@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(del *)",
+      "Bash(dir *)",
+      "WebSearch",
+      "WebFetch(amsa.org.au)",
+      "WebFetch(www.amsa.org)",
+      "WebFetch(en.wikipedia.org)",
+      "Bash(npm run *)",
+      "Bash(node *)"
+    ]
+  },
+  "$version": 3
+}

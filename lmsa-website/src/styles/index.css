@@ -1,0 +1,89 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@400;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-gray-200;
+  }
+
+  body {
+    @apply bg-gray-50 text-gray-900 font-sans antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold text-balance;
+  }
+
+  h1 {
+    @apply text-5xl;
+  }
+
+  h2 {
+    @apply text-4xl;
+  }
+
+  h3 {
+    @apply text-3xl;
+  }
+
+  /* Accessibility base styles */
+  a, button, [role="button"], input, select, textarea {
+    @apply cursor-pointer;
+  }
+
+  /* Focus-visible for keyboard navigation */
+  *:focus-visible {
+    @apply outline-none ring-2 ring-lmsa-600 ring-offset-2;
+  }
+
+  /* Respect user's motion preferences */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer components {
+  .btn {
+    @apply rounded-lg font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2;
+  }
+
+  .btn-primary {
+    @apply bg-lmsa-600 text-white hover:bg-lmsa-700 active:bg-lmsa-800 focus-visible:ring-lmsa-600;
+  }
+
+  .btn-secondary {
+    @apply bg-transparent border-2 border-lmsa-600 text-lmsa-600 hover:bg-lmsa-50 active:bg-lmsa-100 focus-visible:ring-lmsa-600;
+  }
+
+  .btn-ghost {
+    @apply bg-transparent text-gray-700 hover:bg-gray-100 active:bg-gray-200 focus-visible:ring-gray-600;
+  }
+
+  .btn-danger {
+    @apply bg-red-600 text-white hover:bg-red-700 active:bg-red-800 focus-visible:ring-red-600;
+  }
+
+  .input {
+    @apply w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-lmsa-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed;
+  }
+
+  .card {
+    @apply bg-white rounded-xl border border-gray-200 p-6 shadow-sm transition-all duration-200;
+  }
+
+  .card-elevated {
+    @apply card shadow-md hover:shadow-lg;
+  }
+
+  .card-accent {
+    @apply bg-lmsa-50 border-2 border-lmsa-600 rounded-xl p-6;
+  }
+}
