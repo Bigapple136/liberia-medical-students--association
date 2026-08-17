@@ -6,11 +6,11 @@ import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import {
   BookOpen, Heart, FileText, Users, Utensils, Scale,
-  Trophy, DollarSign, Globe, UserPlus, Megaphone, HandHeart,
-  Edit3, Plus, Trash2, Upload, Save, X, Eye, ChevronRight,
+  Trophy, DollarSign, Globe, UserPlus, Megaphone, HeartHandshake,
+  Edit3, Plus, Trash2, Upload, Save, X, Eye,
   Bell, Award, BarChart2, Calendar, Download, Search,
-  Check, AlertCircle, ExternalLink, Mail, Phone, Image,
-  Loader, ArrowLeft, Settings, MoreVertical, Star
+  Check, ExternalLink,
+  Loader, ArrowLeft, Settings
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { committeeService } from '@services/committee.service';
@@ -18,7 +18,7 @@ import { committeeService } from '@services/committee.service';
 // ─── Icon Map ────────────────────────────────────────────────────────────────
 const ICON_MAP = {
   BookOpen, Heart, FileText, Users, Utensils, Scale,
-  Trophy, DollarSign, Globe, UserPlus, Megaphone, HandHeart,
+  Trophy, DollarSign, Globe, UserPlus, Megaphone, HeartHandshake,
 };
 
 // ─── All 12 Committee Definitions (slug-keyed) ───────────────────────────────
@@ -34,7 +34,7 @@ const COMMITTEE_DEFAULTS = {
   'foreign-affairs':  { icon: 'Globe',    color: '#0C8950' },
   membership:    { icon: 'UserPlus',  color: '#DC143C' },
   'media-publicity':  { icon: 'Megaphone',color: '#FFB300' },
-  welfare:       { icon: 'HandHeart', color: '#0C8950' },
+  welfare:       { icon: 'HeartHandshake', color: '#0C8950' },
 };
 
 const TABS = [
@@ -240,6 +240,7 @@ function DetailsTab({ committee, onSave }) {
   const [saving, setSaving] = useState(false);
 
   // Keep form in sync if committee switches
+  /* eslint-disable react-hooks/exhaustive-deps */
   useEffect(() => {
     setForm({
       name:           committee.name || '',
@@ -250,6 +251,7 @@ function DetailsTab({ committee, onSave }) {
       status:         committee.status || 'active',
     });
   }, [committee.id]);
+  /* eslint-enable react-hooks/exhaustive-deps */
 
   function addItem(field) {
     setForm(f => ({ ...f, [field]: [...f[field], ''] }));
@@ -404,9 +406,11 @@ function MembersTab({ committee, onUpdate }) {
   const [userResults, setUsers] = useState([]);
   const [searching, setSearching] = useState(false);
 
+  /* eslint-disable react-hooks/exhaustive-deps */
   useEffect(() => {
     loadMembers();
   }, [committee.id]);
+  /* eslint-enable react-hooks/exhaustive-deps */
 
   async function loadMembers() {
     setLoading(true);
@@ -440,6 +444,7 @@ function MembersTab({ committee, onUpdate }) {
       setNew({ user_id: '', position: 'Member', year: '' });
       setUsers([]);
       loadMembers();
+      onUpdate?.(committee);
     } catch {
       toast.error('Failed to add member');
     }
@@ -451,6 +456,7 @@ function MembersTab({ committee, onUpdate }) {
       await committeeService.removeMember(committee.id, memberId);
       setMembers(m => m.filter(x => x.id !== memberId));
       toast.success('Member removed');
+      onUpdate?.(committee);
     } catch {
       toast.error('Failed to remove member');
     }
@@ -461,6 +467,7 @@ function MembersTab({ committee, onUpdate }) {
       await committeeService.updateMemberRole(committee.id, memberId, position);
       setMembers(m => m.map(x => x.id === memberId ? { ...x, position } : x));
       toast.success('Role updated');
+      onUpdate?.(committee);
     } catch {
       toast.error('Failed to update role');
     }
@@ -617,6 +624,7 @@ function EventsTab({ committee }) {
   });
   const [saving, setSaving] = useState(false);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { loadEvents(); }, [committee.id]);
 
   async function loadEvents() {
@@ -780,6 +788,7 @@ function DocumentsTab({ committee }) {
   const fileRef                 = useRef(null);
   const [meta, setMeta]         = useState({ title: '', category: 'report', access_level: 'members' });
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { loadDocs(); }, [committee.id]);
 
   async function loadDocs() {
@@ -932,6 +941,7 @@ function AnnouncementsTab({ committee }) {
   const [form, setFormData]   = useState({ title: '', message: '', type: 'info', pinned: false });
   const [saving, setSaving] = useState(false);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { load(); }, [committee.id]);
 
   async function load() {
@@ -1046,6 +1056,7 @@ function AchievementsTab({ committee }) {
   const [form, setFormData]   = useState({ title: '', description: '', date: '', badge_emoji: '🏆' });
   const [saving, setSaving] = useState(false);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { load(); }, [committee.id]);
 
   async function load() {

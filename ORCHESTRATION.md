@@ -642,6 +642,27 @@ tree (see how `AdminDashboard` is currently routed for the pattern —
   - All backend changes are additive/backward-compatible: callers that don't
     pass `search`/`limit` get the original unfiltered full user list.
 
+### Report — fixes applied (re-push)
+
+- **Status:** needs-changes → needs-review
+- **Files modified:**
+  - `lmsa-website/src/pages/admin/CommitteeAdminDashboard.jsx` — 3 fixes:
+    1. `HandHeart` → `HeartHandshake` (import, ICON_MAP, COMMITTEE_DEFAULTS) —
+       resolves the build-breaking lucide-react error.
+    2. Removed 7 unused lucide-react imports (`ChevronRight`, `AlertCircle`,
+       `Mail`, `Phone`, `Image`, `MoreVertical`, `Star`). Wired up the
+       existing `onUpdate` prop in `MembersTab` — it now calls
+       `onUpdate?.(committee)` after `addMember`, `removeMember`, and
+       `updateRole` to keep the parent's committee state in sync.
+    3. Added `/* eslint-disable/enable react-hooks/exhaustive-deps */`
+       around all 6 `useEffect` hooks with intentional stable-reference
+       deps (same pattern T3 used).
+- **Verification:**
+  - `npx eslint src/pages/admin/CommitteeAdminDashboard.jsx
+    src/layouts/AdminLayout.jsx src/pages/admin/AdminDashboard.jsx
+    src/routes.jsx` — 0 errors, 0 warnings.
+  - `npm run build` in `lmsa-website` — passes clean.
+
 ### Orchestrator review — changes requested
 
 Ran the lint/build the agent flagged it couldn't run locally. Found one
