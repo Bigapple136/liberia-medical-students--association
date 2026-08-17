@@ -390,8 +390,18 @@ shapes exactly (read the merged T2a code, don't assume).
 ## T3 — Wire real `CommitteePageTemplate.jsx` into routing
 
 **Branch:** `task/t3-committee-template`
-**Status:** assigned
-**Depends on:** T1 (done), T2b (done) — both merged to `main`, unblocked
+**Status:** done
+**Depends on:** T1 (done), T2b (done)
+
+### Orchestrator review
+
+Independently verified (not just report-review): ran `npm install` +
+`npx eslint` on the two touched files (0 errors, 0 warnings) and
+`npm run build` (clean, only the pre-existing chunk-size warning) in
+`lmsa-website`. Fallback logic in `loadAll()` confirmed correct — API
+tried first, static `ALL_COMMITTEES_DATA` only used if `getBySlug` throws.
+`HandHeart` → `HeartHandshake` icon fix confirmed applied cleanly, no
+leftover references. Approved and merged to `main`.
 
 ### Context
 
