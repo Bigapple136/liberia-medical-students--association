@@ -29,7 +29,14 @@ Official website for the Liberia Medical Students' Association (LMSA).
 
 ## Project Structure
 
-See `/docs` folder for complete technical documentation.
+- `src/pages/public/` — Public-facing pages (Home, About, Leadership, Committees, Events, etc.)
+- `src/pages/committees/` — Dynamic committee page template (data-driven, fetches from API)
+- `src/pages/admin/` — Admin dashboard and committee management interface
+- `src/pages/portal/` — Member portal
+- `src/pages/auth/` — Login and registration
+- `src/layouts/` — Page layouts (Public, Admin, Portal)
+- `src/services/` — API service layer (`committee.service.js`, `event.service.js`)
+- `src/components/` — Shared UI components
 
 ## Available Scripts
 

@@ -27,7 +27,7 @@ Claude (orchestrator), and any implementing agents (Claude Code, etc.).
 | T2b | Frontend `event.service.js` | T2a | **done** |
 | T3 | Wire real `CommitteePageTemplate.jsx` into routing | T1, T2b | **assigned** |
 | T4 | Real `CommitteeAdminDashboard.jsx` + `AdminLayout.jsx` sidebar | T1, T2b | **done** |
-| T5 | Cleanup: legacy committee pages/routes, reconcile docs vs. source | T3, T4 | **assigned** |
+| T5 | Cleanup: legacy committee pages/routes, reconcile docs vs. source | T3, T4 | **done** |
 | T6 | Wire public events flow (`EventsPage.jsx` + `EventDetailPage.jsx`) to `eventService`, including a working Register button | T2a, T2b | **assigned** |
 
 T3 and T4 can run in parallel — they touch almost entirely different files
@@ -748,8 +748,21 @@ then push to this same branch.
 ## T5 — Cleanup
 
 **Branch:** `task/t5-cleanup`
-**Status:** assigned
+**Status:** done
 **Depends on:** T3 (done), T4 (done)
+
+### Orchestrator review
+
+Independently verified: `npx eslint src/routes.jsx` clean, `npm run build`
+clean — and module count actually dropped (1578 → 1565), confirming the
+removed files were truly dead weight, not silently still bundled.
+
+Notable good catch beyond the literal spec: the agent found and removed
+an orphaned duplicate `pages/committees/CommitteesPage.jsx` (distinct from
+the live `pages/public/CommitteesPage.jsx`, which is untouched and still
+correctly routed) — confirmed via `git show main:...` that this duplicate
+was never imported or routed anywhere, so it was purely dead weight the
+original spec didn't explicitly name. Approved and merged to `main`.
 
 ### Context
 
@@ -791,7 +804,15 @@ the shape is already clear)
 
 ### Report
 
-*(Agent: fill this in before pushing)*
+- **Status:** assigned → needs-review
+- **Files deleted:** 13 legacy committee files (12 individual `*Committee.jsx` + `CommitteesPage.jsx`) from `pages/committees/`, plus `CommitteeDetailPage.jsx` from `pages/public/`.
+- **Files modified:**
+  - `lmsa-website/src/routes.jsx` — removed 12 legacy committee imports and routes
+  - `lmsa-api/README.md` — added committee and event endpoint sections
+  - `lmsa-website/README.md` — added project structure overview
+- **Files archived:** `docs/Committeepagetemplate.md` and `docs/Complete admin interface for managing all committees.md` → `docs/archive/`
+- **Verification:** `npm run build` passes clean, `npx eslint src/routes.jsx` passes clean.
+- **No hardcoded links found** in Header.jsx or nav components to old `/committees/*` paths.
 
 ---
 
