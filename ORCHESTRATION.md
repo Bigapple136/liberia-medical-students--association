@@ -25,10 +25,10 @@ Claude (orchestrator), and any implementing agents (Claude Code, etc.).
 | T1 | Backend committee API | none | **done** |
 | T2a | Backend events API | none | **done** |
 | T2b | Frontend `event.service.js` | T2a | **done** |
-| T3 | Wire real `CommitteePageTemplate.jsx` into routing | T1, T2b | **assigned** |
+| T3 | Wire real `CommitteePageTemplate.jsx` into routing | T1, T2b | **done** |
 | T4 | Real `CommitteeAdminDashboard.jsx` + `AdminLayout.jsx` sidebar | T1, T2b | **done** |
 | T5 | Cleanup: legacy committee pages/routes, reconcile docs vs. source | T3, T4 | **done** |
-| T6 | Wire public events flow (`EventsPage.jsx` + `EventDetailPage.jsx`) to `eventService`, including a working Register button | T2a, T2b | **assigned** |
+| T6 | Wire public events flow (`EventsPage.jsx` + `EventDetailPage.jsx`) to `eventService`, including a working Register button | T2a, T2b | **needs-review** |
 
 T3 and T4 can run in parallel — they touch almost entirely different files
 (T3: one public page + routing + legacy cleanup candidates; T4: admin
@@ -819,7 +819,7 @@ the shape is already clear)
 ## T6 — Wire public events flow to `eventService`
 
 **Branch:** `task/t6-events-frontend`
-**Status:** assigned
+**Status:** needs-review
 **Depends on:** T2a (done), T2b (done)
 
 ### Context
@@ -890,4 +890,68 @@ fallback/empty state, no fabricated data).
 
 ### Report
 
-*(Agent: fill this in before pushing)*
+- **Status:** in-progress → needs-review
+- **Files modified:**
+  - `lmsa-website/src/pages/public/EventsPage.jsx` — removed the hardcoded
+    `events` array; now loads via `eventService.getAll()` in a
+    `useEffect`/`useState` pattern (loading spinner, `toast.error` on
+    failure, reasonable empty state). Event cards map real fields
+    (`event_type` → category badge, `description` → excerpt, derived date/time
+    from `start_datetime`/`end_datetime`, `location`, optional `image_url`).
+  - `lmsa-website/src/pages/public/EventDetailPage.jsx` — removed the
+    hardcoded `eventsData` lookup; now loads via `eventService.getBySlug(slug)`
+    in a `useEffect` (loading state, keeps the "Event Not Found" fallback on a
+    missing/404 slug). Wired the previously-dead "Register for Event" button:
+    calls `eventService.register(event.id)`, shows a success toast, and flips
+    to a disabled "Registered" state. The button only renders when
+    `event.registration_required` is true.
+- **Deviations from spec (and why):**
+  - **No `?type=` filter UI added.** The spec said to wire filter buttons to
+    the `?type=` param *if the existing UI had them* — `EventsPage.jsx` had no
+    filter buttons, so I did a straight data-source swap (fetch all) and left
+    the visual layout unchanged, exactly as the "keep existing layout, this is
+    a data-source swap" instruction directs. Client-side filtering was not
+    needed since there are no filter controls to drive it.
+  - **Auth handling on Register reuses the existing `api` interceptor.** The
+    spec suggested "redirect to /login or show a toast." `src/services/api.js`
+    already redirects unauthenticated 401s to `/login` in its response
+    interceptor and clears the token, so clicking Register while logged out
+    sends the user to `/login` automatically. In `handleRegister` I skip the
+    error toast specifically for 401 (the redirect is the feedback) and only
+    toast on other failures. This satisfies the graceful-handling requirement
+    without duplicating redirect logic.
+  - **Field mapping:** the schema/controller uses `event_type` (not
+    `category`) and a single `start_datetime`/`end_datetime` (not separate
+    `date`/`time`), so I derived display strings from those real fields rather
+    than the old fake `date`/`time`/`category` keys.
+- **Manual test results / acceptance criteria:**
+  - **Read the source, couldn't run live here:** `lmsa-website` has **no
+    `node_modules`** in this environment, so `npx eslint` and `npm run build`
+    could not be executed. I mirrored the exact `useState`/`useEffect` +
+    `eventService` + `toast` patterns from the already-merged
+    `CommitteePageTemplate.jsx` (T3) and kept imports tight (no unused
+    symbols) to stay clean under `--max-warnings 0`. Orchestrator should run
+    `npm ci && npm run lint && npm run build` in `lmsa-website` before merge.
+  - **`EventsPage.jsx` renders real events:** `eventService.getAll()` →
+    `GET /events`; cards render `response.data.events`. No fake array remains.
+  - **`EventDetailPage.jsx` loads by slug:** `eventService.getBySlug(slug)` →
+    `GET /events/:slug`, returns `response.data.event` (incl.
+    `registration_count`). Missing/404 slug → "Event Not Found" state.
+  - **Register button:** wired to `eventService.register(event.id)` →
+    `POST /events/:id/register`. On success, button becomes disabled
+    "Registered" + success toast; on 401 the `api` interceptor redirects to
+    `/login`; other errors show a failure toast. Could not click-test against
+    a live backend here (no Supabase creds), but the request/response shapes
+    match T2a's `register` handler exactly, so the round-trip should work once
+    the server is up.
+  - **No leftover hardcoded arrays:** confirmed both `events` and
+    `eventsData` literals are gone from the two files (verified by diff).
+- **Open questions / blockers for orchestrator:**
+  - Run frontend `lint` + `build` (no deps present here) before merge.
+  - If a type/category filter UI is later wanted on `EventsPage`, it's a small
+    follow-up: pass `{ type }` to `eventService.getAll()` (backend `?type=`
+    already supported) — not required by this task since the page had no
+    filters to begin with.
+  - All changes are additive to the data layer; existing routes
+    (`/events`, `/events/:slug`) and component APIs are unchanged.
+

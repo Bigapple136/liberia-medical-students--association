@@ -1,28 +1,87 @@
+import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { Calendar, MapPin, Clock, ArrowLeft } from 'lucide-react';
+import {
+  Calendar, MapPin, Clock, ArrowLeft, Loader, Check,
+} from 'lucide-react';
+import toast from 'react-hot-toast';
+import { eventService } from '@services/event.service';
 
-const eventsData = {
-  'annual-symposium-2026': {
-    title: 'Annual Medical Symposium 2026',
-    date: 'August 15-17, 2026',
-    time: '9:00 AM - 5:00 PM',
-    location: 'Monrovia, Liberia',
-    category: 'Conference',
-    description: 'Join us for three days of inspiring talks, workshops, and networking with medical professionals from across West Africa. This year\'s theme is "Innovation in African Healthcare."',
-  },
-  'community-health-outreach-june': {
-    title: 'Community Health Outreach',
-    date: 'June 20, 2026',
-    time: '8:00 AM - 2:00 PM',
-    location: 'West Point, Monrovia',
-    category: 'Community Service',
-    description: 'Free health screenings and education for underserved communities. Volunteers needed!',
-  },
-};
+function formatDate(start, end) {
+  const opts = { month: 'long', day: 'numeric', year: 'numeric' };
+  if (!start) return 'Date TBD';
+  const startDate = new Date(start).toLocaleDateString('default', opts);
+  if (end && new Date(end).toDateString() !== new Date(start).toDateString()) {
+    return `${startDate} – ${new Date(end).toLocaleDateString('default', opts)}`;
+  }
+  return startDate;
+}
+
+function formatTime(start, end) {
+  if (!start) return 'Time TBD';
+  const startStr = new Date(start).toLocaleTimeString('default', {
+    hour: 'numeric',
+    minute: '2-digit',
+  });
+  if (end) {
+    const endStr = new Date(end).toLocaleTimeString('default', {
+      hour: 'numeric',
+      minute: '2-digit',
+    });
+    return `${startStr} – ${endStr}`;
+  }
+  return startStr;
+}
 
 export default function EventDetailPage() {
   const { slug } = useParams();
-  const event = eventsData[slug];
+  const [event, setEvent] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [registered, setRegistered] = useState(false);
+  const [registering, setRegistering] = useState(false);
+
+  useEffect(() => {
+    loadEvent();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [slug]);
+
+  async function loadEvent() {
+    setLoading(true);
+    try {
+      const data = await eventService.getBySlug(slug);
+      setEvent(data);
+    } catch {
+      // 404 or other failure — show Event Not Found state
+      setEvent(null);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleRegister() {
+    if (!event) return;
+    setRegistering(true);
+    try {
+      await eventService.register(event.id);
+      setRegistered(true);
+      toast.success('Registered successfully!');
+    } catch (err) {
+      // Unauthenticated users get a 401 — the api interceptor already
+      // redirects to /login. Avoid a confusing raw error toast for that case.
+      if (err?.response?.status !== 401) {
+        toast.error('Failed to register for event');
+      }
+    } finally {
+      setRegistering(false);
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <Loader size={32} className="animate-spin text-lmsa-600" />
+      </div>
+    );
+  }
 
   if (!event) {
     return (
@@ -50,7 +109,7 @@ export default function EventDetailPage() {
         {/* Event Details */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
           <span className="bg-lmsa-100 text-lmsa-700 text-sm font-bold px-4 py-1 rounded-full">
-            {event.category}
+            {event.event_type}
           </span>
           <h1 className="text-4xl font-bold text-gray-900 mt-4 mb-6">{event.title}</h1>
 
@@ -59,14 +118,18 @@ export default function EventDetailPage() {
               <Calendar size={20} className="text-lmsa-600" />
               <div>
                 <p className="text-sm text-gray-500">Date</p>
-                <p className="font-medium text-gray-900">{event.date}</p>
+                <p className="font-medium text-gray-900">
+                  {formatDate(event.start_datetime, event.end_datetime)}
+                </p>
               </div>
             </div>
             <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
               <Clock size={20} className="text-lmsa-600" />
               <div>
                 <p className="text-sm text-gray-500">Time</p>
-                <p className="font-medium text-gray-900">{event.time}</p>
+                <p className="font-medium text-gray-900">
+                  {formatTime(event.start_datetime, event.end_datetime)}
+                </p>
               </div>
             </div>
             <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
@@ -82,7 +145,20 @@ export default function EventDetailPage() {
             <p className="text-gray-700 leading-relaxed text-lg">{event.description}</p>
           </div>
 
-          <button className="btn btn-primary mt-8">Register for Event</button>
+          {event.registration_required && (
+            <button
+              onClick={handleRegister}
+              disabled={registered || registering}
+              className="btn btn-primary mt-8 flex items-center gap-2"
+            >
+              {registering ? (
+                <Loader size={16} className="animate-spin" />
+              ) : registered ? (
+                <Check size={16} />
+              ) : null}
+              {registered ? 'Registered' : registering ? 'Registering...' : 'Register for Event'}
+            </button>
+          )}
         </div>
       </div>
     </div>
