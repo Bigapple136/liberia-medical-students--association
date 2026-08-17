@@ -791,7 +791,15 @@ the shape is already clear)
 
 ### Report
 
-*(Agent: fill this in before pushing)*
+- **Status:** assigned → needs-review
+- **Files deleted:** 13 legacy committee files (12 individual `*Committee.jsx` + `CommitteesPage.jsx`) from `pages/committees/`, plus `CommitteeDetailPage.jsx` from `pages/public/`.
+- **Files modified:**
+  - `lmsa-website/src/routes.jsx` — removed 12 legacy committee imports and routes
+  - `lmsa-api/README.md` — added committee and event endpoint sections
+  - `lmsa-website/README.md` — added project structure overview
+- **Files archived:** `docs/Committeepagetemplate.md` and `docs/Complete admin interface for managing all committees.md` → `docs/archive/`
+- **Verification:** `npm run build` passes clean, `npx eslint src/routes.jsx` passes clean.
+- **No hardcoded links found** in Header.jsx or nav components to old `/committees/*` paths.
 
 ---
 

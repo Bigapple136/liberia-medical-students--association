@@ -33,20 +33,6 @@ import PartnershipPage from './pages/public/PartnershipPage';
 import ContactPage from './pages/public/ContactPage';
 import NotFoundPage from './pages/public/NotFoundPage';
 
-// Committee pages
-import AcademicCommittee from './pages/committees/AcademicCommittee';
-import HealthCommittee from './pages/committees/HealthCommittee';
-import ResearchJournalCommittee from './pages/committees/ResearchJournalCommittee';
-import SocialProgramCommittee from './pages/committees/SocialProgramCommittee';
-import DietaryCommittee from './pages/committees/DietaryCommittee';
-import JudicialCommittee from './pages/committees/JudicialCommittee';
-import SportsCommittee from './pages/committees/SportsCommittee';
-import AuditingCommittee from './pages/committees/AuditingCommittee';
-import ForeignAffairsCommittee from './pages/committees/ForeignAffairsCommittee';
-import MembershipCommittee from './pages/committees/MembershipCommittee';
-import MediaPublicityCommittee from './pages/committees/MediaPublicityCommittee';
-import WelfareCommittee from './pages/committees/WelfareCommittee';
-
 // Auth pages
 import LoginPage from './pages/auth/LoginPage';
 import RegisterPage from './pages/auth/RegisterPage';
@@ -109,20 +95,6 @@ function AppRoutes() {
         
         {/* Contact route */}
         <Route path="/contact" element={<ContactPage />} />
-
-        {/* Committee routes */}
-        <Route path="/committees/academic" element={<AcademicCommittee />} />
-        <Route path="/committees/health" element={<HealthCommittee />} />
-        <Route path="/committees/research-journal" element={<ResearchJournalCommittee />} />
-        <Route path="/committees/social-program" element={<SocialProgramCommittee />} />
-        <Route path="/committees/dietary" element={<DietaryCommittee />} />
-        <Route path="/committees/judicial" element={<JudicialCommittee />} />
-        <Route path="/committees/sports" element={<SportsCommittee />} />
-        <Route path="/committees/auditing" element={<AuditingCommittee />} />
-        <Route path="/committees/foreign-affairs" element={<ForeignAffairsCommittee />} />
-        <Route path="/committees/membership" element={<MembershipCommittee />} />
-        <Route path="/committees/media-publicity" element={<MediaPublicityCommittee />} />
-        <Route path="/committees/welfare" element={<WelfareCommittee />} />
       </Route>
 
       {/* Auth routes */}
