@@ -13,9 +13,10 @@ new numbered files are added.
 
 ## Status as of 2026-08-17
 
-- **001 has NOT been run yet** against the production Supabase project —
-  confirmed after 002 failed with `relation "events" does not exist`.
-- **002 failed to run** for the same reason. Re-run it after 001 succeeds.
+- ✅ **001 and 002 both applied successfully** against the production
+  Supabase project. All base tables plus committee_announcements,
+  committee_achievements, committee_subscribers, and the committee_id FK
+  columns on events/documents are live.
 
 ## How to run
 

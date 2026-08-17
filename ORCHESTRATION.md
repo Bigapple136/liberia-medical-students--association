@@ -44,14 +44,16 @@ Reviewed full diff against spec. All 22 handlers present with correct
 middleware correctly applied to all 12 mutation routes. `server.js` wiring
 correct. Both files pass `node --check`. Approved and merged to `main`.
 
-Two follow-ups noted, folded into later tasks rather than blocking this one:
+One follow-up noted, folded into a later task rather than blocking this one:
 - `committee.service.js`'s `searchUsers()` calls `GET /users?search=...`,
   but `user.controller.js`'s `getAllUsers` doesn't support a `search` param.
   Pre-existing gap, not part of T1's scope. **Added to T4 spec** since the
   admin dashboard's "add member" flow needs it.
-- Supabase migration (`committee_additions.sql`) application status pending
-  confirmation from Stone (project owner) — needs to be run/confirmed in the
-  Supabase SQL Editor before this is live end-to-end.
+
+**Database:** ✅ Confirmed live. `001_base_schema.sql` and
+`002_committee_additions.sql` (see `lmsa-website/database/`) both applied
+successfully to the production Supabase project as of 2026-08-17. T1 is
+now done end-to-end — backend code, routes, and schema are all live.
 
 ### Context
 
