@@ -37,10 +37,10 @@ export default function LoginPage() {
         <div className="max-w-md text-white">
           <h1 className="text-5xl font-bold mb-6 uppercase tracking-tight">LMSA</h1>
           <p className="text-xl text-lmsa-100 mb-8 text-balance">
-            Liberia Medical Students' Association
+            Liberia Medical Students&apos; Association
           </p>
           <blockquote className="text-lg text-lmsa-100 italic mb-4 text-balance">
-            "Uniting future physicians to promote excellence, advocate for student welfare, and advance healthcare in Liberia."
+            &quot;Uniting future physicians to promote excellence, advocate for student welfare, and advance healthcare in Liberia.&quot;
           </blockquote>
           <div className="mt-12 pt-8 border-t border-lmsa-500">
             <p className="text-sm text-lmsa-200">
@@ -127,7 +127,7 @@ export default function LoginPage() {
           {/* Register Link */}
           <div className="mt-8 text-center text-sm">
             <p className="text-gray-600">
-              Don't have an account?{' '}
+              Don&apos;t have an account?{' '}
               <Link to="/register" className="text-lmsa-600 hover:text-lmsa-700 font-medium transition-colors duration-200">
                 Register here
               </Link>

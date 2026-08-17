@@ -48,7 +48,7 @@ export default function MissionVisionPage() {
             <p className="text-gray-700 leading-relaxed mb-4">
               A Liberia where every medical student has access to quality education, resources, 
               and opportunities to become competent, compassionate healthcare professionals who 
-              will lead the transformation of our nation's health system.
+              will lead the transformation of our nation&apos;s health system.
             </p>
             <ul className="space-y-3 text-gray-700">
               <li className="flex items-start gap-3">

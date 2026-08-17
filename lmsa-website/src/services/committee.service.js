@@ -85,7 +85,7 @@ export const committeeService = {
   async uploadDocument(committeeId, file, { title, category, access_level }) {
     // 1. Upload file to Supabase Storage
     const fileName = `committees/${committeeId}/${Date.now()}-${file.name}`;
-    const { data: storageData, error: storageError } = await supabase.storage
+    const { error: storageError } = await supabase.storage
       .from('documents')
       .upload(fileName, file);
 

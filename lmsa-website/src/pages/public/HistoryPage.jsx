@@ -23,16 +23,16 @@ export default function HistoryPage() {
             <div className="mb-8">
               <h2 className="text-2xl font-bold text-gray-900 mb-4">The Beginning (1972)</h2>
               <p className="text-gray-700 leading-relaxed">
-                The Liberia Medical Students' Association (LMSA) was founded in 1972 by a small group of visionary 
+                The Liberia Medical Students&apos; Association (LMSA) was founded in 1972 by a small group of visionary 
                 medical students who recognized the need for a unified voice in medical education. What started as 
                 a modest gathering of 15 students has grown into one of the most influential student organizations 
-                in Liberia's medical landscape.
+                in Liberia&apos;s medical landscape.
               </p>
             </div>
 
             <div className="mb-8 p-6 bg-lmsa-50 rounded-xl border-l-4 border-lmsa-600">
               <p className="text-lmsa-800 font-medium italic">
-                "Education is the foundation of progress, but unity is the bridge that takes us there."
+                &quot;Education is the foundation of progress, but unity is the bridge that takes us there.&quot;
               </p>
               <p className="text-lmsa-600 text-sm mt-2">— Founding Members, 1972</p>
             </div>

@@ -92,7 +92,7 @@ export default function JoinCommitteePage() {
             </div>
           </div>
           <p className="text-lmsa-50 max-w-2xl leading-relaxed">
-            Committees are the backbone of LMSA's operations. By joining a committee, you'll work
+            Committees are the backbone of LMSA&apos;s operations. By joining a committee, you&apos;ll work
             directly on initiatives that advance our mission, develop professional skills, and make
             lasting connections with fellow students.
           </p>

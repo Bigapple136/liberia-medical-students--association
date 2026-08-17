@@ -156,13 +156,13 @@ export default function CommitteesPage() {
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 mb-8">
           <h2 className="text-2xl font-bold text-gray-900 mb-4">Our Committee Structure</h2>
           <p className="text-gray-700 leading-relaxed mb-4">
-            LMSA operates through 12 standing committees, each responsible for specific areas of the organization's
+            LMSA operates through 12 standing committees, each responsible for specific areas of the organization&apos;s
             work. These committees ensure focused attention on critical issues and provide opportunities for members
             to contribute meaningfully to our mission.
           </p>
           <p className="text-gray-700 leading-relaxed">
             Committee members are appointed annually and work throughout the year to develop programs, policies,
-            and initiatives that advance LMSA's goals.
+            and initiatives that advance LMSA&apos;s goals.
           </p>
         </div>
 

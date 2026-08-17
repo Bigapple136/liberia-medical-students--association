@@ -96,7 +96,7 @@ export default function HomePage() {
       <section className="py-16 bg-lmsa-600 text-white">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <blockquote className="text-2xl md:text-3xl font-serif italic mb-6 text-balance">
-            "Together, we are shaping the future of healthcare in Liberia—one student, one community, one mission at a time."
+            &quot;Together, we are shaping the future of healthcare in Liberia—one student, one community, one mission at a time.&quot;
           </blockquote>
           <p className="text-lmsa-100 text-lg">
             — LMSA Mission Statement

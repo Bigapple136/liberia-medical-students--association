@@ -46,7 +46,7 @@ export default function Header() {
             </div>
             <div className="hidden sm:block">
               <span className="text-xl font-bold text-lmsa-600">LMSA</span>
-              <p className="text-xs text-gray-500">Medical Students' Association</p>
+              <p className="text-xs text-gray-500">Medical Students&apos; Association</p>
             </div>
           </Link>
 

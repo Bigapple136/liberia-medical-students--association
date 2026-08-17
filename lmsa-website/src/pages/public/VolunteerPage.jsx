@@ -48,7 +48,7 @@ export default function VolunteerPage() {
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 mb-8">
           <p className="text-gray-700 leading-relaxed">
             LMSA is committed to serving our communities. Through our volunteer programs, medical students 
-            gain valuable experience while making a real difference in people's lives. Join us in our 
+            gain valuable experience while making a real difference in people&apos;s lives. Join us in our 
             mission to improve healthcare access and education across Liberia.
           </p>
         </div>
