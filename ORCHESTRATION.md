@@ -26,7 +26,7 @@ Claude (orchestrator), and any implementing agents (Claude Code, etc.).
 | T2a | Backend events API | none | **done** |
 | T2b | Frontend `event.service.js` | T2a | **done** |
 | T3 | Wire real `CommitteePageTemplate.jsx` into routing | T1, T2b | **assigned** |
-| T4 | Real `CommitteeAdminDashboard.jsx` + `AdminLayout.jsx` sidebar | T1, T2b | **needs-review** |
+| T4 | Real `CommitteeAdminDashboard.jsx` + `AdminLayout.jsx` sidebar | T1, T2b | **needs-changes** |
 | T5 | Cleanup: legacy committee pages/routes, reconcile docs vs. source | T3, T4 | blocked |
 | T6 | Wire `EventDetailPage.jsx` to `eventService` (currently static, same issue T3 fixes for committees) | T2b | unassigned — noted, not yet specced |
 
@@ -642,7 +642,48 @@ tree (see how `AdminDashboard` is currently routed for the pattern —
   - All backend changes are additive/backward-compatible: callers that don't
     pass `search`/`limit` get the original unfiltered full user list.
 
----
+### Orchestrator review — changes requested
+
+Ran the lint/build the agent flagged it couldn't run locally. Found one
+**build-breaking error** and lint issues that need fixing before this can
+merge:
+
+1. **BLOCKER — build fails.** `CommitteeAdminDashboard.jsx` line 9 still
+   imports `HandHeart` from `lucide-react`, which doesn't exist in the
+   installed version (same issue the T3 agent already found and fixed in
+   `CommitteePageTemplate.jsx` — flagged in T3's report as something T4
+   might also need). `npm run build` fails outright with:
+   `"HandHeart" is not exported by lucide-react`. Fix: rename to
+   `HeartHandshake` (import + every usage/ICON_MAP reference), same as T3
+   did.
+2. **8 ESLint errors** (`no-unused-vars`), all in
+   `CommitteeAdminDashboard.jsx` — `ChevronRight`, `AlertCircle`, `Mail`,
+   `Phone`, `Image`, `MoreVertical`, `Star` (unused lucide-react imports —
+   remove any not actually used in JSX), and `onUpdate` (unused function
+   param in the `MembersTab` component, line ~397). On that last one:
+   check whether `MembersTab` is *supposed* to call `onUpdate` after a
+   member add/remove/role-change to refresh the parent's committee state
+   (e.g. member count) — if so this may be a real wiring gap, not just an
+   unused-var lint issue; wire it up if it should be called, or remove the
+   prop if it's genuinely not needed.
+3. **6 `react-hooks/exhaustive-deps` warnings** — the project's `npm run
+   lint` script uses `--max-warnings 0`, so these currently fail lint too.
+   Follow the same pattern T3 used (`// eslint-disable-next-line
+   react-hooks/exhaustive-deps` on the specific `useEffect` calls where the
+   missing deps are intentional stable references) rather than adding all
+   listed deps blindly, which could cause refetch loops.
+
+Everything else in the report checks out — architecture, route choice
+(`/admin/committees` without a slug — agreed, correct call given the
+component's self-contained committee-picker sidebar), the `searchUsers`
+backend fix, and the real-stats replacement in `AdminDashboard.jsx` all
+look right on inspection. This is a fix-and-repush, not a redo.
+
+**Status:** needs-changes — please fix the 3 items above, re-run
+`npx eslint src/pages/admin/CommitteeAdminDashboard.jsx
+src/layouts/AdminLayout.jsx src/pages/admin/AdminDashboard.jsx
+src/routes.jsx --ext js,jsx` and `npm run build` locally to confirm clean,
+then push to this same branch.
 
 ## T5 — Cleanup
 
