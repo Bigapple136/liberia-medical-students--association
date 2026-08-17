@@ -13,6 +13,7 @@ import { logger } from './middleware/logger.middleware.js';
 import authRoutes from './routes/auth.routes.js';
 import userRoutes from './routes/user.routes.js';
 import healthRoutes from './routes/health.routes.js';
+import committeeRoutes from './routes/committee.routes.js';
 
 // Load environment variables
 dotenv.config();
@@ -58,6 +59,7 @@ app.use('/api/', limiter);
 app.use('/api/health', healthRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/committees', committeeRoutes);
 
 // Root route
 app.get('/', (req, res) => {
