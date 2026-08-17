@@ -26,7 +26,7 @@ Claude (orchestrator), and any implementing agents (Claude Code, etc.).
 | T2a | Backend events API | none | **done** |
 | T2b | Frontend `event.service.js` | T2a | **done** |
 | T3 | Wire real `CommitteePageTemplate.jsx` into routing | T1, T2b | **assigned** |
-| T4 | Real `CommitteeAdminDashboard.jsx` + `AdminLayout.jsx` sidebar | T1, T2b | **needs-changes** |
+| T4 | Real `CommitteeAdminDashboard.jsx` + `AdminLayout.jsx` sidebar | T1, T2b | **done** |
 | T5 | Cleanup: legacy committee pages/routes, reconcile docs vs. source | T3, T4 | blocked |
 | T6 | Wire `EventDetailPage.jsx` to `eventService` (currently static, same issue T3 fixes for committees) | T2b | unassigned — noted, not yet specced |
 
@@ -663,7 +663,17 @@ tree (see how `AdminDashboard` is currently routed for the pattern —
     src/routes.jsx` — 0 errors, 0 warnings.
   - `npm run build` in `lmsa-website` — passes clean.
 
-### Orchestrator review — changes requested
+### Orchestrator review — approved, merged
+
+Re-verified independently after the fix-and-repush: `npx eslint` on all
+four touched files — 0 errors, 0 warnings. `npm run build` — clean.
+Confirmed `HandHeart` fully replaced with `HeartHandshake` (import,
+ICON_MAP, COMMITTEE_DEFAULTS). Confirmed `onUpdate` wasn't just
+lint-silenced — it's genuinely wired now: `MembersTab` calls
+`onUpdate?.(committee)` after add/remove/role-change so the parent's
+committee state (member count etc.) actually stays in sync. Good catch
+turning a lint error into a real bug fix rather than just deleting the
+prop. Approved and merged to `main`.
 
 Ran the lint/build the agent flagged it couldn't run locally. Found one
 **build-breaking error** and lint issues that need fixing before this can
