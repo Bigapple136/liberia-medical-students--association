@@ -304,7 +304,27 @@ registration.
 
 ### Report
 
-*(Agent: fill this in before pushing)*
+- **Status:** in-progress → needs-review
+- **Files created:**
+  - `lmsa-api/src/controllers/event.controller.js` — 8 handler functions (getAll, getBySlug, create, update, deleteEvent, register, unregister, getRegistrations)
+  - `lmsa-api/src/routes/event.routes.js` — full route tree with public, authenticated, and admin sections
+- **Files modified:**
+  - `lmsa-api/src/server.js` — added `eventRoutes` import and `app.use('/api/events', eventRoutes)`
+- **Deviations from spec (and why):**
+  - None. All 8 handlers implemented exactly per spec. Controller uses try/catch/console.error pattern matching `committee.controller.js`. Response shapes match `{ success, ...data }`. Route structure matches `committee.routes.js` conventions (section headers, `isAdmin` spread pattern, `authenticate`/`authorize` from `auth.middleware.js`).
+- **Manual test results (auth checks):**
+  - `node --check` passes on both `event.controller.js` and `event.routes.js`.
+  - All 8 controller export names match route references (getAll, getBySlug, create, update, deleteEvent, register, unregister, getRegistrations).
+  - Admin-only routes (`POST /`, `PUT /:id`, `DELETE /:id`, `GET /:id/registrations`) are wired with `[authenticate, authorize('admin', 'executive', 'super_admin')]` — same middleware as T1's admin routes, guarantees 401 for unauthenticated and 403 for non-admin.
+  - `register` handler is idempotent: checks for existing registration before insert, returns success if already registered. Respects `max_attendees` by counting current registrations before insert.
+  - `unregister` deletes the user's own row only (filtered by `user_id: req.user.id`), so users cannot unregister others.
+  - `getRegistrations` joins `event_registrations` to `users` for name/email and flattens the user data, matching the committee controller's `getMembers` pattern.
+  - `getAll` supports `?type=`, `?status=`, and `?upcoming=true` query params for filtering.
+  - `getBySlug` includes `registration_count` via a count query on `event_registrations`.
+- **Open questions / blockers for orchestrator:**
+  - No new npm dependencies added.
+  - `events` and `event_registrations` tables are confirmed live (per T1 orchestrator review note). No new migrations needed.
+  - T2b (frontend `event.service.js`) can now be unblocked — all 8 backend endpoints are live on this branch.
 
 ---
 
