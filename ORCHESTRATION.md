@@ -23,8 +23,8 @@ Claude (orchestrator), and any implementing agents (Claude Code, etc.).
 | ID | Task | Depends on | Status |
 |----|------|------------|--------|
 | T1 | Backend committee API | none | **done** |
-| T2a | Backend events API | none | **assigned** |
-| T2b | Frontend `event.service.js` | T2a | blocked |
+| T2a | Backend events API | none | **done** |
+| T2b | Frontend `event.service.js` | T2a | **assigned** |
 | T3 | Wire real `CommitteePageTemplate.jsx` into routing | T1, T2b | blocked |
 | T4 | Real `CommitteeAdminDashboard.jsx` + `AdminLayout.jsx` sidebar | T1, T2b | blocked |
 | T5 | Cleanup: legacy committee pages/routes, reconcile docs vs. source | T3, T4 | blocked |
@@ -211,8 +211,17 @@ your report whether you ran it or found it already applied (check for
 ## T2a — Backend Events API
 
 **Branch:** `task/t2a-events-backend`
-**Status:** assigned
+**Status:** done
 **Depends on:** none
+
+### Orchestrator review
+
+Reviewed full diff. All 8 handlers present, correct `{ success, ...key }`
+response shapes, idempotent registration (checks existing row before
+insert), `max_attendees` capacity check before allowing registration,
+`unregister` correctly scoped to `req.user.id` only. Route auth matches
+T1's pattern exactly (`isAdmin` spread array). Both files pass
+`node --check`. `server.js` wiring correct. Approved and merged to `main`.
 
 ### Context
 
@@ -331,8 +340,8 @@ registration.
 ## T2b — Frontend `event.service.js`
 
 **Branch:** `task/t2b-event-service`
-**Status:** blocked (needs T2a done)
-**Depends on:** T2a
+**Status:** assigned
+**Depends on:** T2a (done — merged to main)
 
 ### Context
 
