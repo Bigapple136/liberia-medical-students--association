@@ -29,6 +29,17 @@ Claude (orchestrator), and any implementing agents (Claude Code, etc.).
 | T4 | Real `CommitteeAdminDashboard.jsx` + `AdminLayout.jsx` sidebar | T1, T2b | **done** |
 | T5 | Cleanup: legacy committee pages/routes, reconcile docs vs. source | T3, T4 | **done** |
 | T6 | Wire public events flow (`EventsPage.jsx` + `EventDetailPage.jsx`) to `eventService`, including a working Register button | T2a, T2b | **done** |
+| T7 | 🔴 **Security** — implement missing role enforcement in `ProtectedRoute.jsx` (`requireRole` is currently a no-op) | none | **assigned — priority** |
+| T8 | Repo-wide lint cleanup (38 pre-existing errors, unrelated to T1–T6) | none | assigned |
+
+**T7 is flagged priority.** Found during T6's post-merge full-repo lint
+sweep: `ProtectedRoute.jsx`'s `requireRole` prop has never been
+implemented (literal comment in the code: `// Add role checking logic
+here if requireRole is provided`). This means **`/admin/*` — including
+T4's `CommitteeAdminDashboard` — currently accepts any authenticated
+user, not just admins.** Any logged-in student can reach the admin
+committee dashboard today. This should be fixed before this is announced
+or widely used, independent of whatever else is being worked on.
 
 T3 and T4 can run in parallel — they touch almost entirely different files
 (T3: one public page + routing + legacy cleanup candidates; T4: admin
@@ -967,3 +978,172 @@ fallback/empty state, no fabricated data).
   - All changes are additive to the data layer; existing routes
     (`/events`, `/events/:slug`) and component APIs are unchanged.
 
+---
+
+## T7 — 🔴 Security: implement role enforcement in `ProtectedRoute.jsx`
+
+**Branch:** `task/t7-role-enforcement`
+**Status:** assigned — priority
+**Depends on:** none
+
+### Context
+
+`lmsa-website/src/components/common/ProtectedRoute.jsx` accepts a
+`requireRole` prop (used by `routes.jsx` on the `/admin` route tree,
+including T4's `CommitteeAdminDashboard`) but never checks it — the
+component only verifies the user is logged in at all:
+
+```jsx
+export default function ProtectedRoute({ children, requireRole }) {
+  const { user, loading } = useAuth();
+  // ...
+  if (!user) return <Navigate to="/login" replace />;
+  // Add role checking logic here if requireRole is provided
+  return children;
+}
+```
+
+Root cause: `lmsa-website/src/context/AuthContext.jsx`'s `user` value is
+the raw Supabase Auth session object (`session.user` — just `id`, `email`,
+etc.). The app's `role` field lives in a separate row in the `users`
+table, fetched via the already-existing, working
+`GET /api/users/me` endpoint (`lmsa-api/src/controllers/user.controller.js`
+`getCurrentUser`, returns `{ success, user }` where `user` includes
+`role`). `AuthContext` never calls this endpoint, so `role` isn't
+available anywhere on the frontend right now.
+
+### Files to modify
+
+**`lmsa-website/src/context/AuthContext.jsx`**
+- After a session is established (both in the initial
+  `supabase.auth.getSession()` branch and the `onAuthStateChange`
+  listener), call the existing user service / `GET /api/users/me` to
+  fetch the full profile row and merge `role` (and any other
+  app-level fields you find useful — e.g. `membership_status`) onto the
+  `user` object exposed via context. Check
+  `lmsa-website/src/services/` for an existing `user.service.js` first —
+  if one already wraps `/users/me`, use it; if not, a minimal
+  `api.get('/users/me')` call inline is fine, don't over-build this.
+- Handle the fetch failing gracefully (e.g. network hiccup) — don't leave
+  the user stuck in a broken loading state; falling back to the bare
+  Supabase session (no role) with an admin check that then correctly
+  denies access is an acceptable degradation.
+
+**`lmsa-website/src/components/common/ProtectedRoute.jsx`**
+- Implement the actual check: if `requireRole` is provided and the
+  user's `role` doesn't match (or isn't in an allowed set — check how
+  `requireRole` is actually called in `routes.jsx`, currently passed as a
+  single string like `requireRole="admin"`, but consider whether it
+  should accept an array to match the backend's
+  `authorize('admin', 'executive', 'super_admin')` pattern — your call,
+  document whichever you pick), redirect somewhere sensible (e.g. back to
+  `/portal/dashboard` or `/` with a toast, not just a blank page) rather
+  than silently rendering `children` anyway.
+- Keep the existing loading-state and not-logged-in behavior unchanged.
+
+### Acceptance criteria
+
+- [ ] `npx eslint` on both modified files — 0 new errors (existing
+      `requireRole`/`user` unused-var errors should now resolve naturally
+      since they're actually used).
+- [ ] `npm run build` — clean.
+- [ ] **Manually verify with two accounts**: a non-admin (`role: 'student'`)
+      logged-in user hitting `/admin/dashboard` or `/admin/committees`
+      gets redirected, not the admin UI. An admin account gets through.
+      Note both results explicitly in your report — this is the entire
+      point of the task, don't skip it.
+- [ ] No regression to the existing "not logged in → redirect to /login"
+      behavior.
+- [ ] `AuthContext`'s extra fetch doesn't introduce a visible flash of
+      wrong content (e.g. briefly rendering admin UI before the role
+      check resolves) — if `loading` needs to stay `true` until the role
+      fetch completes too, do that.
+
+### Report
+
+*(Agent: fill this in before pushing)*
+
+---
+
+## T8 — Repo-wide lint cleanup
+
+**Branch:** `task/t8-lint-cleanup`
+**Status:** assigned
+**Depends on:** none (independent of T7, can run in parallel)
+
+### Context
+
+Full-repo `npx eslint src --ext js,jsx` in `lmsa-website` (run after T6
+merged) surfaced 38 pre-existing errors across files never touched by any
+task in this board — this is not new breakage, just never cleaned up.
+None of it currently breaks the production build (Vite doesn't run
+ESLint), but the project's own `npm run lint` script uses
+`--max-warnings 0`, so it currently fails project-wide. Full list as of
+this writing:
+
+**Unused variables (`no-unused-vars`) — 5 instances:**
+- `src/components/common/ErrorBoundary.jsx:12` — `error` param in
+  `getDerivedStateFromError(error)` unused (state is derived without it —
+  check if it should be used or the param removed/prefixed `_error`)
+- `src/pages/portal/DashboardPage.jsx:5` — `user` assigned but unused
+- `src/pages/public/PartnershipPage.jsx:2` — `ExternalLink`, `Search`
+  imported but unused
+- `src/services/committee.service.js:88` — `storageData` assigned but
+  unused (from the Supabase Storage upload destructure — check if this
+  was meant to be used, e.g. to confirm upload success details, or is
+  safely droppable)
+
+**Undefined global (`no-undef`) — 1 instance, also relevant to T7's fix:**
+- `src/components/common/ErrorBoundary.jsx:56` — references
+  `process.env.NODE_ENV`. This is a Vite app; `process` doesn't exist in
+  the browser bundle. Replace with Vite's built-in
+  `import.meta.env.DEV` (boolean, `true` in dev). This is a real
+  potential runtime bug, not just a lint nit — if this line ever
+  executes in production it throws a `ReferenceError` inside the error
+  boundary itself, meaning a real error could become a blank crash
+  instead of the friendly fallback UI. Prioritize this fix within T8.
+
+**Unescaped JSX entities (`react/no-unescaped-entities`) — remainder,
+~15 files** — raw `'` or `"` characters in JSX text need escaping
+(`&apos;`/`&rsquo;` or `&quot;`/`&rdquo;`) or wrapping in
+`{"'"}`/`{'"'}`. Affected files (run
+`npx eslint src --ext js,jsx` yourself for exact line numbers, they may
+shift slightly if T7 lands first and touches `ProtectedRoute.jsx`):
+`components/layout/Footer.jsx`, `components/layout/Header.jsx`,
+`pages/auth/LoginPage.jsx`, `pages/auth/RegisterPage.jsx`,
+`pages/portal/DashboardPage.jsx`, `pages/public/AboutPage.jsx`,
+`pages/public/CommitteesPage.jsx`, `pages/public/ContactPage.jsx`,
+`pages/public/HistoryPage.jsx`, `pages/public/HomePage.jsx`,
+`pages/public/JoinCommitteePage.jsx`, `pages/public/MembershipPage.jsx`,
+`pages/public/MissionVisionPage.jsx`, `pages/public/NotFoundPage.jsx`,
+`pages/public/PartnershipPage.jsx`, `pages/public/VolunteerPage.jsx`.
+
+**Also check `lmsa-api`** — this sweep only covered `lmsa-website`. Run
+`npx eslint .` in `lmsa-api` too (it has its own `.eslintrc.json`) and fix
+anything found there in the same pass, or note in your report if it's
+already clean.
+
+### Acceptance criteria
+
+- [ ] `npm run lint` passes clean (0 errors, 0 warnings) in
+      `lmsa-website`.
+- [ ] `npm run lint` passes clean in `lmsa-api` (check its actual lint
+      script name in `package.json` first).
+- [ ] `npm run build` still passes in `lmsa-website` — a plain text
+      find/replace on quote characters is easy to fat-finger inside a
+      template literal or JS string (not JSX text) and break something;
+      double check you're only escaping quotes that are literal JSX text
+      content, not inside `{...}` expressions or string literals.
+- [ ] `ErrorBoundary.jsx`'s `process.env.NODE_ENV` → `import.meta.env.DEV`
+      fix specifically called out and confirmed in your report — this one
+      matters more than the rest.
+- [ ] No behavior changes beyond fixing the lint errors themselves — this
+      is a cleanup task, not a refactor. If any unused var turns out to
+      indicate a real bug (like T4's `onUpdate` did), flag it in your
+      report rather than silently fixing scope beyond "remove/escape" —
+      note it and either fix minimally or leave for the orchestrator to
+      spec separately, your judgment call on which is faster.
+
+### Report
+
+*(Agent: fill this in before pushing)*
