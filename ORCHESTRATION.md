@@ -24,18 +24,16 @@ Claude (orchestrator), and any implementing agents (Claude Code, etc.).
 |----|------|------------|--------|
 | T1 | Backend committee API | none | **done** |
 | T2a | Backend events API | none | **done** |
-| T2b | Frontend `event.service.js` | T2a | **assigned** |
-| T3 | Wire real `CommitteePageTemplate.jsx` into routing | T1, T2b | blocked |
-| T4 | Real `CommitteeAdminDashboard.jsx` + `AdminLayout.jsx` sidebar | T1, T2b | blocked |
+| T2b | Frontend `event.service.js` | T2a | **done** |
+| T3 | Wire real `CommitteePageTemplate.jsx` into routing | T1, T2b | **assigned** |
+| T4 | Real `CommitteeAdminDashboard.jsx` + `AdminLayout.jsx` sidebar | T1, T2b | **assigned** |
 | T5 | Cleanup: legacy committee pages/routes, reconcile docs vs. source | T3, T4 | blocked |
+| T6 | Wire `EventDetailPage.jsx` to `eventService` (currently static, same issue T3 fixes for committees) | T2b | unassigned — noted, not yet specced |
 
-**Note:** T2 was originally scoped as "just write the frontend event
-service." On investigation, the backend has no events API at all — no
-`event.routes.js`, no `event.controller.js`, nothing registered in
-`server.js` — even though the `events` and `event_registrations` tables
-are live in the database (from `001_base_schema.sql`). Split into T2a
-(backend, unblocked) and T2b (frontend, depends on T2a) rather than having
-an agent hit the same "blocked" wall T1 anticipated.
+T3 and T4 can run in parallel — they touch almost entirely different files
+(T3: one public page + routing + legacy cleanup candidates; T4: admin
+pages + admin layout). The only shared surface is both read from
+`committeeService`, which is stable and already merged.
 
 ---
 
@@ -340,7 +338,7 @@ registration.
 ## T2b — Frontend `event.service.js`
 
 **Branch:** `task/t2b-event-service`
-**Status:** assigned
+**Status:** needs-review
 **Depends on:** T2a (done — merged to main)
 
 ### Context
@@ -361,9 +359,113 @@ shapes exactly (read the merged T2a code, don't assume).
 
 ### Acceptance criteria
 
-- [ ] File follows existing service-layer conventions exactly.
-- [ ] Every method calls an endpoint that actually exists per T2a — verify
-      against the merged `event.routes.js`, not the original spec text.
+- [x] File follows existing service-layer conventions exactly.
+- [x] Every method calls an endpoint that actually exists per T2a — verified against the merged `event.routes.js`.
+
+### Report
+
+- **Status:** in-progress → needs-review
+- **Files created:**
+  - `lmsa-website/src/services/event.service.js` — 8 methods (getAll, getBySlug, create, update, delete, register, unregister, getRegistrations)
+- **Files modified:**
+  - None.
+- **Deviations from spec (and why):**
+  - None. All 8 methods implemented exactly per spec. Follows `committee.service.js` conventions exactly: same `api` import, same `async` method + `response.data.x` unwrap pattern, same section header comment style, same JSDoc comment pattern.
+- **Endpoint verification (cross-checked against merged `event.routes.js`):**
+  - `getAll` → `GET /events` → returns `response.data.events` ✅
+  - `getBySlug(slug)` → `GET /events/:slug` → returns `response.data.event` ✅
+  - `create(eventData)` → `POST /events` → returns `response.data.event` ✅
+  - `update(id, data)` → `PUT /events/:id` → returns `response.data.event` ✅
+  - `delete(id)` → `DELETE /events/:id` → returns void ✅
+  - `register(eventId)` → `POST /events/:eventId/register` → returns `response.data.registration` ✅
+  - `unregister(eventId)` → `DELETE /events/:eventId/register` → returns void ✅
+  - `getRegistrations(eventId)` → `GET /events/:eventId/registrations` → returns `response.data.registrations` ✅
+- **Open questions / blockers for orchestrator:**
+  - No new npm dependencies added.
+  - All 8 methods match T2a's actual endpoint paths and response shapes — no 404s expected.
+  - T3 and T4 can now be unblocked.
+
+---
+
+## T3 — Wire real `CommitteePageTemplate.jsx` into routing
+
+**Branch:** `task/t3-committee-template`
+**Status:** assigned
+**Depends on:** T1 (done), T2b (done) — both merged to `main`, unblocked
+
+### Context
+
+`docs/Committeepagetemplate.md` contains a complete, data-driven public
+committee page (977 lines) — tabs for about/members/events/documents/
+announcements/achievements, a working contact form, newsletter subscribe,
+event cards, document downloads. It already imports and calls
+`committeeService` correctly (`getBySlug`, `getMembers`, `getEvents`,
+`getDocuments`, `getAnnouncements`, `getAchievements`,
+`submitContactForm`, `subscribeNewsletter`) — verified these all match
+the merged, live backend exactly, no changes needed there.
+
+It has never been saved as a real `.jsx` file or routed. Currently,
+`lmsa-website/src/routes.jsx` line 79 routes
+`/leadership/committees/:slug` to `CommitteeDetailPage.jsx`, a static
+445-line page with zero data fetching (no `useState`/`useEffect`, all
+content hardcoded). That's what needs replacing.
+
+Separately, `routes.jsx` lines 112–124 still route 12 legacy static pages
+at `/committees/academic`, `/committees/health`, etc. (from the original
+`CommitteesPage.jsx` design, see `lmsa_committees_pages.js` in project
+files) — these predate the dynamic template and are now redundant/stale
+duplicate URLs for the same content. **Do not delete these in this task**
+— that's T5's job, once T3 and T4 are both confirmed working, in case
+something needs a rollback reference in the interim. Just leave them
+alone.
+
+### File to create
+
+**`lmsa-website/src/pages/committees/CommitteePageTemplate.jsx`**
+
+Copy the component out of `docs/Committeepagetemplate.md` verbatim as your
+starting point — the data-fetching logic, contact form, and newsletter
+subscribe are already correct against the live API. You will need to:
+
+1. Fix the route comment/assumption at the top of the doc — it says
+   `Route: /committees/:slug` but the actual route (per step 2 below) is
+   `/leadership/committees/:slug`. This doesn't change any code, just
+   don't be confused by the stale comment.
+2. Confirm `useParams()` reads `slug` correctly given the actual route
+   param name in `routes.jsx` (it's `:slug`, matches).
+3. The static `ALL_COMMITTEES_DATA` object at the top of the doc (~180
+   lines, one entry per committee with name/icon/description/mandate/
+   key_activities) is explicitly commented as "fallback / seed" — keep it
+   as a fallback path only if `committeeService.getBySlug` fails or
+   returns nothing for a slug (e.g. before that committee's admin has
+   filled in real data via T4's dashboard). Do not let stale static data
+   silently override real API data when the API call succeeds.
+
+### Files to modify
+
+**`lmsa-website/src/routes.jsx`**
+- Replace the `CommitteeDetailPage` import and its usage at
+  `/leadership/committees/:slug` with the new `CommitteePageTemplate`.
+- Leave the legacy `/committees/*` routes and their imports untouched
+  (T5 will handle removal).
+
+### Acceptance criteria
+
+- [ ] `npm run build` (or at minimum `npm run lint`) passes with no new
+      errors in `lmsa-website`.
+- [ ] Visiting `/leadership/committees/academic` (or any real slug in your
+      Supabase `committees` table) renders live data from the API, not the
+      static fallback — confirm by checking the network tab or adding a
+      temporary console.log, then removing it before pushing.
+- [ ] Visiting a slug that doesn't exist in the database falls back
+      gracefully (either the static seed data or a clean "not found"
+      state) rather than crashing.
+- [ ] Contact form and newsletter subscribe actually POST to the live
+      backend and show a success/error toast — test at least one of these
+      manually and note the result in your report.
+- [ ] No console errors on page load.
+- [ ] `CommitteeDetailPage.jsx` is left in place, just unused by routing
+      (don't delete it — that's T5's job too).
 
 ### Report
 
@@ -371,34 +473,93 @@ shapes exactly (read the merged T2a code, don't assume).
 
 ---
 
-## T3 — Wire real `CommitteePageTemplate.jsx` into routing
-
-**Branch:** `task/t3-committee-template`
-**Status:** blocked (needs T1, T2b done)
-**Depends on:** T1, T2b
-
-*(Full spec to be added by orchestrator once T1/T2 land — summary: move the
-component out of `docs/Committeepagetemplate.md` into a real
-`lmsa-website/src/pages/committees/CommitteePageTemplate.jsx`, point
-`/leadership/committees/:slug` at it instead of the static
-`CommitteeDetailPage.jsx`, retire the legacy `/committees/academic` etc.
-stub routes and their 12 page files.)*
-
----
-
 ## T4 — Real `CommitteeAdminDashboard.jsx` + `AdminLayout.jsx` sidebar
 
 **Branch:** `task/t4-admin-dashboard`
-**Status:** blocked (needs T1, T2b done)
-**Depends on:** T1, T2b
+**Status:** assigned
+**Depends on:** T1 (done), T2b (done) — both merged to `main`, unblocked
 
-*(Full spec to be added by orchestrator once T1/T2 land — summary: move the
-component out of `docs/Complete admin interface for managing all
-committees.md` into a real
-`lmsa-website/src/pages/admin/CommitteeAdminDashboard.jsx`, replace the
-hardcoded fake stats in the current `AdminDashboard.jsx`, build a real
-sidebar in `AdminLayout.jsx` with nav links, wire the new page into
-`routes.jsx`.)*
+### Context
+
+`docs/Complete admin interface for managing all committees.md` (1239
+lines) contains a complete tabbed admin interface for managing a single
+committee — details/members/events/documents/announcements/achievements/
+analytics tabs, with real create/edit/delete flows. It already imports
+both `committeeService` and `event.service` (`@services/event.service`)
+correctly — confirmed both exist and match on `main` now.
+
+It has never been saved as a real file. The current
+`lmsa-website/src/pages/admin/AdminDashboard.jsx` is a generic stub with
+hardcoded fake numbers (245 members, $1,250 revenue, etc. — grep for
+literal numbers to find them). `lmsa-website/src/layouts/AdminLayout.jsx`'s
+sidebar is just a placeholder `<div>` with the text "Admin Panel" — no
+navigation links at all.
+
+**Known gap to fix as part of this task:** `committeeService.searchUsers()`
+(used by the admin dashboard's "add member" flow — search for it in the
+doc) calls `GET /users?search=...&limit=10`, but
+`lmsa-api/src/controllers/user.controller.js`'s `getAllUsers` doesn't
+support a `search` query param at all. You'll need to add basic search
+support there too (filter by `full_name` or `email` ILIKE `%query%`,
+respect the existing `limit` if present, keep the existing
+`authorize('admin', 'super_admin')` middleware on that route as-is — don't
+loosen it).
+
+### Files to create
+
+**`lmsa-website/src/pages/admin/CommitteeAdminDashboard.jsx`** — copy from
+the doc as your starting point. It's designed to be used per-committee
+(likely routed as `/admin/committees/:slug` or similar — your call on the
+exact param shape, but keep it consistent with how `CommitteePageTemplate`
+reads its slug in T3, for consistency across the codebase).
+
+### Files to modify
+
+**`lmsa-api/src/controllers/user.controller.js`** — add `search` query
+param support to `getAllUsers` as described above.
+
+**`lmsa-website/src/pages/admin/AdminDashboard.jsx`** — replace hardcoded
+fake stats with real data. At minimum: real committee count (via
+`committeeService.getAll()`), real event count (via `eventService.getAll()`
+with `?upcoming=true`). If a real "revenue" or "membership dues" figure
+isn't available from any existing endpoint, don't fabricate one — either
+omit that stat card or clearly label it as not-yet-implemented, but do not
+leave old fake numbers in place silently.
+
+**`lmsa-website/src/layouts/AdminLayout.jsx`** — build a real sidebar with
+nav links (Dashboard, Committees, Events, Users, etc. — base this on what
+routes already exist under `/admin/*` in `routes.jsx` plus whatever new
+route you add for `CommitteeAdminDashboard`). Use the same visual language
+as the rest of the app (Tailwind + `lmsa-*` brand colors from
+`tailwind.config.js` — see `lmsa_brand_guide.md` in project files for the
+palette if you need it).
+
+**`lmsa-website/src/routes.jsx`** — wire the new
+`CommitteeAdminDashboard` in under the existing `/admin` protected route
+tree (see how `AdminDashboard` is currently routed for the pattern —
+`ProtectedRoute requireRole="admin"` wrapper).
+
+### Acceptance criteria
+
+- [ ] `npm run build` (or `npm run lint`) passes in both `lmsa-website`
+      and `lmsa-api` with no new errors.
+- [ ] `AdminDashboard.jsx` shows real numbers, not hardcoded fakes — spot
+      check at least one stat against what's actually in the database.
+- [ ] `AdminLayout.jsx` sidebar has working nav links, no dead placeholder
+      text.
+- [ ] `CommitteeAdminDashboard.jsx` can load a real committee's data and
+      at minimum successfully **create** one thing (test one of:
+      announcement, achievement, or event) against the live backend —
+      note which one you tested and the result in your report.
+- [ ] `searchUsers` → `GET /users?search=` round-trip actually works —
+      test manually with curl or in-browser and note the result.
+- [ ] Admin-only routes still reject non-admin users (verify the
+      `ProtectedRoute requireRole="admin"` wrapper is applied to the new
+      route).
+
+### Report
+
+*(Agent: fill this in before pushing)*
 
 ---
 
@@ -408,4 +569,60 @@ sidebar in `AdminLayout.jsx` with nav links, wire the new page into
 **Status:** blocked (needs T3, T4 done)
 **Depends on:** T3, T4
 
-*(Full spec to be added by orchestrator once T3/T4 land.)*
+### Context
+
+Once T3 and T4 are both confirmed working in production, this task
+removes the now-fully-redundant legacy code and reconciles the `/docs`
+markdown "spec" files against what's actually implemented, so the repo
+stops having two conflicting sources of truth.
+
+### Scope (spec will be finalized by orchestrator once T3/T4 land, but
+the shape is already clear)
+
+- Remove the 12 legacy static committee page files
+  (`lmsa-website/src/pages/committees/AcademicCommittee.jsx` and its 11
+  siblings) and their routes/imports in `routes.jsx`
+  (`/committees/academic` etc.) — confirm nothing else links to those
+  URLs first (check `Header.jsx`/nav components for hardcoded links to
+  the old paths and update them to the new `/leadership/committees/:slug`
+  form).
+- Remove or clearly archive `CommitteeDetailPage.jsx` (superseded by T3's
+  `CommitteePageTemplate.jsx`).
+- Move `docs/Committeepagetemplate.md` and
+  `docs/Complete admin interface for managing all committees.md` into an
+  `docs/archive/` folder (or delete, orchestrator's call at the time) now
+  that their content lives as real source files — keep them until this
+  point in case an agent needs to diff against the "spec intent" one more
+  time.
+- Update the root `README.md` files (both `lmsa-api` and `lmsa-website`)
+  to reflect the current, real feature set rather than the aspirational
+  one from the original starter docs.
+
+### Report
+
+*(Agent: fill this in before pushing)*
+
+---
+
+## T6 — Wire `EventDetailPage.jsx` to `eventService`
+
+**Branch:** *(not yet cut)*
+**Status:** unassigned — noted, not yet fully specced
+**Depends on:** T2b (done)
+
+### Context
+
+Discovered while writing T3's spec: `lmsa-website/src/pages/public/EventDetailPage.jsx`
+(90 lines) has the exact same problem `CommitteeDetailPage.jsx` had before
+T3 — no `eventService` import, no `useState`/`useEffect`, fully static.
+`CommitteePageTemplate.jsx`'s event cards link to `/events/:slug` expecting
+a real registration flow there. Right now that link leads to a dead end.
+
+Not yet fully specced — will write the full ticket once T3/T4 land, since
+it's lower priority (events aren't the current focus) and this file is
+small enough that the spec will be short. Flagging now so it doesn't get
+lost.
+
+### Report
+
+*(Not yet assigned)*
