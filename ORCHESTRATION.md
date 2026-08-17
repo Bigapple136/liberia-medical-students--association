@@ -28,7 +28,7 @@ Claude (orchestrator), and any implementing agents (Claude Code, etc.).
 | T3 | Wire real `CommitteePageTemplate.jsx` into routing | T1, T2b | **done** |
 | T4 | Real `CommitteeAdminDashboard.jsx` + `AdminLayout.jsx` sidebar | T1, T2b | **done** |
 | T5 | Cleanup: legacy committee pages/routes, reconcile docs vs. source | T3, T4 | **done** |
-| T6 | Wire public events flow (`EventsPage.jsx` + `EventDetailPage.jsx`) to `eventService`, including a working Register button | T2a, T2b | **needs-review** |
+| T6 | Wire public events flow (`EventsPage.jsx` + `EventDetailPage.jsx`) to `eventService`, including a working Register button | T2a, T2b | **done** |
 
 T3 and T4 can run in parallel — they touch almost entirely different files
 (T3: one public page + routing + legacy cleanup candidates; T4: admin
@@ -819,8 +819,20 @@ the shape is already clear)
 ## T6 — Wire public events flow to `eventService`
 
 **Branch:** `task/t6-events-frontend`
-**Status:** needs-review
+**Status:** done
 **Depends on:** T2a (done), T2b (done)
+
+### Orchestrator review
+
+Independently verified (agent had no `node_modules` locally): rebased the
+branch onto post-T5 `main` to eliminate diff noise from the two branches
+forking at the same point, then ran `npx eslint` on both files (0 errors,
+0 warnings) and `npm run build` (clean). Confirmed the `api.js` 401
+interceptor claim is accurate by reading the actual file — not just
+trusting the report's assertion. Register button flow, field mapping
+(`event_type`, `start_datetime`/`end_datetime` vs. the old fake
+`date`/`time`/`category` keys), and empty/loading states all check out on
+inspection. Approved and merged to `main`.
 
 ### Context
 
