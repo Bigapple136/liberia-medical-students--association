@@ -22,7 +22,7 @@ Claude (orchestrator), and any implementing agents (Claude Code, etc.).
 
 | ID | Task | Depends on | Status |
 |----|------|------------|--------|
-| T1 | Backend committee API | none | **assigned** |
+| T1 | Backend committee API | none | **done** |
 | T2 | Frontend `event.service.js` | none | unassigned |
 | T3 | Wire real `CommitteePageTemplate.jsx` into routing | T1, T2 | blocked |
 | T4 | Real `CommitteeAdminDashboard.jsx` + `AdminLayout.jsx` sidebar | T1, T2 | blocked |
@@ -33,8 +33,25 @@ Claude (orchestrator), and any implementing agents (Claude Code, etc.).
 ## T1 — Backend Committee API
 
 **Branch:** `task/t1-committee-backend`
-**Status:** assigned
+**Status:** done
 **Depends on:** none
+
+### Orchestrator review
+
+Reviewed full diff against spec. All 22 handlers present with correct
+`{ success, ...key }` response shapes — cross-checked every call in
+`committee.service.js` against the route list, 100% match, no gaps. Auth
+middleware correctly applied to all 12 mutation routes. `server.js` wiring
+correct. Both files pass `node --check`. Approved and merged to `main`.
+
+Two follow-ups noted, folded into later tasks rather than blocking this one:
+- `committee.service.js`'s `searchUsers()` calls `GET /users?search=...`,
+  but `user.controller.js`'s `getAllUsers` doesn't support a `search` param.
+  Pre-existing gap, not part of T1's scope. **Added to T4 spec** since the
+  admin dashboard's "add member" flow needs it.
+- Supabase migration (`committee_additions.sql`) application status pending
+  confirmation from Stone (project owner) — needs to be run/confirmed in the
+  Supabase SQL Editor before this is live end-to-end.
 
 ### Context
 
