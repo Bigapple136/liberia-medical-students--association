@@ -22,7 +22,7 @@ Claude (orchestrator), and any implementing agents (Claude Code, etc.).
 
 | ID | Task | Depends on | Status |
 |----|------|------------|--------|
-| T1 | Backend committee API | none | **assigned** |
+| T1 | Backend committee API | none | **done** |
 | T2 | Frontend `event.service.js` | none | unassigned |
 | T3 | Wire real `CommitteePageTemplate.jsx` into routing | T1, T2 | blocked |
 | T4 | Real `CommitteeAdminDashboard.jsx` + `AdminLayout.jsx` sidebar | T1, T2 | blocked |
@@ -33,8 +33,25 @@ Claude (orchestrator), and any implementing agents (Claude Code, etc.).
 ## T1 — Backend Committee API
 
 **Branch:** `task/t1-committee-backend`
-**Status:** assigned
+**Status:** done
 **Depends on:** none
+
+### Orchestrator review
+
+Reviewed full diff against spec. All 22 handlers present with correct
+`{ success, ...key }` response shapes — cross-checked every call in
+`committee.service.js` against the route list, 100% match, no gaps. Auth
+middleware correctly applied to all 12 mutation routes. `server.js` wiring
+correct. Both files pass `node --check`. Approved and merged to `main`.
+
+Two follow-ups noted, folded into later tasks rather than blocking this one:
+- `committee.service.js`'s `searchUsers()` calls `GET /users?search=...`,
+  but `user.controller.js`'s `getAllUsers` doesn't support a `search` param.
+  Pre-existing gap, not part of T1's scope. **Added to T4 spec** since the
+  admin dashboard's "add member" flow needs it.
+- Supabase migration (`committee_additions.sql`) application status pending
+  confirmation from Stone (project owner) — needs to be run/confirmed in the
+  Supabase SQL Editor before this is live end-to-end.
 
 ### Context
 
@@ -159,12 +176,24 @@ your report whether you ran it or found it already applied (check for
 
 *(Agent: fill this in before pushing)*
 
-- **Status:**
+- **Status:** in-progress → needs-review
 - **Files created:**
+  - `lmsa-api/src/controllers/committee.controller.js` — 22 handler functions
+  - `lmsa-api/src/routes/committee.routes.js` — full route tree
 - **Files modified:**
+  - `lmsa-api/src/server.js` — added `committeeRoutes` import and `app.use('/api/committees', committeeRoutes)`
 - **Deviations from spec (and why):**
+  - None. All 22 handlers implemented exactly per spec. Controller uses try/catch/console.error pattern per `user.controller.js`. Response shapes match `{ success, ...data }`. Route structure mirrors `docs/Committeeroutes .md`.
 - **Manual test results (auth checks):**
+  - Server starts without import errors (verified via `node --check` on both new files).
+  - Server startup fails only due to missing Supabase env vars (no `.env` present in this environment) — no module resolution issues.
+  - Auth middleware is the exact same proven `authenticate`/`authorize` from `auth.middleware.js` used by `user.routes.js`. Unauthenticated requests to admin-only routes will receive 401 ("No token provided") from `authenticate`. Non-admin authenticated requests will receive 403 ("Not authorized to access this resource") from `authorize('admin', 'executive', 'super_admin')`. Full curl verification requires a running server with real Supabase credentials.
+  - Verified all 12 admin-only mutation routes are wired with `[authenticate, authorize('admin', 'executive', 'super_admin')]` middleware.
+  - All 22 controller export names match route references (no naming mismatches).
 - **Open questions / blockers for orchestrator:**
+  - `committee_additions.sql` needs to be run against the Supabase project via SQL Editor. Cannot confirm from this environment whether it's already applied — orchestrator should verify the `committee_announcements` table exists in Supabase.
+  - No new npm dependencies were added.
+  - All endpoints in `committee.service.js` now have matching backend routes — no 404s expected for committee-related calls.
 
 ---
 
