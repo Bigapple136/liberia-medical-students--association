@@ -26,7 +26,7 @@ Claude (orchestrator), and any implementing agents (Claude Code, etc.).
 | T2a | Backend events API | none | **done** |
 | T2b | Frontend `event.service.js` | T2a | **done** |
 | T3 | Wire real `CommitteePageTemplate.jsx` into routing | T1, T2b | **assigned** |
-| T4 | Real `CommitteeAdminDashboard.jsx` + `AdminLayout.jsx` sidebar | T1, T2b | **assigned** |
+| T4 | Real `CommitteeAdminDashboard.jsx` + `AdminLayout.jsx` sidebar | T1, T2b | **needs-review** |
 | T5 | Cleanup: legacy committee pages/routes, reconcile docs vs. source | T3, T4 | blocked |
 | T6 | Wire `EventDetailPage.jsx` to `eventService` (currently static, same issue T3 fixes for committees) | T2b | unassigned — noted, not yet specced |
 
@@ -476,7 +476,7 @@ subscribe are already correct against the live API. You will need to:
 ## T4 — Real `CommitteeAdminDashboard.jsx` + `AdminLayout.jsx` sidebar
 
 **Branch:** `task/t4-admin-dashboard`
-**Status:** assigned
+**Status:** needs-review
 **Depends on:** T1 (done), T2b (done) — both merged to `main`, unblocked
 
 ### Context
@@ -559,7 +559,88 @@ tree (see how `AdminDashboard` is currently routed for the pattern —
 
 ### Report
 
-*(Agent: fill this in before pushing)*
+- **Status:** in-progress → needs-review
+- **Files created:**
+  - `lmsa-website/src/pages/admin/CommitteeAdminDashboard.jsx` — full admin
+    dashboard (committee-list sidebar + 7 tabs: Details, Members, Events,
+    Documents, Announcements, Achievements, Analytics) ported from
+    `docs/Complete admin interface for managing all committees.md`.
+- **Files modified:**
+  - `lmsa-api/src/controllers/user.controller.js` — `getAllUsers` now reads
+    `req.query.search` (`.or('full_name.ilike.%term%,email.ilike.%term%')`)
+    and `req.query.limit` (`.limit(n)`), still returning
+    `{ success: true, users }`. `authorize('admin', 'super_admin')` middleware
+    on the route is unchanged.
+  - `lmsa-website/src/pages/admin/AdminDashboard.jsx` — replaced the hardcoded
+    fake stats (245 members / $1,250 revenue etc.) with real data loaded via
+    `Promise.all([committeeService.getAll(), eventService.getAll({ upcoming:
+    true }), eventService.getAll()])`: Total Members (sum of committee
+    `member_count`), Committees (count), Upcoming Events (upcoming count),
+    Total Events (count). Revenue/dues card omitted — no endpoint exists for
+    it, so per spec I did not fabricate a figure.
+  - `lmsa-website/src/layouts/AdminLayout.jsx` — replaced placeholder aside
+    with a real `NavLink` sidebar: brand header, nav (Dashboard →
+    `/admin/dashboard`, Committee Management → `/admin/committees`, plus
+    Events/Documents/Announcements forward links), and a "View Site" /
+    "Back to Dashboard" footer. `<Outlet />` preserved.
+  - `lmsa-website/src/routes.jsx` — imported `CommitteeAdminDashboard` and
+    added `<Route path="committees" element={<CommitteeAdminDashboard />} />`
+    inside the existing `ProtectedRoute requireRole="admin"` `/admin` group.
+- **Deviations from spec (and why):**
+  - **Route shape:** spec suggested `/admin/committees/:slug` "or similar."
+    I routed it as `/admin/committees` (no slug). The doc component is
+    self-contained: it loads *all* committees via `committeeService.getAll()`
+    and renders its own committee-list sidebar to select the active one, so a
+    slug param is unnecessary and would be unused. Noted for consistency with
+    T3's `CommitteePageTemplate` when that lands.
+  - **Removed `eventService` import from `CommitteeAdminDashboard.jsx`:** the
+    doc imports it but never uses it (events go through `committeeService`).
+    Dropped to avoid a dead import.
+  - **AdminLayout sidebar includes Events/Documents/Announcements links with no
+    matching pages yet** — these are forward-looking nav entries (spec says
+    "base this on what routes exist ... plus whatever new route you add").
+    Only Dashboard and Committee Management resolve today; the others will
+    404 until those admin pages exist (T5/follow-up). Flagged below.
+- **Manual test results / acceptance criteria:**
+  - `node --check` passes on the modified `lmsa-api/src/controllers/
+    user.controller.js` (backend search fix).
+  - **Build/lint:** `lmsa-website` has **no `node_modules` in this
+    environment**, so `npm run build` / `npm run lint` could not be executed.
+    The new/modified JSX reuses existing `.input`/`.btn`/`.btn-primary` classes
+    and the `lmsa-*` palette already defined in `tailwind.config.js` +
+    `src/styles/index.css`; `CommitteeAdminDashboard.jsx` is a 1:1 port of the
+    orchestrator's spec doc. Orchestrator should run `npm ci && npm run lint &&
+    npm run build` in `lmsa-website` before merge to confirm green.
+  - **Real stats:** `AdminDashboard.jsx` no longer contains hardcoded numbers
+    — all four cards are populated from live service calls (with a `—`
+    placeholder while loading and on error). Spot-check the underlying counts
+    against the DB once live.
+  - **Sidebar nav:** `AdminLayout.jsx` NavLinks render with active-state
+    styling; Dashboard and Committee Management resolve to real routes.
+  - **Create-one-thing:** couldn't be exercised against a live backend here
+    (no Supabase creds / server in this env). The create flows
+    (announcement/achievement/event/document) are wired to the exact
+    `committeeService` methods that T1/T2a implemented; code-level review
+    confirms the request/response shapes match. Live round-trip is a
+    follow-up for the orchestrator's environment.
+  - **`searchUsers` round-trip:** `committeeService.searchUsers(q)` →
+    `GET /users?search=q&limit=10` → now filters via the updated `getAllUsers`
+    (ILIKE on `full_name`/`email`, capped at `limit`). Couldn't curl it live
+    here; verified by inspection that the param is read and applied and the
+    route stays admin-only.
+  - **Admin-only route:** `/admin/committees` sits inside the
+    `ProtectedRoute requireRole="admin"` group, same guard as the existing
+    dashboard. The `getAllUsers` route keeps `authorize('admin',
+    'super_admin')`.
+- **Open questions / blockers for orchestrator:**
+  - Run frontend `lint`+`build` (no deps present here) before merge.
+  - Decide whether the forward-looking AdminLayout sidebar links
+    (Events/Documents/Announcements) should be hidden until their pages exist,
+    or left as visible placeholders.
+  - Revenue/dues stat intentionally omitted from `AdminDashboard.jsx` (no
+    endpoint) — add a stats endpoint later if a real figure is wanted.
+  - All backend changes are additive/backward-compatible: callers that don't
+    pass `search`/`limit` get the original unfiltered full user list.
 
 ---
 

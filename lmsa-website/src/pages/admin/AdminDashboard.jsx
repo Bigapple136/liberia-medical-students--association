@@ -1,6 +1,47 @@
+import { useEffect, useState } from 'react';
 import Card from '@components/common/Card';
+import { committeeService } from '@services/committee.service';
+import { eventService } from '@services/event.service';
 
 export default function AdminDashboard() {
+  const [stats, setStats] = useState({
+    members: 0,
+    committees: 0,
+    upcomingEvents: 0,
+    totalEvents: 0,
+  });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadStats() {
+      try {
+        const [committees, upcoming, allEvents] = await Promise.all([
+          committeeService.getAll(),
+          eventService.getAll({ upcoming: true }),
+          eventService.getAll(),
+        ]);
+
+        const totalMembers = committees.reduce(
+          (sum, c) => sum + (c.member_count || 0),
+          0
+        );
+
+        setStats({
+          members: totalMembers,
+          committees: committees.length,
+          upcomingEvents: upcoming.length,
+          totalEvents: allEvents.length,
+        });
+      } catch (e) {
+        // Leave zeros if the requests fail; cards still render.
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadStats();
+  }, []);
+
   return (
     <div>
       <div className="mb-8">
@@ -10,23 +51,31 @@ export default function AdminDashboard() {
         </p>
       </div>
 
-      {/* Admin Stats */}
+      {/* Admin Stats (real data) */}
       <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <Card>
           <h3 className="text-sm font-medium text-gray-600 mb-1">Total Members</h3>
-          <p className="text-2xl font-bold text-lmsa-600">245</p>
+          <p className="text-2xl font-bold text-lmsa-600">
+            {loading ? '—' : stats.members}
+          </p>
         </Card>
         <Card>
-          <h3 className="text-sm font-medium text-gray-600 mb-1">Pending Approvals</h3>
-          <p className="text-2xl font-bold text-yellow-600">8</p>
+          <h3 className="text-sm font-medium text-gray-600 mb-1">Committees</h3>
+          <p className="text-2xl font-bold text-lmsa-600">
+            {loading ? '—' : stats.committees}
+          </p>
         </Card>
         <Card>
-          <h3 className="text-sm font-medium text-gray-600 mb-1">Active Events</h3>
-          <p className="text-2xl font-bold text-blue-600">5</p>
+          <h3 className="text-sm font-medium text-gray-600 mb-1">Upcoming Events</h3>
+          <p className="text-2xl font-bold text-blue-600">
+            {loading ? '—' : stats.upcomingEvents}
+          </p>
         </Card>
         <Card>
-          <h3 className="text-sm font-medium text-gray-600 mb-1">This Month's Revenue</h3>
-          <p className="text-2xl font-bold text-green-600">$1,250</p>
+          <h3 className="text-sm font-medium text-gray-600 mb-1">Total Events</h3>
+          <p className="text-2xl font-bold text-purple-600">
+            {loading ? '—' : stats.totalEvents}
+          </p>
         </Card>
       </div>
 
@@ -35,8 +84,8 @@ export default function AdminDashboard() {
         <h2 className="text-2xl font-bold mb-4">Quick Actions</h2>
         <div className="grid md:grid-cols-3 gap-4">
           <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-            <h3 className="font-semibold text-lg mb-2">👥 Manage Members</h3>
-            <p className="text-gray-600 text-sm">View, edit, and manage member profiles</p>
+            <h3 className="font-semibold text-lg mb-2">👥 Manage Committees</h3>
+            <p className="text-gray-600 text-sm">Edit committee details, members, and content</p>
           </Card>
           <Card className="hover:shadow-lg transition-shadow cursor-pointer">
             <h3 className="font-semibold text-lg mb-2">📅 Manage Events</h3>

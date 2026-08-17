@@ -54,10 +54,26 @@ export const updateProfile = async (req, res) => {
 
 export const getAllUsers = async (req, res) => {
   try {
-    const { data, error } = await supabase
+    const { search, limit } = req.query;
+
+    let query = supabase
       .from('users')
       .select('*')
       .order('created_at', { ascending: false });
+
+    // Optional free-text search across name/email for the admin
+    // "add member" flow (committee.service.js searchUsers).
+    if (search && search.trim().length > 0) {
+      const term = `%${search.trim()}%`;
+      query = query.or(`full_name.ilike.${term},email.ilike.${term}`);
+    }
+
+    // Optional result cap (committee.service.js passes limit: 10).
+    if (limit && !isNaN(parseInt(limit, 10))) {
+      query = query.limit(parseInt(limit, 10));
+    }
+
+    const { data, error } = await query;
 
     if (error) {
       return res.status(400).json({
