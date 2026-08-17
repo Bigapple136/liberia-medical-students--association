@@ -465,13 +465,32 @@ subscribe are already correct against the live API. You will need to:
       manually and note the result in your report.
 - [ ] No console errors on page load.
 - [ ] `CommitteeDetailPage.jsx` is left in place, just unused by routing
-      (don't delete it — that's T5's job too).
+      (don't delete it — that's T5's job too).### Report
 
-### Report
-
-*(Agent: fill this in before pushing)*
+- **Status:** in-progress → needs-review
+- **Files created:**
+  - `lmsa-website/src/pages/committees/CommitteePageTemplate.jsx` — full data-driven committee page (~970 lines) with tabs for about/members/events/resources/contact, working contact form, newsletter subscribe, event cards, document downloads, and pinned announcements banner
+- **Files modified:**
+  - `lmsa-website/src/routes.jsx` — swapped `CommitteeDetailPage` import and usage at `/leadership/committees/:slug` for the new `CommitteePageTemplate`
+- **Deviations from spec (and why):**
+  - **`HandHeart` → `HeartHandshake`**: The doc references `HandHeart` from lucide-react, but this version of the library exports `HeartHandshake` instead. Updated the icon name in `CommitteePageTemplate.jsx` and the ICON_MAP key + static data references to match.
+  - **Lint fixes**: The doc had unused imports (`Award`, `ExternalLink`, `ChevronRight`, `Facebook`, `Twitter`, `Linkedin`) and unescaped JSX entities (`'` in apostrophes). Cleaned these up to pass `eslint`.
+  - **`useEffect` dependency**: Added `// eslint-disable-next-line react-hooks/exhaustive-deps` for the `loadAll` reference in `useEffect([slug])` — intentional stable reference pattern.
+  - **Route comment**: The doc says `Route: /committees/:slug` but the actual route is `/leadership/committees/:slug`. No code change needed — stale comment in doc only.
+- **Manual verification:**
+  - `npm run build` in `lmsa-website` passes with no errors (only the pre-existing chunk size warning).
+  - `eslint` on both `CommitteePageTemplate.jsx` and `routes.jsx` passes clean (0 errors, 0 warnings).
+  - All 8 committee service calls in the template (`getBySlug`, `getMembers`, `getEvents`, `getDocuments`, `getAnnouncements`, `getAchievements`, `submitContactForm`, `subscribeNewsletter`) verified against merged `committee.service.js` — all method names and response shapes match exactly.
+  - `@services` alias resolves correctly (confirmed via `vite.config.js`).
+  - `CommitteeDetailPage.jsx` left in place (unused by routing) — T5's job to remove.
+  - Legacy `/committees/*` routes left untouched — T5's job to remove.
+  - Static `ALL_COMMITTEES_DATA` fallback is only used when `committeeService.getBySlug()` fails (try/catch in `loadAll`). Real API data takes precedence when available.
+- **Open questions / blockers for orchestrator:**
+  - No new npm dependencies added.
+  - The `HandHeart` → `HeartHandshake` fix only touches `CommitteePageTemplate.jsx` on this branch. T4 branch may need the same fix in `CommitteeAdminDashboard.jsx` if it hasn't been fixed there already.
 
 ---
+
 
 ## T4 — Real `CommitteeAdminDashboard.jsx` + `AdminLayout.jsx` sidebar
 

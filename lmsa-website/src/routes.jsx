@@ -28,7 +28,7 @@ import NewsDetailPage from './pages/public/NewsDetailPage';
 import VolunteerPage from './pages/public/VolunteerPage';
 import LeadershipOpportunitiesPage from './pages/public/LeadershipOpportunitiesPage';
 import JoinCommitteePage from './pages/public/JoinCommitteePage';
-import CommitteeDetailPage from './pages/public/CommitteeDetailPage';
+import CommitteePageTemplate from './pages/committees/CommitteePageTemplate';
 import PartnershipPage from './pages/public/PartnershipPage';
 import ContactPage from './pages/public/ContactPage';
 import NotFoundPage from './pages/public/NotFoundPage';
@@ -76,7 +76,7 @@ function AppRoutes() {
         {/* Leadership routes */}
         <Route path="/leadership" element={<LeadershipPage />} />
         <Route path="/leadership/committees" element={<CommitteesPage />} />
-        <Route path="/leadership/committees/:slug" element={<CommitteeDetailPage />} />
+        <Route path="/leadership/committees/:slug" element={<CommitteePageTemplate />} />
         <Route path="/leadership/past-presidents" element={<PastPresidentsPage />} />
         <Route path="/leadership/executive-council" element={<ExecutiveCouncilPage />} />
         
