@@ -27,8 +27,8 @@ Claude (orchestrator), and any implementing agents (Claude Code, etc.).
 | T2b | Frontend `event.service.js` | T2a | **done** |
 | T3 | Wire real `CommitteePageTemplate.jsx` into routing | T1, T2b | **assigned** |
 | T4 | Real `CommitteeAdminDashboard.jsx` + `AdminLayout.jsx` sidebar | T1, T2b | **done** |
-| T5 | Cleanup: legacy committee pages/routes, reconcile docs vs. source | T3, T4 | blocked |
-| T6 | Wire `EventDetailPage.jsx` to `eventService` (currently static, same issue T3 fixes for committees) | T2b | unassigned — noted, not yet specced |
+| T5 | Cleanup: legacy committee pages/routes, reconcile docs vs. source | T3, T4 | **assigned** |
+| T6 | Wire public events flow (`EventsPage.jsx` + `EventDetailPage.jsx`) to `eventService`, including a working Register button | T2a, T2b | **assigned** |
 
 T3 and T4 can run in parallel — they touch almost entirely different files
 (T3: one public page + routing + legacy cleanup candidates; T4: admin
@@ -748,8 +748,17 @@ then push to this same branch.
 ## T5 — Cleanup
 
 **Branch:** `task/t5-cleanup`
-**Status:** blocked (needs T3, T4 done)
-**Depends on:** T3, T4
+**Status:** assigned
+**Depends on:** T3 (done), T4 (done)
+
+### Context
+
+Orchestrator pre-check confirmed the legacy routes are genuinely orphaned:
+`lmsa-website/src/pages/public/CommitteesPage.jsx` (the committees overview
+grid) already links to `` `/leadership/committees/${committee.slug}` `` —
+the new dynamic route, not the old stub paths. No hardcoded links to
+`/committees/academic` etc. exist anywhere in `src/components` or
+`src/layouts`. Safe to remove.
 
 ### Context
 
@@ -786,25 +795,78 @@ the shape is already clear)
 
 ---
 
-## T6 — Wire `EventDetailPage.jsx` to `eventService`
+## T6 — Wire public events flow to `eventService`
 
-**Branch:** *(not yet cut)*
-**Status:** unassigned — noted, not yet fully specced
-**Depends on:** T2b (done)
+**Branch:** `task/t6-events-frontend`
+**Status:** assigned
+**Depends on:** T2a (done), T2b (done)
 
 ### Context
 
-Discovered while writing T3's spec: `lmsa-website/src/pages/public/EventDetailPage.jsx`
-(90 lines) has the exact same problem `CommitteeDetailPage.jsx` had before
-T3 — no `eventService` import, no `useState`/`useEffect`, fully static.
-`CommitteePageTemplate.jsx`'s event cards link to `/events/:slug` expecting
-a real registration flow there. Right now that link leads to a dead end.
+Discovered while writing T3's spec, and confirmed wider on inspection:
+**both** public event pages are fully static, not just the detail page.
 
-Not yet fully specced — will write the full ticket once T3/T4 land, since
-it's lower priority (events aren't the current focus) and this file is
-small enough that the spec will be short. Flagging now so it doesn't get
-lost.
+- `lmsa-website/src/pages/public/EventsPage.jsx` (127 lines) — hardcoded
+  `const events = [...]` array (4 fake events), no `eventService` import,
+  no data fetching at all.
+- `lmsa-website/src/pages/public/EventDetailPage.jsx` (90 lines) — same
+  problem, hardcoded `eventsData` object keyed by slug. The "Register for
+  Event" button (line 85) has **no `onClick` handler at all** — it's fully
+  dead, does nothing when clicked.
+
+Both `eventService` (T2b) and the backend `/api/events/*` routes (T2a) are
+live and working — this task is purely about wiring the existing static
+pages up to them, following the same pattern T3 already established for
+`CommitteePageTemplate.jsx` (fetch on mount, loading state, graceful
+fallback/empty state, no fabricated data).
+
+### Files to modify
+
+**`lmsa-website/src/pages/public/EventsPage.jsx`**
+- Replace the hardcoded `events` array with `eventService.getAll()` in a
+  `useEffect`/`useState` pattern (mirror `CommitteePageTemplate.jsx`'s
+  `loadAll()` structure — loading state, try/catch, `toast.error` on
+  failure).
+- If the existing UI has category/type filter buttons, wire them to the
+  `?type=` query param `eventService.getAll()` already supports (check
+  `event.controller.js`'s `getAll` for the exact supported filters:
+  `type`, `status`, `upcoming`) rather than client-side filtering a full
+  fetched list, if reasonably easy — otherwise client-side filtering on
+  the fetched real data is an acceptable fallback, just don't leave the
+  fake array in place.
+- Keep existing visual layout/styling — this is a data-source swap, not a
+  redesign.
+
+**`lmsa-website/src/pages/public/EventDetailPage.jsx`**
+- Replace hardcoded `eventsData` lookup with `eventService.getBySlug(slug)`
+  in a `useEffect`. Keep the existing "Event Not Found" state for a 404 /
+  missing slug.
+- **Wire the "Register for Event" button.** On click: call
+  `eventService.register(event.id)`, show a success toast, and update the
+  UI to reflect registered state (disable the button / change its label —
+  your call on exact UX, but it must not be clickable indefinitely after a
+  successful registration without feedback). If the user isn't
+  authenticated, the backend will reject with 401 — handle that
+  gracefully (e.g. redirect to `/login` or show a toast asking them to log
+  in, rather than a raw unhandled error).
+- If `event.registration_required` is false, don't show a register button
+  at all (check this field — it's on the schema and the T2a controller
+  returns it).
+
+### Acceptance criteria
+
+- [ ] `npx eslint` on both files — 0 errors, 0 warnings.
+- [ ] `npm run build` — clean.
+- [ ] `EventsPage.jsx` renders real events from the API, not the 4
+      hardcoded fakes — verify against your actual `events` table content
+      (may be empty right now — confirm the empty-state UI is reasonable,
+      not broken/blank).
+- [ ] `EventDetailPage.jsx` loads real event data by slug.
+- [ ] Register button actually calls the backend and gives visible
+      feedback (success or error) — test manually and note the result in
+      your report (a logged-in test session is fine).
+- [ ] No leftover hardcoded `eventsData`/`events` arrays in either file.
 
 ### Report
 
-*(Not yet assigned)*
+*(Agent: fill this in before pushing)*
