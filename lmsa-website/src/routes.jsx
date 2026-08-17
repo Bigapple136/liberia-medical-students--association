@@ -56,6 +56,7 @@ import DashboardPage from './pages/portal/DashboardPage';
 
 // Admin pages
 import AdminDashboard from './pages/admin/AdminDashboard';
+import CommitteeAdminDashboard from './pages/admin/CommitteeAdminDashboard';
 
 // Protected route wrapper
 import ProtectedRoute from './components/common/ProtectedRoute';
@@ -152,6 +153,7 @@ function AppRoutes() {
       >
         <Route index element={<Navigate to="/admin/dashboard" replace />} />
         <Route path="dashboard" element={<AdminDashboard />} />
+        <Route path="committees" element={<CommitteeAdminDashboard />} />
       </Route>
 
       {/* 404 */}
