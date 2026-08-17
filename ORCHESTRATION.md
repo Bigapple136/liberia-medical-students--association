@@ -340,7 +340,7 @@ registration.
 ## T2b — Frontend `event.service.js`
 
 **Branch:** `task/t2b-event-service`
-**Status:** assigned
+**Status:** needs-review
 **Depends on:** T2a (done — merged to main)
 
 ### Context
@@ -361,13 +361,31 @@ shapes exactly (read the merged T2a code, don't assume).
 
 ### Acceptance criteria
 
-- [ ] File follows existing service-layer conventions exactly.
-- [ ] Every method calls an endpoint that actually exists per T2a — verify
-      against the merged `event.routes.js`, not the original spec text.
+- [x] File follows existing service-layer conventions exactly.
+- [x] Every method calls an endpoint that actually exists per T2a — verified against the merged `event.routes.js`.
 
 ### Report
 
-*(Agent: fill this in before pushing)*
+- **Status:** in-progress → needs-review
+- **Files created:**
+  - `lmsa-website/src/services/event.service.js` — 8 methods (getAll, getBySlug, create, update, delete, register, unregister, getRegistrations)
+- **Files modified:**
+  - None.
+- **Deviations from spec (and why):**
+  - None. All 8 methods implemented exactly per spec. Follows `committee.service.js` conventions exactly: same `api` import, same `async` method + `response.data.x` unwrap pattern, same section header comment style, same JSDoc comment pattern.
+- **Endpoint verification (cross-checked against merged `event.routes.js`):**
+  - `getAll` → `GET /events` → returns `response.data.events` ✅
+  - `getBySlug(slug)` → `GET /events/:slug` → returns `response.data.event` ✅
+  - `create(eventData)` → `POST /events` → returns `response.data.event` ✅
+  - `update(id, data)` → `PUT /events/:id` → returns `response.data.event` ✅
+  - `delete(id)` → `DELETE /events/:id` → returns void ✅
+  - `register(eventId)` → `POST /events/:eventId/register` → returns `response.data.registration` ✅
+  - `unregister(eventId)` → `DELETE /events/:eventId/register` → returns void ✅
+  - `getRegistrations(eventId)` → `GET /events/:eventId/registrations` → returns `response.data.registrations` ✅
+- **Open questions / blockers for orchestrator:**
+  - No new npm dependencies added.
+  - All 8 methods match T2a's actual endpoint paths and response shapes — no 404s expected.
+  - T3 and T4 can now be unblocked.
 
 ---
 
