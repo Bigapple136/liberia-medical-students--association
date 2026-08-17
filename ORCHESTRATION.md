@@ -23,10 +23,19 @@ Claude (orchestrator), and any implementing agents (Claude Code, etc.).
 | ID | Task | Depends on | Status |
 |----|------|------------|--------|
 | T1 | Backend committee API | none | **done** |
-| T2 | Frontend `event.service.js` | none | unassigned |
-| T3 | Wire real `CommitteePageTemplate.jsx` into routing | T1, T2 | blocked |
-| T4 | Real `CommitteeAdminDashboard.jsx` + `AdminLayout.jsx` sidebar | T1, T2 | blocked |
+| T2a | Backend events API | none | **assigned** |
+| T2b | Frontend `event.service.js` | T2a | blocked |
+| T3 | Wire real `CommitteePageTemplate.jsx` into routing | T1, T2b | blocked |
+| T4 | Real `CommitteeAdminDashboard.jsx` + `AdminLayout.jsx` sidebar | T1, T2b | blocked |
 | T5 | Cleanup: legacy committee pages/routes, reconcile docs vs. source | T3, T4 | blocked |
+
+**Note:** T2 was originally scoped as "just write the frontend event
+service." On investigation, the backend has no events API at all — no
+`event.routes.js`, no `event.controller.js`, nothing registered in
+`server.js` — even though the `events` and `event_registrations` tables
+are live in the database (from `001_base_schema.sql`). Split into T2a
+(backend, unblocked) and T2b (frontend, depends on T2a) rather than having
+an agent hit the same "blocked" wall T1 anticipated.
 
 ---
 
@@ -199,37 +208,133 @@ your report whether you ran it or found it already applied (check for
 
 ---
 
-## T2 — Frontend `event.service.js`
+## T2a — Backend Events API
 
-**Branch:** `task/t2-event-service`
-**Status:** unassigned
-**Depends on:** none (can run in parallel with T1)
+**Branch:** `task/t2a-events-backend`
+**Status:** assigned
+**Depends on:** none
+
+### Context
+
+Same shape of gap as T1 but for events: `events` and `event_registrations`
+tables are live in Supabase (from `001_base_schema.sql`, confirmed applied
+2026-08-17), and `events.committee_id` FK exists (from
+`002_committee_additions.sql`). But there is no `event.routes.js`, no
+`event.controller.js`, and nothing registered in `server.js`. Read
+`lmsa-api/src/controllers/committee.controller.js` and
+`lmsa-api/src/routes/committee.routes.js` first — match that exact style
+(`{ success, ...key }` response shape, try/catch/console.error pattern,
+`authenticate`/`authorize` middleware from `auth.middleware.js`).
+
+### Schema reference (already live, do not modify)
+
+```sql
+-- events
+id, title, slug, description, event_type, location, venue,
+start_datetime, end_datetime, registration_required, max_attendees,
+registration_deadline, fee, image_url, organizer_id, committee_id,
+status ('draft'|'upcoming'|'ongoing'|'completed'|'cancelled'),
+created_at, updated_at
+
+-- event_registrations
+id, event_id, user_id,
+registration_status ('registered'|'attended'|'absent'|'cancelled'),
+payment_status ('unpaid'|'paid'|'waived'), payment_reference,
+attended, registered_at
+-- UNIQUE(event_id, user_id)
+```
+
+### Files to create
+
+**`lmsa-api/src/controllers/event.controller.js`**
+
+- `getAll(req, res)` — `GET /` — all events, support optional query params
+  `?type=`, `?status=`, `?upcoming=true` (filters `start_datetime >= now()`).
+  Order by `start_datetime ascending`. Response: `{ success: true, events: [...] }`
+- `getBySlug(req, res)` — `GET /:slug` — single event by slug, 404 if not
+  found, include a `registration_count` via a count on `event_registrations`.
+  Response: `{ success: true, event: {...} }`
+- `create(req, res)` — `POST /` — admin-only. Auto-generate `slug` from
+  `title` (same slugify pattern used in
+  `committee.controller.js`'s `createEvent`). Sets `organizer_id` from
+  `req.user.id`, `status: 'upcoming'`. Response: `{ success: true, event: {...} }`
+- `update(req, res)` — `PUT /:id` — admin-only. Response:
+  `{ success: true, event: {...} }`
+- `deleteEvent(req, res)` — `DELETE /:id` — admin-only. Response:
+  `{ success: true }`
+- `register(req, res)` — `POST /:id/register` — authenticated (any logged-in
+  user). Body may be empty. Insert into `event_registrations` with
+  `user_id: req.user.id`. If `max_attendees` is set on the event, check
+  current registration count first and reject with 400 if full. Handle the
+  `UNIQUE(event_id, user_id)` conflict gracefully — if already registered,
+  return success (idempotent), don't error. Response:
+  `{ success: true, registration: {...} }`
+- `unregister(req, res)` — `DELETE /:id/register` — authenticated. Deletes
+  the current user's own registration row for that event. Response:
+  `{ success: true }`
+- `getRegistrations(req, res)` — `GET /:id/registrations` — admin-only.
+  Joins `event_registrations` to `users` for name/email. Response:
+  `{ success: true, registrations: [...] }`
+
+**`lmsa-api/src/routes/event.routes.js`**
+
+- Public: `GET /`, `GET /:slug`
+- Authenticated (any logged-in user): `POST /:id/register`,
+  `DELETE /:id/register`
+- Admin-only (`authorize('admin', 'executive', 'super_admin')`):
+  `POST /`, `PUT /:id`, `DELETE /:id`, `GET /:id/registrations`
+
+### Files to modify
+
+**`lmsa-api/src/server.js`** — add `eventRoutes` import and
+`app.use('/api/events', eventRoutes)`, same pattern as the committee route
+registration.
+
+### Acceptance criteria
+
+- [ ] `node --check` passes on both new files.
+- [ ] Response JSON shapes match what T2b's `event.service.js` will expect
+      (see T2b spec below — write this controller first, T2b is designed
+      to match it).
+- [ ] Registration endpoint is idempotent (double-registering doesn't 500).
+- [ ] Registration endpoint respects `max_attendees` when set.
+- [ ] Admin-only routes reject unauthenticated (401) and non-admin (403)
+      requests — note this in your report same as T1 did.
+- [ ] No new npm dependencies without flagging it.
+
+### Report
+
+*(Agent: fill this in before pushing)*
+
+---
+
+## T2b — Frontend `event.service.js`
+
+**Branch:** `task/t2b-event-service`
+**Status:** blocked (needs T2a done)
+**Depends on:** T2a
 
 ### Context
 
 `docs/Complete admin interface for managing all committees.md` (the spec for
 the future `CommitteeAdminDashboard.jsx`) imports an `eventService` from
 `@services/event.service` that does not exist yet in
-`lmsa-website/src/services/`. The API endpoints for events already exist per
-`lmsa_technical_docs.md` (`/api/events/*`) — confirm against the actual
-backend once T1's sibling event routes are checked (events are NOT part of
-T1; they were already speced in the original `lmsa-api` docs as a future
-sprint — if `/api/events/*` doesn't exist on the backend either, flag this
-as a **blocker** in your report rather than building it yourself).
+`lmsa-website/src/services/`.
 
 ### File to create
 
 **`lmsa-website/src/services/event.service.js`** — follow the exact style
 of `lmsa-website/src/services/committee.service.js` (same `api` import,
 same `async` method + `response.data.x` unwrap pattern). Cover: `getAll`,
-`getBySlug`, `create`, `update`, `delete`, `register` (event registration),
-`unregister`, `getRegistrations` (admin).
+`getBySlug`, `create`, `update`, `delete`, `register`, `unregister`,
+`getRegistrations` — matching T2a's actual endpoint paths and response
+shapes exactly (read the merged T2a code, don't assume).
 
 ### Acceptance criteria
 
 - [ ] File follows existing service-layer conventions exactly.
-- [ ] If backend `/api/events/*` routes don't exist, this is reported as a
-      blocker, not silently worked around.
+- [ ] Every method calls an endpoint that actually exists per T2a — verify
+      against the merged `event.routes.js`, not the original spec text.
 
 ### Report
 
@@ -240,8 +345,8 @@ same `async` method + `response.data.x` unwrap pattern). Cover: `getAll`,
 ## T3 — Wire real `CommitteePageTemplate.jsx` into routing
 
 **Branch:** `task/t3-committee-template`
-**Status:** blocked (needs T1, T2 done)
-**Depends on:** T1, T2
+**Status:** blocked (needs T1, T2b done)
+**Depends on:** T1, T2b
 
 *(Full spec to be added by orchestrator once T1/T2 land — summary: move the
 component out of `docs/Committeepagetemplate.md` into a real
@@ -255,8 +360,8 @@ stub routes and their 12 page files.)*
 ## T4 — Real `CommitteeAdminDashboard.jsx` + `AdminLayout.jsx` sidebar
 
 **Branch:** `task/t4-admin-dashboard`
-**Status:** blocked (needs T1, T2 done)
-**Depends on:** T1, T2
+**Status:** blocked (needs T1, T2b done)
+**Depends on:** T1, T2b
 
 *(Full spec to be added by orchestrator once T1/T2 land — summary: move the
 component out of `docs/Complete admin interface for managing all
