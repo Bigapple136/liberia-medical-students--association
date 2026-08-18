@@ -12,7 +12,7 @@ export default function Footer() {
           <div className="lg:col-span-2">
             <h3 className="text-2xl font-bold text-white mb-4">LMSA</h3>
             <p className="text-sm text-gray-400 mb-4 max-w-xs">
-              Liberia Medical Students' Association<br />
+              Liberia Medical Students&apos; Association<br />
               Uniting future physicians at A.M. Dogliotti College of Medicine
             </p>
             <div className="space-y-3 text-sm">
@@ -150,7 +150,7 @@ export default function Footer() {
         {/* Bottom Bar */}
         <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-sm text-gray-400">
-            © {currentYear} Liberia Medical Students' Association. All rights reserved.
+            © {currentYear} Liberia Medical Students&apos; Association. All rights reserved.
           </p>
           <div className="flex gap-6 text-sm">
             <a href="#" className="hover:text-lmsa-400 transition-colors duration-200">

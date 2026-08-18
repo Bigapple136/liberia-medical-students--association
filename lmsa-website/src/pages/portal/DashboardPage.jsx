@@ -2,14 +2,14 @@ import { useAuth } from '@context/AuthContext';
 import Card from '@components/common/Card';
 
 export default function DashboardPage() {
-  const { user } = useAuth();
+  useAuth();
 
   return (
     <div>
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2">Welcome Back!</h1>
         <p className="text-gray-600">
-          Here's what's happening with your LMSA membership
+          Here&apos;s what&apos;s happening with your LMSA membership
         </p>
       </div>
 

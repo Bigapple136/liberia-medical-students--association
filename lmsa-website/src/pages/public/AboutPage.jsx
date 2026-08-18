@@ -41,7 +41,7 @@ export default function AboutPage() {
             <h2 className="text-3xl font-bold mb-6 uppercase tracking-tight">Our History</h2>
             <div className="card">
               <p className="text-gray-600 mb-4 text-balance">
-                The Liberia Medical Students' Association (LMSA) was established in 1972 at the
+                The Liberia Medical Students&apos; Association (LMSA) was established in 1972 at the
                 A.M. Dogliotti College of Medicine, University of Liberia. For over five decades,
                 LMSA has served as the unified voice of medical students, advocating for academic
                 excellence, student welfare, and professional development.

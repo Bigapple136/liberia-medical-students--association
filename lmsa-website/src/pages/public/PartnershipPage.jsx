@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Heart, Building2, Globe, Award, Users, TrendingUp, CheckCircle, ArrowRight, Mail, Phone, ExternalLink, Star, Crown, Shield, Target, Search } from 'lucide-react';
+import { Heart, Building2, Globe, Award, Users, TrendingUp, CheckCircle, ArrowRight, Mail, Phone, Star, Crown, Shield, Target } from 'lucide-react';
 
 // Partner organizations
 const partners = [
@@ -154,7 +154,7 @@ export default function PartnershipPage() {
             </div>
             <div>
               <h1 className="text-4xl md:text-5xl font-bold">Partnership Opportunities</h1>
-              <p className="text-lg text-lmsa-100 mt-1">Collaborate with Liberia's Future Medical Leaders</p>
+              <p className="text-lg text-lmsa-100 mt-1">Collaborate with Liberia&apos;s Future Medical Leaders</p>
             </div>
           </div>
           <p className="text-lmsa-50 max-w-2xl leading-relaxed">
@@ -167,7 +167,7 @@ export default function PartnershipPage() {
         {/* Partner Types */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 mb-8">
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Types of Partnerships</h2>
-          <p className="text-gray-600 mb-8">We offer flexible partnership models to suit your organization's goals and capacity.</p>
+          <p className="text-gray-600 mb-8">We offer flexible partnership models to suit your organization&apos;s goals and capacity.</p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {partnerTypes.map((type, index) => {
               const Icon = type.icon;

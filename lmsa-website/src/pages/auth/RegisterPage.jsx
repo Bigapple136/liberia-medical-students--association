@@ -90,7 +90,7 @@ export default function RegisterPage() {
         <div className="max-w-md text-white">
           <h1 className="text-5xl font-bold mb-6 uppercase tracking-tight">Join LMSA</h1>
           <p className="text-xl text-lmsa-100 mb-8 text-balance">
-            Become part of Liberia's leading medical student community
+            Become part of Liberia&apos;s leading medical student community
           </p>
           
           {/* Benefits */}
@@ -128,7 +128,7 @@ export default function RegisterPage() {
           {/* Header */}
           <div className="mb-8">
             <h2 className="text-3xl font-bold mb-2 uppercase tracking-tight">Create Account</h2>
-            <p className="text-gray-600">Join the Liberia Medical Students' Association</p>
+            <p className="text-gray-600">Join the Liberia Medical Students&apos; Association</p>
           </div>
 
           {/* Form */}

@@ -9,7 +9,7 @@ export class ErrorBoundary extends Component {
     this.state = { hasError: false, error: null, errorInfo: null };
   }
 
-  static getDerivedStateFromError(error) {
+  static getDerivedStateFromError() {
     return { hasError: true };
   }
 
@@ -53,7 +53,7 @@ export class ErrorBoundary extends Component {
             </div>
 
             {/* Error Details (Development Only) */}
-            {process.env.NODE_ENV === 'development' && this.state.error && (
+            {import.meta.env.DEV && this.state.error && (
               <details className="mt-8 text-left bg-white rounded-lg border border-gray-200 p-6">
                 <summary className="font-semibold mb-2 cursor-pointer">Error Details (Development)</summary>
                 <pre className="text-sm text-red-600 overflow-auto whitespace-pre-wrap">
