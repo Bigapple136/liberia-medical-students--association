@@ -7,11 +7,22 @@ export const register = async (req, res) => {
   try {
     const { email, password, full_name, year_level, student_id } = req.body;
 
-    // Create user in Supabase Auth
+    // email_confirm: true — this app has no email-verification flow built
+    // (no verify route, no frontend confirmation page, and Supabase's own
+    // confirmation email requires separate SMTP setup in the Supabase
+    // dashboard, distinct from this app's Gmail-based welcome email). With
+    // email_confirm: false and nothing to ever satisfy it, every
+    // registered user was permanently locked out at login
+    // ("email_not_confirmed"). This endpoint already uses the service-role
+    // key (admin-privileged), so marking accounts pre-confirmed here is a
+    // deliberate, safe simplification — not a security gap, since account
+    // creation still requires a valid registration request either way.
+    // A real email-verification flow can be built as its own feature later
+    // if desired; this just unblocks the core registration/login loop now.
     const { data: authData, error: authError } = await supabase.auth.admin.createUser({
       email,
       password,
-      email_confirm: false,
+      email_confirm: true,
     });
 
     if (authError) {
@@ -59,7 +70,7 @@ export const register = async (req, res) => {
 
     res.status(201).json({
       success: true,
-      message: 'Registration successful. Please check your email.',
+      message: 'Registration successful. You can now log in.',
     });
   } catch (error) {
     console.error('Registration error:', error);

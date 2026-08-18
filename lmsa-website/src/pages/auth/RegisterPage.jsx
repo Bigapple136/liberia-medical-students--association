@@ -83,7 +83,7 @@ export default function RegisterPage() {
         student_id: formData.studentId,
         year_level: parseInt(formData.yearOfStudy, 10),
       });
-      toast.success('Registration successful! Please check your email to verify your account.');
+      toast.success('Registration successful! You can now log in.');
       navigate('/login');
     } catch (error) {
       toast.error(error.message || 'Registration failed');
