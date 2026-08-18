@@ -39,16 +39,23 @@ export const register = async (req, res) => {
       });
     }
 
-    // Send welcome email
-    await sendEmail({
-      to: email,
-      subject: 'Welcome to LMSA',
-      html: `
-        <h1>Welcome to LMSA, ${full_name}!</h1>
-        <p>Your account has been created successfully.</p>
-        <p>Please verify your email to complete registration.</p>
-      `,
-    });
+    // Send welcome email — best-effort only. Account creation above already
+    // succeeded (auth user + profile row both exist), so a failure here
+    // (e.g. email provider misconfigured/unreachable) must not turn a
+    // successful registration into a reported failure. Log and continue.
+    try {
+      await sendEmail({
+        to: email,
+        subject: 'Welcome to LMSA',
+        html: `
+          <h1>Welcome to LMSA, ${full_name}!</h1>
+          <p>Your account has been created successfully.</p>
+          <p>Please verify your email to complete registration.</p>
+        `,
+      });
+    } catch (emailError) {
+      console.error('Welcome email failed to send (registration still succeeded):', emailError);
+    }
 
     res.status(201).json({
       success: true,

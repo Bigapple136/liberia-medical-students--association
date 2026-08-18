@@ -739,18 +739,24 @@ export const submitContactForm = async (req, res) => {
       `,
     });
 
-    // Also send confirmation to sender
-    await sendEmail({
-      to: email,
-      subject: `Your message to LMSA ${committee?.name || ''} has been received`,
-      html: `
-        <h2>We received your message!</h2>
-        <p>Hi ${name},</p>
-        <p>Thank you for reaching out to the LMSA ${committee?.name || 'Committee'}. We'll get back to you as soon as possible.</p>
-        <p><strong>Your message:</strong> ${message}</p>
-        <p>Best regards,<br>LMSA Team</p>
-      `,
-    });
+    // Confirmation copy to the sender is a courtesy, not the point of this
+    // endpoint — the message to the committee above already succeeded, so
+    // don't fail the whole request if only this second email fails.
+    try {
+      await sendEmail({
+        to: email,
+        subject: `Your message to LMSA ${committee?.name || ''} has been received`,
+        html: `
+          <h2>We received your message!</h2>
+          <p>Hi ${name},</p>
+          <p>Thank you for reaching out to the LMSA ${committee?.name || 'Committee'}. We'll get back to you as soon as possible.</p>
+          <p><strong>Your message:</strong> ${message}</p>
+          <p>Best regards,<br>LMSA Team</p>
+        `,
+      });
+    } catch (confirmationError) {
+      console.error('Contact form confirmation email failed (message to committee still sent):', confirmationError);
+    }
 
     res.json({
       success: true,
