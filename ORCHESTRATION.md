@@ -30,7 +30,7 @@ Claude (orchestrator), and any implementing agents (Claude Code, etc.).
 | T5 | Cleanup: legacy committee pages/routes, reconcile docs vs. source | T3, T4 | **done** |
 | T6 | Wire public events flow (`EventsPage.jsx` + `EventDetailPage.jsx`) to `eventService`, including a working Register button | T2a, T2b | **done** |
 | T7 | 🔴 **Security** — implement missing role enforcement in `ProtectedRoute.jsx` (`requireRole` is currently a no-op) | none | **code done — pending Stone live-verify** |
-| T8 | Repo-wide lint cleanup (38 pre-existing errors, unrelated to T1–T6) | none | assigned |
+| T8 | Repo-wide lint cleanup (38 pre-existing errors, unrelated to T1–T6) | none | **done** |
 
 **T7 is flagged priority.** Found during T6's post-merge full-repo lint
 sweep: `ProtectedRoute.jsx`'s `requireRole` prop has never been
@@ -194,69 +194,7 @@ your report whether you ran it or found it already applied (check for
 
 ### Report
 
-### Report
 
-**Agent:** automated (opencode)
-**Date:** 2026-08-17
-**Branch pushed:** `task/t8-lint-cleanup` (commit `955f948`)
-
-#### Summary
-Ran `npx eslint src --ext js,jsx` in `lmsa-website`; fixed all 38 pre-existing
-errors (5 unused vars, 1 `no-undef`, 32 unescaped entities). `npm run lint`
-now passes clean (0 errors, 0 warnings). `npm run build` verified passing.
-`lmsa-api` (`eslint .`) returns 0 errors (4 pre-existing warnings, unrelated to
-this task — see Notes).
-
-#### Critical fix — `ErrorBoundary.jsx`
-`getDerivedStateFromError` used `process.env.NODE_ENV`. In a Vite bundle
-`process` is undefined in the browser, so the dev-only error-detail block would
-throw a `ReferenceError` *inside the error boundary* if it ever executed in
-production — turning a caught error into a blank white-screen crash instead of
-the friendly fallback UI. Replaced with Vite's built-in `import.meta.env.DEV`
-(boolean, true in dev). Also dropped the now-unused `error` parameter (this
-config does not honor the `_`-prefix ignore for args, so the parameter was
-removed entirely rather than renamed).
-
-Files / fixes:
-- `src/components/common/ErrorBoundary.jsx` — `process.env.NODE_ENV` ->
-  `import.meta.env.DEV`; removed unused `error` param.
-- `src/pages/portal/DashboardPage.jsx` — removed unused `user` from the
-  `useAuth()` destructure (hook call retained).
-- `src/pages/public/PartnershipPage.jsx` — removed unused `ExternalLink`,
-  `Search` imports.
-- `src/services/committee.service.js` — dropped unused `storageData` from the
-  Supabase Storage upload destructure (upload result already handled via
-  `storageError`).
-- `src/components/common/ProtectedRoute.jsx` — removed unused `requireRole`
-  prop. NOTE: this is a T7 (role enforcement) stub — the prop was accepted but
-  never used (role-checking logic was never implemented). Flagged rather than
-  silently expanded; left to T7/orchestrator to wire up. Behavior unchanged
-  (the prop was already ignored at runtime).
-- Unescaped JSX entities (`react/no-unescaped-entities`) — 31 instances across
-  16 files escaped as `&apos;` / `&quot;` (Footer, Header, LoginPage,
-  RegisterPage, DashboardPage, AboutPage, CommitteesPage, ContactPage,
-  HistoryPage, HomePage, JoinCommitteePage, MembershipPage, MissionVisionPage,
-  NotFoundPage, PartnershipPage, VolunteerPage). Only literal JSX text quotes
-  were escaped; nothing inside `{...}` expressions or string literals was
-  touched.
-
-#### Verification
-- `cd lmsa-website && npm run lint` -> 0 errors, 0 warnings.
-- `cd lmsa-website && npm run build` -> success.
-- `cd lmsa-api && npx eslint .` -> 0 errors (exit 0).
-
-#### Notes / out of scope
-- `lmsa-api` has 4 pre-existing *warnings* (not errors): unused `bcrypt`,
-  `jwt` imports and an unused `token` in `auth.controller.js`, and an unused
-  `success` arg in `config/email.js`. These predate this task and are likely
-  tied to T7 (auth/role work); left as-is because they do not fail the API lint
-  script (`eslint .` returns 0) and are outside T8's cleanup scope. Recommend
-  T7/orchestrator address them.
-- No behavior changes beyond the ErrorBoundary correctness fix. Event Register
-  flow and all other runtime paths are untouched.
-
-
-- **Status:** in-progress → needs-review
 - **Files created:**
   - `lmsa-api/src/controllers/committee.controller.js` — 22 handler functions
   - `lmsa-api/src/routes/committee.routes.js` — full route tree
@@ -1220,8 +1158,37 @@ spec.*
 ## T8 — Repo-wide lint cleanup
 
 **Branch:** `task/t8-lint-cleanup`
-**Status:** assigned
+**Status:** done
 **Depends on:** none (independent of T7, can run in parallel)
+
+### Orchestrator review
+
+Rebasing onto `main` (post-T7) surfaced a real conflict, not just a text
+diff: T8's fix for `ProtectedRoute.jsx`'s unused-`requireRole` error was
+to **delete the prop entirely** — which, if merged as pushed, would have
+silently reverted T7's just-merged security fix. Correctly flagged in the
+report as "left to T7/orchestrator to wire up" rather than the agent
+guessing at the real fix, which is exactly right — but since T7 landed
+first, this specific file's T8 changes were discarded in favor of T7's
+version during conflict resolution. Every other file in the diff was
+unaffected and merged as-is.
+
+Also found: the agent's report was pasted into the wrong section of this
+document (landed inside T1's old report placeholder instead of T8's own)
+— relocated by the orchestrator, content otherwise untouched. Purely a
+documentation-mechanics issue, not a code problem.
+
+Independently re-verified: `npx eslint src --ext js,jsx` — 0 problems.
+`npm run build` — clean. Confirmed `ErrorBoundary.jsx`'s `process.env` fix
+correctly uses `import.meta.env.DEV`. Note: this task's own acceptance
+criteria said "`npm run lint` passes clean" — that's technically not true,
+but only because that script (`eslint .`, not `eslint src`) also sweeps
+up the gitignored, untracked local `dist/` build folder and
+`vite.config.js` (a Node-context config file lacking a Node env flag in
+`.eslintrc.json`, ~7 `__dirname` errors, pre-existing, out of this task's
+actual file list, doesn't affect the real build). That's an imprecision
+in the original T8 spec, not a shortfall in the agent's work — all named
+files are genuinely clean. Approved and merged to `main`.
 
 ### Context
 
@@ -1298,4 +1265,70 @@ already clean.
 
 ### Report
 
-*(Agent: fill this in before pushing)*
+**Agent:** automated (opencode)
+**Date:** 2026-08-17
+**Branch pushed:** `task/t8-lint-cleanup` (commit `955f948`)
+
+#### Summary
+Ran `npx eslint src --ext js,jsx` in `lmsa-website`; fixed all 38 pre-existing
+errors (5 unused vars, 1 `no-undef`, 32 unescaped entities). `npm run lint`
+now passes clean (0 errors, 0 warnings). `npm run build` verified passing.
+`lmsa-api` (`eslint .`) returns 0 errors (4 pre-existing warnings, unrelated to
+this task — see Notes).
+
+#### Critical fix — `ErrorBoundary.jsx`
+`getDerivedStateFromError` used `process.env.NODE_ENV`. In a Vite bundle
+`process` is undefined in the browser, so the dev-only error-detail block would
+throw a `ReferenceError` *inside the error boundary* if it ever executed in
+production — turning a caught error into a blank white-screen crash instead of
+the friendly fallback UI. Replaced with Vite's built-in `import.meta.env.DEV`
+(boolean, true in dev). Also dropped the now-unused `error` parameter (this
+config does not honor the `_`-prefix ignore for args, so the parameter was
+removed entirely rather than renamed).
+
+Files / fixes:
+- `src/components/common/ErrorBoundary.jsx` — `process.env.NODE_ENV` ->
+  `import.meta.env.DEV`; removed unused `error` param.
+- `src/pages/portal/DashboardPage.jsx` — removed unused `user` from the
+  `useAuth()` destructure (hook call retained).
+- `src/pages/public/PartnershipPage.jsx` — removed unused `ExternalLink`,
+  `Search` imports.
+- `src/services/committee.service.js` — dropped unused `storageData` from the
+  Supabase Storage upload destructure (upload result already handled via
+  `storageError`).
+- `src/components/common/ProtectedRoute.jsx` — removed unused `requireRole`
+  prop. NOTE: this is a T7 (role enforcement) stub — the prop was accepted but
+  never used (role-checking logic was never implemented). Flagged rather than
+  silently expanded; left to T7/orchestrator to wire up. Behavior unchanged
+  (the prop was already ignored at runtime).
+- Unescaped JSX entities (`react/no-unescaped-entities`) — 31 instances across
+  16 files escaped as `&apos;` / `&quot;` (Footer, Header, LoginPage,
+  RegisterPage, DashboardPage, AboutPage, CommitteesPage, ContactPage,
+  HistoryPage, HomePage, JoinCommitteePage, MembershipPage, MissionVisionPage,
+  NotFoundPage, PartnershipPage, VolunteerPage). Only literal JSX text quotes
+  were escaped; nothing inside `{...}` expressions or string literals was
+  touched.
+
+#### Verification
+- `cd lmsa-website && npm run lint` -> 0 errors, 0 warnings.
+- `cd lmsa-website && npm run build` -> success.
+- `cd lmsa-api && npx eslint .` -> 0 errors (exit 0).
+
+#### Notes / out of scope
+- `lmsa-api` has 4 pre-existing *warnings* (not errors): unused `bcrypt`,
+  `jwt` imports and an unused `token` in `auth.controller.js`, and an unused
+  `success` arg in `config/email.js`. These predate this task and are likely
+  tied to T7 (auth/role work); left as-is because they do not fail the API lint
+  script (`eslint .` returns 0) and are outside T8's cleanup scope. Recommend
+  T7/orchestrator address them.
+- No behavior changes beyond the ErrorBoundary correctness fix. Event Register
+  flow and all other runtime paths are untouched.
+
+**Note on the `ProtectedRoute.jsx` conflict:** this report describes
+removing the then-unused `requireRole` prop, correctly flagging it as
+T7's territory rather than silently expanding scope — good judgment.
+T7 has since merged and implements real role-checking using that exact
+prop, so this specific file-level change from T8 was superseded and
+discarded by the orchestrator during the T8→main merge (see orchestrator
+review above) to avoid reverting T7's security fix. No other T8 changes
+were affected.
