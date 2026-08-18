@@ -73,7 +73,16 @@ export default function RegisterPage() {
     setLoading(true);
 
     try {
-      await register(formData);
+      // Backend expects a different payload shape than the form's local
+      // state — map fields here rather than changing the form's internal
+      // naming (keeps the UI/UX code independent of the API contract).
+      await register({
+        email: formData.email,
+        password: formData.password,
+        full_name: `${formData.firstName} ${formData.lastName}`.trim(),
+        student_id: formData.studentId,
+        year_level: parseInt(formData.yearOfStudy, 10),
+      });
       toast.success('Registration successful! Please check your email to verify your account.');
       navigate('/login');
     } catch (error) {
