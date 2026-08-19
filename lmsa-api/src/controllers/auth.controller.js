@@ -1,7 +1,5 @@
 import { supabase } from '../config/supabase.js';
 import { sendEmail } from '../config/email.js';
-import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
 
 export const register = async (req, res) => {
   try {

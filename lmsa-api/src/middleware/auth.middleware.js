@@ -1,6 +1,10 @@
-import jwt from 'jsonwebtoken';
 import { supabase } from '../config/supabase.js';
 
+// Tokens arriving here are Supabase session access tokens issued directly
+// by Supabase Auth on login (see auth.controller.js's login, and the
+// frontend's authService.login, which both use Supabase's own session —
+// this app never issues its own JWTs). Validate them against Supabase
+// itself via the admin/service-role client, not a local secret.
 export const authenticate = async (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
@@ -14,14 +18,24 @@ export const authenticate = async (req, res, next) => {
 
     const token = authHeader.split(' ')[1];
 
-    // Verify JWT token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    // Validate the token with Supabase Auth and get the corresponding
+    // auth user (id, email, etc.) — this replaces the old jwt.verify()
+    // against process.env.JWT_SECRET, which nothing in this codebase ever
+    // actually signed tokens with, so it rejected every request.
+    const { data: authData, error: authError } = await supabase.auth.getUser(token);
 
-    // Get user from Supabase
+    if (authError || !authData?.user) {
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid or expired token',
+      });
+    }
+
+    // Get the app-level profile row (role, membership_status, etc.)
     const { data: user, error } = await supabase
       .from('users')
       .select('*')
-      .eq('id', decoded.sub)
+      .eq('id', authData.user.id)
       .single();
 
     if (error || !user) {
