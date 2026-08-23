@@ -14,17 +14,19 @@ export const authService = {
       email,
       password,
     });
-    
+
     if (error) throw error;
-    
-    localStorage.setItem('lmsa_token', data.session.access_token);
+
+    // No manual token storage needed — Supabase's client already persists
+    // the session itself, and api.js now reads the current token directly
+    // from that session on every request (see api.js for why the old
+    // separately-tracked localStorage copy caused a reload loop).
     return data;
   },
 
   // Logout user
   async logout() {
     await supabase.auth.signOut();
-    localStorage.removeItem('lmsa_token');
   },
 
   // Get current user
