@@ -18,6 +18,51 @@ Claude (orchestrator), and any implementing agents (Claude Code, etc.).
 
 ---
 
+## Critical bugs found and fixed directly (outside the task board)
+
+While diagnosing Stone's registration/login issues in production, two
+pre-existing, severe bugs were found and fixed directly by the
+orchestrator (not routed through an agent — small, urgent, and required
+live production debugging in real time):
+
+1. **`RegisterPage.jsx` field mismatch** — form sent `firstName`/
+   `lastName`/`studentId`/`yearOfStudy`, backend validator required
+   `full_name`/`student_id`/`year_level`. 100% registration failure.
+2. **Unguarded `sendEmail` in `register()`** — a misconfigured/broken
+   email provider (Render's `EMAIL_*` env vars were never set) turned a
+   successful account creation into a reported 500 failure.
+3. **`email_confirm: false` with no verification flow anywhere in the
+   codebase** — permanently locked every registered user out of login
+   with `email_not_confirmed`, no way to ever satisfy it.
+4. **`auth.middleware.js` validated tokens with `jwt.verify(token,
+   JWT_SECRET)`, but nothing in the codebase ever signed a token with
+   that secret** — the app only ever issues Supabase's own session
+   tokens. Every `authenticate()`-protected route 401'd unconditionally,
+   for every user, always. Fixed by validating against Supabase directly
+   (`supabase.auth.getUser(token)`). This bug predates every task on this
+   board and had nothing to do with T7 — it just took T7's `/users/me`
+   call (the first thing to ever exercise an authenticated route right
+   after login) to surface it.
+5. **Frontend dual-token desync causing an infinite reload loop** —
+   `api.js` read a separately-maintained `lmsa_token` from localStorage
+   that only got set inside the login click-handler, while Supabase's
+   own client independently persisted its session. Any page load that
+   wasn't the instant after clicking "Login" had a valid session but a
+   stale/missing `lmsa_token`, causing every request to 401, which
+   triggered a hard `window.location.href` reload, which hit the exact
+   same problem again. Fixed by reading the token live from
+   `supabase.auth.getSession()` on every request instead, and removing
+   the hard-redirect entirely (`ProtectedRoute` already handles
+   unauthenticated redirects via React Router).
+
+Bugs 4 and 5 together explain why nothing in this app's protected routes
+had ever actually been exercised via a real end-to-end login by an end
+user before now — T1–T8's backend endpoints were all verified via direct
+inspection/curl-style testing, never via the actual frontend login flow,
+so this entire authentication path was silently broken the whole time.
+
+---
+
 ## Task Board Summary
 
 | ID | Task | Depends on | Status |
