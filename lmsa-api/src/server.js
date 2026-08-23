@@ -46,12 +46,32 @@ app.use(express.urlencoded({ extended: true }));
 app.use(logger);
 
 // Rate limiting
-const limiter = rateLimit({
+//
+// A single 100-req/15min limit shared across the entire /api/ surface was
+// too tight for normal use — every page load can fire several calls
+// (profile fetch, committee data, events, etc.), and it applied the same
+// strict budget to routine authenticated reads as to the endpoints where
+// rate limiting actually matters (login/register, to slow down
+// brute-force/spam). Split into two tiers instead.
+
+// Strict limiter for auth endpoints specifically — this is where limiting
+// genuinely matters (credential stuffing, registration spam).
+const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limit each IP to 100 requests per windowMs
+  max: 30,
+  message: 'Too many auth requests from this IP, please try again later.',
+});
+app.use('/api/auth', authLimiter);
+
+// Generous general limiter for everything else under /api/ — high enough
+// that normal browsing (multiple calls per page navigation) doesn't hit
+// it, while still guarding against runaway/abusive request volume.
+const generalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 1000,
   message: 'Too many requests from this IP, please try again later.',
 });
-app.use('/api/', limiter);
+app.use('/api/', generalLimiter);
 
 // ============================================
 // ROUTES
