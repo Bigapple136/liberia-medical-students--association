@@ -2,30 +2,30 @@ import api from './api';
 
 export const membershipService = {
 
-  // ─── Applicant Actions ────────────────────────────────────────────────────
+  // ─── Applicant actions (authenticated) ─────────────────────────────────
 
-  /** Submit a membership application */
+  /** Submit a membership application. Body: { membership_type } */
   async apply(membershipType) {
     const response = await api.post('/membership/apply', { membership_type: membershipType });
     return response.data.application;
   },
 
-  /** Get current user's application status */
+  /** Get the current user's most recent application (or null) */
   async getStatus() {
     const response = await api.get('/membership/status');
     return response.data.application;
   },
 
-  // ─── Admin Actions ────────────────────────────────────────────────────────
+  // ─── Admin actions ──────────────────────────────────────────────────────
 
-  /** Get all applications (admin), optional status filter */
+  /** List all applications (optional status filter: pending|approved|rejected) */
   async getAll(status) {
     const params = status && status !== 'all' ? { status } : {};
     const response = await api.get('/membership/applications', { params });
     return response.data.applications;
   },
 
-  /** Get a single application by ID (admin) */
+  /** Get a single application by id */
   async getById(id) {
     const response = await api.get(`/membership/applications/${id}`);
     return response.data.application;
