@@ -76,6 +76,9 @@ so this entire authentication path was silently broken the whole time.
 | T6 | Wire public events flow (`EventsPage.jsx` + `EventDetailPage.jsx`) to `eventService`, including a working Register button | T2a, T2b | **done** |
 | T7 | 🔴 **Security** — implement missing role enforcement in `ProtectedRoute.jsx` (`requireRole` is currently a no-op) | none | **done — live-verified** |
 | T8 | Repo-wide lint cleanup (38 pre-existing errors, unrelated to T1–T6) | none | **done** |
+| T9 | Backend membership application API | none | **assigned** |
+| T10 | Frontend membership application form (`MembershipPage.jsx`) | T9 | blocked |
+| T11 | Admin membership review UI | T9 | blocked |
 
 **T7 is flagged priority.** Found during T6's post-merge full-repo lint
 sweep: `ProtectedRoute.jsx`'s `requireRole` prop has never been
@@ -1399,3 +1402,245 @@ prop, so this specific file-level change from T8 was superseded and
 discarded by the orchestrator during the T8→main merge (see orchestrator
 review above) to avoid reverting T7's security fix. No other T8 changes
 were affected.
+
+---
+
+## T9 — Backend membership application API
+
+**Branch:** `task/t9-membership-backend`
+**Status:** assigned
+**Depends on:** none
+
+### Context
+
+The `membership_applications` table has existed in the live database
+since `001_base_schema.sql`, but has zero backend API — no route, no
+controller, nothing registered in `server.js`. `MembershipPage.jsx` (the
+public page describing membership categories/benefits) currently has no
+apply button or form at all. Read `lmsa-api/src/controllers/user.controller.js`
+and `lmsa-api/src/controllers/committee.controller.js` first to match
+established conventions exactly (`{ success, ...key }` response shape,
+try/catch/console.error pattern, `authenticate`/`authorize` middleware).
+
+Scope is deliberately limited to **applications only** — dues/payment
+tracking (`membership_dues` table, Mobile Money integration) is explicitly
+a post-launch feature in the project roadmap, not part of this task.
+
+### Schema reference (already live, do not modify)
+
+```sql
+-- membership_applications
+id, user_id, membership_type,
+application_status ('pending'|'approved'|'rejected'),
+reviewed_by, review_notes, submitted_at, reviewed_at
+
+-- users (relevant existing columns)
+membership_type ('full'|'associate'|'honorary'|'veteran')
+membership_status ('active'|'pending'|'inactive'|'suspended')
+```
+
+### Files to create
+
+**`lmsa-api/src/controllers/membership.controller.js`**
+
+- `apply(req, res)` — `POST /apply` — authenticated (any logged-in user).
+  Body: `{ membership_type }` — validate it's one of `full`/`associate`/
+  `honorary`/`veteran`. Before inserting, check the user doesn't already
+  have a `pending` or `approved` application (query
+  `membership_applications` for `user_id = req.user.id` and
+  `application_status IN ('pending', 'approved')`) — if one exists,
+  return 400 with a clear message rather than creating a duplicate.
+  Insert with `user_id: req.user.id`, `application_status: 'pending'`.
+  Response: `{ success: true, application: {...} }`.
+- `getStatus(req, res)` — `GET /status` — authenticated. Returns the
+  current user's most recent application (order by `submitted_at DESC`,
+  limit 1), or `{ success: true, application: null }` if they've never
+  applied. Response: `{ success: true, application: {...} | null }`.
+- `getAll(req, res)` — `GET /applications` — admin-only
+  (`authorize('admin', 'executive', 'super_admin')`). List all
+  applications, joined to `users` for applicant name/email/year_level/
+  student_id (the reviewer needs context to decide, not just a bare
+  `user_id`). Support an optional `?status=pending` filter query param.
+  Order by `submitted_at DESC`. Response:
+  `{ success: true, applications: [...] }`.
+- `getById(req, res)` — `GET /applications/:id` — admin-only. Single
+  application with the same user join as above, 404 if not found.
+  Response: `{ success: true, application: {...} }`.
+- `updateStatus(req, res)` — `PUT /applications/:id` — admin-only. Body:
+  `{ application_status, review_notes }` (`application_status` must be
+  `approved` or `rejected` — this endpoint is for reviewing, not creating
+  pending applications). Sets `reviewed_by: req.user.id`,
+  `reviewed_at: new Date().toISOString()`. **On approval**, also update
+  the applicant's own `users` row: set `membership_status: 'active'` and
+  `membership_type` to match the approved application's
+  `membership_type` — the application table alone isn't the source of
+  truth for a user's current standing, `users.membership_status` is what
+  the rest of the app (and T7's role-adjacent logic) actually reads.
+  **On rejection**, leave `users.membership_status` as `'pending'`
+  (unchanged) — a rejected application shouldn't silently downgrade
+  someone who might reapply. After the DB update succeeds, best-effort
+  email the applicant their outcome (wrap in try/catch — follow the
+  pattern in `auth.controller.js`'s `register` from the recent
+  production fixes; a failed notification email must never fail an
+  otherwise-successful review action). Response:
+  `{ success: true, application: {...} }`.
+
+**`lmsa-api/src/routes/membership.routes.js`**
+
+- `POST /apply` — `authenticate` only (any logged-in user)
+- `GET /status` — `authenticate` only
+- `GET /applications` — `authenticate`, `authorize('admin', 'executive', 'super_admin')`
+- `GET /applications/:id` — same admin auth
+- `PUT /applications/:id` — same admin auth
+
+### Files to modify
+
+**`lmsa-api/src/server.js`** — add `membershipRoutes` import and
+`app.use('/api/membership', membershipRoutes)`, same pattern as the
+existing route registrations.
+
+### Acceptance criteria
+
+- [ ] `node --check` passes on both new files.
+- [ ] Duplicate-application prevention actually works — verify by
+      attempting to apply twice with the same test account and confirm
+      the second attempt is rejected with a clear message, not a raw DB
+      constraint error.
+- [ ] Approval correctly updates `users.membership_status` and
+      `users.membership_type` — verify with a real test approval and
+      check the `users` table row changed.
+- [ ] Admin-only routes reject unauthenticated (401) and non-admin (403)
+      requests — test at least one and note results in your report.
+- [ ] Email notification failure doesn't fail the review action (test by
+      temporarily breaking email config if easy, or just confirm the
+      try/catch wraps it correctly on inspection and note that in your
+      report).
+- [ ] No new npm dependencies without flagging it.
+
+### Report
+
+*(Agent: fill this in before pushing)*
+
+---
+
+## T10 — Frontend membership application form
+
+**Branch:** `task/t10-membership-form`
+**Status:** blocked (needs T9 done)
+**Depends on:** T9
+
+### Context
+
+`MembershipPage.jsx` (169 lines) currently has membership category cards
+and a benefits/eligibility section, but zero apply functionality — no
+form, no button, nothing. This task adds the actual application flow on
+top of the existing page content (don't redesign what's already there,
+add to it).
+
+### Files to create
+
+**`lmsa-website/src/services/membership.service.js`** — follow the exact
+style of `committee.service.js`/`event.service.js`. Cover: `apply`,
+`getStatus`, `getAll` (admin), `getById` (admin), `updateStatus` (admin)
+— match T9's actual merged endpoints exactly, don't assume from this
+spec text alone.
+
+### Files to modify
+
+**`lmsa-website/src/pages/public/MembershipPage.jsx`**
+- Add an "Apply Now" call-to-action per membership category card (or a
+  single application section below the categories — your call on
+  layout, keep it consistent with the page's existing visual style).
+- **Auth-gating**: applying requires being logged in (`user_id` is a
+  required FK in the schema). If the visitor isn't authenticated,
+  clicking apply should prompt them to log in/register first (e.g.
+  redirect to `/login` with a return path, or show an inline prompt) —
+  don't let them fill out a form that will just 401 on submit.
+- On mount (for logged-in users), call `membershipService.getStatus()`
+  to check if they already have an application. If `pending`, show a
+  status indicator instead of an apply button ("Application under
+  review"). If `approved`, show that too ("You're a full member" /
+  whatever's appropriate). If `rejected`, allow reapplying (the backend's
+  duplicate-check only blocks `pending`/`approved`, so a fresh apply call
+  after rejection should work — no special frontend handling needed
+  beyond just showing the apply button again).
+- The application itself only needs `membership_type` as input (per the
+  schema) — a simple selector/confirmation is enough, don't over-build a
+  multi-step form the schema doesn't support fields for.
+- Use `toast.success`/`toast.error` for feedback, consistent with the
+  rest of the app (`react-hot-toast`, already used throughout).
+
+### Acceptance criteria
+
+- [ ] `npx eslint` — 0 errors, 0 warnings.
+- [ ] `npm run build` — clean.
+- [ ] Logged-out visitor clicking apply is prompted to log in, not shown
+      a broken/failing form.
+- [ ] Logged-in visitor can actually submit an application against the
+      live backend — test manually and note the result in your report.
+- [ ] Status correctly reflects `pending`/`approved`/`rejected` states
+      after a real submission (test at least the `pending` state, since
+      that requires no admin action to trigger).
+
+### Report
+
+*(Agent: fill this in before pushing)*
+
+---
+
+## T11 — Admin membership review UI
+
+**Branch:** `task/t11-membership-admin`
+**Status:** blocked (needs T9 done)
+**Depends on:** T9
+
+### Context
+
+No way currently exists for an admin to see or act on membership
+applications except direct Supabase table edits. This task builds the
+review interface. Read `lmsa-website/src/pages/admin/CommitteeAdminDashboard.jsx`
+first for the established admin-page conventions (loading states,
+`toast` feedback, table/list layout patterns) — match that style rather
+than inventing a new one.
+
+### Files to create
+
+**`lmsa-website/src/pages/admin/MembershipAdminPage.jsx`** — a list/table
+of applications (use `membershipService.getAll()`, T10's service — if T10
+hasn't merged yet when you pick this up, coordinate with the orchestrator
+rather than duplicating `membership.service.js` yourself). Needs:
+- A status filter (pending/approved/rejected/all) — the backend supports
+  `?status=` already.
+- Per-application: applicant name/email/year_level/student_id (from the
+  join T9 built), requested `membership_type`, submission date, and
+  approve/reject actions with an optional review-notes field.
+- Approve/reject should call `membershipService.updateStatus()` and
+  refresh the list (or optimistically update) on success, with toast
+  feedback.
+- Default view should probably filter to `pending` first (that's the
+  actionable queue), with an easy way to see all/approved/rejected too.
+
+### Files to modify
+
+**`lmsa-website/src/routes.jsx`** — wire the new page in under the
+existing `/admin` protected route tree (same `ProtectedRoute
+requireRole={[...]}` wrapper pattern as `CommitteeAdminDashboard`).
+
+**`lmsa-website/src/layouts/AdminLayout.jsx`** — add a nav link to the
+new page in the sidebar T4 built.
+
+### Acceptance criteria
+
+- [ ] `npx eslint` — 0 errors, 0 warnings.
+- [ ] `npm run build` — clean.
+- [ ] Admin can see a real pending application (from T10's testing, if
+      available by then, or create one for this test) and approve or
+      reject it — test at least one full approve or reject cycle against
+      the live backend and note the result in your report.
+- [ ] Non-admin cannot reach this page (same `ProtectedRoute` pattern as
+      the rest of `/admin/*` — should already be covered by T7's fix,
+      just confirm the route is actually wrapped correctly).
+
+### Report
+
+*(Agent: fill this in before pushing)*
