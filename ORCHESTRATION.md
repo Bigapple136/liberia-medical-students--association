@@ -76,9 +76,9 @@ so this entire authentication path was silently broken the whole time.
 | T6 | Wire public events flow (`EventsPage.jsx` + `EventDetailPage.jsx`) to `eventService`, including a working Register button | T2a, T2b | **done** |
 | T7 | 🔴 **Security** — implement missing role enforcement in `ProtectedRoute.jsx` (`requireRole` is currently a no-op) | none | **done — live-verified** |
 | T8 | Repo-wide lint cleanup (38 pre-existing errors, unrelated to T1–T6) | none | **done** |
-| T9 | Backend membership application API | none | **needs-review** |
-| T10 | Frontend membership application form (`MembershipPage.jsx`) | T9 | **unassigned** |
-| T11 | Admin membership review UI | T9 | **unassigned** |
+| T9 | Backend membership application API | none | **done** |
+| T10 | Frontend membership application form (`MembershipPage.jsx`) | T9 | **assigned** |
+| T11 | Admin membership review UI | T9 | **assigned** |
 
 **T7 is flagged priority.** Found during T6's post-merge full-repo lint
 sweep: `ProtectedRoute.jsx`'s `requireRole` prop has never been
@@ -1408,8 +1408,23 @@ were affected.
 ## T9 — Backend membership application API
 
 **Branch:** `task/t9-membership-backend`
-**Status:** assigned
+**Status:** done
 **Depends on:** none
+
+### Orchestrator review
+
+Independently verified: `node --check` clean on all 3 files, `npx eslint`
+0 errors/0 warnings, `server.js` wiring correct. Code matches the report
+exactly — no gap between claimed and actual. Notable good implementation
+choices beyond the literal spec text: `.maybeSingle()` used correctly
+for graceful null handling on both the duplicate-check and `getStatus`
+queries; the email-resiliency pattern from the earlier production
+incident (non-critical email failures must never fail the primary
+action) was correctly applied to the review-notification email without
+needing to be told explicitly — the agent generalized the lesson
+correctly. Approval-triggered `users` table sync is correct and
+non-fatal on its own failure (logged, not thrown). Approved and merged
+to `main`. Unblocks T10 and T11.
 
 ### Context
 
@@ -1550,8 +1565,8 @@ existing route registrations.
 ## T10 — Frontend membership application form
 
 **Branch:** `task/t10-membership-form`
-**Status:** blocked (needs T9 done)
-**Depends on:** T9
+**Status:** assigned
+**Depends on:** T9 (done — merged to main)
 
 ### Context
 
@@ -1615,8 +1630,8 @@ spec text alone.
 ## T11 — Admin membership review UI
 
 **Branch:** `task/t11-membership-admin`
-**Status:** blocked (needs T9 done)
-**Depends on:** T9
+**Status:** assigned
+**Depends on:** T9 (done — merged to main)
 
 ### Context
 
