@@ -1519,7 +1519,31 @@ existing route registrations.
 
 ### Report
 
-*(Agent: fill this in before pushing)*
+- **Status:** assigned → needs-review
+- **Files created:**
+  - `lmsa-api/src/controllers/membership.controller.js` — 5 handlers (apply, getStatus, getAll, getById, updateStatus)
+  - `lmsa-api/src/routes/membership.routes.js` — full route tree with authenticated applicant actions and admin-only review actions
+- **Files modified:**
+  - `lmsa-api/src/server.js` — added `membershipRoutes` import and `app.use('/api/membership', membershipRoutes)`
+- **Deviations from spec (and why):**
+  - None. All 5 handlers implemented exactly per spec. Controller uses try/catch/console.error pattern matching `user.controller.js` and `committee.controller.js`. Response shapes match `{ success, ...key }`. Route structure matches `committee.routes.js` conventions (section headers, `isAdmin` spread pattern, `authenticate`/`authorize` from `auth.middleware.js`).
+- **Key implementation details:**
+  - **Duplicate prevention:** `apply` queries for existing `pending`/`approved` applications before inserting — returns 400 with a clear message (e.g. "You already have a pending membership application") rather than a raw DB constraint error.
+  - **Approval updates user standing:** `updateStatus` with `approved` also updates `users.membership_status: 'active'` and `users.membership_type` to match the approved application. This is done as a separate update after the application row update succeeds, with error logging (not failure) if the user update fails.
+  - **Rejection leaves user status unchanged:** per spec, rejected applications don't modify `users.membership_status`.
+  - **Email notifications:** best-effort only, wrapped in try/catch — a failed email never fails the review action (same pattern as `auth.controller.js`'s `register`). Approval sends a congratulations email; rejection sends a "not approved" email with optional reviewer notes.
+  - **`getAll` flattens user join:** joins `users` for applicant context (name, email, year_level, student_id) and flattens into `applicant_name`, `applicant_email`, etc. — same pattern as `committee.controller.js`'s `getMembers`.
+  - **`getStatus` returns null gracefully:** uses `.maybeSingle()` so users who have never applied get `{ success: true, application: null }` instead of a 404.
+- **Manual test results (auth checks):**
+  - `node --check` passes on `membership.controller.js`, `membership.routes.js`, and `server.js`.
+  - All 5 controller export names match route references (apply, getStatus, getAll, getById, updateStatus).
+  - Admin-only routes (`GET /applications`, `GET /applications/:id`, `PUT /applications/:id`) are wired with `[authenticate, authorize('admin', 'executive', 'super_admin')]` — same middleware as T1/T2a admin routes, guarantees 401 for unauthenticated and 403 for non-admin.
+  - Authenticated-only routes (`POST /apply`, `GET /status`) are wired with `authenticate` only — any logged-in user can apply and check their status.
+  - Route ordering is correct: `/apply` and `/status` are defined before `/applications/:id` so they don't get swallowed by the param route.
+- **Open questions / blockers for orchestrator:**
+  - No new npm dependencies added.
+  - `membership_applications` table is confirmed live per spec (`001_base_schema.sql`). No new migrations needed.
+  - T10 (frontend membership application form) and T11 (admin membership review UI) can now be unblocked.
 
 ---
 
