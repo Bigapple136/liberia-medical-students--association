@@ -74,7 +74,7 @@ so this entire authentication path was silently broken the whole time.
 | T4 | Real `CommitteeAdminDashboard.jsx` + `AdminLayout.jsx` sidebar | T1, T2b | **done** |
 | T5 | Cleanup: legacy committee pages/routes, reconcile docs vs. source | T3, T4 | **done** |
 | T6 | Wire public events flow (`EventsPage.jsx` + `EventDetailPage.jsx`) to `eventService`, including a working Register button | T2a, T2b | **done** |
-| T7 | 🔴 **Security** — implement missing role enforcement in `ProtectedRoute.jsx` (`requireRole` is currently a no-op) | none | **code done — pending Stone live-verify** |
+| T7 | 🔴 **Security** — implement missing role enforcement in `ProtectedRoute.jsx` (`requireRole` is currently a no-op) | none | **done — live-verified** |
 | T8 | Repo-wide lint cleanup (38 pre-existing errors, unrelated to T1–T6) | none | **done** |
 
 **T7 is flagged priority.** Found during T6's post-merge full-repo lint
@@ -1026,8 +1026,30 @@ fallback/empty state, no fabricated data).
 ## T7 — 🔴 Security: implement role enforcement in `ProtectedRoute.jsx`
 
 **Branch:** `task/t7-role-enforcement`
-**Status:** done — code merged, live dual-account test still needed from Stone (see below)
+**Status:** done — live-verified by Stone with two real accounts, fully closed
 **Depends on:** none
+
+### Final closure — live verification results (2026-08-18)
+
+Stone tested with two real production accounts after the registration/
+login infrastructure bugs (see "Critical bugs found and fixed" section
+near the top of this file) were resolved:
+
+- **Student account** → navigated to `/admin/dashboard` → redirected to
+  `/portal/dashboard`, admin content never rendered. ✅
+- **Admin account** (role manually flipped in Supabase) → navigated to
+  `/admin/dashboard` → real admin panel loads correctly, "Admin" link
+  correctly appears in the header nav only for this account. ✅
+
+Confirms the redirect-to-`/portal/dashboard` (rather than `/login`)
+design choice documented in the original spec works as intended — a
+logged-in-but-unauthorized user lands somewhere sensible rather than
+being bounced to a login screen while already authenticated.
+
+This is now fully closed. The extended path to get here surfaced two
+severe, unrelated pre-existing bugs in the login/auth pipeline (see the
+critical-bugs log) that had nothing to do with T7's own code — T7's
+implementation was correct from the first merge.
 
 ### Orchestrator review
 
