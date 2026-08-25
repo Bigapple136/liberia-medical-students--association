@@ -76,9 +76,9 @@ so this entire authentication path was silently broken the whole time.
 | T6 | Wire public events flow (`EventsPage.jsx` + `EventDetailPage.jsx`) to `eventService`, including a working Register button | T2a, T2b | **done** |
 | T7 | 🔴 **Security** — implement missing role enforcement in `ProtectedRoute.jsx` (`requireRole` is currently a no-op) | none | **done — live-verified** |
 | T8 | Repo-wide lint cleanup (38 pre-existing errors, unrelated to T1–T6) | none | **done** |
-| T9 | Backend membership application API | none | **assigned** |
-| T10 | Frontend membership application form (`MembershipPage.jsx`) | T9 | blocked |
-| T11 | Admin membership review UI | T9 | blocked |
+| T9 | Backend membership application API | none | **needs-review** |
+| T10 | Frontend membership application form (`MembershipPage.jsx`) | T9 | **unassigned** |
+| T11 | Admin membership review UI | T9 | **unassigned** |
 
 **T7 is flagged priority.** Found during T6's post-merge full-repo lint
 sweep: `ProtectedRoute.jsx`'s `requireRole` prop has never been
