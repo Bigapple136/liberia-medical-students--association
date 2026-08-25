@@ -356,6 +356,14 @@ export default function Header() {
           <div className="hidden lg:flex items-center space-x-3">
             {user ? (
               <>
+                {['admin', 'executive', 'super_admin'].includes(user.role) && (
+                  <Link
+                    to="/admin/dashboard"
+                    className="flex items-center space-x-2 px-4 py-2 text-gray-700 hover:text-lmsa-600 rounded-lg hover:bg-gray-50"
+                  >
+                    <span className="font-medium">Admin</span>
+                  </Link>
+                )}
                 <Link
                   to="/portal/dashboard"
                   className="flex items-center space-x-2 px-4 py-2 text-gray-700 hover:text-lmsa-600 rounded-lg hover:bg-gray-50"
@@ -435,6 +443,15 @@ export default function Header() {
             <div className="pt-4 border-t border-gray-200 space-y-2">
               {user ? (
                 <>
+                  {['admin', 'executive', 'super_admin'].includes(user.role) && (
+                    <Link
+                      to="/admin/dashboard"
+                      onClick={closeMenu}
+                      className="block px-4 py-2 bg-lmsa-50 text-lmsa-600 font-medium rounded-lg"
+                    >
+                      Go to Admin Panel
+                    </Link>
+                  )}
                   <Link
                     to="/portal/dashboard"
                     onClick={closeMenu}
