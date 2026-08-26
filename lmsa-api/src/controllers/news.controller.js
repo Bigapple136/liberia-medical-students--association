@@ -111,9 +111,35 @@ export const getAllAdmin = async (req, res) => {
       });
     }
 
+    // Attach tag_ids per post (batched — one query for all posts' tag
+    // associations, not N+1). Without this, the admin edit form has no
+    // way to know a post's existing tags, defaults to an empty array,
+    // and silently wipes them on save (update() replaces tag_ids
+    // wholesale). getBySlug already does this per-post for the public
+    // detail view; this mirrors that for the admin list.
+    const postIds = (data || []).map((p) => p.id);
+    let tagsByPost = {};
+
+    if (postIds.length > 0) {
+      const { data: tagRows } = await supabase
+        .from('news_post_tags')
+        .select('news_post_id, tag_id')
+        .in('news_post_id', postIds);
+
+      tagsByPost = (tagRows || []).reduce((acc, row) => {
+        (acc[row.news_post_id] ||= []).push(row.tag_id);
+        return acc;
+      }, {});
+    }
+
+    const posts = (data || []).map((post) => ({
+      ...post,
+      tag_ids: tagsByPost[post.id] || [],
+    }));
+
     res.json({
       success: true,
-      posts: data,
+      posts,
     });
   } catch (error) {
     console.error('Get all news posts (admin) error:', error);
