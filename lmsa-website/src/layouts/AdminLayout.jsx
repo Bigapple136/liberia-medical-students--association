@@ -1,7 +1,7 @@
 import { NavLink, Link, Outlet } from 'react-router-dom';
 import {
   LayoutDashboard, Users, Calendar, FileText, Megaphone,
-  UserPlus, Settings, ExternalLink, ArrowLeft
+  UserPlus, Newspaper, Settings, ExternalLink, ArrowLeft
 } from 'lucide-react';
 
 const NAV_ITEMS = [
@@ -11,6 +11,7 @@ const NAV_ITEMS = [
   { to: '/admin/documents', label: 'Documents', icon: FileText },
   { to: '/admin/announcements', label: 'Announcements', icon: Megaphone },
   { to: '/admin/membership', label: 'Membership Review', icon: UserPlus },
+  { to: '/admin/news', label: 'News Management', icon: Newspaper },
 ];
 
 export default function AdminLayout() {

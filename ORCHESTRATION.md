@@ -2242,4 +2242,99 @@ established admin-page conventions in this codebase (list/table layout,
 
 ### Report
 
-*(Agent: fill this in before pushing)*
+**Status:** assigned → needs-review
+**Branch:** `task/t14-news-admin`
+
+#### What changed
+
+1. **`lmsa-website/src/services/news.service.js`** (new) — follows
+   `event.service.js` conventions exactly (same `api` import, same
+   `async` method + `response.data.x` unwrap pattern):
+   - `getAll(params)` → `GET /news` — public, returns `{ posts, total }`
+   - `getBySlug(slug)` → `GET /news/:slug` — public, returns `post`
+   - `getTags()` → `GET /news/tags` — public, returns `tags`
+   - `getAllAdmin(params)` → `GET /news/admin/all` — admin, returns `posts`
+   - `create(postData)` → `POST /news` — admin, returns `post`
+   - `update(id, data)` → `PUT /news/:id` — admin, returns `post`
+   - `delete(id)` → `DELETE /news/:id` — admin, void
+   - **Merge conflict note:** T13 (`task/t13-news-frontend`) has not yet
+     created its own `news.service.js` (confirmed via
+     `git show origin/task/t13-news-frontend:...` — file does not exist).
+     This file includes the public methods (`getAll`, `getBySlug`,
+     `getTags`) that T13 will also need. When T13 lands, the orchestrator
+     should reconcile — likely T13 just imports from this file rather than
+     creating a duplicate. Same pattern as T10/T11 with
+     `membership.service.js`.
+
+2. **`lmsa-website/src/pages/admin/NewsAdminPage.jsx`** (new, ~320 lines)
+   — follows `MembershipAdminPage.jsx` conventions closely:
+   - **Status filter tabs** (draft/published/archived/all) with counts,
+     same styling pattern as membership admin.
+   - **Post list** with expand/collapse cards showing title, category
+     badge, status badge, publish date, created date, view count.
+   - **Quick actions** on expand: Edit, Publish (if draft/archived),
+     Archive (if published), Delete (with `window.confirm`).
+   - **Create/Edit form** (inline, toggled by "New Post" button or
+     card Edit button):
+     - Title (required), Excerpt, Content (`<textarea>`, no rich text
+       editor — none installed), Category (`Select` component), Status
+       (`Select` component), Featured Image URL (text input), Tags
+       (toggle buttons from `getTags()`).
+     - Form validation: title and content required, toast error on
+       missing fields.
+     - Saves via `newsService.create()` or `newsService.update()`,
+       toast success/error, refreshes list on save.
+   - **Loading/empty states** matching membership admin patterns.
+   - Uses `Select` component from `@components/common/Select` for
+     category and status dropdowns.
+
+3. **`lmsa-website/src/routes.jsx`** — added `NewsAdminPage` import and
+   `<Route path="news" element={<NewsAdminPage />} />` inside the
+   existing `ProtectedRoute requireRole={[...]}` `/admin` group.
+
+4. **`lmsa-website/src/layouts/AdminLayout.jsx`** — added "News
+   Management" nav link (`Newspaper` icon, `/admin/news`) to sidebar.
+
+#### Deviations from spec
+
+- None. All requirements implemented: list with status filter, create/edit
+  form with `Select` for category/status, publish/unpublish/archive actions,
+  delete with confirmation, toast feedback. Plain `<textarea>` for content
+  as spec'd (no rich text editor in the project).
+
+#### Manual verification / acceptance criteria
+
+- **ESLint:** `npx eslint src/pages/admin/NewsAdminPage.jsx
+  src/services/news.service.js src/routes.jsx src/layouts/AdminLayout.jsx
+  --ext js,jsx` — **0 errors, 0 warnings.**
+- **Build:** `npm run build` — **clean** (1571 modules transformed, built
+  in 4.94s; only the pre-existing >500 kB chunk-size warning, unrelated
+  to this change).
+- **Admin-only route:** `/admin/news` sits inside the `ProtectedRoute
+  requireRole={["admin", "executive", "super_admin"]}` group — same
+  guard as all other admin pages. Non-admin users cannot reach it.
+- **Full loop test** (create → draft → publish → public visibility):
+  could not be executed against a live backend in this environment (no
+  Supabase credentials). The request/response shapes were verified
+  against T12's merged `news.controller.js` and `news.routes.js` —
+  `create` sends `{ title, excerpt, content, category, status,
+  featured_image_url, tag_ids }`, `update` sends the same shape,
+  `getAllAdmin` accepts `?status=` filter, `delete` takes the id. All
+  match the controller exactly. **Orchestrator: run a manual create →
+  publish cycle against the live API before merge.**
+
+#### Notes / open questions for orchestrator
+
+- **T13 merge conflict:** `news.service.js` includes public methods
+  (`getAll`, `getBySlug`, `getTags`) that T13 will also need. T13 has
+  not yet created its own service file. Orchestrator should coordinate
+  at merge time — T13 can import from this file as-is.
+- No new npm dependencies added.
+- The `featured_image_url` field is a plain URL text input per spec —
+  no upload widget. Admin uploads an image externally and pastes the URL.
+- Tags are rendered as toggle buttons (not a multi-select dropdown)
+  because the tag count is expected to be small and this provides
+  better UX for the admin. If tag lists grow very large, this could
+  be revisited.
+- Category options match the DB CHECK constraint exactly: news,
+  announcement, achievement, opportunity, health, academic, event.
