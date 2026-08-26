@@ -79,9 +79,9 @@ so this entire authentication path was silently broken the whole time.
 | T9 | Backend membership application API | none | **done** |
 | T10 | Frontend membership application form (`MembershipPage.jsx`) | T9 | **done** |
 | T11 | Admin membership review UI | T9 | **done** |
-| T12 | Backend news API | none | **assigned** |
-| T13 | Frontend public news pages (`NewsPage.jsx` + `NewsDetailPage.jsx`) | T12 | blocked |
-| T14 | Admin news editor (create/edit/publish) | T12 | blocked |
+| T12 | Backend news API | none | **done** |
+| T13 | Frontend public news pages (`NewsPage.jsx` + `NewsDetailPage.jsx`) | T12 | **assigned** |
+| T14 | Admin news editor (create/edit/publish) | T12 | **assigned** |
 
 ### Backlog — found during post-membership audit, not yet specced
 
@@ -1915,8 +1915,20 @@ new page in the sidebar T4 built.
 ## T12 — Backend news API
 
 **Branch:** `task/t12-news-backend`
-**Status:** assigned
+**Status:** done
 **Depends on:** none
+
+### Orchestrator review
+
+Independently verified: `node --check` clean on all 3 files, `npx eslint`
+0 errors/0 warnings, `server.js` wiring correct. Route ordering claim
+verified directly (`/admin/all`, `/tags` correctly registered before the
+`/:slug` wildcard). `published_at` preservation logic on `update`
+correctly handles both first-publish and already-published-editing-again
+cases via `current?.status !== 'published' && !current?.published_at`.
+Draft-leak prevention confirmed via direct code read (`eq('status',
+'published')` on both public endpoints). No gap between report and
+reality. Approved and merged to `main`. Unblocks T13 and T14.
 
 ### Context
 
@@ -2120,8 +2132,8 @@ concern, they set the precedent).
 ## T13 — Frontend public news pages
 
 **Branch:** `task/t13-news-frontend`
-**Status:** blocked (needs T12 done)
-**Depends on:** T12
+**Status:** assigned
+**Depends on:** T12 (done — merged to main)
 
 ### Context
 
@@ -2183,8 +2195,8 @@ if rich rendering is genuinely needed).
 ## T14 — Admin news editor
 
 **Branch:** `task/t14-news-admin`
-**Status:** blocked (needs T12 done)
-**Depends on:** T12
+**Status:** assigned
+**Depends on:** T12 (done — merged to main)
 
 ### Context
 
