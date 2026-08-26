@@ -2183,14 +2183,95 @@ if rich rendering is genuinely needed).
       fakes.
 - [ ] `NewsDetailPage.jsx` loads real post data by slug, increments view
       count (verify by checking the `views` column before/after a real
-      fetch).
-- [ ] No leftover hardcoded `news`/`newsData` arrays in either file.
+      fetch).- [ ] No leftover hardcoded `news`/`newsData` arrays in either file.
 
 ### Report
 
-*(Agent: fill this in before pushing)*
+**Status:** assigned → needs-review
+**Branch:** `task/t13-news-frontend`
+
+#### What changed
+
+1. **`lmsa-website/src/services/news.service.js`** (brought from
+   `task/t14-news-admin`) — imported rather than creating a duplicate,
+   per orchestrator instruction. Covers all methods T13 needs: `getAll`
+   (with `?category=`/`?page=`/`?limit=`), `getBySlug`, `getTags`,
+   plus admin methods for T14. Same `event.service.js` conventions.
+
+2. **`lmsa-website/src/pages/public/NewsPage.jsx`** (rewritten, ~145 lines)
+   — replaced hardcoded `news` array (6 fake articles) with real API fetch:
+   - Follows `EventsPage.jsx` conventions exactly (same loading spinner,
+     empty state, card grid layout).
+   - Fetches via `newsService.getAll({ page, limit: 9 })` on mount.
+   - Category colors mapped from the DB enum values (news, announcement,
+     achievement, opportunity, health, academic, event).
+   - Featured image shown when present, fallback Newspaper icon.
+   - **Pagination:** "Load more" button when `posts.length < total`,
+     appends next page without replacing existing posts.
+   - No leftover hardcoded `news` array.
+
+3. **`lmsa-website/src/pages/public/NewsDetailPage.jsx`** (rewritten,
+   ~130 lines) — replaced hardcoded `newsData` lookup with real API fetch:
+   - Follows `EventDetailPage.jsx` conventions exactly (same loading
+     spinner, 404 "Not Found" state, back link).
+   - Fetches via `newsService.getBySlug(slug)` on mount (slug from
+     `useParams()`).
+   - **Tags** displayed when present (from the join through
+     `news_post_tags` → `news_tags`).
+   - **Content** rendered as plain text with preserved line breaks
+     (split on `\n`, each non-empty line becomes a `<p>`). Content is
+     stored as `TEXT` in the DB (not HTML), so plain rendering is
+     correct. Flagged as follow-up if rich rendering is needed.
+   - View count displayed (`post.views`).
+   - Published date displayed.
+   - No leftover hardcoded `newsData` object.
+
+#### Deviations from spec
+
+- **Category filter buttons not added.** The spec says "if category filter
+  buttons already exist in the current layout, wire them; otherwise don't
+  invent new filter UI the spec didn't ask for." The original static
+  `NewsPage.jsx` had no category filter buttons, so none were added.
+  Category filtering is available via the `?category=` query param for
+  future use if filter UI is added later.
+- **Content rendering:** Spec said to check for markdown libraries — none
+  installed. Content is stored as plain `TEXT` in the DB, so plain text
+  rendering with line-break preservation was implemented. No new
+  dependencies added.
+
+#### Manual verification / acceptance criteria
+
+- **ESLint:** `npx eslint src/pages/public/NewsPage.jsx
+  src/pages/public/NewsDetailPage.jsx src/services/news.service.js
+  --ext js,jsx` — **0 errors, 0 warnings.**
+- **Build:** `npm run build` — **clean** (1570 modules transformed, built
+  in 4.99s; only the pre-existing >500 kB chunk-size warning, unrelated
+  to this change).
+- **No hardcoded data:** Both files were fully rewritten — no leftover
+  `news` array or `newsData` object.
+- **API integration verified by inspection:** `getAll` returns
+  `{ posts, total }` matching the service's unwrap. `getBySlug` returns
+  `post` (with `tags` array from the join). Both match T12's controller
+  response shapes exactly.
+- **View count increment:** `getBySlug` on the backend fires a
+  non-blocking `views += 1` update — this is handled by T12's controller,
+  not the frontend. The detail page displays `post.views` when present.
+- **Live round-trip:** Could not be tested against a live backend (no
+  Supabase credentials). Request/response shapes verified against T12's
+  merged `news.controller.js`.
+
+#### Notes / open questions for orchestrator
+
+- `news.service.js` was brought from `task/t14-news-admin` to avoid
+  duplicate files. T14 created it first; this branch imports it as-is.
+  No merge conflict expected since this branch adds a new file that
+  doesn't exist on `main` yet.
+- No new npm dependencies added.
+- Pagination uses a simple "Load more" pattern (append, not replace)
+  — consistent with the spec's "simple Load more or prev/next" guidance.
 
 ---
+
 
 ## T14 — Admin news editor
 
