@@ -77,7 +77,7 @@ so this entire authentication path was silently broken the whole time.
 | T7 | 🔴 **Security** — implement missing role enforcement in `ProtectedRoute.jsx` (`requireRole` is currently a no-op) | none | **done — live-verified** |
 | T8 | Repo-wide lint cleanup (38 pre-existing errors, unrelated to T1–T6) | none | **done** |
 | T9 | Backend membership application API | none | **done** |
-| T10 | Frontend membership application form (`MembershipPage.jsx`) | T9 | **needs-changes** |
+| T10 | Frontend membership application form (`MembershipPage.jsx`) | T9 | **done** |
 | T11 | Admin membership review UI | T9 | **done** |
 
 **T7 is flagged priority.** Found during T6's post-merge full-repo lint
@@ -1565,8 +1565,40 @@ existing route registrations.
 ## T10 — Frontend membership application form
 
 **Branch:** `task/t10-membership-form`
-**Status:** needs-changes — build genuinely fails, see orchestrator review below
+**Status:** done
 **Depends on:** T9 (done — merged to main)
+
+### Orchestrator review — round 2, approved
+
+No round-2 report was added to this file (just the code fix + push) —
+not treating that as a problem on its own since the actual deliverable
+was independently verified directly rather than taken on trust, same
+process as every other review on this board:
+
+- `npx eslint src --ext js,jsx` (full repo, not just touched files) — 0
+  errors, 0 warnings.
+- `npm run build` — genuinely clean this time (contrast with round 1's
+  false claim, confirmed via the exact same command).
+- `Select.jsx`: matches `Input.jsx`'s conventions correctly (label/error/
+  helperText/required/disabled), plus went beyond the spec with proper
+  `aria-invalid`/`aria-describedby`/`role="alert"` accessibility
+  wiring that wasn't explicitly asked for.
+- `Alert.jsx`: all 4 variants present including `error` (flagged as a
+  "check for" in the spec, correctly included). Success variant
+  correctly uses the app's actual `lmsa-*` brand colors rather than a
+  generic green — shows attention to the existing design system rather
+  than a generic implementation.
+- `membership.service.js` merge conflict (both this branch and T11
+  independently created the file with different call signatures for
+  `getAll`/`updateStatus`) resolved by the orchestrator during rebase,
+  keeping T11's already-merged positional-arg signature as canonical.
+  `MembershipPage.jsx` only calls `apply`/`getStatus`, which were
+  identical between both versions, so no call-site changes were needed
+  on this branch specifically.
+
+Approved and merged to `main`. **This completes the full membership
+application flow end-to-end** (T9 backend + T10 public form + T11 admin
+review, all live).
 
 ### Context
 
@@ -1694,6 +1726,10 @@ spec text alone.
 - `LoginPage` does not currently honor a `?from=` return path, so the log-in
   prompt links straight to `/login` (no return redirect after auth). If a return
   path is desired later, that's a small `LoginPage` follow-up, out of scope here.
+After creating both: re-run `npx eslint` and `npm run build` **yourself,
+locally, and actually check the output** before reporting clean — don't
+report a build status without having just run it in this exact session.
+Push to the same branch.
 
 ### Orchestrator review — changes requested (build genuinely fails)
 
