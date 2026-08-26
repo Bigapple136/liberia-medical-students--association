@@ -79,8 +79,37 @@ so this entire authentication path was silently broken the whole time.
 | T9 | Backend membership application API | none | **done** |
 | T10 | Frontend membership application form (`MembershipPage.jsx`) | T9 | **done** |
 | T11 | Admin membership review UI | T9 | **done** |
+| T12 | Backend news API | none | **assigned** |
+| T13 | Frontend public news pages (`NewsPage.jsx` + `NewsDetailPage.jsx`) | T12 | blocked |
+| T14 | Admin news editor (create/edit/publish) | T12 | blocked |
 
-**T7 is flagged priority.** Found during T6's post-merge full-repo lint
+### Backlog — found during post-membership audit, not yet specced
+
+Tracked here so they don't get lost; will be turned into full task specs
+in order after the news feature (T12–T14) lands, per Stone's stated
+priority order. None of these are breaking anything currently live —
+they're unbuilt/stubbed features, not bugs, unlike the production
+incidents logged above.
+
+- **`ContactPage.jsx` doesn't actually submit anything** — `handleSubmit`
+  is a literal `// TODO: Implement form submission` with a fake
+  `setTimeout` + native `alert()`. No backend endpoint for
+  general (non-committee-specific) contact exists — T1 built a
+  per-committee contact form (`POST /committees/:id/contact`), but the
+  main "Contact Us" page needs its own general endpoint.
+- **`DashboardPage.jsx` (student portal home) is 100% fake data** —
+  hardcoded "Events Attended: 12", "Resources Accessed: 28", "Community
+  Rank: #15" (no ranking system exists at all), plus hardcoded fake
+  upcoming events and announcements arrays — despite real, working APIs
+  now existing for both (T2a events, T1 committee announcements). This
+  is the first thing a logged-in student sees, and it's visibly
+  disconnected from all the real functionality built this session.
+- **`LeadershipPage.jsx` is static** — hardcoded `executives` array; the
+  `executive_positions` table exists in the schema, unused.
+- **No newsletter signup UI exists anywhere** — `Footer.jsx` has no
+  signup form despite being a planned feature across every project doc.
+
+---**T7 is flagged priority.** Found during T6's post-merge full-repo lint
 sweep: `ProtectedRoute.jsx`'s `requireRole` prop has never been
 implemented (literal comment in the code: `// Add role checking logic
 here if requireRole is provided`). This means **`/admin/*` — including
@@ -1882,3 +1911,231 @@ new page in the sidebar T4 built.
 - **Open questions / blockers for orchestrator:**
   - T10 may want to import from the same `membership.service.js` created here — coordinate so the service isn't duplicated.
   - No new npm dependencies added.
+
+## T12 — Backend news API
+
+**Branch:** `task/t12-news-backend`
+**Status:** assigned
+**Depends on:** none
+
+### Context
+
+`news_posts`, `news_tags`, `news_post_tags` tables have existed since
+`001_base_schema.sql`, zero backend API. `NewsPage.jsx` and
+`NewsDetailPage.jsx` are both fully static with hardcoded fake articles
+(same disease T6 fixed for events, T10 fixed for membership). Read
+`lmsa-api/src/controllers/event.controller.js` first — news shares the
+same shape (public list/detail, admin CRUD, slug-based routing,
+draft/published/archived-style status) and should follow its conventions
+exactly.
+
+### Schema reference (already live, do not modify)
+
+```sql
+-- news_posts
+id, title, slug, excerpt, content, featured_image_url,
+category ('news'|'announcement'|'achievement'|'opportunity'|'health'|'academic'|'event'),
+author_id, status ('draft'|'published'|'archived'),
+published_at, views, created_at, updated_at
+
+-- news_tags: id, name, slug
+-- news_post_tags: news_post_id, tag_id (join table)
+```
+
+A `generate_news_slug` trigger already exists (auto-slugifies `title` on
+insert) — **do not manually set `slug` on create**, let the trigger
+handle it, same as `events` already does via its own equivalent trigger.
+
+### Files to create
+
+**`lmsa-api/src/controllers/news.controller.js`**
+
+- `getAll(req, res)` — `GET /` — **public**, only `status = 'published'`
+  posts (never leak drafts to unauthenticated visitors). Support
+  `?category=`, and pagination via `?page=`/`?limit=` (default a
+  reasonable page size, e.g. 10). Order by `published_at DESC`. Response:
+  `{ success: true, posts: [...], total: <count> }` (total needed for
+  frontend pagination UI).
+- `getBySlug(req, res)` — `GET /:slug` — public, `status = 'published'`
+  only (a draft's slug shouldn't be guessable/viewable pre-publish),
+  404 if not found or not published. **Increment `views` by 1** on each
+  fetch (fire-and-forget update, don't block the response on it failing
+  — same non-critical-side-effect pattern as the email resiliency fixes
+  earlier in this file). Include associated tags (join through
+  `news_post_tags` → `news_tags`). Response:
+  `{ success: true, post: {...} }`.
+- `getAllAdmin(req, res)` — `GET /admin/all` — admin-only
+  (`authorize('admin', 'executive', 'super_admin')`). All posts
+  regardless of status, optional `?status=` filter, so admins can see
+  and manage drafts. Response: `{ success: true, posts: [...] }`.
+- `create(req, res)` — `POST /` — admin-only. Body: `{ title, excerpt,
+  content, featured_image_url, category, status, tag_ids }` (`tag_ids`
+  optional array — if provided, insert corresponding `news_post_tags`
+  rows after the post itself is created). Sets `author_id: req.user.id`.
+  If `status === 'published'` and no `published_at` given, set it to
+  now. Response: `{ success: true, post: {...} }`.
+- `update(req, res)` — `PUT /:id` — admin-only. Same body shape as
+  create. If transitioning from a non-published status to `published`
+  and `published_at` is null, set it to now (don't overwrite an existing
+  `published_at` on subsequent edits — that should reflect original
+  publish time, not last-edited time; `updated_at` already covers edits
+  via the existing trigger). Handle `tag_ids` by replacing the
+  `news_post_tags` rows for this post if provided. Response:
+  `{ success: true, post: {...} }`.
+- `deletePost(req, res)` — `DELETE /:id` — admin-only. Response:
+  `{ success: true }`.
+- `getTags(req, res)` — `GET /tags` — public (needed for filter UI).
+  Response: `{ success: true, tags: [...] }`.
+
+**`lmsa-api/src/routes/news.routes.js`**
+
+- Public: `GET /`, `GET /:slug`, `GET /tags`
+- Admin-only: `GET /admin/all`, `POST /`, `PUT /:id`, `DELETE /:id`
+
+Watch route ordering — `/:slug` is a single-segment wildcard, make sure
+`/tags` and `/admin/all` are registered so they don't get swallowed by
+it (Express matches in registration order; register the more specific
+literal paths in a sensible order, or scope `/:slug` narrowly — check
+how `committee.routes.js`/`event.routes.js` already handle this same
+concern, they set the precedent).
+
+### Files to modify
+
+**`lmsa-api/src/server.js`** — add `newsRoutes` import and
+`app.use('/api/news', newsRoutes)`.
+
+### Acceptance criteria
+
+- [ ] `node --check` passes on both new files.
+- [ ] Draft posts are never returned by the public `getAll`/`getBySlug`
+      endpoints — verify by creating a draft (via `getAllAdmin` or direct
+      test) and confirming it's absent from the public list/detail
+      responses.
+- [ ] View count increments on `getBySlug`, and a failure to increment
+      doesn't fail the actual post-fetch response.
+- [ ] Admin-only routes reject unauthenticated (401) and non-admin (403)
+      — test and note in report.
+- [ ] Slug auto-generation via the existing DB trigger confirmed working
+      (don't manually set slug in the controller).
+- [ ] No new npm dependencies without flagging it.
+
+### Report
+
+*(Agent: fill this in before pushing)*
+
+---
+
+## T13 — Frontend public news pages
+
+**Branch:** `task/t13-news-frontend`
+**Status:** blocked (needs T12 done)
+**Depends on:** T12
+
+### Context
+
+`NewsPage.jsx` and `NewsDetailPage.jsx` are both fully static with
+hardcoded fake data. This task wires both to the real API, following the
+exact pattern T6 already established for `EventsPage.jsx`/
+`EventDetailPage.jsx` — read those two files first as the reference
+implementation for loading states, empty states, and error handling
+conventions in this codebase.
+
+### Files to create
+
+**`lmsa-website/src/services/news.service.js`** — match
+`event.service.js`'s style. Cover: `getAll` (with category/pagination
+params), `getBySlug`, `getTags`.
+
+### Files to modify
+
+**`lmsa-website/src/pages/public/NewsPage.jsx`** — replace the hardcoded
+`news` array with a real `useEffect`/`useState` fetch via
+`newsService.getAll()`. If category filter buttons already exist in the
+current layout, wire them to the `?category=` param; otherwise don't
+invent new filter UI the spec didn't ask for. Add pagination controls if
+the total count from T12 exceeds one page (simple "Load more" or
+prev/next is fine, don't over-build).
+
+**`lmsa-website/src/pages/public/NewsDetailPage.jsx`** — replace the
+hardcoded `newsData` lookup with `newsService.getBySlug(slug)`. Keep the
+existing "Not Found" state for missing/unpublished slugs. Display tags if
+present. Render `content` as-is (check whether it's stored as HTML or
+markdown in the DB — if HTML, this needs safe rendering, e.g.
+`dangerouslySetInnerHTML` only if the content source is trusted, which it
+is here since only admins can create posts; if markdown, check if any
+markdown-rendering library is already a dependency before adding a new
+one — if none exists, render as plain text/preserve line breaks rather
+than pulling in a new dependency for this task, flag it as a follow-up
+if rich rendering is genuinely needed).
+
+### Acceptance criteria
+
+- [ ] `npx eslint` — 0 errors, 0 warnings.
+- [ ] `npm run build` — clean, **actually run and check the output
+      yourself before reporting** (previous rounds on this board have had
+      false "clean" claims caught by independent orchestrator
+      verification — don't be the next one).
+- [ ] `NewsPage.jsx` renders real published posts, not the 6 hardcoded
+      fakes.
+- [ ] `NewsDetailPage.jsx` loads real post data by slug, increments view
+      count (verify by checking the `views` column before/after a real
+      fetch).
+- [ ] No leftover hardcoded `news`/`newsData` arrays in either file.
+
+### Report
+
+*(Agent: fill this in before pushing)*
+
+---
+
+## T14 — Admin news editor
+
+**Branch:** `task/t14-news-admin`
+**Status:** blocked (needs T12 done)
+**Depends on:** T12
+
+### Context
+
+No way currently exists to create/edit/publish news posts except direct
+Supabase table edits. Read `MembershipAdminPage.jsx` first for the
+established admin-page conventions in this codebase (list/table layout,
+`toast` feedback, status filtering) — this task is structurally similar
+(a list view + a create/edit form), not a from-scratch design.
+
+### Files to create
+
+**`lmsa-website/src/pages/admin/NewsAdminPage.jsx`** — needs:
+- A list of all posts (via `newsService`'s admin method — coordinate
+  with T13 on `news.service.js` the same way T10/T11 coordinated on
+  `membership.service.js`; if T13 hasn't merged when you pick this up,
+  create your own copy and flag the likely merge conflict in your report
+  rather than blocking on it, the orchestrator will reconcile at merge
+  time same as before), with status filter (draft/published/archived/all).
+- Create/edit form: title, excerpt, content (a plain `<textarea>` is
+  fine — no rich text editor dependency unless one is already installed,
+  check `package.json` first), category (use the new `Select.jsx`
+  component from the membership work), status, featured image URL (plain
+  text URL field, no upload widget needed for this task).
+- Publish/unpublish/archive actions, delete with a confirmation step.
+- Toast feedback on all actions, consistent with the rest of the admin
+  UI.
+
+### Files to modify
+
+**`lmsa-website/src/routes.jsx`** — wire in under `/admin`, same
+`ProtectedRoute` pattern as the other admin pages.
+
+**`lmsa-website/src/layouts/AdminLayout.jsx`** — add a nav link.
+
+### Acceptance criteria
+
+- [ ] `npx eslint` — 0 errors, 0 warnings.
+- [ ] `npm run build` — clean, **actually verified, not assumed.**
+- [ ] Admin can create a post, see it appear as a draft, publish it, and
+      confirm it's now visible on the real public `/news` page (full
+      loop test) — note the result in your report.
+- [ ] Non-admin cannot reach this page.
+
+### Report
+
+*(Agent: fill this in before pushing)*
