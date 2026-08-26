@@ -80,8 +80,8 @@ so this entire authentication path was silently broken the whole time.
 | T10 | Frontend membership application form (`MembershipPage.jsx`) | T9 | **done** |
 | T11 | Admin membership review UI | T9 | **done** |
 | T12 | Backend news API | none | **done** |
-| T13 | Frontend public news pages (`NewsPage.jsx` + `NewsDetailPage.jsx`) | T12 | **assigned** |
-| T14 | Admin news editor (create/edit/publish) | T12 | **assigned** |
+| T13 | Frontend public news pages (`NewsPage.jsx` + `NewsDetailPage.jsx`) | T12 | **not actually started — see note** |
+| T14 | Admin news editor (create/edit/publish) | T12 | **done — pending Stone live-verify** |
 
 ### Backlog — found during post-membership audit, not yet specced
 
@@ -2195,8 +2195,44 @@ if rich rendering is genuinely needed).
 ## T14 — Admin news editor
 
 **Branch:** `task/t14-news-admin`
-**Status:** assigned
-**Depends on:** T12 (done — merged to main)
+**Status:** done — code merged, live create→publish test still needed from Stone (see below)
+**Depends on:** T12
+
+### Orchestrator review
+
+Independently verified: `npx eslint` on all 4 files — 0 errors, 0
+warnings. `npm run build` — genuinely clean, matches the report exactly.
+Field names/shapes cross-checked directly against T12's merged
+controller — correct.
+
+**One real bug found and fixed before merge:** `getAllAdmin` never
+returned tag associations (`.select('*')` on `news_posts` only, no
+`news_post_tags` join — unlike `getBySlug`, which already does this
+correctly for the public detail view). Since `NewsAdminPage.jsx`'s edit
+form initializes `tag_ids: post.tag_ids || []`, and `tag_ids` was never
+present on list-view post objects, opening the edit form for *any*
+tagged post would show no tags selected — and since `update()` treats
+`tag_ids: []` as "replace with none," **saving an edited post would
+silently wipe its existing tags every time.** Fixed by batching a single
+extra query in `getAllAdmin` to attach `tag_ids` per post (not N+1 —
+one query for all posts' tag associations together), mirroring what
+`getBySlug` already does per-post.
+
+**T13 coordination note confirmed accurate:** T13 genuinely has not
+pushed a `news.service.js` (or anything else) despite being reported
+done — see the note below.
+
+### Stone — please verify before considering this fully closed
+
+Same as T7's precedent: I can't make authenticated requests to the live
+Render backend from this sandbox. Please do one full loop test:
+1. Log in as admin, go to `/admin/news`.
+2. Create a post as a draft, confirm it appears in the list.
+3. Publish it, confirm status updates.
+4. Visit the public `/news` page (once T13 lands) and confirm the
+   published post appears there.
+
+Reply with results and I'll mark this fully closed. (done — merged to main)
 
 ### Context
 
