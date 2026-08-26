@@ -1630,8 +1630,32 @@ spec text alone.
 ## T11 — Admin membership review UI
 
 **Branch:** `task/t11-membership-admin`
-**Status:** assigned
-**Depends on:** T9 (done — merged to main)
+**Status:** done
+**Depends on:** T9
+
+### Orchestrator review
+
+Independently verified: `npx eslint` on all 4 touched files — 0 errors,
+0 warnings. `npm run build` — clean. Report's claims match reality
+exactly (contrast with T10's submission, reviewed just before this one,
+where the same "clean build" claim was independently checked and found
+false — good reminder why every report gets re-verified rather than
+trusted). Field-name alignment with T9's `getAll` flattening
+(`applicant_name`/`applicant_email`/etc.) checked directly against the
+merged controller — correct. Route correctly nested inside the existing
+`/admin` `ProtectedRoute` group, inheriting T7's role guard automatically
+rather than needing its own.
+
+**Known merge conflict, not a defect:** this branch independently created
+its own `membership.service.js` (correctly, since T10 hadn't merged when
+this was picked up) with a different call signature (positional args)
+than T10's version (options object) for `getAll`/`updateStatus`. Both
+report sections flagged this same coordination gap independently — good
+sign both agents were paying attention to the shared surface. This will
+be resolved by the orchestrator when T10's corrected version comes back:
+one canonical signature will be picked and the losing side's call sites
+updated to match. Not blocking this merge. Approved and merged to
+`main`. (done — merged to main)
 
 ### Context
 
