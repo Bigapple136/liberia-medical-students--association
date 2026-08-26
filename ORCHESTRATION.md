@@ -77,7 +77,7 @@ so this entire authentication path was silently broken the whole time.
 | T7 | 🔴 **Security** — implement missing role enforcement in `ProtectedRoute.jsx` (`requireRole` is currently a no-op) | none | **done — live-verified** |
 | T8 | Repo-wide lint cleanup (38 pre-existing errors, unrelated to T1–T6) | none | **done** |
 | T9 | Backend membership application API | none | **done** |
-| T10 | Frontend membership application form (`MembershipPage.jsx`) | T9 | **needs-changes** |
+| T10 | Frontend membership application form (`MembershipPage.jsx`) | T9 | **needs-review (round 2)** |
 | T11 | Admin membership review UI | T9 | **done** |
 
 **T7 is flagged priority.** Found during T6's post-merge full-repo lint
@@ -1694,6 +1694,58 @@ spec text alone.
 - `LoginPage` does not currently honor a `?from=` return path, so the log-in
   prompt links straight to `/login` (no return redirect after auth). If a return
   path is desired later, that's a small `LoginPage` follow-up, out of scope here.
+After creating both: re-run `npx eslint` and `npm run build` **yourself,
+locally, and actually check the output** before reporting clean — don't
+report a build status without having just run it in this exact session.
+Push to the same branch.
+
+### Orchestrator review — changes requested (build genuinely fails)
+
+Independently ran `npm run build` myself (not just trusted the report),
+and it **fails**, contradicting this report's explicit "npm run build —
+clean" claim:
+
+```
+[vite:load-fallback] Could not load
+.../src/components/common/Alert (imported by
+src/pages/public/MembershipPage.jsx): ENOENT: no such file or directory
+```
+
+`MembershipPage.jsx` imports `Select` from
+`@components/common/Select` and `Alert` from
+`@components/common/Alert` — **neither file exists anywhere in the
+repo** (confirmed: `ls lmsa-website/src/components/common/` only has
+`Button.jsx`, `Card.jsx`, `ErrorBoundary.jsx`, `Input.jsx`,
+`LoadingSkeleton.jsx`, `ProtectedRoute.jsx` — this branch's diff doesn't
+create them either). This is a hard, unambiguous build failure, not a
+style nit — every acceptance-criteria checkbox claiming a clean build was
+inaccurate.
+
+Everything else about this submission is genuinely good — the actual
+logic (auth-gating, status branching, form handling, service layer) is
+well thought through and matches T9's endpoints correctly. This is a
+missing-files problem, not a design problem.
+
+**Fix needed:** create the two missing components, matching this
+codebase's existing conventions (see `Input.jsx` for the established
+pattern — label/error/helperText props, Tailwind `input`/similar utility
+classes, forwardRef where relevant):
+
+- **`lmsa-website/src/components/common/Select.jsx`** — a labeled select
+  dropdown matching `Input.jsx`'s prop shape (`label`, `error`,
+  `helperText`, `required`, `disabled`, plus `options` — an array of
+  `{ value, label }`, and `placeholder` for a disabled default option).
+  This is genuinely reusable — T11's admin review UI likely needs a
+  status filter dropdown too, so build this as a real shared component,
+  not a one-off inline `<select>`.
+- **`lmsa-website/src/components/common/Alert.jsx`** — matching the
+  `variant` prop usage already written in `MembershipPage.jsx`
+  (`"info"`, `"warning"`, `"success"` seen in the diff — check for any
+  `"error"`/`"danger"` variant needed elsewhere too). Simple bordered/
+  tinted box with an icon (lucide-react, already a dependency) matching
+  variant color, accepting `children` for the message content — no need
+  to overengineer this, it's a straightforward presentational component.
+
 After creating both: re-run `npx eslint` and `npm run build` **yourself,
 locally, and actually check the output** before reporting clean — don't
 report a build status without having just run it in this exact session.
