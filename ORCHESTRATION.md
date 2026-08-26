@@ -80,8 +80,8 @@ so this entire authentication path was silently broken the whole time.
 | T10 | Frontend membership application form (`MembershipPage.jsx`) | T9 | **done** |
 | T11 | Admin membership review UI | T9 | **done** |
 | T12 | Backend news API | none | **done** |
-| T13 | Frontend public news pages (`NewsPage.jsx` + `NewsDetailPage.jsx`) | T12 | **done — pending Stone live-verify** |
-| T14 | Admin news editor (create/edit/publish) | T12 | **done — pending Stone live-verify** |
+| T13 | Frontend public news pages (`NewsPage.jsx` + `NewsDetailPage.jsx`) | T12 | **done — live-verified** |
+| T14 | Admin news editor (create/edit/publish) | T12 | **done — live-verified** |
 
 ### Backlog — found during post-membership audit, not yet specced
 
@@ -2132,7 +2132,7 @@ concern, they set the precedent).
 ## T13 — Frontend public news pages
 
 **Branch:** `task/t13-news-frontend`
-**Status:** done — code merged, live round-trip test still needed from Stone (see T14's note above, same test now covers both)
+**Status:** done — live-verified by Stone (full create → publish → view → edit-preserves-tags loop confirmed working)
 **Depends on:** T12 (done — merged to main)
 
 ### Orchestrator review
@@ -2293,7 +2293,7 @@ if rich rendering is genuinely needed).
 ## T14 — Admin news editor
 
 **Branch:** `task/t14-news-admin`
-**Status:** done — code merged, live create→publish test still needed from Stone (see below)
+**Status:** done — live-verified by Stone (full loop, including tag-preservation-on-edit)
 **Depends on:** T12
 
 ### Orchestrator review
