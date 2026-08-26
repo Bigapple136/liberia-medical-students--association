@@ -80,7 +80,7 @@ so this entire authentication path was silently broken the whole time.
 | T10 | Frontend membership application form (`MembershipPage.jsx`) | T9 | **done** |
 | T11 | Admin membership review UI | T9 | **done** |
 | T12 | Backend news API | none | **done** |
-| T13 | Frontend public news pages (`NewsPage.jsx` + `NewsDetailPage.jsx`) | T12 | **not actually started — see note** |
+| T13 | Frontend public news pages (`NewsPage.jsx` + `NewsDetailPage.jsx`) | T12 | **done — pending Stone live-verify** |
 | T14 | Admin news editor (create/edit/publish) | T12 | **done — pending Stone live-verify** |
 
 ### Backlog — found during post-membership audit, not yet specced
@@ -2132,8 +2132,25 @@ concern, they set the precedent).
 ## T13 — Frontend public news pages
 
 **Branch:** `task/t13-news-frontend`
-**Status:** assigned
+**Status:** done — code merged, live round-trip test still needed from Stone (see T14's note above, same test now covers both)
 **Depends on:** T12 (done — merged to main)
+
+### Orchestrator review
+
+Independently verified: `npx eslint` on all 3 files (2 rewritten pages +
+the shared `news.service.js`) — 0 errors, 0 warnings. `npm run build` —
+genuinely clean, matches the report. Pagination logic (`hasMore =
+posts.length < total`, append-not-replace on "Load more") confirmed
+correct by direct code read. Correctly reused T14's already-merged
+`news.service.js` rather than duplicating it — confirmed via a clean
+rebase with zero conflicts, exactly as coordinated. Both stated
+deviations (no category filter buttons — none existed in the original
+static page either; plain-text content rendering — no markdown library
+installed, content is a `TEXT` column not HTML) are correctly justified
+against the spec's own conditional language, not scope-cutting.
+
+Approved and merged to `main`. **This completes the full news feature
+end-to-end** (T12 backend + T13 public pages + T14 admin editor).
 
 ### Context
 
