@@ -2021,7 +2021,99 @@ concern, they set the precedent).
 
 ### Report
 
-*(Agent: fill this in before pushing)*
+**Status:** assigned → needs-review
+**Branch:** `task/t12-news-backend`
+
+#### What changed
+
+1. **`lmsa-api/src/controllers/news.controller.js`** (new) — 7 handlers matching
+   `event.controller.js` conventions exactly (same `{ success, ...key }` response
+   shapes, same try/catch/console.error pattern, same `supabase` import from
+   `../config/supabase.js`):
+
+   - `getAll(req, res)` — **public**, `status = 'published'` only. Supports
+     `?category=` filter and pagination via `?page=`/`?limit=` (default 10,
+     capped at 50). Orders by `published_at DESC`. Response:
+     `{ success: true, posts: [...], total: <count> }`.
+   - `getBySlug(req, res)` — **public**, `status = 'published'` only.
+     404 if not found or not published. Fetches associated tags via
+     `news_post_tags → news_tags` join. Increments `views` by 1 as a
+     fire-and-forget (`.then(() => {}).catch(() => {})`) — a failure to
+     increment never blocks the response. Response:
+     `{ success: true, post: {..., tags: [...]} }`.
+   - `getAllAdmin(req, res)` — **admin-only**. Returns all posts regardless
+     of status, with optional `?status=` filter. Response:
+     `{ success: true, posts: [...] }`.
+   - `create(req, res)` — **admin-only**. Body: `{ title, excerpt, content,
+     featured_image_url, category, status, tag_ids }`. Sets `author_id`
+     from `req.user.id`. Does **not** set `slug` — lets the existing
+     `generate_news_slug` DB trigger handle it. If `status === 'published'`
+     and no `published_at` provided, sets `published_at` to now. Inserts
+     `news_post_tags` rows if `tag_ids` is provided. Response:
+     `{ success: true, post: {...} }`.
+   - `update(req, res)` — **admin-only**. Same body shape. Fetches current
+     post to check publish transition: if transitioning from non-published
+     to `published` and `published_at` is null, sets it to now (preserves
+     original publish time on subsequent edits — `updated_at` covers edit
+     time via the existing trigger). Replaces `news_post_tags` rows if
+     `tag_ids` is provided. Response: `{ success: true, post: {...} }`.
+   - `deletePost(req, res)` — **admin-only**. Response: `{ success: true }`.
+   - `getTags(req, res)` — **public**. Returns all tags ordered by name.
+     Response: `{ success: true, tags: [...] }`.
+
+2. **`lmsa-api/src/routes/news.routes.js`** (new) — following
+   `event.routes.js` conventions. Route ordering carefully handled to
+   prevent `/:slug` from swallowing literal paths:
+   - `GET /admin/all` (admin) registered first
+   - `POST /`, `PUT /:id`, `DELETE /:id` (admin)
+   - `GET /tags` (public) registered before `/:slug`
+   - `GET /` (public), `GET /:slug` (public) registered last
+
+3. **`lmsa-api/src/server.js`** — added `newsRoutes` import and
+   `app.use('/api/news', newsRoutes)` alongside existing route
+   registrations.
+
+#### Deviations from spec
+
+- None. All 7 handlers implemented exactly per spec. Controller follows
+  `event.controller.js` patterns (same response shapes, same error handling,
+  same supabase query style). Route structure matches `event.routes.js`
+  conventions.
+
+#### Manual test results / acceptance criteria
+
+- `node --check` passes on both `news.controller.js` and `news.routes.js`.
+- **Draft leak prevention:** Public `getAll` and `getBySlug` both filter
+  `eq('status', 'published')` — drafts are never returned. Verified by code
+  path inspection (same pattern as the DB RLS policy
+  `news_posts_public_read` which already enforces this at the DB level).
+- **View count:** `getBySlug` increments views via a non-blocking
+  fire-and-forget update. If the update fails, the post still returns
+  normally.
+- **Slug auto-generation:** No slug is set manually in `create` or `update`.
+  The existing `generate_news_slug` trigger on `news_posts` handles it,
+  same as events.
+- **Admin-only routes:** `GET /admin/all`, `POST /`, `PUT /:id`,
+  `DELETE /:id` are all wired with `[authenticate, authorize('admin',
+  'executive', 'super_admin')]` — same middleware as T1/T2a admin routes.
+  Unauthenticated requests → 401, non-admin requests → 403.
+- **Tag handling:** `create` inserts `news_post_tags` rows when `tag_ids`
+  provided. `update` deletes existing + re-inserts (full replacement).
+  `getBySlug` fetches tags via the join table. `getTags` returns all tags.
+- **Server wiring:** `app.use('/api/news', newsRoutes)` registered in
+  `server.js` alongside existing routes.
+
+#### Notes / open questions for orchestrator
+
+- No new npm dependencies added.
+- `tag_ids` handling uses a delete-all + re-insert pattern on update, which
+  is safe for a join table but could be optimized to a diff-based approach
+  if tag lists grow very large (unlikely for news tags).
+- The `getAll` pagination returns `total` count for frontend pagination UI.
+  `getAllAdmin` does not paginate (admin lists typically want full visibility;
+  pagination can be added if the admin list grows unwieldy).
+- All endpoints in the spec have been implemented. T13 (frontend news pages)
+  and T14 (admin news editor) can now be unblocked.
 
 ---
 

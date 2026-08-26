@@ -16,6 +16,7 @@ import healthRoutes from './routes/health.routes.js';
 import committeeRoutes from './routes/committee.routes.js';
 import eventRoutes from './routes/event.routes.js';
 import membershipRoutes from './routes/membership.routes.js';
+import newsRoutes from './routes/news.routes.js';
 
 // Load environment variables
 dotenv.config();
@@ -84,6 +85,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/committees', committeeRoutes);
 app.use('/api/events', eventRoutes);
 app.use('/api/membership', membershipRoutes);
+app.use('/api/news', newsRoutes);
 
 // Root route
 app.get('/', (req, res) => {
