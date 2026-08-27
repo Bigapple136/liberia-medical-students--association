@@ -83,7 +83,7 @@ so this entire authentication path was silently broken the whole time.
 | T13 | Frontend public news pages (`NewsPage.jsx` + `NewsDetailPage.jsx`) | T12 | **done — live-verified** |
 | T14 | Admin news editor (create/edit/publish) | T12 | **done — live-verified** |
 | T15 | General site-wide contact form (`ContactPage.jsx` → real backend) | none | **done — code verified, mailbox setup deferred by Stone** |
-| T16 | Real student dashboard stats (replace 100% fake data in `DashboardPage.jsx`) | none | **needs-review** |
+| T16 | Real student dashboard stats (replace 100% fake data in `DashboardPage.jsx`) | none | **done — pending Stone live-verify (1 specific risk flagged)** |
 
 ### Backlog — found during post-membership audit, not yet specced
 
@@ -2656,8 +2656,54 @@ swap, not a redesign.
 ## T16 — Real student dashboard stats
 
 **Branch:** `task/t16-dashboard-real-data`
-**Status:** assigned
-**Depends on:** none (all data sources it needs already exist and are live)
+**Status:** done — code merged, live verification needed from Stone (see below, one specific technical risk flagged)
+**Depends on:** none
+
+### Orchestrator review
+
+Independently verified: `node --check` clean on all backend files,
+`npx eslint` 0 errors/0 warnings on both repos, `npm run build` clean —
+matches the report exactly. Followed the spec's honest-replacement
+mapping precisely, including the deliberate removal of "Resources
+Accessed" rather than inventing a different fake number. Good
+independent judgment call on the 4th stat card (site-wide upcoming
+event count) — reasonable, and correctly flagged as a judgment call
+rather than silently deciding without noting it. `Promise.all` used for
+parallel fetches — good practice, not explicitly required by the spec.
+`newsService.getAll({ limit: 3 })` param shape confirmed compatible with
+T13's actual service by direct inspection.
+
+**One specific technical risk, not confirmed either way:**
+`getMyUpcomingEvents` filters and sorts using
+`.gte('event.start_datetime', now)` / `.order('event.start_datetime',
+...)` — these target a column on the *embedded* `event` resource
+(via the `event:event_id (...)` nested select), not the base
+`event_registrations` table being queried from. PostgREST does support
+this dot-path syntax for embedded-resource filtering, but I can't
+confirm from this sandbox whether it's actually filtering/sorting
+correctly against the live database, or silently returning unsorted/
+unfiltered results (e.g. including past events). This is exactly the
+kind of thing that can pass every lint/build/syntax check while still
+being functionally wrong.
+
+Approved and merged to `main`. Not blocking, but genuinely uncertain
+until tested live.
+
+### Stone — please verify before considering this fully closed
+
+1. Log in with an account whose `membership_status` you know (e.g. one
+   you approved via T11's admin UI) — confirm the dashboard's
+   Membership Status card shows the correct real value.
+2. Register for at least one upcoming event, then check the dashboard's
+   "My Upcoming Events" section — confirm **only future events show,
+   correctly sorted** (this is the specific risk flagged above — if this
+   section shows nothing, shows past events, or shows events in the
+   wrong order, that confirms the embedded-filter concern was real and
+   needs a follow-up fix).
+3. Confirm the stat card counts (events registered, committees) look
+   right for an account you know the real numbers for.
+
+Reply with results and I'll mark this fully closed.
 
 ### Context
 
