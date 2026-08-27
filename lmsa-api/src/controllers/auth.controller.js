@@ -53,14 +53,26 @@ export const register = async (req, res) => {
     // The user account itself is the primary deliverable; a failed
     // auto-application can always be created later via the manual apply
     // flow on MembershipPage.jsx as a fallback.
+    //
+    // Note: supabase-js does NOT throw on a query-level error (constraint
+    // violation, etc.) -- it resolves with { data, error } like every
+    // other call, so the error must be captured and checked explicitly
+    // here, not just relied on via try/catch (which only guards against a
+    // genuinely thrown exception, e.g. a network failure).
     try {
-      await supabase.from('membership_applications').insert({
-        user_id: authData.user.id,
-        membership_type: membership_type || 'full',
-        application_status: 'pending',
-      });
+      const { error: appError } = await supabase
+        .from('membership_applications')
+        .insert({
+          user_id: authData.user.id,
+          membership_type: membership_type || 'full',
+          application_status: 'pending',
+        });
+
+      if (appError) {
+        console.error('Auto-membership-application insert failed (registration still succeeded):', appError);
+      }
     } catch (appError) {
-      console.error('Auto-membership-application insert failed (registration still succeeded):', appError);
+      console.error('Auto-membership-application insert threw (registration still succeeded):', appError);
     }
 
     // Send welcome email — best-effort only. Account creation above already

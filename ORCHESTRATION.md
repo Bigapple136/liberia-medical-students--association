@@ -84,7 +84,7 @@ so this entire authentication path was silently broken the whole time.
 | T14 | Admin news editor (create/edit/publish) | T12 | **done — live-verified** |
 | T15 | General site-wide contact form (`ContactPage.jsx` → real backend) | none | **done — code verified, mailbox setup deferred by Stone** |
 | T16 | Real student dashboard stats (replace 100% fake data in `DashboardPage.jsx`) | none | **done — pending Stone live-verify (1 specific risk flagged)** |
-| T17 | Unify registration with membership application; fix hardcoded `membership_type` | none | **needs-review** |
+| T17 | Unify registration with membership application; fix hardcoded `membership_type` | none | **done — pending Stone live-verify** |
 | T18 | Admin events management page (`EventsAdminPage.jsx`) | none | **needs-review** |
 
 **T17 and T18 flagged priority**, ahead of the remaining backlog (Leadership
@@ -2855,8 +2855,46 @@ the mapping table above:
 ## T17 — Unify registration with membership application
 
 **Branch:** `task/t17-registration-membership-unify`
-**Status:** assigned — priority
+**Status:** done — code merged, live loop test still needed from Stone (see below)
 **Depends on:** none
+
+### Orchestrator review
+
+Independently verified: `node --check` clean, `npx eslint` 0 errors (1
+pre-existing unrelated warning), `npm run build` clean. Design decision
+followed exactly, no deviation — registration now unconditionally
+creates a real `membership_applications` row, T9's duplicate-check
+composes correctly with no changes needed there, `MembershipAdminPage.jsx`
+needs no changes since it already reads from the right table.
+
+**One real gap found and fixed before merge:** the new
+`membership_applications` insert was wrapped in `try/catch` for
+resilience (correct instinct, matches the established pattern), but
+never captured or checked the `{ error }` returned by the Supabase call
+itself — `supabase-js` doesn't throw on a query-level failure (constraint
+violation, etc.), it resolves normally with an `error` field, so a silent
+DB-level failure here would never have been logged anywhere. Given this
+is exactly the code path Stone is testing right now, that blind spot
+mattered. Fixed to capture and log `error` explicitly, in addition to
+the `try/catch` for genuinely thrown exceptions — now if this insert
+ever fails, it'll actually show up in server logs instead of vanishing
+silently.
+
+Approved and merged to `main`.
+
+### Stone — please verify before considering this fully closed
+
+1. Register a new account, choosing a membership type **other than
+   "Full"** — confirm the resulting `users` row shows the type you
+   actually chose, not silently defaulting to full.
+2. Check `MembershipAdminPage.jsx`'s pending queue — confirm the new
+   registration appears there automatically, with no separate "Apply"
+   step needed.
+3. Approve it via the admin UI — confirm the user's `membership_status`
+   updates to `active` (this part is unchanged from T9, just confirming
+   the whole chain works end-to-end now).
+
+Reply with results and I'll mark this fully closed.
 
 ### Context
 
