@@ -14,6 +14,15 @@ export default function ContactPage() {
     message: ''
   });
   const [loading, setLoading] = useState(false);
+  // Incrementing this and using it as the <form>'s key forces a full
+  // remount on successful submit. Belt-and-suspenders fix alongside the
+  // setFormData reset below: some browsers' autofill/form-memory can
+  // re-populate fields shortly after React clears them via state alone,
+  // particularly for common field names like name/email/message. A full
+  // remount gives the browser a fresh DOM node with no autofill history
+  // to restore, rather than relying solely on the value prop winning
+  // that race.
+  const [formKey, setFormKey] = useState(0);
 
   const handleChange = (e) => {
     setFormData({
@@ -30,6 +39,7 @@ export default function ContactPage() {
       await contactService.submit(formData);
       toast.success('Message sent successfully!');
       setFormData({ name: '', email: '', subject: '', message: '' });
+      setFormKey((k) => k + 1);
     } catch (error) {
       toast.error(error.response?.data?.message || 'Failed to send message. Please try again.');
     } finally {
@@ -134,7 +144,7 @@ export default function ContactPage() {
             <div>
               <h2 className="text-3xl font-bold mb-6 uppercase tracking-tight">Send Us a Message</h2>
               <Card>
-                <form onSubmit={handleSubmit} className="space-y-6">
+                <form onSubmit={handleSubmit} className="space-y-6" autoComplete="off" key={formKey}>
                   <Input
                     label="Your Name"
                     name="name"
