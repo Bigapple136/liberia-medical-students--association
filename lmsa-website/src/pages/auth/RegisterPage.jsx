@@ -5,6 +5,8 @@ import { useAuth } from '@context/AuthContext';
 import toast from 'react-hot-toast';
 import Input from '@components/common/Input';
 import Button from '@components/common/Button';
+import Select from '@components/common/Select';
+import { MEMBERSHIP_TYPES } from '@utils/constants';
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
@@ -13,6 +15,7 @@ export default function RegisterPage() {
     email: '',
     studentId: '',
     yearOfStudy: '',
+    membershipType: MEMBERSHIP_TYPES.FULL,
     password: '',
     confirmPassword: ''
   });
@@ -82,6 +85,7 @@ export default function RegisterPage() {
         full_name: `${formData.firstName} ${formData.lastName}`.trim(),
         student_id: formData.studentId,
         year_level: parseInt(formData.yearOfStudy, 10),
+        membership_type: formData.membershipType,
       });
       toast.success('Registration successful! You can now log in.');
       navigate('/login');
@@ -202,6 +206,17 @@ export default function RegisterPage() {
               </div>
             </div>
 
+            {/* Membership Type */}
+            <Select
+              label="Membership Type"
+              name="membershipType"
+              value={formData.membershipType}
+              onChange={handleChange}
+              required
+              options={membershipTypeOptions}
+              helperText="Full membership is for current medical students"
+            />
+
             {/* Password */}
             <div>
               <Input
@@ -308,6 +323,13 @@ export default function RegisterPage() {
     </div>
   );
 }
+
+const membershipTypeOptions = [
+  { value: MEMBERSHIP_TYPES.FULL, label: 'Full Member — Current medical students' },
+  { value: MEMBERSHIP_TYPES.ASSOCIATE, label: 'Associate Member — Allied health students' },
+  { value: MEMBERSHIP_TYPES.HONORARY, label: 'Honorary Member — Distinguished contributors' },
+  { value: MEMBERSHIP_TYPES.VETERAN, label: 'Veteran Member — Alumni' },
+];
 
 const benefitsList = [
   'Access to study materials and resources',

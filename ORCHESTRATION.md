@@ -84,8 +84,8 @@ so this entire authentication path was silently broken the whole time.
 | T14 | Admin news editor (create/edit/publish) | T12 | **done — live-verified** |
 | T15 | General site-wide contact form (`ContactPage.jsx` → real backend) | none | **done — code verified, mailbox setup deferred by Stone** |
 | T16 | Real student dashboard stats (replace 100% fake data in `DashboardPage.jsx`) | none | **done — pending Stone live-verify (1 specific risk flagged)** |
-| T17 | Unify registration with membership application; fix hardcoded `membership_type` | none | **assigned — priority** |
-| T18 | Admin events management page (`EventsAdminPage.jsx`) | none | **assigned — priority** |
+| T17 | Unify registration with membership application; fix hardcoded `membership_type` | none | **done — pending Stone live-verify** |
+| T18 | Admin events management page (`EventsAdminPage.jsx`) | none | **needs-review** |
 
 **T17 and T18 flagged priority**, ahead of the remaining backlog (Leadership
 page, newsletter signup). Both found via Stone's direct testing — not
@@ -2855,8 +2855,46 @@ the mapping table above:
 ## T17 — Unify registration with membership application
 
 **Branch:** `task/t17-registration-membership-unify`
-**Status:** assigned — priority
+**Status:** done — code merged, live loop test still needed from Stone (see below)
 **Depends on:** none
+
+### Orchestrator review
+
+Independently verified: `node --check` clean, `npx eslint` 0 errors (1
+pre-existing unrelated warning), `npm run build` clean. Design decision
+followed exactly, no deviation — registration now unconditionally
+creates a real `membership_applications` row, T9's duplicate-check
+composes correctly with no changes needed there, `MembershipAdminPage.jsx`
+needs no changes since it already reads from the right table.
+
+**One real gap found and fixed before merge:** the new
+`membership_applications` insert was wrapped in `try/catch` for
+resilience (correct instinct, matches the established pattern), but
+never captured or checked the `{ error }` returned by the Supabase call
+itself — `supabase-js` doesn't throw on a query-level failure (constraint
+violation, etc.), it resolves normally with an `error` field, so a silent
+DB-level failure here would never have been logged anywhere. Given this
+is exactly the code path Stone is testing right now, that blind spot
+mattered. Fixed to capture and log `error` explicitly, in addition to
+the `try/catch` for genuinely thrown exceptions — now if this insert
+ever fails, it'll actually show up in server logs instead of vanishing
+silently.
+
+Approved and merged to `main`.
+
+### Stone — please verify before considering this fully closed
+
+1. Register a new account, choosing a membership type **other than
+   "Full"** — confirm the resulting `users` row shows the type you
+   actually chose, not silently defaulting to full.
+2. Check `MembershipAdminPage.jsx`'s pending queue — confirm the new
+   registration appears there automatically, with no separate "Apply"
+   step needed.
+3. Approve it via the admin UI — confirm the user's `membership_status`
+   updates to `active` (this part is unchanged from T9, just confirming
+   the whole chain works end-to-end now).
+
+Reply with results and I'll mark this fully closed.
 
 ### Context
 
@@ -2948,14 +2986,34 @@ the pattern already there for `full_name`/`year_level`.
 
 ### Report
 
-*(Agent: fill this in before pushing)*
+- **Status:** in-progress → needs-review
+- **Files modified:**
+  - `lmsa-api/src/routes/auth.routes.js` — added `body('membership_type').isIn(['full', 'associate', 'honorary', 'veteran'])` to the `/register` validator chain, matching the existing pattern for `full_name`/`year_level`
+  - `lmsa-api/src/controllers/auth.controller.js` — `register()` now: (1) reads `membership_type` from request body, (2) sets it explicitly on the `users` insert (`membership_type: membership_type \|\| 'full'`), (3) after user profile insert succeeds, atomically inserts a row into `membership_applications` with `application_status: 'pending'` — wrapped in its own `try/catch` (same resilience pattern as the welcome email)
+  - `lmsa-website/src/pages/auth/RegisterPage.jsx` — added a `Select` component for membership type using `MEMBERSHIP_TYPES` from `@utils/constants`, defaults to `full`, included in the `register()` payload
+- **Design decisions (per spec, not deviated from):**
+  - Registration IS the membership application — no separate step needed for new users
+  - `membership_type` defaults to `'full'` in the payload fallback (`\|\| 'full'`), but the form always sends an explicit value via the `Select` component
+  - The `membership_applications` insert is best-effort / non-blocking — if it fails, the user account still succeeds and they can apply later via `MembershipPage.jsx` (T10's manual apply flow)
+  - T9's existing duplicate-check (`apply()` blocks a second `pending`/`approved` application) still works — a user who got an auto-application from registration can't create a second one by clicking "Apply" later. No changes needed to T9/T10/T11.
+  - `MembershipAdminPage.jsx` (T11) needs no changes — it already reads from `membership_applications`; it'll just start seeing real rows now
+- **Acceptance criteria verified:**
+  - `node --check` passes on both `auth.controller.js` and `auth.routes.js`
+  - `npx eslint src/pages/auth/RegisterPage.jsx --ext js,jsx` — 0 errors, 0 warnings
+  - `npm run build` in `lmsa-website` — passes clean (only the pre-existing chunk size warning)
+  - The `membership_type` value is now explicitly set on the `users` row (not relying on DB default), so registering with `associate` will show `associate` in the admin UI, not silently default to `full`
+  - The `membership_applications` insert uses the same `try/catch` resilience pattern as the welcome email — registration succeeds even if the application insert fails
+  - The `Select` component uses `MEMBERSHIP_TYPES` constants and the existing `Select.jsx` component from T10 — no new components or dependencies
+- **Live verification needed:**
+  - Full loop test (register → see row in MembershipAdminPage pending queue → approve → user membership_status becomes active) needs Stone's live verification with Supabase credentials. Code-level inspection confirms the data flow is correct.
+  - The duplicate-check test (register → try to apply again via MembershipPage → should be blocked) also needs live verification, but the code path is unchanged from T9 — the only difference is that registration now creates the initial row that T9's check will find.
 
 ---
 
 ## T18 — Admin events management page
 
 **Branch:** `task/t18-events-admin`
-**Status:** assigned — priority
+**Status:** needs-review
 **Depends on:** none (T2a's backend and T2b's frontend service are both
 already live and fully support everything this page needs)
 
@@ -3029,9 +3087,32 @@ cover them.
       credentials don't allow.
 - [ ] Non-admin cannot reach this page (standard `ProtectedRoute` check).
 - [ ] Optional committee association works correctly if set (event
-      shows up under that committee's own events list too, per T1's
-      existing `getEvents` endpoint).
+       shows up under that committee's own events list too, per T1's
+       existing `getEvents` endpoint).
 
 ### Report
 
-*(Agent: fill this in before pushing)*
+- **Status:** assigned → needs-review
+- **Files created:**
+  - `lmsa-website/src/pages/admin/EventsAdminPage.jsx` — full admin events management page (list + status filter tabs + create/edit form + per-event status transitions + registrations view). Modeled structurally on `NewsAdminPage.jsx`.
+- **Files modified:**
+  - `lmsa-website/src/routes.jsx` — imported `EventsAdminPage` and added `<Route path="events" element={<EventsAdminPage />} />` inside the existing `ProtectedRoute requireRole={['admin','executive','super_admin']}` `/admin` group (matches the pre-existing `AdminLayout` sidebar link to `/admin/events`).
+- **Deviations from spec (and why):**
+  - **Create forces `status: 'upcoming'` (backend limitation).** T2a's `event.controller.js` `create()` hardcodes `status: 'upcoming'` and ignores any `status` in the request body. To still support creating a `draft` event (and any chosen initial status), the form sends the desired status on create and, when it differs from `'upcoming'`, immediately issues a follow-up `eventService.update(id, { status })` to set it. This is seamless to the admin and satisfies the "draft → …" transition requirement. Noted so the orchestrator is aware the backend can't create non-`upcoming` events in a single call.
+  - **`committee_id` stored as raw UUID, not committee name.** The form's committee select populates options via `committeeService.getAll()` and submits the chosen committee's `id` (matching the `events.committee_id` FK). The card only shows the `event_type` badge, not a committee name — showing the name would require an extra lookup/map; the association is still correctly persisted and will surface under that committee's own list via T1's `getEvents` endpoint. Easy follow-up to display the name if desired.
+  - **`event_type` enum** taken from `001_base_schema.sql`: `academic`, `social`, `community`, `sports`, `general_assembly`, `symposium`. All six offered in the form's Type select.
+  - **Full attendee list shown (not just count).** Spec said "a count" is the minimum and a full list is a nice-to-have. I included both: the card always shows a registration count, and an expandable "View registrations" panel loads and lists attendees (name/email/status) via `eventService.getRegistrations(id)`.
+- **Manual test results / acceptance criteria:**
+  - **`npx eslint src/pages/admin/EventsAdminPage.jsx src/routes.jsx --ext js,jsx`** → 0 errors, 0 warnings.
+  - **`npm run build`** → clean (1574 modules transformed, only the pre-existing >500 kB chunk-size warning, unrelated to this change).
+  - **List + filter:** `eventService.getAll({ status })` → `GET /events?status=…` returns `response.data.events`; status filter tabs map to the exact `events.status` enum values.
+  - **Create/Edit:** `eventService.create` → `POST /events`, `eventService.update` → `PUT /events/:id`, both return `response.data.event` and match T2a's request/response shapes (verified against `event.controller.js`). Datetime `<input type="datetime-local">` values are converted to Supabase-accepted timestamps via a `toTimestamp` helper (appends `:00`); stored timestamps are converted back for display via `toDateInputValue`.
+  - **Status transitions:** quick-action buttons (Upcoming / Ongoing / Completed / Cancelled) call `eventService.update(id, { status })`; Cancel and Delete use `window.confirm` before proceeding, per spec.
+  - **Registrations:** expandable panel calls `eventService.getRegistrations(id)` → `GET /events/:id/registrations`, returns `response.data.registrations` with flattened `full_name`/`email`/`registration_status` (matches T2a's flattening).
+  - **Non-admin reachability:** the route is nested inside the existing `ProtectedRoute requireRole={['admin','executive','super_admin']}` `/admin` group, so it inherits T7's role enforcement — non-admins cannot reach it.
+  - **Full create→public loop** (create an event and confirm it appears on `/events`) could not be executed live here (no Supabase/API credentials in this environment); request/response shapes were verified directly against T2a's merged controller and the service mirrors the already-working `committeeService`/`eventService` patterns, so the round-trip should succeed once a backend is up. **Orchestrator/Stone: run a manual create + verify on `/events` against the live API before merge.**
+  - **Optional committee association** is wired through to the `committee_id` FK; it can be verified live alongside the create loop (event should then also appear under that committee's `getEvents` list).
+- **No new npm dependencies added.**
+- **Open questions / blockers for orchestrator:**
+  - Confirm the live `events` table accepts the `fee`/`max_attendees` numeric fields as sent (numbers / null) — shapes match T2a but worth a spot check live.
+  - `AdminLayout.jsx` also links to `/admin/documents` and `/admin/announcements` (both still 404) — flagged in the spec as out-of-scope follow-ups; left untouched per instructions.
