@@ -3,7 +3,7 @@ import { sendEmail } from '../config/email.js';
 
 export const register = async (req, res) => {
   try {
-    const { email, password, full_name, year_level, student_id } = req.body;
+    const { email, password, full_name, year_level, student_id, membership_type } = req.body;
 
     // email_confirm: true — this app has no email-verification flow built
     // (no verify route, no frontend confirmation page, and Supabase's own
@@ -39,6 +39,7 @@ export const register = async (req, res) => {
       student_id,
       role: 'student',
       membership_status: 'pending',
+      membership_type: membership_type || 'full',
     });
 
     if (profileError) {
@@ -46,6 +47,20 @@ export const register = async (req, res) => {
         success: false,
         message: 'Failed to create user profile',
       });
+    }
+
+    // Create a pending membership application — best-effort, non-blocking.
+    // The user account itself is the primary deliverable; a failed
+    // auto-application can always be created later via the manual apply
+    // flow on MembershipPage.jsx as a fallback.
+    try {
+      await supabase.from('membership_applications').insert({
+        user_id: authData.user.id,
+        membership_type: membership_type || 'full',
+        application_status: 'pending',
+      });
+    } catch (appError) {
+      console.error('Auto-membership-application insert failed (registration still succeeded):', appError);
     }
 
     // Send welcome email — best-effort only. Account creation above already

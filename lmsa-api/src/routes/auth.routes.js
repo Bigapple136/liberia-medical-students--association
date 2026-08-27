@@ -15,6 +15,9 @@ router.post(
       .withMessage('Password must be at least 8 characters'),
     body('full_name').notEmpty().withMessage('Full name is required'),
     body('year_level').isInt({ min: 1, max: 6 }).withMessage('Invalid year level'),
+    body('membership_type')
+      .isIn(['full', 'associate', 'honorary', 'veteran'])
+      .withMessage('membership_type must be one of: full, associate, honorary, veteran'),
     validate,
   ],
   authController.register
