@@ -84,6 +84,15 @@ so this entire authentication path was silently broken the whole time.
 | T14 | Admin news editor (create/edit/publish) | T12 | **done — live-verified** |
 | T15 | General site-wide contact form (`ContactPage.jsx` → real backend) | none | **done — code verified, mailbox setup deferred by Stone** |
 | T16 | Real student dashboard stats (replace 100% fake data in `DashboardPage.jsx`) | none | **done — pending Stone live-verify (1 specific risk flagged)** |
+| T17 | Unify registration with membership application; fix hardcoded `membership_type` | none | **assigned — priority** |
+| T18 | Admin events management page (`EventsAdminPage.jsx`) | none | **assigned — priority** |
+
+**T17 and T18 flagged priority**, ahead of the remaining backlog (Leadership
+page, newsletter signup). Both found via Stone's direct testing — not
+cosmetic gaps like the rest of the backlog, these are broken core flows:
+new members never actually reach admin review, and admins have no way to
+create/publish an event at all despite the full backend/public pipeline
+already working.
 
 ### Backlog — found during post-membership audit, not yet specced
 
@@ -2840,3 +2849,189 @@ the mapping table above:
   - `membership_status` depends on the backend profile fetch working (T7 fix). If the profile fetch fails, `user.membership_status` will be undefined and the card shows "—".
   - The 4th stat card ("Upcoming Site Events") counts all site-wide upcoming events, not just the user's — this is intentional per spec, giving the student a sense of overall activity.
   - Live end-to-end verification needs to be done by Stone against the deployed backend.
+
+---
+
+## T17 — Unify registration with membership application
+
+**Branch:** `task/t17-registration-membership-unify`
+**Status:** assigned — priority
+**Depends on:** none
+
+### Context
+
+Found via Stone's direct testing, not a cosmetic gap. Two related bugs,
+one root cause: registration and membership application are currently
+two fully disconnected steps.
+
+1. `users.membership_type` defaults to `'full'` at the DB level
+   (`001_base_schema.sql` line 16). `RegisterPage.jsx`'s form never
+   collects a membership type, and `auth.controller.js`'s `register()`
+   never sets it explicitly — so **every single registrant silently
+   becomes a "full" member regardless of what they'd actually choose**,
+   with no UI ever presenting the choice.
+2. `MembershipAdminPage.jsx` (T11) lists rows from the
+   `membership_applications` table — not from `users` directly. A brand
+   new registrant has **no row in that table at all** until they
+   separately visit `/membership` and click "Apply" (T10's flow).
+   Apparently almost nobody is completing that separate second step, so
+   **new registrations never actually appear for admin review.**
+
+### Design decision (already made — implement this, don't redesign)
+
+This is specifically an association membership site, not a general
+account system — registering *is* applying. Unify the two: the
+registration form gains a membership-type selector, and successful
+registration **atomically creates a real, reviewable `pending`
+membership application** alongside the user profile — not just a
+default column value nobody chose.
+
+This composes cleanly with what already exists:
+- T9's `apply()` duplicate-check (blocks a second `pending`/`approved`
+  application) means a user who already got one from registration simply
+  can't create a second one by later clicking "Apply" on
+  `MembershipPage.jsx` — correct, not a bug, no changes needed there.
+- T10's separate apply flow on `MembershipPage.jsx` **stays** — it's
+  still needed for users who registered before this fix, and for anyone
+  reapplying after a rejection.
+- T11's admin review UI needs **no changes** — it already reads from
+  `membership_applications`; it'll just start seeing real rows now.
+
+### Files to modify
+
+**`lmsa-website/src/pages/auth/RegisterPage.jsx`**
+- Add a membership-type selector using the `Select.jsx` component (built
+  in T10) and the existing `MEMBERSHIP_TYPES` constant
+  (`lmsa-website/src/utils/constants.js`) for the options list.
+- Include `membership_type` in the payload sent to `register()`.
+
+**`lmsa-api/src/controllers/auth.controller.js`** — `register()`:
+- Accept `membership_type` from the request body (validate it's one of
+  the 4 allowed values — reuse whatever pattern
+  `membership.controller.js`'s `apply()` already uses for this same
+  validation, don't reinvent it).
+- Set it explicitly on the `users` insert (don't rely on the DB default
+  — the default becomes a fallback for old rows only, not the source of
+  truth going forward).
+- **After** the user profile insert succeeds, also insert a row into
+  `membership_applications`: `user_id`, `membership_type` (same value),
+  `application_status: 'pending'`. Wrap this in the same
+  non-critical-secondary-action resilience pattern already established
+  for the welcome email in this same function — if this insert fails for
+  some reason, log it, don't fail the whole registration (the user
+  account itself is more important than the application row; a failed
+  auto-application can always be created later via T10's manual apply
+  flow as a fallback).
+
+**`lmsa-api/src/routes/auth.routes.js`** — add
+`body('membership_type').isIn(['full', 'associate', 'honorary',
+'veteran'])` to the existing `/register` validator chain, matching
+the pattern already there for `full_name`/`year_level`.
+
+### Acceptance criteria
+
+- [ ] `node --check` / `npx eslint` / `npm run build` — all clean,
+      **actually run and verified.**
+- [ ] Registering with a specific membership type (not "full") results
+      in the `users` row correctly showing that type, not the old
+      hardcoded default — test and note in report.
+- [ ] Registering creates a real, visible row in
+      `MembershipAdminPage.jsx`'s pending queue — full loop test if
+      credentials allow, or clearly flag for Stone's live verification.
+- [ ] A user who already has a pending application (from registration)
+      attempting to apply again via `MembershipPage.jsx` gets correctly
+      blocked by T9's existing duplicate check — confirm this still
+      works, don't break it.
+- [ ] Registration doesn't fail outright if the application-row insert
+      specifically fails (test the resilience wrapping, same pattern as
+      the email-failure fix).
+
+### Report
+
+*(Agent: fill this in before pushing)*
+
+---
+
+## T18 — Admin events management page
+
+**Branch:** `task/t18-events-admin`
+**Status:** assigned — priority
+**Depends on:** none (T2a's backend and T2b's frontend service are both
+already live and fully support everything this page needs)
+
+### Context
+
+`AdminLayout.jsx`'s sidebar has an "Events" nav link pointing to
+`/admin/events` — **this route doesn't exist anywhere in `routes.jsx`**,
+so clicking it 404s. No `EventsAdminPage.jsx` file exists at all. This is
+the one content type from the whole T1–T16 arc that never got its admin
+management page built (committees got T4, membership got T11, news got
+T14 — events never got the equivalent). The backend (T2a) and frontend
+service (T2b) are both fully live and support everything needed —
+`eventService.create`, `.update`, `.delete`, `.getAll`,
+`.getRegistrations` all already exist and work.
+
+Read `NewsAdminPage.jsx` first — same structural shape (list + create/
+edit form + status/publish-style actions), closest existing reference in
+this codebase.
+
+### Files to create
+
+**`lmsa-website/src/pages/admin/EventsAdminPage.jsx`** — needs:
+- A list of all events (via `eventService.getAll()`), with a status
+  filter (draft/upcoming/ongoing/completed/cancelled/all — check the
+  exact enum in `001_base_schema.sql`'s `events` table).
+- Create/edit form: title, description, `event_type`, location, venue,
+  `start_datetime`/`end_datetime` (datetime inputs), `registration_required`
+  (checkbox), `max_attendees`, `registration_deadline`,
+  `fee`, `image_url`, `committee_id` (optional — use the new `Select.jsx`
+  component, populate options via `committeeService.getAll()` so an
+  event can optionally be tied to a specific committee, matching
+  `committee.controller.js`'s existing `getEvents`/`createEvent` per-
+  committee endpoints from T1).
+- Status transitions (draft → upcoming → ongoing → completed, or →
+  cancelled) with confirmation on cancel/delete.
+- A registrations view/count per event — `eventService.getRegistrations(id)`
+  already exists (T2a); at minimum show a count, a full attendee list view
+  is a nice-to-have if time allows but not required for this task.
+- Toast feedback throughout, consistent with the rest of the admin UI.
+
+### Files to modify
+
+**`lmsa-website/src/routes.jsx`** — wire in under `/admin`, same
+`ProtectedRoute` pattern as every other admin page.
+
+**`lmsa-website/src/layouts/AdminLayout.jsx`** — the nav link already
+exists (`{ to: '/admin/events', label: 'Events', ... }`) — no change
+needed there unless the route path chosen differs from `/admin/events`
+(it shouldn't — match the existing link).
+
+### Also flagging, not in scope for this task
+
+`AdminLayout.jsx`'s sidebar also links to `/admin/documents` and
+`/admin/announcements`, **neither of which have routes either** — same
+dead-link problem. Documents ties to the entirely-unbuilt
+resources/documents feature (bigger scope, separate future task).
+Announcements is ambiguous — could mean global site announcements (don't
+currently exist as a concept, `committee_announcements` is per-committee
+only) or could just be a redundant nav item that should be removed since
+News (T14) now covers general announcements. Flagging both as follow-ups
+for the orchestrator to scope properly later — don't expand this task to
+cover them.
+
+### Acceptance criteria
+
+- [ ] `npx eslint` — 0 errors, 0 warnings.
+- [ ] `npm run build` — clean, **actually verified.**
+- [ ] Admin can create an event, see it appear, and it's confirmed
+      visible on the real public `/events` page (full loop test) — note
+      result in report, or flag for Stone's live verification if
+      credentials don't allow.
+- [ ] Non-admin cannot reach this page (standard `ProtectedRoute` check).
+- [ ] Optional committee association works correctly if set (event
+      shows up under that committee's own events list too, per T1's
+      existing `getEvents` endpoint).
+
+### Report
+
+*(Agent: fill this in before pushing)*
