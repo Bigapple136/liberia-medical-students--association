@@ -1,8 +1,10 @@
 import { useState } from 'react';
+import { toast } from 'react-hot-toast';
 import { MapPin, Mail, Phone, Clock, Facebook, Twitter, Instagram } from 'lucide-react';
 import Button from '@components/common/Button';
 import Input from '@components/common/Input';
 import Card from '@components/common/Card';
+import { contactService } from '@services/contact.service';
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -24,11 +26,15 @@ export default function ContactPage() {
     e.preventDefault();
     setLoading(true);
 
-    // TODO: Implement form submission
-    setTimeout(() => {
+    try {
+      await contactService.submit(formData);
+      toast.success('Message sent successfully!');
+      setFormData({ name: '', email: '', subject: '', message: '' });
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Failed to send message. Please try again.');
+    } finally {
       setLoading(false);
-      alert('Message sent successfully!');
-    }, 1000);
+    }
   };
 
   return (
