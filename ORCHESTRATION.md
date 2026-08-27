@@ -86,8 +86,8 @@ so this entire authentication path was silently broken the whole time.
 | T16 | Real student dashboard stats (replace 100% fake data in `DashboardPage.jsx`) | none | **done — pending Stone live-verify (1 specific risk flagged)** |
 | T17 | Unify registration with membership application; fix hardcoded `membership_type` | none | **done — live-verified** |
 | T18 | Admin events management page (`EventsAdminPage.jsx`) | none | **done — live-verified** |
-| T19 | Backend executive positions API (`LeadershipPage.jsx` real data + admin assignment) | none | **needs-review** |
-| T20 | Frontend: real `LeadershipPage.jsx` + admin executive-position management | T19 | blocked |
+| T19 | Backend executive positions API (`LeadershipPage.jsx` real data + admin assignment) | none | **done** |
+| T20 | Frontend: real `LeadershipPage.jsx` + admin executive-position management | T19 | **assigned** |
 | T21 | Site-wide newsletter signup | none | **assigned** |
 
 **T17 and T18 flagged priority**, ahead of the remaining backlog (Leadership
@@ -3161,8 +3161,20 @@ cover them.
 ## T19 — Backend executive positions API
 
 **Branch:** `task/t19-leadership-backend`
-**Status:** assigned → needs-review
+**Status:** done
 **Depends on:** none
+
+### Orchestrator review
+
+Independently verified: `node --check` clean on all 3 files, `npx eslint`
+0 errors/0 warnings, `server.js` wiring correct. Report matches reality
+exactly. `update()`'s unfiltered destructure-and-pass-through of
+possibly-`undefined` fields confirmed safe by direct reasoning — same
+pattern already validated in T1's committee controller
+(`JSON.stringify` drops `undefined` keys before the request ever goes
+out, so partial updates work correctly without extra filtering code).
+Active-only filtering on the public endpoint confirmed via direct read
+(`eq('status', 'active')`). Approved and merged to `main`. Unblocks T20.
 
 ### Context
 
