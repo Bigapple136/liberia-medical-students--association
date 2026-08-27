@@ -3417,9 +3417,43 @@ of scope here.
 - [ ] Re-subscribing with the same email doesn't error (upsert works
       correctly) — test and note in report.
 - [ ] Migration SQL is syntactically valid and includes exact run
-      instructions for Stone in the report — same as T1's original
-      pattern.
+       instructions for Stone in the report — same as T1's original
+       pattern.
 
 ### Report
 
-*(Agent: fill this in before pushing)*
+- **Status:** assigned → needs-review
+- **Files created:**
+  - `lmsa-website/database/003_newsletter.sql` — new migration: `newsletter_subscribers` table, email index, RLS, public insert + update policies.
+  - `lmsa-api/src/controllers/newsletter.controller.js` — `subscribe` + `unsubscribe` handlers.
+  - `lmsa-api/src/routes/newsletter.routes.js` — both routes public (no `authenticate`).
+  - `lmsa-website/src/services/newsletter.service.js` — `subscribe(email)` / `unsubscribe(email)`.
+- **Files modified:**
+  - `lmsa-api/src/server.js` — imported `newsletterRoutes` and mounted `app.use('/api/newsletter', authLimiter, newsletterRoutes)` (shares the strict 30/15min `authLimiter`, same T15 judgment call for the public contact form).
+  - `lmsa-website/src/components/layout/Footer.jsx` — added an email input + Subscribe button to the Brand column, wired to `newsletterService.subscribe`, with `react-hot-toast` feedback (success/error) consistent with the rest of the app. Loading state disables the button while pending.
+  - `lmsa-website/database/README.md` — added the `003` row to the migration table, marked it "not yet applied", and added a step 4 to the run instructions.
+- **Deviations from spec (and why):**
+  - **Added a public `UPDATE` RLS policy** (`"Public can unsubscribe"`) in addition to the spec's insert policy. Required because the `unsubscribe` endpoint (per spec, public, no auth) performs an `UPDATE`, and the `subscribe` upsert re-uses the update path when re-subscribing an existing email. Without an update policy the anon role hits an RLS violation and both re-subscribe and unsubscribe fail. `USING (true) WITH CHECK (true)` matches the open/no-auth unsubscribe-link model the spec describes. Flagged because it's the one addition beyond the literal SQL in the spec.
+  - **Added inline email-format validation** in both handlers (`/^[^\s@]+@[^\s@]+\.[^\s@]+$/`) before hitting Supabase, so malformed input returns a clean 400 `{ success: false, message: 'A valid email is required' }` rather than a raw DB error. Same defensive style as `contact.controller.js`.
+  - **Rate limiting:** applied the existing `authLimiter` (30 req / 15 min, same as `/api/contact`) at the `/api/newsletter` mount in `server.js` rather than writing a new limiter — the spec asked for the same judgment call T15 made, and reusing `authLimiter` is exactly that. Noted for the orchestrator.
+  - **No `express-validator`** on these routes (the spec left rate-limiting as "your call"; I kept the controllers self-validating to match `committee.controller.js`'s `subscribe` style rather than the `contact.routes.js` validator style).
+- **Manual test results:**
+  - `node --check` passes on `newsletter.controller.js`, `newsletter.routes.js`, and `server.js`.
+  - `npx eslint` clean (0 errors, 0 warnings) on the three API files above.
+  - `npx eslint` clean on `Footer.jsx` and `newsletter.service.js`; `npm run build` in `lmsa-website` passes clean (only the pre-existing 500 kB chunk-size warning, unchanged by this task).
+  - **Upsert re-subscribe:** verified by code inspection — `subscribe` calls `.upsert({ email, status: 'active' }, { onConflict: 'email' })`. New email → insert; existing email (active or previously `unsubscribed`) → update to `active`, no unique-violation error path. Could not run the full live round-trip here (no Supabase credentials in this environment); the live POST is a follow-up for the orchestrator's environment. Same applies to `unsubscribe` (`.update({ status: 'unsubscribed' }).eq('email', email)`).
+  - Both `/api/newsletter/subscribe` and `/api/newsletter/unsubscribe` are mounted without `authenticate`, exactly as specified (public signup + email-link unsubscribe).
+- **Database migration — exact run instructions for Stone (same pattern as T1's 001/002):**
+  1. Open the Supabase dashboard → your production project → **SQL Editor**.
+  2. Click **New query** (or open a blank query tab).
+  3. Open the file `lmsa-website/database/003_newsletter.sql` in this branch (repo path: `lmsa-website/database/003_newsletter.sql`).
+  4. Copy its **entire** contents and paste into the SQL Editor query window.
+  5. Click **Run** (▶). Expected result: `Success. No rows returned` (DDL), and under **Table Editor** a new `newsletter_subscribers` table should appear with columns `id`, `email`, `subscribed_at`, `status`.
+  6. (Optional sanity check) run: `SELECT count(*) FROM newsletter_subscribers;` → should return `0` (or whatever's there). And confirm the two policies `Public can subscribe` and `Public can unsubscribe` exist under **Table Editor → newsletter_subscribers → Policies**.
+  7. Run it **once only** — the script uses `CREATE TABLE IF NOT EXISTS` guards, but if you need to re-run after edits, drop the table/policies first (RLS policies are not idempotent on re-create). This is the same hand-run-SQL-Editor model as 001/002 (Supabase does not track migration history here).
+  8. After confirming, update the status line in `lmsa-website/database/README.md` (currently ⬜ "003 not yet applied") to ✅.
+  - ⚠️ **Do not merge / mark T21 done until step 5 succeeds on the live project** — the `/api/newsletter/subscribe` and `/unsubscribe` endpoints will fail with RLS/table errors until this migration is actually run, exactly like T1's original `committee_additions.sql` required Stone to run it by hand.
+- **Open questions / blockers for orchestrator:**
+  - **BLOCKER for go-live:** `003_newsletter.sql` must be run against Supabase by Stone (steps above) before the endpoints work in production. Code + build are green; the live table is the only outstanding dependency.
+  - No new npm dependencies were added (reused `express-rate-limit` which is already a dependency, and `react-hot-toast` which is already used app-wide).
+  - Confirm whether the footer's Subscribe placement in the Brand column is acceptable, or whether it should move to its own footer column — spec left placement to my judgment.
