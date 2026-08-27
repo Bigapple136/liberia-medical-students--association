@@ -83,7 +83,7 @@ so this entire authentication path was silently broken the whole time.
 | T13 | Frontend public news pages (`NewsPage.jsx` + `NewsDetailPage.jsx`) | T12 | **done — live-verified** |
 | T14 | Admin news editor (create/edit/publish) | T12 | **done — live-verified** |
 | T15 | General site-wide contact form (`ContactPage.jsx` → real backend) | none | **done — code verified, mailbox setup deferred by Stone** |
-| T16 | Real student dashboard stats (replace 100% fake data in `DashboardPage.jsx`) | none | **assigned** |
+| T16 | Real student dashboard stats (replace 100% fake data in `DashboardPage.jsx`) | none | **needs-review** |
 
 ### Backlog — found during post-membership audit, not yet specced
 
@@ -2756,4 +2756,41 @@ the mapping table above:
 
 ### Report
 
-*(Agent: fill this in before pushing)*
+- **Status:** in-progress → needs-review
+- **Files created:**
+  - `lmsa-api/src/controllers/dashboard.controller.js` — `getMyStats` (membership_status from auth user, events_registered_count via `event_registrations`, committees_count via `committee_members`) and `getMyUpcomingEvents` (joins `event_registrations` → `events`, filters `start_datetime >= now()`, limit 5)
+  - `lmsa-api/src/routes/dashboard.routes.js` — `GET /stats` and `GET /my-events`, both `authenticate`-only
+  - `lmsa-website/src/services/dashboard.service.js` — `getStats()` and `getMyUpcomingEvents()`, matching existing service conventions
+- **Files modified:**
+  - `lmsa-api/src/server.js` — added `dashboardRoutes` import and `app.use('/api/dashboard', dashboardRoutes)`
+  - `lmsa-website/src/pages/portal/DashboardPage.jsx` — full rewrite: replaced all hardcoded fake data with real API calls
+- **Honest-replacement mapping (followed spec exactly):**
+  - "Membership Status: Active" → `user.membership_status` from AuthContext (real, no new fetch)
+  - "Events Attended: 12" → "Events Registered" — real count from `event_registrations` (no mark-attendance endpoint exists, so "attended" would be fake)
+  - "Resources Accessed: 28" → **Removed entirely** — no documents/resources feature exists anywhere; faking a different number would just be swapping one lie for another
+  - "Community Rank: #15" → "My Committees" — real count from `committee_members` (no ranking/gamification system exists)
+  - 4th stat card: "Upcoming Site Events" — count from existing `eventService.getAll({ upcoming: true })` (per spec: "your call, note the choice in your report")
+  - Fake hardcoded "Upcoming Events" → personalized events the user is registered for, from `dashboardService.getMyUpcomingEvents()`
+  - Fake hardcoded "Recent Announcements" → "Recent News" — 3 most recent published posts from `newsService.getAll({ limit: 3 })`
+- **Loading states:**
+  - Full-page `Loader` spinner (`Loader size={32} className="animate-spin text-lmsa-600"`) while all 4 parallel API calls complete — same pattern as `EventsPage.jsx` and `NewsPage.jsx`
+  - Uses `Promise.all` for all 4 calls (dashboard stats, my events, news, site events) — fires them in parallel, not sequentially
+- **Empty states (zero registrations / zero committees):**
+  - Membership Status card shows "—" when `membership_status` is null (new student, not yet approved)
+  - Stats cards show real counts (0 is a valid number, not fabricated)
+  - "My Upcoming Events" section: friendly empty state with Calendar icon, "No upcoming events registered" message, and a link to `/events`
+  - "Recent News" section: empty state if no posts published yet
+- **Manual test results:**
+  - `node --check` passes on `dashboard.controller.js`, `dashboard.routes.js`, and `server.js`.
+  - `npx eslint src/services/dashboard.service.js src/pages/portal/DashboardPage.jsx --ext js,jsx` — 0 errors, 0 warnings.
+  - `npm run build` in `lmsa-website` — passes clean (only the pre-existing chunk size warning).
+  - All hardcoded fake data removed — no fabricated numbers remain on the page.
+  - `membership_status` reads from `req.user.membership_status` which T7's AuthContext already merges onto the user object from the backend profile fetch.
+  - `getMyUpcomingEvents` uses `.gte('event.start_datetime', now)` to filter to future events only, ordered ascending, limited to 5.
+  - Live submission test could not be performed in this environment (no running server / Supabase credentials). **Needs Stone's live verification** — test with an account whose membership_status you know (e.g. one approved via T11's admin UI).
+- **Open questions / blockers for orchestrator:**
+  - No new npm dependencies added.
+  - No new env vars needed.
+  - `membership_status` depends on the backend profile fetch working (T7 fix). If the profile fetch fails, `user.membership_status` will be undefined and the card shows "—".
+  - The 4th stat card ("Upcoming Site Events") counts all site-wide upcoming events, not just the user's — this is intentional per spec, giving the student a sense of overall activity.
+  - Live end-to-end verification needs to be done by Stone against the deployed backend.
