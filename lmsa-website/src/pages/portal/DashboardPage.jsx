@@ -1,101 +1,200 @@
+import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { Loader, Calendar, Users, BookOpen, Clock, ArrowRight } from 'lucide-react';
+import { toast } from 'react-hot-toast';
 import { useAuth } from '@context/AuthContext';
 import Card from '@components/common/Card';
+import { dashboardService } from '@services/dashboard.service';
+import { eventService } from '@services/event.service';
+import { newsService } from '@services/news.service';
 
 export default function DashboardPage() {
-  useAuth();
+  const { user } = useAuth();
+
+  const [stats, setStats] = useState({
+    membership_status: null,
+    events_registered_count: 0,
+    committees_count: 0,
+    upcoming_site_events: 0,
+  });
+  const [myEvents, setMyEvents] = useState([]);
+  const [newsPosts, setNewsPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadDashboard();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  async function loadDashboard() {
+    setLoading(true);
+    try {
+      const [statsData, myEventsData, newsData, siteEventsData] = await Promise.all([
+        dashboardService.getStats(),
+        dashboardService.getMyUpcomingEvents(),
+        newsService.getAll({ limit: 3 }),
+        eventService.getAll({ upcoming: true }),
+      ]);
+
+      setStats({
+        membership_status: statsData.membership_status,
+        events_registered_count: statsData.events_registered_count,
+        committees_count: statsData.committees_count,
+        upcoming_site_events: (siteEventsData || []).length,
+      });
+      setMyEvents(myEventsData || []);
+      setNewsPosts(newsData.posts || []);
+    } catch {
+      toast.error('Failed to load dashboard data');
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  function formatStatus(status) {
+    if (!status) return '—';
+    return status.charAt(0).toUpperCase() + status.slice(1);
+  }
+
+  function formatDate(dateStr) {
+    if (!dateStr) return '';
+    return new Date(dateStr).toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    });
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center">
+        <Loader size={32} className="animate-spin text-lmsa-600" />
+      </div>
+    );
+  }
 
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">Welcome Back!</h1>
+        <h1 className="text-3xl font-bold mb-2">
+          Welcome Back{user?.full_name ? `, ${user.full_name.split(' ')[0]}` : ''}!
+        </h1>
         <p className="text-gray-600">
           Here&apos;s what&apos;s happening with your LMSA membership
         </p>
       </div>
 
-      {/* Quick Stats */}
+      {/* ── Quick Stats ──────────────────────────────────────────────────── */}
       <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <Card>
           <h3 className="text-sm font-medium text-gray-600 mb-1">Membership Status</h3>
-          <p className="text-2xl font-bold text-lmsa-600">Active</p>
+          <p className="text-2xl font-bold text-lmsa-600">
+            {formatStatus(stats.membership_status)}
+          </p>
         </Card>
         <Card>
-          <h3 className="text-sm font-medium text-gray-600 mb-1">Events Attended</h3>
-          <p className="text-2xl font-bold">12</p>
+          <h3 className="text-sm font-medium text-gray-600 mb-1">Events Registered</h3>
+          <p className="text-2xl font-bold">{stats.events_registered_count}</p>
         </Card>
         <Card>
-          <h3 className="text-sm font-medium text-gray-600 mb-1">Resources Accessed</h3>
-          <p className="text-2xl font-bold">28</p>
+          <h3 className="text-sm font-medium text-gray-600 mb-1">My Committees</h3>
+          <p className="text-2xl font-bold">{stats.committees_count}</p>
         </Card>
         <Card>
-          <h3 className="text-sm font-medium text-gray-600 mb-1">Community Rank</h3>
-          <p className="text-2xl font-bold">#15</p>
+          <h3 className="text-sm font-medium text-gray-600 mb-1">Upcoming Site Events</h3>
+          <p className="text-2xl font-bold text-blue-600">{stats.upcoming_site_events}</p>
         </Card>
       </div>
 
-      {/* Upcoming Events */}
+      {/* ── My Upcoming Events ───────────────────────────────────────────── */}
       <div className="mb-8">
-        <h2 className="text-2xl font-bold mb-4">Upcoming Events</h2>
-        <div className="space-y-4">
-          {upcomingEvents.map((event, index) => (
-            <Card key={index}>
-              <div className="flex justify-between items-center">
-                <div>
-                  <h3 className="font-semibold text-lg">{event.title}</h3>
-                  <p className="text-gray-600 text-sm">{event.date}</p>
-                  <p className="text-gray-600 text-sm">{event.location}</p>
-                </div>
-                <button className="btn btn-primary text-sm">Register</button>
-              </div>
-            </Card>
-          ))}
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-2xl font-bold">My Upcoming Events</h2>
+          <Link
+            to="/events"
+            className="text-sm text-lmsa-600 hover:text-lmsa-700 flex items-center gap-1"
+          >
+            View all events <ArrowRight size={14} />
+          </Link>
         </div>
+
+        {myEvents.length === 0 ? (
+          <Card>
+            <div className="text-center py-6">
+              <Calendar size={32} className="mx-auto text-gray-400 mb-3" />
+              <p className="text-gray-600 mb-1">No upcoming events registered</p>
+              <p className="text-sm text-gray-500">
+                Browse{' '}
+                <Link to="/events" className="text-lmsa-600 hover:underline">
+                  upcoming events
+                </Link>{' '}
+                to register.
+              </p>
+            </div>
+          </Card>
+        ) : (
+          <div className="space-y-4">
+            {myEvents.map(event => (
+              <Card key={event.id}>
+                <div className="flex items-start gap-3">
+                  <Calendar size={20} className="text-lmsa-600 flex-shrink-0 mt-1" />
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-lg">{event.title}</h3>
+                    <div className="flex flex-wrap gap-3 text-sm text-gray-600 mt-1">
+                      <span className="flex items-center gap-1">
+                        <Clock size={14} />
+                        {formatDate(event.start_datetime)}
+                      </span>
+                      {event.location && (
+                        <span className="flex items-center gap-1">
+                          <BookOpen size={14} />
+                          {event.location}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </Card>
+            ))}
+          </div>
+        )}
       </div>
 
-      {/* Recent Announcements */}
+      {/* ── Recent News ──────────────────────────────────────────────────── */}
       <div>
-        <h2 className="text-2xl font-bold mb-4">Recent Announcements</h2>
-        <div className="space-y-4">
-          {announcements.map((announcement, index) => (
-            <Card key={index}>
-              <h3 className="font-semibold text-lg mb-2">{announcement.title}</h3>
-              <p className="text-gray-600 text-sm">{announcement.excerpt}</p>
-              <p className="text-xs text-gray-500 mt-2">{announcement.date}</p>
-            </Card>
-          ))}
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-2xl font-bold">Recent News</h2>
+          <Link
+            to="/news"
+            className="text-sm text-lmsa-600 hover:text-lmsa-700 flex items-center gap-1"
+          >
+            View all news <ArrowRight size={14} />
+          </Link>
         </div>
+
+        {newsPosts.length === 0 ? (
+          <Card>
+            <div className="text-center py-6">
+              <Users size={32} className="mx-auto text-gray-400 mb-3" />
+              <p className="text-gray-600">No news posts yet</p>
+            </div>
+          </Card>
+        ) : (
+          <div className="space-y-4">
+            {newsPosts.map(post => (
+              <Card key={post.id}>
+                <Link to={`/news/${post.slug}`} className="block hover:shadow-md transition-shadow">
+                  <h3 className="font-semibold text-lg mb-1">{post.title}</h3>
+                  <p className="text-gray-600 text-sm line-clamp-2">{post.excerpt || post.content?.slice(0, 150)}</p>
+                  <p className="text-xs text-gray-500 mt-2">
+                    {formatDate(post.published_at || post.created_at)}
+                  </p>
+                </Link>
+              </Card>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
 }
-
-const upcomingEvents = [
-  {
-    title: 'Annual Medical Symposium',
-    date: 'April 25, 2026',
-    location: 'A.M. Dogliotti College of Medicine'
-  },
-  {
-    title: 'Community Health Camp',
-    date: 'May 5, 2026',
-    location: 'Monrovia Community Center'
-  },
-  {
-    title: 'Study Group: Anatomy Review',
-    date: 'May 12, 2026',
-    location: 'Library Conference Room'
-  }
-];
-
-const announcements = [
-  {
-    title: 'Membership Renewal Now Open',
-    excerpt: 'Don\'t forget to renew your LMSA membership for the 2026-2027 academic year. Early bird discount available until May 1st.',
-    date: 'April 10, 2026'
-  },
-  {
-    title: 'New Research Opportunities',
-    excerpt: 'Several research positions are now available for LMSA members. Check the opportunities board for more details.',
-    date: 'April 8, 2026'
-  }
-];

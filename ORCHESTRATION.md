@@ -83,7 +83,7 @@ so this entire authentication path was silently broken the whole time.
 | T13 | Frontend public news pages (`NewsPage.jsx` + `NewsDetailPage.jsx`) | T12 | **done — live-verified** |
 | T14 | Admin news editor (create/edit/publish) | T12 | **done — live-verified** |
 | T15 | General site-wide contact form (`ContactPage.jsx` → real backend) | none | **done — code verified, mailbox setup deferred by Stone** |
-| T16 | Real student dashboard stats (replace 100% fake data in `DashboardPage.jsx`) | none | **assigned** |
+| T16 | Real student dashboard stats (replace 100% fake data in `DashboardPage.jsx`) | none | **done — pending Stone live-verify (1 specific risk flagged)** |
 
 ### Backlog — found during post-membership audit, not yet specced
 
@@ -2656,8 +2656,54 @@ swap, not a redesign.
 ## T16 — Real student dashboard stats
 
 **Branch:** `task/t16-dashboard-real-data`
-**Status:** assigned
-**Depends on:** none (all data sources it needs already exist and are live)
+**Status:** done — code merged, live verification needed from Stone (see below, one specific technical risk flagged)
+**Depends on:** none
+
+### Orchestrator review
+
+Independently verified: `node --check` clean on all backend files,
+`npx eslint` 0 errors/0 warnings on both repos, `npm run build` clean —
+matches the report exactly. Followed the spec's honest-replacement
+mapping precisely, including the deliberate removal of "Resources
+Accessed" rather than inventing a different fake number. Good
+independent judgment call on the 4th stat card (site-wide upcoming
+event count) — reasonable, and correctly flagged as a judgment call
+rather than silently deciding without noting it. `Promise.all` used for
+parallel fetches — good practice, not explicitly required by the spec.
+`newsService.getAll({ limit: 3 })` param shape confirmed compatible with
+T13's actual service by direct inspection.
+
+**One specific technical risk, not confirmed either way:**
+`getMyUpcomingEvents` filters and sorts using
+`.gte('event.start_datetime', now)` / `.order('event.start_datetime',
+...)` — these target a column on the *embedded* `event` resource
+(via the `event:event_id (...)` nested select), not the base
+`event_registrations` table being queried from. PostgREST does support
+this dot-path syntax for embedded-resource filtering, but I can't
+confirm from this sandbox whether it's actually filtering/sorting
+correctly against the live database, or silently returning unsorted/
+unfiltered results (e.g. including past events). This is exactly the
+kind of thing that can pass every lint/build/syntax check while still
+being functionally wrong.
+
+Approved and merged to `main`. Not blocking, but genuinely uncertain
+until tested live.
+
+### Stone — please verify before considering this fully closed
+
+1. Log in with an account whose `membership_status` you know (e.g. one
+   you approved via T11's admin UI) — confirm the dashboard's
+   Membership Status card shows the correct real value.
+2. Register for at least one upcoming event, then check the dashboard's
+   "My Upcoming Events" section — confirm **only future events show,
+   correctly sorted** (this is the specific risk flagged above — if this
+   section shows nothing, shows past events, or shows events in the
+   wrong order, that confirms the embedded-filter concern was real and
+   needs a follow-up fix).
+3. Confirm the stat card counts (events registered, committees) look
+   right for an account you know the real numbers for.
+
+Reply with results and I'll mark this fully closed.
 
 ### Context
 
@@ -2756,4 +2802,41 @@ the mapping table above:
 
 ### Report
 
-*(Agent: fill this in before pushing)*
+- **Status:** in-progress → needs-review
+- **Files created:**
+  - `lmsa-api/src/controllers/dashboard.controller.js` — `getMyStats` (membership_status from auth user, events_registered_count via `event_registrations`, committees_count via `committee_members`) and `getMyUpcomingEvents` (joins `event_registrations` → `events`, filters `start_datetime >= now()`, limit 5)
+  - `lmsa-api/src/routes/dashboard.routes.js` — `GET /stats` and `GET /my-events`, both `authenticate`-only
+  - `lmsa-website/src/services/dashboard.service.js` — `getStats()` and `getMyUpcomingEvents()`, matching existing service conventions
+- **Files modified:**
+  - `lmsa-api/src/server.js` — added `dashboardRoutes` import and `app.use('/api/dashboard', dashboardRoutes)`
+  - `lmsa-website/src/pages/portal/DashboardPage.jsx` — full rewrite: replaced all hardcoded fake data with real API calls
+- **Honest-replacement mapping (followed spec exactly):**
+  - "Membership Status: Active" → `user.membership_status` from AuthContext (real, no new fetch)
+  - "Events Attended: 12" → "Events Registered" — real count from `event_registrations` (no mark-attendance endpoint exists, so "attended" would be fake)
+  - "Resources Accessed: 28" → **Removed entirely** — no documents/resources feature exists anywhere; faking a different number would just be swapping one lie for another
+  - "Community Rank: #15" → "My Committees" — real count from `committee_members` (no ranking/gamification system exists)
+  - 4th stat card: "Upcoming Site Events" — count from existing `eventService.getAll({ upcoming: true })` (per spec: "your call, note the choice in your report")
+  - Fake hardcoded "Upcoming Events" → personalized events the user is registered for, from `dashboardService.getMyUpcomingEvents()`
+  - Fake hardcoded "Recent Announcements" → "Recent News" — 3 most recent published posts from `newsService.getAll({ limit: 3 })`
+- **Loading states:**
+  - Full-page `Loader` spinner (`Loader size={32} className="animate-spin text-lmsa-600"`) while all 4 parallel API calls complete — same pattern as `EventsPage.jsx` and `NewsPage.jsx`
+  - Uses `Promise.all` for all 4 calls (dashboard stats, my events, news, site events) — fires them in parallel, not sequentially
+- **Empty states (zero registrations / zero committees):**
+  - Membership Status card shows "—" when `membership_status` is null (new student, not yet approved)
+  - Stats cards show real counts (0 is a valid number, not fabricated)
+  - "My Upcoming Events" section: friendly empty state with Calendar icon, "No upcoming events registered" message, and a link to `/events`
+  - "Recent News" section: empty state if no posts published yet
+- **Manual test results:**
+  - `node --check` passes on `dashboard.controller.js`, `dashboard.routes.js`, and `server.js`.
+  - `npx eslint src/services/dashboard.service.js src/pages/portal/DashboardPage.jsx --ext js,jsx` — 0 errors, 0 warnings.
+  - `npm run build` in `lmsa-website` — passes clean (only the pre-existing chunk size warning).
+  - All hardcoded fake data removed — no fabricated numbers remain on the page.
+  - `membership_status` reads from `req.user.membership_status` which T7's AuthContext already merges onto the user object from the backend profile fetch.
+  - `getMyUpcomingEvents` uses `.gte('event.start_datetime', now)` to filter to future events only, ordered ascending, limited to 5.
+  - Live submission test could not be performed in this environment (no running server / Supabase credentials). **Needs Stone's live verification** — test with an account whose membership_status you know (e.g. one approved via T11's admin UI).
+- **Open questions / blockers for orchestrator:**
+  - No new npm dependencies added.
+  - No new env vars needed.
+  - `membership_status` depends on the backend profile fetch working (T7 fix). If the profile fetch fails, `user.membership_status` will be undefined and the card shows "—".
+  - The 4th stat card ("Upcoming Site Events") counts all site-wide upcoming events, not just the user's — this is intentional per spec, giving the student a sense of overall activity.
+  - Live end-to-end verification needs to be done by Stone against the deployed backend.

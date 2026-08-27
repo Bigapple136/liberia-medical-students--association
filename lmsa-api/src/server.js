@@ -18,6 +18,7 @@ import eventRoutes from './routes/event.routes.js';
 import membershipRoutes from './routes/membership.routes.js';
 import newsRoutes from './routes/news.routes.js';
 import contactRoutes from './routes/contact.routes.js';
+import dashboardRoutes from './routes/dashboard.routes.js';
 
 // Load environment variables
 dotenv.config();
@@ -87,6 +88,7 @@ app.use('/api/committees', committeeRoutes);
 app.use('/api/events', eventRoutes);
 app.use('/api/membership', membershipRoutes);
 app.use('/api/news', newsRoutes);
+app.use('/api/dashboard', dashboardRoutes);
 
 // Contact endpoint — public, unauthenticated, plausible spam target.
 // Shares the same strict budget as auth routes (30/15min).
