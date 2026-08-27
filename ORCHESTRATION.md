@@ -85,7 +85,7 @@ so this entire authentication path was silently broken the whole time.
 | T15 | General site-wide contact form (`ContactPage.jsx` → real backend) | none | **done — code verified, mailbox setup deferred by Stone** |
 | T16 | Real student dashboard stats (replace 100% fake data in `DashboardPage.jsx`) | none | **done — pending Stone live-verify (1 specific risk flagged)** |
 | T17 | Unify registration with membership application; fix hardcoded `membership_type` | none | **done — pending Stone live-verify** |
-| T18 | Admin events management page (`EventsAdminPage.jsx`) | none | **needs-review** |
+| T18 | Admin events management page (`EventsAdminPage.jsx`) | none | **done — pending Stone live-verify** |
 
 **T17 and T18 flagged priority**, ahead of the remaining backlog (Leadership
 page, newsletter signup). Both found via Stone's direct testing — not
@@ -3013,9 +3013,45 @@ the pattern already there for `full_name`/`year_level`.
 ## T18 — Admin events management page
 
 **Branch:** `task/t18-events-admin`
-**Status:** needs-review
+**Status:** done — code merged, live create→public loop test still needed from Stone (see below)
 **Depends on:** none (T2a's backend and T2b's frontend service are both
 already live and fully support everything this page needs)
+
+### Orchestrator review
+
+Independently verified: `npx eslint` — 0 errors, 0 warnings. `npm run
+build` — clean, matches report exactly. Every `eventService` method call
+(`getAll`, `create`, `update`, `delete`, `getRegistrations`) confirmed
+against the actual merged service file — correct names, correct return
+shapes. Route wiring confirmed correct (`/admin/events`, matches the
+pre-existing sidebar link, correctly nested in the shared protected
+route group so it inherits T7's role enforcement automatically).
+
+**Deviation verified, not just trusted:** the report claims T2a's
+`create()` hardcodes `status: 'upcoming'` and ignores any status in the
+request body — checked directly against the merged controller, confirmed
+accurate (`req.body` destructure doesn't even include `status`). The
+create-then-follow-up-update workaround is a reasonable, safe solution
+to a real constraint, not a bug — not worth reworking the backend for
+this alone given the workaround is correct and low-risk.
+
+Approved and merged to `main`. **This closes the T18 gap entirely** —
+committees, membership, news, and now events all have real admin
+management UIs; no dead sidebar links remain except the previously-
+flagged `/admin/documents` and `/admin/announcements` (out of scope,
+separate future features).
+
+### Stone — please verify before considering this fully closed
+
+1. Log in as admin → `/admin/events` → create an event, confirm it
+   appears in the list.
+2. Visit the public `/events` page → confirm it shows up there too.
+3. Optionally associate it with a committee → confirm it also appears
+   under that committee's own events (via `/leadership/committees/:slug`).
+4. Try a status transition (e.g. Upcoming → Cancelled) and confirm it
+   reflects correctly on the public side too.
+
+Reply with results and I'll mark this fully closed.
 
 ### Context
 
