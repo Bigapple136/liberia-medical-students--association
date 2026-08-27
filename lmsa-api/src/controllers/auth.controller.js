@@ -43,6 +43,18 @@ export const register = async (req, res) => {
     });
 
     if (profileError) {
+      // Postgres unique_violation. By this point Supabase Auth has
+      // already confirmed the email itself is unique (that check happens
+      // earlier, in admin.createUser above), so a unique-constraint hit
+      // here is almost always the student_id column — give a message
+      // that actually says so instead of the generic fallback below.
+      if (profileError.code === '23505') {
+        return res.status(400).json({
+          success: false,
+          message: 'This student ID is already registered to another account.',
+        });
+      }
+
       return res.status(400).json({
         success: false,
         message: 'Failed to create user profile',

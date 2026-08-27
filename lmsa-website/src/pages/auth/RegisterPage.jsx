@@ -90,7 +90,8 @@ export default function RegisterPage() {
       toast.success('Registration successful! You can now log in.');
       navigate('/login');
     } catch (error) {
-      toast.error(error.message || 'Registration failed');
+      const message = error?.response?.data?.message || 'Registration failed. Please try again.';
+      toast.error(message);
     } finally {
       setLoading(false);
     }
