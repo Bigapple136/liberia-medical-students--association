@@ -83,6 +83,7 @@ so this entire authentication path was silently broken the whole time.
 | T13 | Frontend public news pages (`NewsPage.jsx` + `NewsDetailPage.jsx`) | T12 | **done — live-verified** |
 | T14 | Admin news editor (create/edit/publish) | T12 | **done — live-verified** |
 | T15 | General site-wide contact form (`ContactPage.jsx` → real backend) | none | **done — code verified, mailbox setup deferred by Stone** |
+| T16 | Real student dashboard stats (replace 100% fake data in `DashboardPage.jsx`) | none | **assigned** |
 
 ### Backlog — found during post-membership audit, not yet specced
 
@@ -2649,3 +2650,110 @@ swap, not a redesign.
   - No new npm dependencies added (react-hot-toast was already in the project).
   - `CONTACT_EMAIL` env var is optional — falls back to `EMAIL_FROM` then `info@lmsa.org`. If a distinct inbox is desired, set `CONTACT_EMAIL` in the Render env vars.
   - Live end-to-end test (fill form → email arrives in inbox → confirmation arrives to sender) needs to be done by Stone against the deployed backend.
+
+---
+
+## T16 — Real student dashboard stats
+
+**Branch:** `task/t16-dashboard-real-data`
+**Status:** assigned
+**Depends on:** none (all data sources it needs already exist and are live)
+
+### Context
+
+`DashboardPage.jsx` (the student portal home — the first thing a logged-
+in student sees) is 100% hardcoded fake data: "Membership Status: Active"
+(always, regardless of reality), "Events Attended: 12", "Resources
+Accessed: 28", "Community Rank: #15" (no ranking system exists at all,
+anywhere), plus hardcoded fake upcoming-events and announcements arrays.
+This was true before T1–T15 and hasn't been touched since — it's
+increasingly conspicuous given real data now exists for almost
+everything this page could show.
+
+**Orchestrator's honest-replacement design** (don't deviate from this
+mapping without checking in — it was chosen deliberately, not just "wire
+up whatever's easiest"):
+
+| Current (fake) | Replace with | Why |
+|---|---|---|
+| Membership Status: "Active" | Real `user.membership_status` | Already available via `AuthContext` — T7's fix already merges the full profile row (including this field) onto the `user` object. No new fetch needed, just read it. |
+| Events Attended: 12 | "Events Registered" (real count) | `attended` tracking has no admin UI to ever set it (T2a's controller has no mark-attendance endpoint) — showing "attended" would just be a different fake number. "Registered" is real and honest. |
+| Resources Accessed: 28 | **Removed entirely** | No documents/resources feature exists anywhere — zero backend API, zero admin UI. Faking a number here would just be swapping one fake stat for another. This is a separate, much larger unbuilt feature — not in scope for this task. |
+| Community Rank: #15 | "My Committees" (real count) | No ranking/gamification system exists or is being requested — inventing one to fill this card is out of scope. Committee membership count is real, meaningful, and cheap to add. |
+| Fake hardcoded "Upcoming Events" array | Real, **personalized** — events this specific user is registered for | Needs one new backend endpoint (see below). |
+| Fake hardcoded "Recent Announcements" | Real recent published news posts | `newsService.getAll()` already exists (T13) — this is a straight reuse, no new backend needed. |
+
+### Files to create
+
+**`lmsa-api/src/controllers/dashboard.controller.js`**
+
+- `getMyStats(req, res)` — `GET /stats` — authenticated. Returns:
+  ```
+  {
+    success: true,
+    stats: {
+      membership_status: req.user.membership_status,
+      events_registered_count: <count from event_registrations where user_id = req.user.id>,
+      committees_count: <count from committee_members where user_id = req.user.id and left_at is null>
+    }
+  }
+  ```
+- `getMyUpcomingEvents(req, res)` — `GET /my-events` — authenticated.
+  Joins `event_registrations` (`user_id = req.user.id`) to `events`,
+  filtered to `start_datetime >= now()`, ordered ascending, reasonable
+  limit (e.g. 5). Response: `{ success: true, events: [...] }`.
+
+**`lmsa-api/src/routes/dashboard.routes.js`**
+
+- `GET /stats` — `authenticate` only
+- `GET /my-events` — `authenticate` only
+
+### Files to modify
+
+**`lmsa-api/src/server.js`** — add `dashboardRoutes` import and
+`app.use('/api/dashboard', dashboardRoutes)`.
+
+**`lmsa-website/src/services/dashboard.service.js`** (new) — `getStats()`,
+`getMyUpcomingEvents()`, matching established service conventions.
+
+**`lmsa-website/src/pages/portal/DashboardPage.jsx`** — full rewrite per
+the mapping table above:
+- 4 stat cards: Membership Status, Events Registered, My Committees, and
+  a 4th — since "Resources Accessed" is being removed outright, either
+  drop to a 3-card grid or use the 4th slot for something else real and
+  cheap (e.g. total upcoming site-wide events count, via the existing
+  `eventService.getAll({ upcoming: true })` — your call, note the choice
+  in your report).
+- "Upcoming Events" section → real data via
+  `dashboardService.getMyUpcomingEvents()`. Handle the empty case
+  gracefully (a new student with no registrations yet shouldn't see a
+  broken/blank section — a friendly "no upcoming events" message with a
+  link to `/events` is appropriate).
+- "Recent Announcements" section → rename to "Recent News" (more
+  accurate given the data source) and pull the 3 most recent published
+  posts via `newsService.getAll({ limit: 3 })` (check T13's exact param
+  name/shape first, don't assume).
+- Loading states throughout — this page currently has zero
+  `useState`/`useEffect`, follow the established pattern from
+  `CommitteePageTemplate.jsx`/`EventsPage.jsx` for how this codebase
+  handles async data + loading skeletons.
+
+### Acceptance criteria
+
+- [ ] `node --check` passes on both new backend files.
+- [ ] `npx eslint` — 0 errors, 0 warnings, both repos.
+- [ ] `npm run build` — clean, **actually run and verified, not assumed**
+      (this instruction keeps appearing on this board for a reason —
+      every claim gets independently re-checked regardless).
+- [ ] No fabricated numbers remain anywhere on this page — every stat
+      traces to a real query.
+- [ ] A student with zero event registrations and zero committee
+      memberships sees a sensible, non-broken empty state, not a crash
+      or a raw "0" with no context.
+- [ ] `membership_status` correctly reflects reality — test with an
+      account whose status you know (e.g. one you approved via T11's
+      admin UI) and confirm it matches.
+
+### Report
+
+*(Agent: fill this in before pushing)*
