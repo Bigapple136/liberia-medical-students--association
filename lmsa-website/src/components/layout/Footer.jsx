@@ -1,8 +1,35 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Facebook, Twitter, Instagram, Mail, Phone, MapPin, ExternalLink } from 'lucide-react';
+import toast from 'react-hot-toast';
+import { newsletterService } from '@services/newsletter.service';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
+  const [email, setEmail] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleSubscribe = async (e) => {
+    e.preventDefault();
+    if (!email) {
+      toast.error('Please enter your email');
+      return;
+    }
+    setSubmitting(true);
+    try {
+      const result = await newsletterService.subscribe(email);
+      if (result.success) {
+        toast.success('Subscribed! Welcome to the LMSA newsletter.');
+        setEmail('');
+      } else {
+        toast.error(result.message || 'Subscription failed. Please try again.');
+      }
+    } catch (err) {
+      toast.error('Subscription failed. Please try again.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   return (
     <footer className="bg-gray-900 text-gray-300">
@@ -58,6 +85,30 @@ export default function Footer() {
                 <Instagram size={20} />
               </a>
             </div>
+
+            {/* Newsletter Signup */}
+            <form onSubmit={handleSubscribe} className="mt-6">
+              <label htmlFor="newsletter-email" className="block text-sm font-medium text-white mb-2">
+                Subscribe to our newsletter
+              </label>
+              <div className="flex gap-2">
+                <input
+                  id="newsletter-email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="your@email.com"
+                  className="flex-1 px-3 py-2 text-sm rounded-lg bg-gray-800 text-white placeholder-gray-500 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-lmsa-500"
+                />
+                <button
+                  type="submit"
+                  disabled={submitting}
+                  className="px-4 py-2 text-sm font-semibold rounded-lg bg-lmsa-600 text-white hover:bg-lmsa-500 transition-colors duration-200 disabled:opacity-60"
+                >
+                  {submitting ? '...' : 'Subscribe'}
+                </button>
+              </div>
+            </form>
           </div>
 
           {/* About Column */}
