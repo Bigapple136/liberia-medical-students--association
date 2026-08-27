@@ -85,7 +85,7 @@ so this entire authentication path was silently broken the whole time.
 | T15 | General site-wide contact form (`ContactPage.jsx` → real backend) | none | **done — code verified, mailbox setup deferred by Stone** |
 | T16 | Real student dashboard stats (replace 100% fake data in `DashboardPage.jsx`) | none | **done — pending Stone live-verify (1 specific risk flagged)** |
 | T17 | Unify registration with membership application; fix hardcoded `membership_type` | none | **assigned — priority** |
-| T18 | Admin events management page (`EventsAdminPage.jsx`) | none | **assigned — priority** |
+| T18 | Admin events management page (`EventsAdminPage.jsx`) | none | **needs-review** |
 
 **T17 and T18 flagged priority**, ahead of the remaining backlog (Leadership
 page, newsletter signup). Both found via Stone's direct testing — not
@@ -2955,7 +2955,7 @@ the pattern already there for `full_name`/`year_level`.
 ## T18 — Admin events management page
 
 **Branch:** `task/t18-events-admin`
-**Status:** assigned — priority
+**Status:** needs-review
 **Depends on:** none (T2a's backend and T2b's frontend service are both
 already live and fully support everything this page needs)
 
@@ -3029,9 +3029,32 @@ cover them.
       credentials don't allow.
 - [ ] Non-admin cannot reach this page (standard `ProtectedRoute` check).
 - [ ] Optional committee association works correctly if set (event
-      shows up under that committee's own events list too, per T1's
-      existing `getEvents` endpoint).
+       shows up under that committee's own events list too, per T1's
+       existing `getEvents` endpoint).
 
 ### Report
 
-*(Agent: fill this in before pushing)*
+- **Status:** assigned → needs-review
+- **Files created:**
+  - `lmsa-website/src/pages/admin/EventsAdminPage.jsx` — full admin events management page (list + status filter tabs + create/edit form + per-event status transitions + registrations view). Modeled structurally on `NewsAdminPage.jsx`.
+- **Files modified:**
+  - `lmsa-website/src/routes.jsx` — imported `EventsAdminPage` and added `<Route path="events" element={<EventsAdminPage />} />` inside the existing `ProtectedRoute requireRole={['admin','executive','super_admin']}` `/admin` group (matches the pre-existing `AdminLayout` sidebar link to `/admin/events`).
+- **Deviations from spec (and why):**
+  - **Create forces `status: 'upcoming'` (backend limitation).** T2a's `event.controller.js` `create()` hardcodes `status: 'upcoming'` and ignores any `status` in the request body. To still support creating a `draft` event (and any chosen initial status), the form sends the desired status on create and, when it differs from `'upcoming'`, immediately issues a follow-up `eventService.update(id, { status })` to set it. This is seamless to the admin and satisfies the "draft → …" transition requirement. Noted so the orchestrator is aware the backend can't create non-`upcoming` events in a single call.
+  - **`committee_id` stored as raw UUID, not committee name.** The form's committee select populates options via `committeeService.getAll()` and submits the chosen committee's `id` (matching the `events.committee_id` FK). The card only shows the `event_type` badge, not a committee name — showing the name would require an extra lookup/map; the association is still correctly persisted and will surface under that committee's own list via T1's `getEvents` endpoint. Easy follow-up to display the name if desired.
+  - **`event_type` enum** taken from `001_base_schema.sql`: `academic`, `social`, `community`, `sports`, `general_assembly`, `symposium`. All six offered in the form's Type select.
+  - **Full attendee list shown (not just count).** Spec said "a count" is the minimum and a full list is a nice-to-have. I included both: the card always shows a registration count, and an expandable "View registrations" panel loads and lists attendees (name/email/status) via `eventService.getRegistrations(id)`.
+- **Manual test results / acceptance criteria:**
+  - **`npx eslint src/pages/admin/EventsAdminPage.jsx src/routes.jsx --ext js,jsx`** → 0 errors, 0 warnings.
+  - **`npm run build`** → clean (1574 modules transformed, only the pre-existing >500 kB chunk-size warning, unrelated to this change).
+  - **List + filter:** `eventService.getAll({ status })` → `GET /events?status=…` returns `response.data.events`; status filter tabs map to the exact `events.status` enum values.
+  - **Create/Edit:** `eventService.create` → `POST /events`, `eventService.update` → `PUT /events/:id`, both return `response.data.event` and match T2a's request/response shapes (verified against `event.controller.js`). Datetime `<input type="datetime-local">` values are converted to Supabase-accepted timestamps via a `toTimestamp` helper (appends `:00`); stored timestamps are converted back for display via `toDateInputValue`.
+  - **Status transitions:** quick-action buttons (Upcoming / Ongoing / Completed / Cancelled) call `eventService.update(id, { status })`; Cancel and Delete use `window.confirm` before proceeding, per spec.
+  - **Registrations:** expandable panel calls `eventService.getRegistrations(id)` → `GET /events/:id/registrations`, returns `response.data.registrations` with flattened `full_name`/`email`/`registration_status` (matches T2a's flattening).
+  - **Non-admin reachability:** the route is nested inside the existing `ProtectedRoute requireRole={['admin','executive','super_admin']}` `/admin` group, so it inherits T7's role enforcement — non-admins cannot reach it.
+  - **Full create→public loop** (create an event and confirm it appears on `/events`) could not be executed live here (no Supabase/API credentials in this environment); request/response shapes were verified directly against T2a's merged controller and the service mirrors the already-working `committeeService`/`eventService` patterns, so the round-trip should succeed once a backend is up. **Orchestrator/Stone: run a manual create + verify on `/events` against the live API before merge.**
+  - **Optional committee association** is wired through to the `committee_id` FK; it can be verified live alongside the create loop (event should then also appear under that committee's `getEvents` list).
+- **No new npm dependencies added.**
+- **Open questions / blockers for orchestrator:**
+  - Confirm the live `events` table accepts the `fee`/`max_attendees` numeric fields as sent (numbers / null) — shapes match T2a but worth a spot check live.
+  - `AdminLayout.jsx` also links to `/admin/documents` and `/admin/announcements` (both still 404) — flagged in the spec as out-of-scope follow-ups; left untouched per instructions.
