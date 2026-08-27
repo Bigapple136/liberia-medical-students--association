@@ -86,6 +86,9 @@ so this entire authentication path was silently broken the whole time.
 | T16 | Real student dashboard stats (replace 100% fake data in `DashboardPage.jsx`) | none | **done — pending Stone live-verify (1 specific risk flagged)** |
 | T17 | Unify registration with membership application; fix hardcoded `membership_type` | none | **done — live-verified** |
 | T18 | Admin events management page (`EventsAdminPage.jsx`) | none | **done — live-verified** |
+| T19 | Backend executive positions API (`LeadershipPage.jsx` real data + admin assignment) | none | **assigned** |
+| T20 | Frontend: real `LeadershipPage.jsx` + admin executive-position management | T19 | blocked |
+| T21 | Site-wide newsletter signup | none | **assigned** |
 
 **T17 and T18 flagged priority**, ahead of the remaining backlog (Leadership
 page, newsletter signup). Both found via Stone's direct testing — not
@@ -3152,3 +3155,239 @@ cover them.
 - **Open questions / blockers for orchestrator:**
   - Confirm the live `events` table accepts the `fee`/`max_attendees` numeric fields as sent (numbers / null) — shapes match T2a but worth a spot check live.
   - `AdminLayout.jsx` also links to `/admin/documents` and `/admin/announcements` (both still 404) — flagged in the spec as out-of-scope follow-ups; left untouched per instructions.
+
+---
+
+## T19 — Backend executive positions API
+
+**Branch:** `task/t19-leadership-backend`
+**Status:** assigned
+**Depends on:** none
+
+### Context
+
+`LeadershipPage.jsx` shows a hardcoded `executives` array with literal
+placeholder names ("Student Name", "Student Name", ...). The
+`executive_positions` table has existed since `001_base_schema.sql` —
+zero backend API, zero admin UI. It correctly links to real `users`
+rows via `user_id` (so a position holder's name/photo comes from their
+actual account — no duplicate data entry). Read
+`membership.controller.js` first as the closest structural reference
+(similar size/shape: public read, admin write, links to `users`).
+
+### Schema reference (already live, do not modify)
+
+```sql
+-- executive_positions
+id, position_name, position_rank, user_id, academic_year,
+elected_at, term_start, term_end,
+status ('active'|'completed'|'impeached'), created_at
+```
+
+### Files to create
+
+**`lmsa-api/src/controllers/executive.controller.js`**
+
+- `getAll(req, res)` — `GET /` — **public**. Only `status = 'active'`
+  positions (past/impeached officers shouldn't show on the live public
+  page — a "Past Presidents" style view could reuse this endpoint with a
+  `?status=` filter later, but default to active-only). Join to `users`
+  for `full_name`, `profile_photo_url`, `year_level` (mirror the exact
+  join-and-flatten pattern `membership.controller.js`'s `getAll` already
+  uses for `applicant_name` etc. — flatten to `holder_name`,
+  `holder_photo_url`, `holder_year_level` or similar, keep it
+  consistent). Order by `position_rank ASC`. Support optional
+  `?academic_year=` filter. Response:
+  `{ success: true, positions: [...] }`.
+- `getAllAdmin(req, res)` — `GET /admin/all` — admin-only
+  (`authorize('admin', 'executive', 'super_admin')`). All positions
+  regardless of status, same user join. Response:
+  `{ success: true, positions: [...] }`.
+- `create(req, res)` — `POST /` — admin-only. Body: `{ position_name,
+  position_rank, user_id, academic_year, elected_at, term_start,
+  term_end }`. `status` defaults to `'active'`. Response:
+  `{ success: true, position: {...} }`.
+- `update(req, res)` — `PUT /:id` — admin-only. Same body shape, plus
+  allow updating `status` (e.g. marking a position `'completed'` at
+  end of term). Response: `{ success: true, position: {...} }`.
+- `deletePosition(req, res)` — `DELETE /:id` — admin-only. Response:
+  `{ success: true }`.
+
+**`lmsa-api/src/routes/executive.routes.js`**
+
+- Public: `GET /`
+- Admin-only: `GET /admin/all`, `POST /`, `PUT /:id`, `DELETE /:id`
+
+### Files to modify
+
+**`lmsa-api/src/server.js`** — add `executiveRoutes` import and
+`app.use('/api/executive', executiveRoutes)`.
+
+### Acceptance criteria
+
+- [ ] `node --check` / `npx eslint` — clean, both backend files.
+- [ ] Non-active positions never appear in the public `getAll` — verify
+      by creating one with `status: 'completed'` (via `getAllAdmin` or
+      direct test) and confirming it's absent from the public response.
+- [ ] Admin-only routes reject unauthenticated (401) and non-admin (403)
+      — test and note in report.
+- [ ] User join correctly returns real name/photo, not just a bare
+      `user_id` — verify against a real test user.
+
+### Report
+
+*(Agent: fill this in before pushing)*
+
+---
+
+## T20 — Frontend: real Leadership page + admin executive management
+
+**Branch:** `task/t20-leadership-frontend`
+**Status:** blocked (needs T19 done)
+**Depends on:** T19
+
+### Context
+
+Two things in one task, both smaller in scope than the committees/
+membership/news equivalents — executive position management is a simple
+list + assign-a-user form, not a large feature surface. Read
+`CommitteePageTemplate.jsx` for the public-page pattern and
+`MembershipAdminPage.jsx` for the admin-page pattern.
+
+### Files to create
+
+**`lmsa-website/src/services/executive.service.js`** — matching
+established service conventions. Cover: `getAll`, `getAllAdmin`,
+`create`, `update`, `delete`.
+
+**`lmsa-website/src/pages/admin/ExecutiveAdminPage.jsx`** — a list of all
+positions (admin view, all statuses) + a create/edit form: position
+name, rank, academic year, term dates, status, and a user picker (reuse
+`committeeService.searchUsers()` — already built for T4's committee
+member assignment, same pattern applies here).
+
+### Files to modify
+
+**`lmsa-website/src/pages/public/LeadershipPage.jsx`** — replace the
+hardcoded `executives` array with a real fetch via
+`executiveService.getAll()`. Keep the existing layout/card design — this
+is a data-source swap. Handle the empty case gracefully (no positions
+assigned yet shouldn't show a broken/blank section).
+
+**`lmsa-website/src/routes.jsx`** — wire `ExecutiveAdminPage` under
+`/admin`, same `ProtectedRoute` pattern as every other admin page.
+
+**`lmsa-website/src/layouts/AdminLayout.jsx`** — add a nav link (there
+isn't one for this yet, unlike Events which already had a dead link
+waiting — add a fresh one here, e.g. "Leadership" or "Executive
+Positions").
+
+### Acceptance criteria
+
+- [ ] `npx eslint` — 0 errors, 0 warnings.
+- [ ] `npm run build` — clean, **actually run and verified.**
+- [ ] Public `/leadership` page shows real assigned executives, not the
+      placeholder "Student Name" entries.
+- [ ] Admin can assign a real user to a position and see it appear
+      correctly on the public page — full loop test if credentials
+      allow, or flag for Stone's live verification.
+- [ ] Non-admin cannot reach the new admin page.
+
+### Report
+
+*(Agent: fill this in before pushing)*
+
+---
+
+## T21 — Site-wide newsletter signup
+
+**Branch:** `task/t21-newsletter-signup`
+**Status:** assigned
+**Depends on:** none
+
+### Context
+
+No newsletter signup UI exists anywhere despite being planned across
+every project doc. `committee_subscribers` exists but is scoped to a
+specific `committee_id` (T1's per-committee newsletter) — not suitable
+for a site-wide list without overloading its meaning. This task adds a
+dedicated, separate mechanism.
+
+### Database migration
+
+**`lmsa-website/database/003_newsletter.sql`** (new file, follow the
+numbered-migration convention already established — see
+`lmsa-website/database/README.md` for the pattern, update it with this
+new entry):
+
+```sql
+CREATE TABLE IF NOT EXISTS newsletter_subscribers (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  email TEXT NOT NULL UNIQUE,
+  subscribed_at TIMESTAMPTZ DEFAULT NOW(),
+  status TEXT DEFAULT 'active' CHECK (status IN ('active', 'unsubscribed'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_newsletter_subscribers_email ON newsletter_subscribers(email);
+ALTER TABLE newsletter_subscribers ENABLE ROW LEVEL SECURITY;
+
+-- Anyone can subscribe (public signup)
+CREATE POLICY "Public can subscribe" ON newsletter_subscribers
+  FOR INSERT WITH CHECK (true);
+```
+
+This migration needs to actually be run against the live Supabase
+project (same as `001`/`002` before it) — flag this clearly in your
+report, same as T1's original migration required Stone to run it
+manually via the SQL Editor. Include the exact run instructions in your
+report.
+
+### Files to create
+
+**`lmsa-api/src/controllers/newsletter.controller.js`**
+
+- `subscribe(req, res)` — `POST /subscribe` — public. Body: `{ email }`.
+  Use `.upsert()` with `onConflict: 'email'` so re-subscribing (or a
+  previously-unsubscribed email trying again) doesn't error — same
+  pattern already established in `committee.controller.js`'s own
+  `subscribe`. If the row already exists with `status: 'unsubscribed'`,
+  the upsert should flip it back to `'active'`. Response:
+  `{ success: true }`.
+- `unsubscribe(req, res)` — `POST /unsubscribe` — public (no auth — the
+  person clicking an unsubscribe link in an email isn't logged in). Body:
+  `{ email }`. Sets `status: 'unsubscribed'` rather than deleting the
+  row (preserves the record that they once subscribed, standard
+  practice). Response: `{ success: true }`.
+
+**`lmsa-api/src/routes/newsletter.routes.js`** — both routes public, no
+`authenticate`. Consider the same rate-limiting judgment call T15 made
+(public unauthenticated endpoint, plausible spam target) — your call,
+note it in your report.
+
+### Files to modify
+
+**`lmsa-api/src/server.js`** — wire in `/api/newsletter`.
+
+**`lmsa-website/src/services/newsletter.service.js`** (new) — `subscribe(email)`, matching established conventions.
+
+**`lmsa-website/src/components/layout/Footer.jsx`** — add a simple email
+input + subscribe button to the Brand column (or wherever fits the
+existing layout best — use your judgment, this footer doesn't currently
+have a dedicated newsletter section at all). Use `toast` for feedback,
+consistent with the rest of the app. No unsubscribe UI needed on the
+frontend for this task — that's an email-link-driven flow for later, out
+of scope here.
+
+### Acceptance criteria
+
+- [ ] `node --check` / `npx eslint` — clean, both repos.
+- [ ] `npm run build` — clean, **actually run and verified.**
+- [ ] Re-subscribing with the same email doesn't error (upsert works
+      correctly) — test and note in report.
+- [ ] Migration SQL is syntactically valid and includes exact run
+      instructions for Stone in the report — same as T1's original
+      pattern.
+
+### Report
+
+*(Agent: fill this in before pushing)*
