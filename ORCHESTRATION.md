@@ -82,7 +82,7 @@ so this entire authentication path was silently broken the whole time.
 | T12 | Backend news API | none | **done** |
 | T13 | Frontend public news pages (`NewsPage.jsx` + `NewsDetailPage.jsx`) | T12 | **done — live-verified** |
 | T14 | Admin news editor (create/edit/publish) | T12 | **done — live-verified** |
-| T15 | General site-wide contact form (`ContactPage.jsx` → real backend) | none | **done — pending Stone live-verify** |
+| T15 | General site-wide contact form (`ContactPage.jsx` → real backend) | none | **done — code verified, mailbox setup deferred by Stone** |
 
 ### Backlog — found during post-membership audit, not yet specced
 
@@ -2479,8 +2479,34 @@ established admin-page conventions in this codebase (list/table layout,
 ## T15 — General site-wide contact form
 
 **Branch:** `task/t15-contact-form`
-**Status:** done — code merged, live submission test still needed from Stone (see below)
+**Status:** done — form logic verified live by Stone (submit → 500 due to no real mailbox yet, form-clearing bug found and fixed). Mailbox setup intentionally deferred at Stone's request.
 **Depends on:** none
+
+### Live verification results (2026-08-19)
+
+Stone tested against the live deployment and found two things:
+
+1. **Real bug, fixed**: after a successful submit, form fields stayed
+   filled until a hard refresh — `setFormData` was verifiably correct on
+   inspection (two independent reviews), likely browser autofill
+   re-populating fields after React's own state-driven clear. Fixed with
+   `autoComplete="off"` + a remount-on-success key, pushed directly to
+   `main` (commit `4c98528`) rather than routed through an agent, given
+   the small, well-understood scope.
+2. **Expected, not a bug**: a `{"success":false,"message":"Failed to
+   send message"}` response on one attempt — this is the backend
+   correctly failing because the destination mailbox
+   (`info@lmsa.org.lr` / `CONTACT_EMAIL` fallback) doesn't actually
+   exist yet ("we do not own the mail box" — Stone's words). The error
+   handling itself is working as designed; there's just nowhere real
+   for the email to land yet.
+
+**Stone has explicitly deferred setting up a real mailbox** — this
+feature's *code* is complete and correct; it just needs a real
+`CONTACT_EMAIL` (and the two displayed `info@lmsa.org.lr` mailto links
+in `Footer.jsx`/`ContactPage.jsx`) pointed at an address LMSA actually
+controls whenever that's sorted out. Not blocking anything else on this
+board.
 
 ### Orchestrator review
 
