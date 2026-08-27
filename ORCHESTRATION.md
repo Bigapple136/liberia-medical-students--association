@@ -84,8 +84,8 @@ so this entire authentication path was silently broken the whole time.
 | T14 | Admin news editor (create/edit/publish) | T12 | **done — live-verified** |
 | T15 | General site-wide contact form (`ContactPage.jsx` → real backend) | none | **done — code verified, mailbox setup deferred by Stone** |
 | T16 | Real student dashboard stats (replace 100% fake data in `DashboardPage.jsx`) | none | **done — pending Stone live-verify (1 specific risk flagged)** |
-| T17 | Unify registration with membership application; fix hardcoded `membership_type` | none | **done — pending Stone live-verify** |
-| T18 | Admin events management page (`EventsAdminPage.jsx`) | none | **done — pending Stone live-verify** |
+| T17 | Unify registration with membership application; fix hardcoded `membership_type` | none | **done — live-verified** |
+| T18 | Admin events management page (`EventsAdminPage.jsx`) | none | **done — live-verified** |
 
 **T17 and T18 flagged priority**, ahead of the remaining backlog (Leadership
 page, newsletter signup). Both found via Stone's direct testing — not
@@ -2855,7 +2855,7 @@ the mapping table above:
 ## T17 — Unify registration with membership application
 
 **Branch:** `task/t17-registration-membership-unify`
-**Status:** done — code merged, live loop test still needed from Stone (see below)
+**Status:** done — live-verified by Stone (membership flow confirmed working correctly)
 **Depends on:** none
 
 ### Orchestrator review
@@ -3013,7 +3013,7 @@ the pattern already there for `full_name`/`year_level`.
 ## T18 — Admin events management page
 
 **Branch:** `task/t18-events-admin`
-**Status:** done — code merged, live create→public loop test still needed from Stone (see below)
+**Status:** done — live-verified by Stone (event creation confirmed working, appears correctly on public /events page)
 **Depends on:** none (T2a's backend and T2b's frontend service are both
 already live and fully support everything this page needs)
 
