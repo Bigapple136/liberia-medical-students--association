@@ -82,6 +82,7 @@ so this entire authentication path was silently broken the whole time.
 | T12 | Backend news API | none | **done** |
 | T13 | Frontend public news pages (`NewsPage.jsx` + `NewsDetailPage.jsx`) | T12 | **done — live-verified** |
 | T14 | Admin news editor (create/edit/publish) | T12 | **done — live-verified** |
+| T15 | General site-wide contact form (`ContactPage.jsx` → real backend) | none | **assigned** |
 
 ### Backlog — found during post-membership audit, not yet specced
 
@@ -2472,3 +2473,100 @@ established admin-page conventions in this codebase (list/table layout,
   be revisited.
 - Category options match the DB CHECK constraint exactly: news,
   announcement, achievement, opportunity, health, academic, event.
+
+---
+
+## T15 — General site-wide contact form
+
+**Branch:** `task/t15-contact-form`
+**Status:** assigned
+**Depends on:** none
+
+### Context
+
+`ContactPage.jsx`'s `handleSubmit` is a literal `// TODO: Implement form
+submission` — it fakes success with a `setTimeout` and a native
+`alert()` (not even a `toast`, inconsistent with the rest of the app).
+No backend endpoint exists for general site-wide contact. This is
+distinct from the per-committee contact form T1 already built
+(`POST /committees/:id/contact`) — that one requires a `committee_id`
+and emails a specific committee; this one is the main "Contact Us" page,
+not tied to any committee, and should email a general LMSA address.
+
+No new database table is needed — follow the exact pattern T1 already
+established for `submitContactForm` (email-only side effect, no
+persistence). Read that function in
+`lmsa-api/src/controllers/committee.controller.js` first as your
+reference implementation, including its non-critical-secondary-email
+resilience pattern (the confirmation-to-sender email must not fail the
+whole request if only it fails — see the email-resiliency fixes logged
+earlier in this file for why that matters).
+
+### Current form fields (already exist in `ContactPage.jsx`, don't
+change them)
+
+`name`, `email`, `subject`, `message`
+
+### Files to create
+
+**`lmsa-api/src/controllers/contact.controller.js`**
+
+- `submit(req, res)` — `POST /` — **public**, no auth required (visitors
+  don't need an account to contact the org). Body: `{ name, email,
+  subject, message }` — validate all four are present and non-empty,
+  and `email` looks like a valid email (reuse whatever validation
+  pattern `express-validator` already provides elsewhere in this
+  codebase — check `auth.routes.js` for the established
+  `body('email').isEmail()` pattern). Send an email to a general LMSA
+  address (use `process.env.EMAIL_FROM` or a new
+  `process.env.CONTACT_EMAIL` env var if you want a distinct inbox —
+  your call, document whichever in your report) with the visitor's
+  message. Then, as a **best-effort, non-blocking** secondary step, send
+  a confirmation email back to the visitor's own address acknowledging
+  receipt — wrapped in its own try/catch, must not fail the primary
+  response if only this part fails. Response: `{ success: true, message:
+  'Your message has been sent.' }`.
+
+**`lmsa-api/src/routes/contact.routes.js`**
+
+- `POST /` — public, no `authenticate` middleware needed. Consider
+  whether this should sit behind the existing `authLimiter` (strict,
+  30/15min) rather than the general one, given it's an unauthenticated
+  public-facing form that's a plausible spam target — check
+  `server.js`'s current rate-limiter setup and use your judgment, note
+  the choice in your report.
+
+### Files to modify
+
+**`lmsa-api/src/server.js`** — add `contactRoutes` import and
+`app.use('/api/contact', contactRoutes)`.
+
+**`lmsa-website/src/services/contact.service.js`** (new file) — a single
+`submit({ name, email, subject, message })` method, matching the style
+of every other service file in this codebase.
+
+**`lmsa-website/src/pages/public/ContactPage.jsx`** — replace the fake
+`setTimeout`/`alert()` with a real call to `contactService.submit()`.
+Use `toast.success`/`toast.error` (already used throughout the app,
+`react-hot-toast`) instead of the native `alert()`. Clear the form on
+success. Keep the existing layout/fields — this is a submission-logic
+swap, not a redesign.
+
+### Acceptance criteria
+
+- [ ] `node --check` passes on both new backend files.
+- [ ] `npx eslint` — 0 errors, 0 warnings, both repos.
+- [ ] `npm run build` — clean, **actually run and verified, not
+      assumed.**
+- [ ] Confirmation-email failure doesn't fail the primary submission —
+      confirm the try/catch wraps it correctly on inspection, note in
+      report.
+- [ ] Real submission test against the live backend if credentials
+      allow, or clearly note in the report that this needs Stone's live
+      verification (same pattern as the last several tasks — don't claim
+      a live test happened if it didn't).
+- [ ] `alert()` is gone, replaced with `toast`.
+
+### Report
+
+*(Agent: fill this in before pushing)*
