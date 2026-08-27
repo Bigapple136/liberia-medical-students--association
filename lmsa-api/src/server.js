@@ -19,6 +19,8 @@ import membershipRoutes from './routes/membership.routes.js';
 import newsRoutes from './routes/news.routes.js';
 import contactRoutes from './routes/contact.routes.js';
 import dashboardRoutes from './routes/dashboard.routes.js';
+import executiveRoutes from './routes/executive.routes.js';
+import newsletterRoutes from './routes/newsletter.routes.js';
 
 // Load environment variables
 dotenv.config();
@@ -89,10 +91,15 @@ app.use('/api/events', eventRoutes);
 app.use('/api/membership', membershipRoutes);
 app.use('/api/news', newsRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/executive', executiveRoutes);
 
 // Contact endpoint — public, unauthenticated, plausible spam target.
 // Shares the same strict budget as auth routes (30/15min).
 app.use('/api/contact', authLimiter, contactRoutes);
+
+// Newsletter signup — public, unauthenticated, plausible spam target.
+// Same strict budget as /api/contact (30/15min).
+app.use('/api/newsletter', authLimiter, newsletterRoutes);
 
 // Root route
 app.get('/', (req, res) => {
