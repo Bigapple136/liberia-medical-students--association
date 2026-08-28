@@ -10,6 +10,7 @@ new numbered files are added.
 |---|------|---------------|
 | 001 | `001_base_schema.sql` | Creates all core tables (`users`, `events`, `committees`, `committee_members`, `documents`, `news_posts`, `event_registrations`, etc.), indexes, RLS policies, and triggers. Must run first — everything else depends on these tables existing. |
 | 002 | `002_committee_additions.sql` | Adds `committee_id` FK columns to `events` and `documents`, extra columns on `committees` (`key_activities`, `email`, `meeting_schedule`, `views`), and creates `committee_announcements`, `committee_achievements`, `committee_subscribers` tables. Depends on 001 being applied first. |
+| 003 | `003_newsletter.sql` | Creates the site-wide `newsletter_subscribers` table (separate from the per-committee `committee_subscribers`), its email index, RLS, and a public insert policy so the unauthenticated footer signup can write. Depends on 001 being applied first (RLS enabled; no FK dependencies). |
 
 ## Status as of 2026-08-17
 
@@ -17,6 +18,8 @@ new numbered files are added.
   Supabase project. All base tables plus committee_announcements,
   committee_achievements, committee_subscribers, and the committee_id FK
   columns on events/documents are live.
+- ⬜ **003 not yet applied** — needs to be run as part of T21 (see that
+  task's report for the exact run instructions).
 
 ## How to run
 
@@ -25,4 +28,7 @@ new numbered files are added.
    query, run it. Confirm no errors — you should see ~17 new tables appear
    under **Table Editor**.
 3. Open `002_committee_additions.sql`, same process.
-4. Update the status line above once confirmed.
+4. Open `003_newsletter.sql`, copy the full contents, paste into a new
+   query, run it. Confirm no errors — you should see a `newsletter_subscribers`
+   table appear under **Table Editor**.
+5. Update the status line above once confirmed.
