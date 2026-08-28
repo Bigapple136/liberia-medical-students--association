@@ -88,7 +88,7 @@ so this entire authentication path was silently broken the whole time.
 | T18 | Admin events management page (`EventsAdminPage.jsx`) | none | **done — live-verified** |
 | T19 | Backend executive positions API (`LeadershipPage.jsx` real data + admin assignment) | none | **done** |
 | T20 | Frontend: real `LeadershipPage.jsx` + admin executive-position management | T19 | **assigned** |
-| T21 | Site-wide newsletter signup | none | **assigned** |
+| T21 | Site-wide newsletter signup | none | **code done — needs Stone to run migration** |
 
 **T17 and T18 flagged priority**, ahead of the remaining backlog (Leadership
 page, newsletter signup). Both found via Stone's direct testing — not
@@ -3334,8 +3334,29 @@ Positions").
 ## T21 — Site-wide newsletter signup
 
 **Branch:** `task/t21-newsletter-signup`
-**Status:** assigned
+**Status:** code done — merged, but NOT live until Stone runs the migration (see below)
 **Depends on:** none
+
+### Orchestrator review
+
+Independently verified: `node --check` clean, `npx eslint` 0 errors/0
+warnings across both repos, `npm run build` clean. Matches the report
+exactly. Correctly caught a real gap in my own original migration spec —
+I only wrote an `INSERT` policy, but both `unsubscribe` and the
+`subscribe` upsert's update-path (re-subscribing an existing/
+unsubscribed email) need `UPDATE` too; without it those would hit an RLS
+violation under the anon role. Good catch, correctly flagged as a
+deviation rather than silently added. Email-format validation and the
+shared `authLimiter` reuse are both sound, sensible calls matching
+established patterns. `newsletterService.subscribe()` returning the full
+`{success, message}` envelope (rather than unwrapping further, like
+other services do) is a reasonable adaptation — there's no deeper
+payload to unwrap to for this action.
+
+Approved and merged to `main` — but genuinely **not functional yet**.
+Same as T1's original `committee_additions.sql`, this needs a real human
+to run SQL against production Supabase; I can't do that from this
+sandbox. The endpoints will fail until this happens.
 
 ### Context
 
