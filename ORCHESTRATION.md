@@ -103,6 +103,16 @@ so this entire authentication path was silently broken the whole time.
 | T19 | Backend executive positions API (`LeadershipPage.jsx` real data + admin assignment) | none | **done** |
 | T20 | Frontend: real `LeadershipPage.jsx` + admin executive-position management | T19 | **done** |
 | T21 | Site-wide newsletter signup | none | **done — migration applied, fully live** |
+| T22 | Migrate email delivery from nodemailer/Gmail SMTP to Brevo's HTTP API | none | **assigned — priority** |
+
+**T22 flagged priority.** Render permanently blocks outbound SMTP ports
+(25/465/587) on free-tier web services since September 2025 — confirmed
+via Render's own changelog. No amount of DNS/network fixes can resolve
+this; it's a platform firewall policy, not a bug. Every email-sending
+feature (welcome email, contact form, membership review notifications,
+committee contact forms) has been non-functional since before any
+mailbox was even set up. Brevo's HTTP API sends over HTTPS (port 443,
+never blocked), sidestepping the restriction entirely.
 
 **T17 and T18 flagged priority**, ahead of the remaining backlog (Leadership
 page, newsletter signup). Both found via Stone's direct testing — not
@@ -3535,3 +3545,103 @@ of scope here.
   - **BLOCKER for go-live:** `003_newsletter.sql` must be run against Supabase by Stone (steps above) before the endpoints work in production. Code + build are green; the live table is the only outstanding dependency.
   - No new npm dependencies were added (reused `express-rate-limit` which is already a dependency, and `react-hot-toast` which is already used app-wide).
   - Confirm whether the footer's Subscribe placement in the Brand column is acceptable, or whether it should move to its own footer column — spec left placement to my judgment.
+
+---
+
+## T22 — Migrate email delivery to Brevo's HTTP API
+
+**Branch:** `task/t22-brevo-email-migration`
+**Status:** assigned — priority
+**Depends on:** none
+
+### Context
+
+Confirmed via Render's own changelog and multiple corroborating reports:
+free-tier Render web services block all outbound traffic to SMTP ports
+25, 465, and 587, as of September 26, 2025. This is a platform firewall
+policy — a series of DNS/IPv6 fixes applied to this codebase (see the
+critical-bugs log near the top of this file) correctly resolved a real,
+separate misrouting issue, but the connection now just times out because
+Render silently drops it at the network level. No code change involving
+SMTP can work around this on the free tier.
+
+Every place that sends email in this app already goes through one
+shared helper — `lmsa-api/src/config/email.js`'s `sendEmail({ to,
+subject, html, text })` — called from exactly 4 places:
+`auth.controller.js` (welcome email), `committee.controller.js` (contact
+form + confirmation), `contact.controller.js` (T15's general contact),
+`membership.controller.js` (review notification). **Preserve this exact
+function signature.** If you do, none of those 4 call sites need to
+change at all — only `email.js`'s internal implementation changes.
+
+Brevo offers both an SMTP relay and an HTTP REST API. **Use the HTTP
+API** (`https://api.brevo.com/v3/smtp/email`) — their SMTP relay would
+hit the identical Render port-block regardless of provider, since the
+restriction is on the port, not the destination.
+
+### Stone's setup (parallel to the code work, not blocking it)
+
+1. Create a Brevo account (brevo.com), verify `dev.lmsa@gmail.com` as a
+   sender (Brevo requires sender verification before it'll send on your
+   behalf — follow their verification flow, likely an email confirmation
+   link).
+2. Generate an API key: Brevo dashboard → SMTP & API → API Keys →
+   generate a new key.
+3. Set on Render: `BREVO_API_KEY` (the generated key), `BREVO_SENDER_EMAIL`
+   (`dev.lmsa@gmail.com`), `BREVO_SENDER_NAME` (`LMSA`). The old
+   `EMAIL_HOST`/`EMAIL_PORT`/`EMAIL_USER`/`EMAIL_PASSWORD`/`EMAIL_FROM`
+   vars become unused after this task merges — safe to leave set (harmless)
+   or remove, Stone's call.
+
+### Files to modify
+
+**`lmsa-api/src/config/email.js`** — full rewrite of the implementation,
+same exported interface:
+- Remove the `nodemailer` import and `transporter` entirely.
+- Implement `sendEmail({ to, subject, html, text })` using native
+  `fetch()` (Node 18+, already the runtime here — no new dependency
+  needed) to POST to `https://api.brevo.com/v3/smtp/email` with header
+  `api-key: process.env.BREVO_API_KEY` and a JSON body: `sender: {
+  email: process.env.BREVO_SENDER_EMAIL, name: process.env.BREVO_SENDER_NAME
+  }`, `to: [{ email: to }]`, `subject`, `htmlContent: html`. Check
+  Brevo's actual API docs for the exact required/optional field names
+  and response shape before finalizing — don't guess field names without
+  checking.
+- On a non-2xx response, throw an `Error` with a useful message (parse
+  Brevo's JSON error body if present) — this preserves the existing
+  behavior every call site already depends on (they wrap `sendEmail` in
+  `try/catch` per the established non-critical-secondary-action
+  resilience pattern; a thrown error is what they expect).
+- Remove the old `transporter.verify(...)` startup check (that was
+  nodemailer-specific) — if you want an equivalent "is email configured"
+  sanity check at startup, a simple check that `BREVO_API_KEY` is set
+  (log a warning if not) is a reasonable, much simpler replacement.
+
+**`lmsa-api/package.json`** — remove the `nodemailer` dependency (fully
+unused after this change — confirmed via `grep -rln "sendEmail\|nodemailer"`
+that only `email.js` itself imports it directly).
+
+**`lmsa-api/.env.example`** — replace `EMAIL_HOST`/`EMAIL_PORT`/
+`EMAIL_USER`/`EMAIL_PASSWORD`/`EMAIL_FROM` with `BREVO_API_KEY`,
+`BREVO_SENDER_EMAIL`, `BREVO_SENDER_NAME`.
+
+### Acceptance criteria
+
+- [ ] `node --check` / `npx eslint` — clean.
+- [ ] `npm run build` (frontend, to confirm nothing else broke) and the
+      backend still starts cleanly with `node --check src/server.js` —
+      **actually run and verified, not assumed.**
+- [ ] All 4 call sites (`auth.controller.js`, `committee.controller.js`
+      ×2, `contact.controller.js`, `membership.controller.js`) confirmed
+      to need zero changes — verify by re-reading each, not just
+      assuming the signature match holds.
+- [ ] `nodemailer` fully removed from `package.json` and confirmed no
+      remaining import anywhere (`grep -rn "nodemailer" lmsa-api/src`
+      should return nothing).
+- [ ] Cannot be live-tested without Stone's real Brevo API key — flag
+      this clearly in the report rather than claiming it works. Stone
+      will do the real test after this merges and the env vars are set.
+
+### Report
+
+*(Agent: fill this in before pushing)*
