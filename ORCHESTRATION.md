@@ -3644,4 +3644,25 @@ that only `email.js` itself imports it directly).
 
 ### Report
 
-*(Agent: fill this in before pushing)*
+- **Status:** in-progress → needs-review
+- **Files modified:**
+  - `lmsa-api/src/config/email.js` — full rewrite: removed `nodemailer` import/transporter, replaced with `fetch()` POST to `https://api.brevo.com/v3/smtp/email`. Header: `api-key: BREVO_API_KEY`. Body: `sender: { email, name }`, `to: [{ email }]`, `subject`, `htmlContent`, `textContent` (optional). Error handling parses Brevo's JSON error body for useful messages. Startup warning if `BREVO_API_KEY` is unset. **Exported `sendEmail({ to, subject, html, text })` signature is identical to the old nodemailer version** — no caller changes needed.
+  - `lmsa-api/package.json` — removed `"nodemailer": "^8.0.5"` from dependencies.
+  - `lmsa-api/.env.example` — replaced `EMAIL_HOST`/`EMAIL_PORT`/`EMAIL_USER`/`EMAIL_PASSWORD`/`EMAIL_FROM` with `BREVO_API_KEY`, `BREVO_SENDER_EMAIL`, `BREVO_SENDER_NAME`.
+- **Deviations from spec (and why):**
+  - None. Field names verified against Brevo's official API reference (`https://developers.brevo.com/reference/send-transac-email`): `api-key` header, `sender.email`/`sender.name`, `to[].email`, `subject`, `htmlContent`, `textContent` — all exact matches.
+- **Signature preservation — verified all 4 call sites need zero changes:**
+  - `auth.controller.js` — `sendEmail({ to: email, subject: '...', html: '...' })` ✅
+  - `committee.controller.js` (×2) — `sendEmail({ to: committeeEmail, subject: '...', html: '...' })` and `sendEmail({ to: email, subject: '...', html: '...' })` ✅
+  - `contact.controller.js` — `sendEmail({ to: contactEmail, subject: '...', html: '...' })` and `sendEmail({ to: email, subject: '...', html: '...' })` ✅
+  - `membership.controller.js` — `sendEmail({ to: user.email, subject: '...', html: '...' })` ✅
+  - All use `{ to, subject, html }` — the `text` param is never passed by any caller but remains supported as an optional field.
+- **Verification:**
+  - `node --check src/config/email.js` — passes.
+  - `node --check src/server.js` — passes.
+  - `npx eslint src/config/email.js` — 0 errors, 0 warnings.
+  - `grep -rn "import.*nodemailer\|require.*nodemailer" lmsa-api/src/` — returns nothing (exit code 1). Only 3 remaining mentions of "nodemailer" are in code comments (server.js IPv6 note, email.js JSDoc).
+  - `nodemailer` fully removed from `package.json` dependencies.
+- **Cannot be live-tested without Stone's real Brevo API key** — this is expected and noted per acceptance criteria. Stone will do the real end-to-end test after merge and env var setup (`BREVO_API_KEY`, `BREVO_SENDER_EMAIL`, `BREVO_SENDER_NAME` on Render). The old `EMAIL_*` vars can be left set (harmless) or removed at Stone's discretion.
+
+---
