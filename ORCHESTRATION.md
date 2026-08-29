@@ -20,6 +20,20 @@ Claude (orchestrator), and any implementing agents (Claude Code, etc.).
 
 ## Critical bugs found and fixed directly (outside the task board)
 
+**2026-08-29 addendum:** after Stone set up a real mailbox and updated
+Render's email env vars, production logs showed email sending still
+failing — `ETIMEDOUT` and `ENETUNREACH` on an IPv6 address for Gmail's
+SMTP server. Render's outbound networking doesn't reliably route IPv6,
+but Node can still prefer an AAAA (IPv6) DNS record for smtp.gmail.com
+when both A and AAAA exist. Fixed by forcing `family: 4` (IPv4-only) on
+nodemailer's transporter. Same log also showed repeated
+`ERR_ERL_UNEXPECTED_X_FORWARDED_FOR` warnings — `trust proxy` had never
+been set despite being flagged as an outstanding infrastructure item
+since before any of T1–T21 began; without it, `express-rate-limit`
+can't reliably identify clients by IP behind Render's reverse proxy.
+Fixed with `app.set('trust proxy', 1)`. Both pushed directly
+(commit `d66a412`).
+
 While diagnosing Stone's registration/login issues in production, two
 pre-existing, severe bugs were found and fixed directly by the
 orchestrator (not routed through an agent — small, urgent, and required
