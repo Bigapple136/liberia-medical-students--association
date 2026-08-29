@@ -87,7 +87,7 @@ so this entire authentication path was silently broken the whole time.
 | T17 | Unify registration with membership application; fix hardcoded `membership_type` | none | **done — live-verified** |
 | T18 | Admin events management page (`EventsAdminPage.jsx`) | none | **done — live-verified** |
 | T19 | Backend executive positions API (`LeadershipPage.jsx` real data + admin assignment) | none | **done** |
-| T20 | Frontend: real `LeadershipPage.jsx` + admin executive-position management | T19 | **assigned** |
+| T20 | Frontend: real `LeadershipPage.jsx` + admin executive-position management | T19 | **done** |
 | T21 | Site-wide newsletter signup | none | **code done — needs Stone to run migration** |
 
 **T17 and T18 flagged priority**, ahead of the remaining backlog (Leadership
@@ -3275,8 +3275,28 @@ status ('active'|'completed'|'impeached'), created_at
 ## T20 — Frontend: real Leadership page + admin executive management
 
 **Branch:** `task/t20-leadership-frontend`
-**Status:** blocked (needs T19 done)
-**Depends on:** T19
+**Status:** done
+**Depends on:** T19 (done — merged to main)
+
+### Orchestrator review
+
+Independently verified: `npx eslint` on all 5 touched files — 0 errors,
+0 warnings. `npm run build` — clean, matches report exactly.
+`executive.service.js` confirmed correct against T19's actual merged
+controller endpoint-by-endpoint. Good judgment reusing
+`committeeService.searchUsers()` rather than duplicating user-search
+logic — clean cross-service delegation. Fallback placeholder data on
+the public page (rather than a blank section) is a sensible choice for
+the pre-any-assignment state. Approved and merged to `main`.
+
+**Note on the bug report that came in alongside this submission:**
+Stone's testing after this merge surfaced two real, separate bugs — one
+in the T16 dashboard query (embedded-resource filter/sort likely
+erroring at the PostgREST level, taking down the whole portal load via
+`Promise.all`) and one in T2a's `getAll` (missing registration counts,
+affecting `EventsAdminPage.jsx`'s list view). Both fixed directly by the
+orchestrator, unrelated to T20's own code — see the `31ef253` commit for
+details. T20 itself has no defects found.
 
 ### Context
 
