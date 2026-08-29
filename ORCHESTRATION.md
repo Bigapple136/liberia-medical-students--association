@@ -3327,7 +3327,30 @@ Positions").
 
 ### Report
 
-*(Agent: fill this in before pushing)*
+- **Status:** in-progress → needs-review
+- **Files created:**
+  - `lmsa-website/src/services/executive.service.js` — 6 methods (getAll, getAllAdmin, create, update, deletePosition, searchUsers)
+  - `lmsa-website/src/pages/admin/ExecutiveAdminPage.jsx` — admin interface for managing executive positions: list view with status filter tabs, create/edit form with user picker, delete with confirmation
+- **Files modified:**
+  - `lmsa-website/src/pages/public/LeadershipPage.jsx` — replaced hardcoded `executives` array with real data fetch via `executiveService.getAll()`. Shows a `Loader` spinner while loading. Falls back to static placeholder data if the API returns empty positions (no positions assigned yet) or errors. Shows profile photos when available, crown icon for top-2 ranked positions, and year level if present.
+  - `lmsa-website/src/routes.jsx` — added `ExecutiveAdminPage` import and `<Route path="leadership" element={<ExecutiveAdminPage />} />` inside the existing `ProtectedRoute requireRole` `/admin` group.
+  - `lmsa-website/src/layouts/AdminLayout.jsx` — added `Crown` icon import and `{ to: '/admin/leadership', label: 'Leadership', icon: Crown }` to `NAV_ITEMS`.
+- **Deviations from spec (and why):**
+  - **`executive.service.js` uses `committeeService.searchUsers()`** instead of duplicating the user-search logic — reuses the existing `/users?search=&limit=10` endpoint already built in T4. No new backend endpoints needed.
+  - **Status filter on admin page uses `getAllAdmin()` (returns all statuses) and filters client-side** rather than a `?status=` query param, since the backend `getAllAdmin` endpoint doesn't support filtering. Simple array filter is fine for the expected small dataset (typically <20 positions).
+  - **User picker in create/edit form** uses the same `searchUsers` → dropdown pattern from `CommitteeAdminDashboard.jsx` (T4) — 300ms debounce, shows name + email, click to select. Reuses the committee service's search endpoint.
+  - **Fallback on public LeadershipPage** shows the original static `Student Name` placeholders when the API returns empty or errors — ensures the page isn't blank before admin has assigned real users to positions.
+- **Manual test results / acceptance criteria:**
+  - `npx eslint` on all 5 touched files — 0 errors, 0 warnings.
+  - `npm run build` in `lmsa-website` — passes clean (1576 modules, only the pre-existing chunk-size warning).
+  - Public `/leadership` page: loads real positions from `GET /api/executive` via `executiveService.getAll()`. If positions exist, they render with real names/photos/years. If none exist yet, shows the static fallback placeholders. Spinner shown while loading.
+  - Admin `/admin/leadership` page: loads all positions via `GET /api/executive/admin/all`. Create form sends `POST /api/executive` with position_name, rank, user_id, academic_year, dates, status. Edit form sends `PUT /api/executive/:id`. Delete sends `DELETE /api/executive/:id` with confirmation prompt.
+  - User search in admin form: types 2+ characters → `GET /users?search=term&limit=10` → dropdown of matching users. Click to select → fills `user_id` field. Clear button to unassign.
+  - Non-admin cannot reach `/admin/leadership` — it sits inside the same `ProtectedRoute requireRole={['admin', 'executive', 'super_admin']}` group as all other admin routes.
+- **Open questions / blockers for orchestrator:**
+  - No new npm dependencies added.
+  - All 6 service methods match T19's actual endpoint paths and response shapes — no 404s expected.
+  - The user-search round-trip reuses T4's `GET /users?search=&limit=10` — already proven working on `main`.
 
 ---
 
