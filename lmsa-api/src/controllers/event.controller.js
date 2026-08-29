@@ -31,9 +31,35 @@ export const getAll = async (req, res) => {
       });
     }
 
+    // Attach registration_count per event (batched — one query for all
+    // events' registrations, not N+1). Without this, EventsAdminPage.jsx's
+    // list-view count always falls back to 0 until an admin manually
+    // expands each event to fetch its registrations individually.
+    // Mirrors the same fix applied to news.controller.js's getAllAdmin
+    // for tag_ids.
+    const eventIds = (data || []).map((e) => e.id);
+    let countsByEvent = {};
+
+    if (eventIds.length > 0) {
+      const { data: regRows } = await supabase
+        .from('event_registrations')
+        .select('event_id')
+        .in('event_id', eventIds);
+
+      countsByEvent = (regRows || []).reduce((acc, row) => {
+        acc[row.event_id] = (acc[row.event_id] || 0) + 1;
+        return acc;
+      }, {});
+    }
+
+    const events = (data || []).map((event) => ({
+      ...event,
+      registration_count: countsByEvent[event.id] || 0,
+    }));
+
     res.json({
       success: true,
-      events: data,
+      events,
     });
   } catch (error) {
     console.error('Get all events error:', error);

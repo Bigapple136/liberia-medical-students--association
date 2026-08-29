@@ -49,35 +49,49 @@ export const getMyUpcomingEvents = async (req, res) => {
     const userId = req.user.id;
     const now = new Date().toISOString();
 
+    // Query FROM events (not event_registrations), inner-joining
+    // event_registrations filtered to this user. This targets
+    // start_datetime as a column on the BASE table being queried, which
+    // PostgREST fully and unambiguously supports for filtering/ordering.
+    //
+    // The original version queried FROM event_registrations and tried to
+    // filter/order by `event.start_datetime` -- a column on the *embedded*
+    // resource, not the base table. PostgREST's support for ordering the
+    // outer result set by an embedded resource's column is limited/
+    // inconsistent, and this was very likely erroring out at the query
+    // level rather than just returning wrong results -- which, combined
+    // with DashboardPage.jsx's Promise.all (one rejected call fails the
+    // whole batch), explains both reported symptoms: registered events
+    // never showing up, AND the whole portal failing to load with
+    // "Failed to load portal data."
     const { data, error } = await supabase
-      .from('event_registrations')
+      .from('events')
       .select(`
-        event:event_id (
-          id, title, slug, description, event_type,
-          location, venue, start_datetime, end_datetime,
-          image_url, status
-        ),
-        registered_at
+        id, title, slug, description, event_type,
+        location, venue, start_datetime, end_datetime,
+        image_url, status,
+        event_registrations!inner(registered_at, user_id)
       `)
-      .eq('user_id', userId)
-      .gte('event.start_datetime', now)
-      .order('event.start_datetime', { ascending: true })
+      .eq('event_registrations.user_id', userId)
+      .gte('start_datetime', now)
+      .order('start_datetime', { ascending: true })
       .limit(5);
 
     if (error) {
+      console.error('Get my upcoming events query error:', error);
       return res.status(400).json({
         success: false,
         message: 'Failed to load upcoming events',
       });
     }
 
-    // Flatten event data
-    const events = (data || [])
-      .filter(r => r.event)
-      .map(r => ({
-        ...r.event,
-        registered_at: r.registered_at,
-      }));
+    // Flatten: pull registered_at out of the nested event_registrations
+    // array (inner-joined + filtered to this user, so at most one row)
+    // and drop the nested field from the final shape.
+    const events = (data || []).map(({ event_registrations, ...event }) => ({
+      ...event,
+      registered_at: event_registrations?.[0]?.registered_at ?? null,
+    }));
 
     res.json({
       success: true,
