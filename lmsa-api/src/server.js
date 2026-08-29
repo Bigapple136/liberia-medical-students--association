@@ -28,6 +28,15 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// Render (and most PaaS hosts) sit behind a reverse proxy, so incoming
+// requests carry an X-Forwarded-For header rather than a direct client
+// IP. Without this, Express doesn't trust that header, which makes
+// express-rate-limit unable to reliably identify individual clients
+// (potential shared-bucket rate limiting across all users) and logs a
+// warning on every request. `1` trusts exactly one hop -- Render's own
+// proxy -- rather than blindly trusting the whole chain.
+app.set('trust proxy', 1);
+
 // ============================================
 // MIDDLEWARE
 // ============================================
