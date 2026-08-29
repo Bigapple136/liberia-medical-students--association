@@ -88,7 +88,7 @@ so this entire authentication path was silently broken the whole time.
 | T18 | Admin events management page (`EventsAdminPage.jsx`) | none | **done — live-verified** |
 | T19 | Backend executive positions API (`LeadershipPage.jsx` real data + admin assignment) | none | **done** |
 | T20 | Frontend: real `LeadershipPage.jsx` + admin executive-position management | T19 | **done** |
-| T21 | Site-wide newsletter signup | none | **code done — needs Stone to run migration** |
+| T21 | Site-wide newsletter signup | none | **done — migration applied, fully live** |
 
 **T17 and T18 flagged priority**, ahead of the remaining backlog (Leadership
 page, newsletter signup). Both found via Stone's direct testing — not
@@ -3377,7 +3377,7 @@ Positions").
 ## T21 — Site-wide newsletter signup
 
 **Branch:** `task/t21-newsletter-signup`
-**Status:** code done — merged, but NOT live until Stone runs the migration (see below)
+**Status:** done — migration confirmed applied by Stone, fully live
 **Depends on:** none
 
 ### Orchestrator review

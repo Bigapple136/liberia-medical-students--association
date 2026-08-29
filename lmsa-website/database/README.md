@@ -18,8 +18,9 @@ new numbered files are added.
   Supabase project. All base tables plus committee_announcements,
   committee_achievements, committee_subscribers, and the committee_id FK
   columns on events/documents are live.
-- ⬜ **003 not yet applied** — needs to be run as part of T21 (see that
-  task's report for the exact run instructions).
+- ✅ **003 applied** — `newsletter_subscribers` table, its email index,
+  RLS, and both public insert/update policies are live in production
+  (confirmed by Stone).
 
 ## How to run
 
