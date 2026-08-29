@@ -1,7 +1,48 @@
-import { User } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { User, Loader, Crown } from 'lucide-react';
 import Card from '@components/common/Card';
+import { executiveService } from '@services/executive.service';
+
+// ─── Static fallback (only used if API call fails or is empty) ────────────
+const FALLBACK_EXECUTIVES = [
+  { position_name: 'President', position_rank: 1, holder_name: 'Student Name', holder_photo_url: null, bio: 'Final year medical student passionate about student advocacy' },
+  { position_name: 'Vice President', position_rank: 2, holder_name: 'Student Name', holder_photo_url: null, bio: 'Fourth year student focused on academic excellence' },
+  { position_name: 'General Secretary', position_rank: 3, holder_name: 'Student Name', holder_photo_url: null, bio: 'Third year student ensuring transparent communication' },
+  { position_name: 'Financial Secretary', position_rank: 4, holder_name: 'Student Name', holder_photo_url: null, bio: 'Fourth year student managing association finances' },
+  { position_name: 'Public Relations Officer', position_rank: 5, holder_name: 'Student Name', holder_photo_url: null, bio: 'Second year student building our public presence' },
+  { position_name: 'Academic Director', position_rank: 6, holder_name: 'Student Name', holder_photo_url: null, bio: 'Fifth year student leading academic initiatives' },
+];
 
 export default function LeadershipPage() {
+  const [executives, setExecutives] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+
+  useEffect(() => {
+    loadExecutives();
+  }, []);
+
+  async function loadExecutives() {
+    setLoading(true);
+    try {
+      const data = await executiveService.getAll();
+      if (data && data.length > 0) {
+        setExecutives(data);
+      } else {
+        // No positions assigned yet — show fallback placeholders
+        setExecutives(FALLBACK_EXECUTIVES);
+      }
+    } catch {
+      setError(true);
+      setExecutives(FALLBACK_EXECUTIVES);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  // Determine the current academic year from the data, or default
+  const currentYear = executives[0]?.academic_year || '2025-2026';
+
   return (
     <div>
       {/* Hero Section */}
@@ -19,21 +60,48 @@ export default function LeadershipPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold mb-4 uppercase tracking-tight">Executive Committee</h2>
-            <p className="text-gray-600">Academic Year 2025-2026</p>
+            <p className="text-gray-600">Academic Year {currentYear}</p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
-            {executives.map((exec, index) => (
-              <Card key={index} className="text-center hover:shadow-lg hover:-translate-y-1 transition-all duration-200">
-                <div className="w-32 h-32 mx-auto mb-4 rounded-full bg-lmsa-50 flex items-center justify-center">
-                  <User size={48} className="text-lmsa-600" strokeWidth={1.5} />
-                </div>
-                <h3 className="text-xl font-semibold mb-1">{exec.name}</h3>
-                <p className="text-lmsa-600 font-medium mb-2">{exec.position}</p>
-                <p className="text-sm text-gray-600 text-balance">{exec.bio}</p>
-              </Card>
-            ))}
-          </div>
+          {loading ? (
+            <div className="flex items-center justify-center h-48">
+              <Loader className="animate-spin text-lmsa-600" size={28} />
+            </div>
+          ) : (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+              {executives.map((exec, index) => (
+                <Card key={exec.id || index} className="text-center hover:shadow-lg hover:-translate-y-1 transition-all duration-200">
+                  <div className="w-32 h-32 mx-auto mb-4 rounded-full bg-lmsa-50 flex items-center justify-center overflow-hidden">
+                    {exec.holder_photo_url ? (
+                      <img
+                        src={exec.holder_photo_url}
+                        alt={exec.holder_name || exec.position_name}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <User size={48} className="text-lmsa-600" strokeWidth={1.5} />
+                    )}
+                  </div>
+                  <h3 className="text-xl font-semibold mb-1">
+                    {exec.holder_name || 'Position Available'}
+                  </h3>
+                  <p className="text-lmsa-600 font-medium mb-2 flex items-center justify-center gap-1.5">
+                    {exec.position_rank <= 2 && <Crown size={14} className="text-amber-500" />}
+                    {exec.position_name}
+                  </p>
+                  {exec.bio && (
+                    <p className="text-sm text-gray-600 text-balance">{exec.bio}</p>
+                  )}
+                  {exec.holder_year_level && (
+                    <p className="text-xs text-gray-400 mt-1">Year {exec.holder_year_level}</p>
+                  )}
+                  {error && (
+                    <p className="text-xs text-amber-500 mt-2">Using placeholder data</p>
+                  )}
+                </Card>
+              ))}
+            </div>
+          )}
 
           {/* Organizational Structure */}
           <div className="max-w-4xl mx-auto">
@@ -74,36 +142,3 @@ export default function LeadershipPage() {
     </div>
   );
 }
-
-const executives = [
-  {
-    name: 'Student Name',
-    position: 'President',
-    bio: 'Final year medical student passionate about student advocacy'
-  },
-  {
-    name: 'Student Name',
-    position: 'Vice President',
-    bio: 'Fourth year student focused on academic excellence'
-  },
-  {
-    name: 'Student Name',
-    position: 'General Secretary',
-    bio: 'Third year student ensuring transparent communication'
-  },
-  {
-    name: 'Student Name',
-    position: 'Financial Secretary',
-    bio: 'Fourth year student managing association finances'
-  },
-  {
-    name: 'Student Name',
-    position: 'Public Relations Officer',
-    bio: 'Second year student building our public presence'
-  },
-  {
-    name: 'Student Name',
-    position: 'Academic Director',
-    bio: 'Fifth year student leading academic initiatives'
-  }
-];
