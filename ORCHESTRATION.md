@@ -87,7 +87,7 @@ so this entire authentication path was silently broken the whole time.
 | T17 | Unify registration with membership application; fix hardcoded `membership_type` | none | **done — live-verified** |
 | T18 | Admin events management page (`EventsAdminPage.jsx`) | none | **done — live-verified** |
 | T19 | Backend executive positions API (`LeadershipPage.jsx` real data + admin assignment) | none | **done** |
-| T20 | Frontend: real `LeadershipPage.jsx` + admin executive-position management | T19 | **assigned** |
+| T20 | Frontend: real `LeadershipPage.jsx` + admin executive-position management | T19 | **done** |
 | T21 | Site-wide newsletter signup | none | **code done — needs Stone to run migration** |
 
 **T17 and T18 flagged priority**, ahead of the remaining backlog (Leadership
@@ -3275,8 +3275,28 @@ status ('active'|'completed'|'impeached'), created_at
 ## T20 — Frontend: real Leadership page + admin executive management
 
 **Branch:** `task/t20-leadership-frontend`
-**Status:** blocked (needs T19 done)
-**Depends on:** T19
+**Status:** done
+**Depends on:** T19 (done — merged to main)
+
+### Orchestrator review
+
+Independently verified: `npx eslint` on all 5 touched files — 0 errors,
+0 warnings. `npm run build` — clean, matches report exactly.
+`executive.service.js` confirmed correct against T19's actual merged
+controller endpoint-by-endpoint. Good judgment reusing
+`committeeService.searchUsers()` rather than duplicating user-search
+logic — clean cross-service delegation. Fallback placeholder data on
+the public page (rather than a blank section) is a sensible choice for
+the pre-any-assignment state. Approved and merged to `main`.
+
+**Note on the bug report that came in alongside this submission:**
+Stone's testing after this merge surfaced two real, separate bugs — one
+in the T16 dashboard query (embedded-resource filter/sort likely
+erroring at the PostgREST level, taking down the whole portal load via
+`Promise.all`) and one in T2a's `getAll` (missing registration counts,
+affecting `EventsAdminPage.jsx`'s list view). Both fixed directly by the
+orchestrator, unrelated to T20's own code — see the `31ef253` commit for
+details. T20 itself has no defects found.
 
 ### Context
 
@@ -3327,7 +3347,30 @@ Positions").
 
 ### Report
 
-*(Agent: fill this in before pushing)*
+- **Status:** in-progress → needs-review
+- **Files created:**
+  - `lmsa-website/src/services/executive.service.js` — 6 methods (getAll, getAllAdmin, create, update, deletePosition, searchUsers)
+  - `lmsa-website/src/pages/admin/ExecutiveAdminPage.jsx` — admin interface for managing executive positions: list view with status filter tabs, create/edit form with user picker, delete with confirmation
+- **Files modified:**
+  - `lmsa-website/src/pages/public/LeadershipPage.jsx` — replaced hardcoded `executives` array with real data fetch via `executiveService.getAll()`. Shows a `Loader` spinner while loading. Falls back to static placeholder data if the API returns empty positions (no positions assigned yet) or errors. Shows profile photos when available, crown icon for top-2 ranked positions, and year level if present.
+  - `lmsa-website/src/routes.jsx` — added `ExecutiveAdminPage` import and `<Route path="leadership" element={<ExecutiveAdminPage />} />` inside the existing `ProtectedRoute requireRole` `/admin` group.
+  - `lmsa-website/src/layouts/AdminLayout.jsx` — added `Crown` icon import and `{ to: '/admin/leadership', label: 'Leadership', icon: Crown }` to `NAV_ITEMS`.
+- **Deviations from spec (and why):**
+  - **`executive.service.js` uses `committeeService.searchUsers()`** instead of duplicating the user-search logic — reuses the existing `/users?search=&limit=10` endpoint already built in T4. No new backend endpoints needed.
+  - **Status filter on admin page uses `getAllAdmin()` (returns all statuses) and filters client-side** rather than a `?status=` query param, since the backend `getAllAdmin` endpoint doesn't support filtering. Simple array filter is fine for the expected small dataset (typically <20 positions).
+  - **User picker in create/edit form** uses the same `searchUsers` → dropdown pattern from `CommitteeAdminDashboard.jsx` (T4) — 300ms debounce, shows name + email, click to select. Reuses the committee service's search endpoint.
+  - **Fallback on public LeadershipPage** shows the original static `Student Name` placeholders when the API returns empty or errors — ensures the page isn't blank before admin has assigned real users to positions.
+- **Manual test results / acceptance criteria:**
+  - `npx eslint` on all 5 touched files — 0 errors, 0 warnings.
+  - `npm run build` in `lmsa-website` — passes clean (1576 modules, only the pre-existing chunk-size warning).
+  - Public `/leadership` page: loads real positions from `GET /api/executive` via `executiveService.getAll()`. If positions exist, they render with real names/photos/years. If none exist yet, shows the static fallback placeholders. Spinner shown while loading.
+  - Admin `/admin/leadership` page: loads all positions via `GET /api/executive/admin/all`. Create form sends `POST /api/executive` with position_name, rank, user_id, academic_year, dates, status. Edit form sends `PUT /api/executive/:id`. Delete sends `DELETE /api/executive/:id` with confirmation prompt.
+  - User search in admin form: types 2+ characters → `GET /users?search=term&limit=10` → dropdown of matching users. Click to select → fills `user_id` field. Clear button to unassign.
+  - Non-admin cannot reach `/admin/leadership` — it sits inside the same `ProtectedRoute requireRole={['admin', 'executive', 'super_admin']}` group as all other admin routes.
+- **Open questions / blockers for orchestrator:**
+  - No new npm dependencies added.
+  - All 6 service methods match T19's actual endpoint paths and response shapes — no 404s expected.
+  - The user-search round-trip reuses T4's `GET /users?search=&limit=10` — already proven working on `main`.
 
 ---
 

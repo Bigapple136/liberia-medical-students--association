@@ -46,6 +46,7 @@ import CommitteeAdminDashboard from './pages/admin/CommitteeAdminDashboard';
 import MembershipAdminPage from './pages/admin/MembershipAdminPage';
 import NewsAdminPage from './pages/admin/NewsAdminPage';
 import EventsAdminPage from './pages/admin/EventsAdminPage';
+import ExecutiveAdminPage from './pages/admin/ExecutiveAdminPage';
 
 // Protected route wrapper
 import ProtectedRoute from './components/common/ProtectedRoute';
@@ -132,6 +133,7 @@ function AppRoutes() {
         <Route path="membership" element={<MembershipAdminPage />} />
         <Route path="news" element={<NewsAdminPage />} />
         <Route path="events" element={<EventsAdminPage />} />
+        <Route path="leadership" element={<ExecutiveAdminPage />} />
       </Route>
 
       {/* 404 */}
