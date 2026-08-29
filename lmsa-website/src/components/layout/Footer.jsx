@@ -49,8 +49,8 @@ export default function Footer() {
               </div>
               <div className="flex items-center gap-2">
                 <Mail size={16} className="text-lmsa-400 flex-shrink-0" />
-                <a href="mailto:info@lmsa.org.lr" className="hover:text-lmsa-400 transition-colors duration-200">
-                  info@lmsa.org.lr
+                <a href="mailto:dev.lmsa@gmail.com" className="hover:text-lmsa-400 transition-colors duration-200">
+                  dev.lmsa@gmail.com
                 </a>
               </div>
               <div className="flex items-center gap-2">

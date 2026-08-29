@@ -84,8 +84,8 @@ export default function ContactPage() {
                     <Mail size={20} className="text-lmsa-600 flex-shrink-0 mt-1" />
                     <div>
                       <h3 className="font-semibold text-lg mb-2">Email</h3>
-                      <a href="mailto:info@lmsa.org.lr" className="text-lmsa-600 hover:text-lmsa-700 transition-colors duration-200">
-                        info@lmsa.org.lr
+                      <a href="mailto:dev.lmsa@gmail.com" className="text-lmsa-600 hover:text-lmsa-700 transition-colors duration-200">
+                        dev.lmsa@gmail.com
                       </a>
                     </div>
                   </div>
