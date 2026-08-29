@@ -82,7 +82,7 @@ so this entire authentication path was silently broken the whole time.
 | T12 | Backend news API | none | **done** |
 | T13 | Frontend public news pages (`NewsPage.jsx` + `NewsDetailPage.jsx`) | T12 | **done — live-verified** |
 | T14 | Admin news editor (create/edit/publish) | T12 | **done — live-verified** |
-| T15 | General site-wide contact form (`ContactPage.jsx` → real backend) | none | **done — code verified, mailbox setup deferred by Stone** |
+| T15 | General site-wide contact form (`ContactPage.jsx` → real backend) | none | **done — real mailbox (dev.lmsa@gmail.com) set up, pending Render env vars** |
 | T16 | Real student dashboard stats (replace 100% fake data in `DashboardPage.jsx`) | none | **done — pending Stone live-verify (1 specific risk flagged)** |
 | T17 | Unify registration with membership application; fix hardcoded `membership_type` | none | **done — live-verified** |
 | T18 | Admin events management page (`EventsAdminPage.jsx`) | none | **done — live-verified** |
