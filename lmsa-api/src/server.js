@@ -4,6 +4,23 @@ import helmet from 'helmet';
 import compression from 'compression';
 import dotenv from 'dotenv';
 import rateLimit from 'express-rate-limit';
+import dns from 'node:dns';
+
+// Force IPv4-first DNS resolution for the whole process.
+//
+// Render's outbound networking doesn't reliably route IPv6, but
+// smtp.gmail.com has both A (IPv4) and AAAA (IPv6) records, and Node's
+// default dual-stack resolution can still pick the IPv6 address --
+// observed in production as ENETUNREACH/ETIMEDOUT against a
+// 2607:f8b0:... address. A prior attempt to fix this by passing
+// `family: 4` directly to nodemailer's transporter did NOT resolve it
+// (nodemailer does not reliably forward that option to the underlying
+// connection), so this sets Node's actual default DNS result order
+// instead -- a process-wide, well-supported setting (Node 18+) that
+// affects every dns.lookup() call, including the ones net/tls use
+// internally when connecting by hostname. Must run before anything else
+// performs a DNS lookup, hence placed at the very top of the entry file.
+dns.setDefaultResultOrder('ipv4first');
 
 // Import middleware
 import { errorHandler } from './middleware/error.middleware.js';
