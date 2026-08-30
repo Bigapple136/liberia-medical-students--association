@@ -61,7 +61,7 @@ export default function MembershipAdminPage() {
   return (
     <div className="max-w-6xl mx-auto p-6 space-y-6">
       {/* ── Header ────────────────────────────────────────────────────── */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-lmsa-600 flex items-center justify-center">
             <UserPlus size={20} className="text-white" />
@@ -79,7 +79,7 @@ export default function MembershipAdminPage() {
         {activeFilter !== 'pending' && (
           <button
             onClick={() => setActiveFilter('pending')}
-            className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-amber-700 bg-amber-50 border border-amber-200 rounded-lg hover:bg-amber-100 transition-colors"
+            className="flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-amber-700 bg-amber-50 border border-amber-200 rounded-lg hover:bg-amber-100 transition-colors self-start sm:self-auto"
           >
             <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
             View Pending Queue
@@ -167,7 +167,7 @@ function ApplicationCard({ application, expanded, onToggle, onStatusUpdate }) {
     <div className="bg-white rounded-xl border border-gray-200 overflow-hidden transition-all">
       {/* Card Header */}
       <div
-        className="p-4 flex items-center justify-between cursor-pointer hover:bg-gray-50 transition-colors"
+        className="p-4 flex flex-col sm:flex-row sm:items-center justify-between cursor-pointer hover:bg-gray-50 transition-colors"
         onClick={onToggle}
       >
         <div className="flex items-center gap-4 flex-1 min-w-0">
@@ -187,7 +187,7 @@ function ApplicationCard({ application, expanded, onToggle, onStatusUpdate }) {
                 {app.application_status}
               </span>
             </div>
-            <div className="flex items-center gap-3 mt-1 text-xs text-gray-500">
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1 text-xs text-gray-500">
               <span className="flex items-center gap-1">
                 <Mail size={12} /> {app.applicant_email}
               </span>
@@ -206,7 +206,7 @@ function ApplicationCard({ application, expanded, onToggle, onStatusUpdate }) {
         </div>
 
         {/* Date + Expand */}
-        <div className="flex items-center gap-3 shrink-0">
+        <div className="flex items-center gap-3 shrink-0 mt-2 sm:mt-0 sm:ml-3">
           <span className="text-xs text-gray-400 hidden sm:block">
             {app.submitted_at ? new Date(app.submitted_at).toLocaleDateString() : '—'}
           </span>
@@ -231,7 +231,7 @@ function ApplicationCard({ application, expanded, onToggle, onStatusUpdate }) {
 
           {/* Action Buttons */}
           {app.application_status === 'pending' ? (
-            <div className="flex gap-3">
+            <div className="flex flex-wrap gap-3">
               <button
                 onClick={() => handleAction('rejected')}
                 disabled={acting}

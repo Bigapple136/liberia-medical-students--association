@@ -169,7 +169,7 @@ export default function ExecutiveAdminPage() {
   return (
     <div className="max-w-6xl mx-auto p-6 space-y-6">
       {/* ── Header ────────────────────────────────────────────────────── */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-lmsa-600 flex items-center justify-center">
             <Crown size={20} className="text-white" />
@@ -183,7 +183,7 @@ export default function ExecutiveAdminPage() {
         </div>
         <button
           onClick={openCreate}
-          className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-lmsa-600 rounded-lg hover:bg-lmsa-700 transition-colors"
+          className="flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-white bg-lmsa-600 rounded-lg hover:bg-lmsa-700 transition-colors self-start sm:self-auto"
         >
           <Plus size={16} /> Add Position
         </button>
@@ -387,7 +387,7 @@ export default function ExecutiveAdminPage() {
             <div key={pos.id} className="bg-white rounded-xl border border-gray-200 overflow-hidden">
               {/* Card Header */}
               <div
-                className="p-4 flex items-center justify-between cursor-pointer hover:bg-gray-50 transition-colors"
+                className="p-4 flex flex-col sm:flex-row sm:items-center justify-between cursor-pointer hover:bg-gray-50 transition-colors"
                 onClick={() => setExpandedId(expandedId === pos.id ? null : pos.id)}
               >
                 <div className="flex items-center gap-4 flex-1 min-w-0">
@@ -410,7 +410,7 @@ export default function ExecutiveAdminPage() {
                       </span>
                       <span className="text-xs text-gray-400">#{pos.position_rank}</span>
                     </div>
-                    <div className="flex items-center gap-3 mt-1 text-xs text-gray-500">
+                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1 text-xs text-gray-500">
                       {pos.holder_name ? (
                         <span className="flex items-center gap-1">
                           <User size={12} /> {pos.holder_name}
@@ -427,7 +427,7 @@ export default function ExecutiveAdminPage() {
                     </div>
                   </div>
                 </div>
-                <div className="flex items-center gap-2 shrink-0">
+                <div className="flex items-center gap-2 shrink-0 mt-2 sm:mt-0 sm:ml-3">
                   {expandedId === pos.id ? <ChevronUp size={16} className="text-gray-400" /> : <ChevronDown size={16} className="text-gray-400" />}
                 </div>
               </div>
