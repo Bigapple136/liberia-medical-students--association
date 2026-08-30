@@ -73,7 +73,7 @@ export default function HomePage() {
       <section className="py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold mb-4 uppercase tracking-tight">What We Do</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 uppercase tracking-tight">What We Do</h2>
             <p className="text-gray-600 text-balance">Supporting medical students through four core pillars</p>
           </div>
 
@@ -149,7 +149,7 @@ export default function HomePage() {
       <section className="py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold mb-4 uppercase tracking-tight">Why Join LMSA?</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 uppercase tracking-tight">Why Join LMSA?</h2>
             <p className="text-gray-600 text-balance">Discover what makes our community exceptional</p>
           </div>
 
@@ -181,7 +181,7 @@ export default function HomePage() {
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold mb-4 uppercase tracking-tight">Quick Access</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 uppercase tracking-tight">Quick Access</h2>
             <p className="text-gray-600 text-balance">Jump to the resources you need</p>
           </div>
 
@@ -204,7 +204,7 @@ export default function HomePage() {
       <section className="py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold mb-4 uppercase tracking-tight">Latest from LMSA</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 uppercase tracking-tight">Latest from LMSA</h2>
             <p className="text-gray-600 text-balance">Stay updated with our newest stories and announcements</p>
           </div>
 

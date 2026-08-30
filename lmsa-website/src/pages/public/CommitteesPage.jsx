@@ -121,7 +121,7 @@ export default function CommitteesPage() {
               <Users size={28} className="text-white" />
             </div>
             <div>
-              <h1 className="text-4xl md:text-5xl font-bold">Standing Committees</h1>
+              <h1 className="text-3xl md:text-5xl font-bold">Standing Committees</h1>
               <p className="text-lg text-lmsa-100 mt-1">The Backbone of LMSA Operations</p>
             </div>
           </div>

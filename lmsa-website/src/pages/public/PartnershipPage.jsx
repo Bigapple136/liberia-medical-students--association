@@ -153,7 +153,7 @@ export default function PartnershipPage() {
               <Heart size={28} className="text-white" />
             </div>
             <div>
-              <h1 className="text-4xl md:text-5xl font-bold">Partnership Opportunities</h1>
+              <h1 className="text-3xl md:text-5xl font-bold">Partnership Opportunities</h1>
               <p className="text-lg text-lmsa-100 mt-1">Collaborate with Liberia&apos;s Future Medical Leaders</p>
             </div>
           </div>

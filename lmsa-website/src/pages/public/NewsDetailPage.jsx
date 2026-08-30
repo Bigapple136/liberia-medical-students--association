@@ -57,7 +57,7 @@ export default function NewsDetailPage() {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">Article Not Found</h1>
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Article Not Found</h1>
           <Link to="/news" className="text-lmsa-600 hover:underline flex items-center gap-2 justify-center">
             <ArrowLeft size={16} />
             Back to News
@@ -89,7 +89,7 @@ export default function NewsDetailPage() {
             )}
           </div>
 
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">{post.title}</h1>
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">{post.title}</h1>
 
           <div className="flex items-center gap-4 text-sm text-gray-500 mb-8 pb-8 border-b border-gray-200 flex-wrap">
             {post.published_at && (

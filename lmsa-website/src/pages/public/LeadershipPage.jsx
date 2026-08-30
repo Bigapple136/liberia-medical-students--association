@@ -48,7 +48,7 @@ export default function LeadershipPage() {
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-lmsa-50 to-lmsa-100 py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-5xl font-bold mb-6 uppercase tracking-tight">LMSA Leadership</h1>
+          <h1 className="text-3xl md:text-5xl font-bold mb-6 uppercase tracking-tight">LMSA Leadership</h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto text-balance">
             Meet the dedicated leaders guiding our association towards excellence
           </p>
@@ -59,7 +59,7 @@ export default function LeadershipPage() {
       <section className="py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4 uppercase tracking-tight">Executive Committee</h2>
+            <h2 className="text-2xl md:text-3xl font-bold mb-4 uppercase tracking-tight">Executive Committee</h2>
             <p className="text-gray-600">Academic Year {currentYear}</p>
           </div>
 
@@ -105,7 +105,7 @@ export default function LeadershipPage() {
 
           {/* Organizational Structure */}
           <div className="max-w-4xl mx-auto">
-            <h2 className="text-3xl font-bold mb-6 text-center uppercase tracking-tight">Organizational Structure</h2>
+            <h2 className="text-2xl md:text-3xl font-bold mb-6 text-center uppercase tracking-tight">Organizational Structure</h2>
             <Card>
               <div className="space-y-4">
                 <div className="border-l-4 border-lmsa-600 pl-4">

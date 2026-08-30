@@ -147,7 +147,7 @@ export default function MembershipPage() {
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-lmsa-50 to-lmsa-100 py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-5xl font-bold mb-6 uppercase tracking-tight">Membership</h1>
+          <h1 className="text-3xl md:text-5xl font-bold mb-6 uppercase tracking-tight">Membership</h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto text-balance">
             Join the Liberia Medical Students&apos; Association and become part of our community
           </p>
