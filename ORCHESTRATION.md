@@ -104,7 +104,7 @@ so this entire authentication path was silently broken the whole time.
 | T20 | Frontend: real `LeadershipPage.jsx` + admin executive-position management | T19 | **done** |
 | T21 | Site-wide newsletter signup | none | **done — migration applied, fully live** |
 | T22 | Migrate email delivery from nodemailer/Gmail SMTP to Brevo's HTTP API | none | **code done — Brevo setup deferred by Stone** |
-| T23 | Responsive design audit + fixes — public pages | none | **needs-review** |
+| T23 | Responsive design audit + fixes — public pages | none | **done** |
 | T24 | Responsive design audit + fixes — portal (student) pages | none | **assigned** |
 | T25 | Responsive design audit + fixes — admin pages | none | **assigned** |
 
@@ -3698,8 +3698,21 @@ that only `email.js` itself imports it directly).
 ## T23 — Responsive design audit + fixes: public pages
 
 **Branch:** `task/t23-responsive-public`
-**Status:** assigned
+**Status:** done
 **Depends on:** none
+
+### Orchestrator review
+
+Independently verified: `npx eslint` on the full `pages/public` directory
+— 0 errors, 0 warnings. `npm run build` — clean. Spot-checked the more
+complex fix (`PastPresidentsPage.jsx`'s flex-stacking + photo-size
+change) directly against the diff — matches the report exactly. The
+broad-but-shallow diff pattern (27 files, small per-file changes) makes
+sense given the actual finding: oversized hero/heading text on mobile
+was a genuinely systemic issue, not padding to look thorough. Honest
+about verification method throughout (code-level Tailwind reasoning, no
+live browser access — explicitly not overclaiming). Approved and merged
+to `main`.
 
 ### Context
 
