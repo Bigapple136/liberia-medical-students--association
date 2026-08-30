@@ -97,13 +97,16 @@ so this entire authentication path was silently broken the whole time.
 | T13 | Frontend public news pages (`NewsPage.jsx` + `NewsDetailPage.jsx`) | T12 | **done — live-verified** |
 | T14 | Admin news editor (create/edit/publish) | T12 | **done — live-verified** |
 | T15 | General site-wide contact form (`ContactPage.jsx` → real backend) | none | **done — real mailbox (dev.lmsa@gmail.com) set up, pending Render env vars** |
-| T16 | Real student dashboard stats (replace 100% fake data in `DashboardPage.jsx`) | none | **done — pending Stone live-verify (1 specific risk flagged)** |
+| T16 | Real student dashboard stats (replace 100% fake data in `DashboardPage.jsx`) | none | **done — live-verified (including the 31ef253 query fix)** |
 | T17 | Unify registration with membership application; fix hardcoded `membership_type` | none | **done — live-verified** |
 | T18 | Admin events management page (`EventsAdminPage.jsx`) | none | **done — live-verified** |
 | T19 | Backend executive positions API (`LeadershipPage.jsx` real data + admin assignment) | none | **done** |
 | T20 | Frontend: real `LeadershipPage.jsx` + admin executive-position management | T19 | **done** |
 | T21 | Site-wide newsletter signup | none | **done — migration applied, fully live** |
 | T22 | Migrate email delivery from nodemailer/Gmail SMTP to Brevo's HTTP API | none | **code done — Brevo setup deferred by Stone** |
+| T23 | Responsive design audit + fixes — public pages | none | **assigned** |
+| T24 | Responsive design audit + fixes — portal (student) pages | none | **assigned** |
+| T25 | Responsive design audit + fixes — admin pages | none | **assigned** |
 
 **T22 flagged priority.** Render permanently blocks outbound SMTP ports
 (25/465/587) on free-tier web services since September 2025 — confirmed
@@ -3689,3 +3692,167 @@ that only `email.js` itself imports it directly).
 - **Cannot be live-tested without Stone's real Brevo API key** — this is expected and noted per acceptance criteria. Stone will do the real end-to-end test after merge and env var setup (`BREVO_API_KEY`, `BREVO_SENDER_EMAIL`, `BREVO_SENDER_NAME` on Render). The old `EMAIL_*` vars can be left set (harmless) or removed at Stone's discretion.
 
 ---
+
+---
+
+## T23 — Responsive design audit + fixes: public pages
+
+**Branch:** `task/t23-responsive-public`
+**Status:** assigned
+**Depends on:** none
+
+### Context
+
+Baseline check: 43 of 48 `.jsx` files already use Tailwind responsive
+prefixes (`sm:`/`md:`/`lg:`/`xl:`) — mobile-first was followed from the
+start per the brand guide. This is a **targeted audit-and-fix pass**,
+not a from-scratch responsive rebuild. Don't restructure pages that
+already work; find and fix specific breakage.
+
+**Scope: `lmsa-website/src/pages/public/*` and shared layout components**
+(`Header.jsx`, `Footer.jsx`, `PublicLayout.jsx`) — every page reachable
+without logging in: Home, About, Leadership, Membership, Committees +
+detail, Events + detail, News + detail, Contact, and any others in that
+folder.
+
+### What to actually check (common real failure patterns, not a vague
+"make it responsive" ask)
+
+For each page, at minimum check these breakpoints: **375px** (small
+phone), **768px** (tablet), **1024px+** (desktop) — either via browser
+dev tools device emulation or by reasoning carefully about the Tailwind
+classes in play (you likely don't have live browser access in this
+environment; if so, say so explicitly in your report rather than
+claiming visual verification that didn't happen).
+
+- **Fixed pixel widths** that don't shrink (`w-[800px]` style, or a
+  Tailwind fixed-width class where a responsive/fluid one is needed).
+- **Grids/flex rows that don't stack** on narrow screens — a
+  `grid-cols-3` or `flex justify-between` row with multiple content
+  blocks needs a `sm:`/`md:` variant that stacks to a single column
+  before content gets cramped or forces horizontal scroll.
+- **Text sizing** — headings/body text that's fine on desktop but
+  oversized or causes overflow on a 375px viewport.
+- **Touch targets** — buttons/links under ~44px tap area on mobile (the
+  brand guide specifies this minimum explicitly).
+- **Images** — make sure `CommitteePageTemplate.jsx`/`EventDetailPage.jsx`/
+  `NewsDetailPage.jsx` hero/featured images scale down rather than
+  overflowing or forcing horizontal scroll on mobile.
+- **Forms** — `ContactPage.jsx`, `MembershipPage.jsx`'s apply flow,
+  `RegisterPage.jsx`/`LoginPage.jsx` — inputs and buttons should be
+  full-width and comfortably tappable on mobile, not cramped into a
+  desktop-width layout.
+- **The mobile nav** in `Header.jsx` already has a hamburger menu — spot
+  check it still works correctly, don't rebuild it unless you find a
+  real defect.
+
+### Acceptance criteria
+
+- [ ] `npx eslint` — 0 errors, 0 warnings on every touched file.
+- [ ] `npm run build` — clean, **actually run and verified.**
+- [ ] Report lists every specific issue found (page + description) and
+      the fix applied — not just "made things responsive," concrete
+      before/after for each real problem.
+- [ ] No visual regression on desktop — this is about *adding* mobile/
+      tablet handling, not changing how things look at 1024px+ unless a
+      genuine desktop bug was also found.
+- [ ] Be explicit in your report about whether verification was live
+      (real browser/device testing) or code-level reasoning about
+      Tailwind breakpoints — don't blur the two.
+
+### Report
+
+*(Agent: fill this in before pushing)*
+
+---
+
+## T24 — Responsive design audit + fixes: portal (student) pages
+
+**Branch:** `task/t24-responsive-portal`
+**Status:** assigned
+**Depends on:** none
+
+### Scope
+
+`lmsa-website/src/pages/portal/*` (`DashboardPage.jsx`, `ProfilePage.jsx`
+if it exists, any other portal-only pages) + `PortalLayout.jsx`. Same
+checklist as T23 (fixed widths, non-stacking grids/flex rows, text
+sizing, touch targets, forms) — read T23's full pattern list, don't
+duplicate it here, just apply it to this page set.
+
+**Specific area of concern**: `DashboardPage.jsx` (T16's real-data
+rewrite) has multiple stat cards + an events list + a news list on one
+page — check this doesn't become a cramped, hard-to-scan wall on mobile;
+stat cards in particular often need to go from a 4-column desktop grid
+down to 1 or 2 columns on phone width.
+
+### Acceptance criteria
+
+Same as T23's, scoped to this page set.
+
+### Report
+
+*(Agent: fill this in before pushing)*
+
+---
+
+## T25 — Responsive design audit + fixes: admin pages
+
+**Branch:** `task/t25-responsive-admin`
+**Status:** assigned
+**Depends on:** none
+
+### Context
+
+Admin pages have the highest concentration of dense, table/list-heavy
+UI in the app — the most likely place for real mobile breakage. Found
+one concrete example while scoping this: `MembershipAdminPage.jsx`'s
+list rows use `flex items-center justify-between` (line ~170) without a
+responsive stacking variant — the applicant info block and the approve/
+reject action buttons could get cramped or force horizontal scroll on a
+narrow screen instead of stacking. **Fix this specific instance as part
+of this task**, and apply the same scrutiny to the equivalent row/list
+patterns in the other admin pages.
+
+**Scope:** `lmsa-website/src/pages/admin/*` (`AdminDashboard.jsx`,
+`CommitteeAdminDashboard.jsx`, `MembershipAdminPage.jsx`,
+`NewsAdminPage.jsx`, `EventsAdminPage.jsx`, `ExecutiveAdminPage.jsx`) +
+`AdminLayout.jsx` (the sidebar).
+
+### What to check, beyond T23's general checklist
+
+- **List/row items using `flex justify-between` without a stacking
+  breakpoint** — the exact pattern flagged above. Search for this
+  pattern across all 6 admin pages, not just the one already found.
+- **The admin sidebar** (`AdminLayout.jsx`) — on mobile, a permanently
+  visible sidebar eats most of the screen width. Check whether it
+  already collapses/hides on small screens (it may not — this codebase's
+  `PortalLayout.jsx`/`AdminLayout.jsx` sidebars were built early, before
+  the mobile-first pattern was consistently applied elsewhere). If it
+  doesn't collapse, add a reasonable mobile treatment (e.g. a hamburger
+  toggle matching `Header.jsx`'s existing mobile nav pattern, or an
+  off-canvas drawer) — this is likely the single highest-impact fix in
+  this whole task given how much horizontal space a fixed sidebar
+  consumes on a phone.
+- **Forms with many fields** (event create/edit, news create/edit,
+  executive position assignment) — these tend to be built as multi-
+  column grids on desktop; confirm they collapse to single-column on
+  mobile rather than cramming form fields into an unreadably narrow
+  space.
+- **Data-dense cards** (stat cards, committee/event/news list items) —
+  same stacking concern as T24's dashboard note, applied to admin
+  equivalents.
+
+### Acceptance criteria
+
+Same as T23's, plus:
+- [ ] The `AdminLayout.jsx` sidebar specifically confirmed to have a
+      reasonable mobile treatment (collapsed/toggleable), or explicitly
+      confirmed already fine if it turns out it was — don't skip this
+      check.
+- [ ] The specific `MembershipAdminPage.jsx` flex-row issue fixed and
+      confirmed in the report.
+
+### Report
+
+*(Agent: fill this in before pushing)*
