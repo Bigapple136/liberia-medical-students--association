@@ -11,7 +11,7 @@ export default function ExecutiveCouncilPage() {
               <Building2 size={24} className="text-lmsa-600" />
             </div>
             <div>
-              <h1 className="text-4xl font-bold text-gray-900">Executive Council</h1>
+              <h1 className="text-3xl md:text-4xl font-bold text-gray-900">Executive Council</h1>
               <p className="text-lg text-gray-600 mt-1">Class Presidents & Student Representatives</p>
             </div>
           </div>

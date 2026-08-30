@@ -87,7 +87,7 @@ export default function EventDetailPage() {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">Event Not Found</h1>
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Event Not Found</h1>
           <Link to="/events" className="text-lmsa-600 hover:underline flex items-center gap-2 justify-center">
             <ArrowLeft size={16} />
             Back to Events
@@ -111,7 +111,7 @@ export default function EventDetailPage() {
           <span className="bg-lmsa-100 text-lmsa-700 text-sm font-bold px-4 py-1 rounded-full">
             {event.event_type}
           </span>
-          <h1 className="text-4xl font-bold text-gray-900 mt-4 mb-6">{event.title}</h1>
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mt-4 mb-6">{event.title}</h1>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
             <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg">

@@ -8,7 +8,7 @@ export default function AboutPage() {
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-lmsa-50 to-lmsa-100 py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-5xl font-bold mb-6 uppercase tracking-tight">About LMSA</h1>
+          <h1 className="text-3xl md:text-5xl font-bold mb-6 uppercase tracking-tight">About LMSA</h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto text-balance">
             Learn about our mission, history, and commitment to medical education in Liberia
           </p>
@@ -38,7 +38,7 @@ export default function AboutPage() {
 
           {/* History */}
           <div className="max-w-4xl mx-auto mb-16">
-            <h2 className="text-3xl font-bold mb-6 uppercase tracking-tight">Our History</h2>
+            <h2 className="text-2xl md:text-3xl font-bold mb-6 uppercase tracking-tight">Our History</h2>
             <div className="card">
               <p className="text-gray-600 mb-4 text-balance">
                 The Liberia Medical Students&apos; Association (LMSA) was established in 1972 at the
@@ -62,7 +62,7 @@ export default function AboutPage() {
 
           {/* Core Values */}
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4 uppercase tracking-tight">Our Core Values</h2>
+            <h2 className="text-2xl md:text-3xl font-bold mb-4 uppercase tracking-tight">Our Core Values</h2>
           </div>
           <div className="grid md:grid-cols-3 gap-8 mb-16">
             {values.map((value, index) => (
