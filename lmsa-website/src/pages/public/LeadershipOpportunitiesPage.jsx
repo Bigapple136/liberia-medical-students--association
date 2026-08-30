@@ -11,7 +11,7 @@ export default function LeadershipOpportunitiesPage() {
               <Award size={24} className="text-lmsa-600" />
             </div>
             <div>
-              <h1 className="text-4xl font-bold text-gray-900">Leadership Opportunities</h1>
+              <h1 className="text-3xl md:text-4xl font-bold text-gray-900">Leadership Opportunities</h1>
               <p className="text-lg text-gray-600 mt-1">Run for Office and Lead</p>
             </div>
           </div>

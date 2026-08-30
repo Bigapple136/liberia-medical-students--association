@@ -20,7 +20,7 @@ export default function PastPresidentsPage() {
               <Award size={24} className="text-lmsa-600" />
             </div>
             <div>
-              <h1 className="text-4xl font-bold text-gray-900">Past Presidents</h1>
+              <h1 className="text-3xl md:text-4xl font-bold text-gray-900">Past Presidents</h1>
               <p className="text-lg text-gray-600 mt-1">Alumni Leadership Legacy</p>
             </div>
           </div>
@@ -41,8 +41,8 @@ export default function PastPresidentsPage() {
         <div className="space-y-6">
           {pastPresidents.map((president, index) => (
             <div key={index} className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-              <div className="flex items-start gap-6">
-                <div className="w-20 h-20 bg-gray-200 rounded-lg flex-shrink-0 flex items-center justify-center">
+              <div className="flex flex-col sm:flex-row items-start gap-4 sm:gap-6">
+                <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gray-200 rounded-lg flex-shrink-0 flex items-center justify-center">
                   <Star size={32} className="text-gray-400" />
                 </div>
                 <div className="flex-1">

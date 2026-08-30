@@ -11,7 +11,7 @@ export default function MentorshipPage() {
               <Heart size={24} className="text-lmsa-600" />
             </div>
             <div>
-              <h1 className="text-4xl font-bold text-gray-900">Mentorship Program</h1>
+              <h1 className="text-3xl md:text-4xl font-bold text-gray-900">Mentorship Program</h1>
               <p className="text-lg text-gray-600 mt-1">Connect with Senior Students</p>
             </div>
           </div>

@@ -6,7 +6,7 @@ export default function MissionVisionPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Hero Section */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">Mission & Vision</h1>
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Mission & Vision</h1>
           <p className="text-lg text-gray-600">Our Goals and Core Values</p>
         </div>
 
