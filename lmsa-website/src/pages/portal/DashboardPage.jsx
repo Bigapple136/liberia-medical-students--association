@@ -75,44 +75,44 @@ export default function DashboardPage() {
 
   return (
     <div>
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">
+      <div className="mb-6 sm:mb-8">
+        <h1 className="text-2xl sm:text-3xl font-bold mb-2">
           Welcome Back{user?.full_name ? `, ${user.full_name.split(' ')[0]}` : ''}!
         </h1>
-        <p className="text-gray-600">
+        <p className="text-gray-600 text-sm sm:text-base">
           Here&apos;s what&apos;s happening with your LMSA membership
         </p>
       </div>
 
       {/* ── Quick Stats ──────────────────────────────────────────────────── */}
-      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <Card>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-6 sm:mb-8">
+        <Card className="p-4 sm:p-6">
           <h3 className="text-sm font-medium text-gray-600 mb-1">Membership Status</h3>
-          <p className="text-2xl font-bold text-lmsa-600">
+          <p className="text-xl sm:text-2xl font-bold text-lmsa-600">
             {formatStatus(stats.membership_status)}
           </p>
         </Card>
-        <Card>
+        <Card className="p-4 sm:p-6">
           <h3 className="text-sm font-medium text-gray-600 mb-1">Events Registered</h3>
-          <p className="text-2xl font-bold">{stats.events_registered_count}</p>
+          <p className="text-xl sm:text-2xl font-bold">{stats.events_registered_count}</p>
         </Card>
-        <Card>
+        <Card className="p-4 sm:p-6">
           <h3 className="text-sm font-medium text-gray-600 mb-1">My Committees</h3>
-          <p className="text-2xl font-bold">{stats.committees_count}</p>
+          <p className="text-xl sm:text-2xl font-bold">{stats.committees_count}</p>
         </Card>
-        <Card>
+        <Card className="p-4 sm:p-6">
           <h3 className="text-sm font-medium text-gray-600 mb-1">Upcoming Site Events</h3>
-          <p className="text-2xl font-bold text-blue-600">{stats.upcoming_site_events}</p>
+          <p className="text-xl sm:text-2xl font-bold text-blue-600">{stats.upcoming_site_events}</p>
         </Card>
       </div>
 
       {/* ── My Upcoming Events ───────────────────────────────────────────── */}
-      <div className="mb-8">
+      <div className="mb-6 sm:mb-8">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-2xl font-bold">My Upcoming Events</h2>
+          <h2 className="text-xl sm:text-2xl font-bold">My Upcoming Events</h2>
           <Link
             to="/events"
-            className="text-sm text-lmsa-600 hover:text-lmsa-700 flex items-center gap-1"
+            className="text-sm text-lmsa-600 hover:text-lmsa-700 flex items-center gap-1 p-2 -m-2 min-h-[44px] min-w-[44px] justify-center"
           >
             View all events <ArrowRight size={14} />
           </Link>
@@ -135,19 +135,19 @@ export default function DashboardPage() {
         ) : (
           <div className="space-y-4">
             {myEvents.map(event => (
-              <Card key={event.id}>
+              <Card key={event.id} className="p-4 sm:p-6">
                 <div className="flex items-start gap-3">
                   <Calendar size={20} className="text-lmsa-600 flex-shrink-0 mt-1" />
-                  <div className="flex-1">
+                  <div className="flex-1 min-w-0">
                     <h3 className="font-semibold text-lg">{event.title}</h3>
-                    <div className="flex flex-wrap gap-3 text-sm text-gray-600 mt-1">
+                    <div className="flex flex-wrap gap-2 sm:gap-3 text-sm text-gray-600 mt-1">
                       <span className="flex items-center gap-1">
-                        <Clock size={14} />
+                        <Clock size={14} className="flex-shrink-0" />
                         {formatDate(event.start_datetime)}
                       </span>
                       {event.location && (
                         <span className="flex items-center gap-1">
-                          <BookOpen size={14} />
+                          <BookOpen size={14} className="flex-shrink-0" />
                           {event.location}
                         </span>
                       )}
@@ -163,10 +163,10 @@ export default function DashboardPage() {
       {/* ── Recent News ──────────────────────────────────────────────────── */}
       <div>
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-2xl font-bold">Recent News</h2>
+          <h2 className="text-xl sm:text-2xl font-bold">Recent News</h2>
           <Link
             to="/news"
-            className="text-sm text-lmsa-600 hover:text-lmsa-700 flex items-center gap-1"
+            className="text-sm text-lmsa-600 hover:text-lmsa-700 flex items-center gap-1 p-2 -m-2 min-h-[44px] min-w-[44px] justify-center"
           >
             View all news <ArrowRight size={14} />
           </Link>
@@ -182,7 +182,7 @@ export default function DashboardPage() {
         ) : (
           <div className="space-y-4">
             {newsPosts.map(post => (
-              <Card key={post.id}>
+              <Card key={post.id} className="p-4 sm:p-6">
                 <Link to={`/news/${post.slug}`} className="block hover:shadow-md transition-shadow">
                   <h3 className="font-semibold text-lg mb-1">{post.title}</h3>
                   <p className="text-gray-600 text-sm line-clamp-2">{post.excerpt || post.content?.slice(0, 150)}</p>
