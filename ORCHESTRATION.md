@@ -106,7 +106,7 @@ so this entire authentication path was silently broken the whole time.
 | T22 | Migrate email delivery from nodemailer/Gmail SMTP to Brevo's HTTP API | none | **code done — Brevo setup deferred by Stone** |
 | T23 | Responsive design audit + fixes — public pages | none | **done** |
 | T24 | Responsive design audit + fixes — portal (student) pages | none | **done** |
-| T25 | Responsive design audit + fixes — admin pages | none | **assigned** |
+| T25 | Responsive design audit + fixes — admin pages | none | **done** |
 
 **T22 flagged priority.** Render permanently blocks outbound SMTP ports
 (25/465/587) on free-tier web services since September 2025 — confirmed
@@ -3914,8 +3914,28 @@ Same as T23's, scoped to this page set.
 ## T25 — Responsive design audit + fixes: admin pages
 
 **Branch:** `task/t25-responsive-admin`
-**Status:** assigned
+**Status:** done
 **Depends on:** none
+
+### Orchestrator review
+
+Independently verified: `npx eslint` across all 6 touched files — 0
+errors, 0 warnings. `npm run build` — clean. Reviewed the full
+`AdminLayout.jsx` drawer implementation directly — correctly wires
+auto-close-on-navigation to every single link (nav items, header logo,
+"View Site", "Back to Dashboard" — not just some), correct visibility
+logic across the `lg` breakpoint using the `hidden`/`flex`/`translate-x`
+combination. Spot-checked the specifically-flagged
+`MembershipAdminPage.jsx` fix directly against the diff — confirmed
+exact match to what was originally called out in T25's spec. Good
+judgment on `CommitteeAdminDashboard.jsx`'s separate committee-list
+sidebar — correctly distinguished from `AdminLayout.jsx`'s nav sidebar
+and appropriately given a lighter touch (default-collapsed on mobile)
+rather than over-engineering a second full drawer system for something
+already partially handled. Approved and merged to `main`.
+
+**This closes out the full responsive-design pass (T23 + T24 + T25)** —
+public, portal, and admin surfaces all audited and fixed.
 
 ### Context
 
