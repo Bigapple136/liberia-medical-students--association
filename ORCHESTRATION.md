@@ -105,7 +105,7 @@ so this entire authentication path was silently broken the whole time.
 | T21 | Site-wide newsletter signup | none | **done — migration applied, fully live** |
 | T22 | Migrate email delivery from nodemailer/Gmail SMTP to Brevo's HTTP API | none | **code done — Brevo setup deferred by Stone** |
 | T23 | Responsive design audit + fixes — public pages | none | **needs-review** |
-| T24 | Responsive design audit + fixes — portal (student) pages | none | **assigned** |
+| T24 | Responsive design audit + fixes — portal (student) pages | none | **needs-review** |
 | T25 | Responsive design audit + fixes — admin pages | none | **assigned** |
 
 **T22 flagged priority.** Render permanently blocks outbound SMTP ports
@@ -3825,7 +3825,7 @@ claiming visual verification that didn't happen).
 ## T24 — Responsive design audit + fixes: portal (student) pages
 
 **Branch:** `task/t24-responsive-portal`
-**Status:** assigned
+**Status:** needs-review
 **Depends on:** none
 
 ### Scope
@@ -3848,7 +3848,37 @@ Same as T23's, scoped to this page set.
 
 ### Report
 
-*(Agent: fill this in before pushing)*
+- **Status:** assigned → needs-review
+- **Branch:** `task/t24-responsive-portal`
+
+#### What changed
+
+1. **`lmsa-website/src/layouts/PortalLayout.jsx`** — added toggleable sidebar for mobile
+   - **Issue:** Fixed `w-64` (256px) sidebar always visible — on 375px mobile screen, sidebar consumes ~69% of viewport width, leaving ~119px for content. Cramped and unusable.
+   - **Fix:** Added `useState` + hamburger toggle button (visible only `md:hidden`). Sidebar uses `fixed` positioning with `translate-x` transitions — hidden by default on mobile (`-translate-x-full`), shown via `translate-x-0` when toggle is active. Dark overlay closes sidebar on outside click. On `md:` breakpoints and above, sidebar uses `md:sticky` and is always visible (`md:translate-x-0`). Matches `Header.jsx`'s existing mobile nav pattern.
+
+2. **`lmsa-website/src/pages/portal/DashboardPage.jsx`** — responsive fixes across the page
+   - **Heading:** `text-3xl` → `text-2xl sm:text-3xl` — prevents oversized text on 375px viewport
+   - **Subtitle:** Added `text-sm sm:text-base` — slightly smaller on mobile for better hierarchy
+   - **Stat cards grid:** Added explicit `grid-cols-1` (Tailwind default, now explicit for clarity) + `sm:grid-cols-2 lg:grid-cols-4`. Reduced gap on mobile: `gap-3 sm:gap-6`. Reduced card padding: `p-4 sm:p-6` via className override. Stat numbers: `text-xl sm:text-2xl` — slightly smaller on mobile to prevent overflow in narrow cards.
+   - **Section margins:** `mb-8` → `mb-6 sm:mb-8` — tighter vertical rhythm on mobile
+   - **Section headings:** `text-2xl` → `text-xl sm:text-2xl` — smaller on mobile
+   - **"View all" links:** Added `p-2 -m-2 min-h-[44px] min-w-[44px] justify-center` — expands touch target to meet the 44px minimum (brand guide requirement) without visually changing the link's size
+   - **Event items:** Added `className="p-4 sm:p-6"` to Card, `min-w-0` to text container (prevents long titles from pushing icons off-screen), `flex-shrink-0` on Calendar/Clock/BookOpen icons (prevents icon collapse on narrow screens), `gap-2 sm:gap-3` on date/location tags
+   - **News items:** Same `p-4 sm:p-6` Card padding treatment
+
+#### Verification
+
+- `npx eslint src/layouts/PortalLayout.jsx src/pages/portal/DashboardPage.jsx --ext js,jsx` — **0 errors, 0 warnings**
+- `npm run build` — **clean** (1577 modules, built in 8.12s; only the pre-existing >500kB chunk-size warning)
+- No visual regression on desktop: all responsive variants use `sm:`/`md:` breakpoints, so 1024px+ layouts are unchanged
+- Code-level verification only (no live browser in this environment) — all Tailwind breakpoint reasoning documented above
+
+#### Open questions / blockers for orchestrator
+
+- No new npm dependencies added
+- Only 2 files touched, both within the T24 scope
+- No other portal pages found (`ProfilePage.jsx` does not exist) — DashboardPage is the only portal page to audit
 
 ---
 
