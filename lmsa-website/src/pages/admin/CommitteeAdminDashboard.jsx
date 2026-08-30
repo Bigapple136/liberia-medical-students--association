@@ -56,6 +56,14 @@ export default function CommitteeAdminDashboard() {
   const [sidebarOpen, setSidebarOpen]     = useState(true);
 
   useEffect(() => {
+    // Default the committee list to collapsed on small screens so it does
+    // not eat most of the viewport width on mobile.
+    if (typeof window !== 'undefined' && window.innerWidth < 640) {
+      setSidebarOpen(false);
+    }
+  }, []);
+
+  useEffect(() => {
     loadCommittees();
   }, []);
 
@@ -147,7 +155,7 @@ export default function CommitteeAdminDashboard() {
         {activeCommittee ? (
           <>
             {/* Top Bar */}
-            <header className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between shrink-0">
+            <header className="bg-white border-b border-gray-200 px-4 sm:px-6 py-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between shrink-0">
               <div className="flex items-center gap-3">
                 {(() => {
                   const defaults = COMMITTEE_DEFAULTS[activeCommittee.slug] || {};
@@ -172,7 +180,7 @@ export default function CommitteeAdminDashboard() {
               <Link
                 to={`/committees/${activeCommittee.slug}`}
                 target="_blank"
-                className="flex items-center gap-2 px-4 py-2 text-sm text-lmsa-600 border border-lmsa-200 rounded-lg hover:bg-lmsa-50 transition-colors"
+                className="flex items-center justify-center gap-2 px-4 py-2 text-sm text-lmsa-600 border border-lmsa-200 rounded-lg hover:bg-lmsa-50 transition-colors self-start sm:self-auto"
               >
                 <Eye size={15} />
                 View Public Page
@@ -289,7 +297,7 @@ function DetailsTab({ committee, onSave }) {
   return (
     <div className="max-w-3xl space-y-6">
       <SectionCard title="Basic Information">
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="col-span-2">
             <Label>Committee Name</Label>
             <input
@@ -359,7 +367,7 @@ function DetailsTab({ committee, onSave }) {
       </SectionCard>
 
       <SectionCard title="Key Activities" subtitle="Programs and activities this committee runs">
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
           {form.key_activities.map((item, idx) => (
             <div key={idx} className="flex gap-2">
               <input
@@ -481,12 +489,12 @@ function MembersTab({ committee, onUpdate }) {
   return (
     <div className="max-w-4xl">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-6">
         <div>
           <h2 className="font-bold text-gray-900">Committee Members</h2>
           <p className="text-sm text-gray-500">{members.length} members total</p>
         </div>
-        <button onClick={() => setModal(true)} className="btn btn-primary flex items-center gap-2">
+        <button onClick={() => setModal(true)} className="btn btn-primary flex items-center justify-center gap-2 self-start sm:self-auto">
           <Plus size={16} /> Add Member
         </button>
       </div>
@@ -667,12 +675,12 @@ function EventsTab({ committee }) {
 
   return (
     <div className="max-w-4xl">
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-6">
         <div>
           <h2 className="font-bold text-gray-900">Committee Events</h2>
           <p className="text-sm text-gray-500">{events.length} events total</p>
         </div>
-        <button onClick={() => setShowForm(v => !v)} className="btn btn-primary flex items-center gap-2">
+        <button onClick={() => setShowForm(v => !v)} className="btn btn-primary flex items-center justify-center gap-2 self-start sm:self-auto">
           {showForm ? <X size={16} /> : <Plus size={16} />}
           {showForm ? 'Cancel' : 'Create Event'}
         </button>
@@ -682,7 +690,7 @@ function EventsTab({ committee }) {
       {showForm && (
         <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
           <h3 className="font-semibold text-gray-900 mb-4">New Event</h3>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="col-span-2">
               <Label>Event Title</Label>
               <input className="input" value={form.title} onChange={e => setForm(f => ({...f, title: e.target.value}))} />
@@ -740,16 +748,16 @@ function EventsTab({ committee }) {
       ) : (
         <div className="space-y-3">
           {events.map(ev => (
-            <div key={ev.id} className="bg-white rounded-xl border border-gray-200 p-4 flex items-start justify-between gap-4">
-              <div className="flex gap-4">
+            <div key={ev.id} className="bg-white rounded-xl border border-gray-200 p-4 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-4">
+              <div className="flex gap-4 min-w-0">
                 <div className="text-center bg-lmsa-50 rounded-lg px-3 py-2 min-w-[52px]">
                   <p className="text-xs text-lmsa-600 font-semibold">{new Date(ev.start_datetime).toLocaleString('default',{month:'short'})}</p>
                   <p className="text-xl font-bold text-lmsa-700">{new Date(ev.start_datetime).getDate()}</p>
                 </div>
-                <div>
+                <div className="min-w-0">
                   <h3 className="font-semibold text-gray-900">{ev.title}</h3>
-                  <p className="text-sm text-gray-500 mt-0.5">{ev.location} • {ev.event_type}</p>
-                  <div className="flex gap-2 mt-1.5">
+                  <p className="text-sm text-gray-500 mt-0.5 truncate">{ev.location} • {ev.event_type}</p>
+                  <div className="flex flex-wrap gap-2 mt-1.5">
                     <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
                       ev.status === 'upcoming' ? 'bg-blue-50 text-blue-700' :
                       ev.status === 'completed' ? 'bg-gray-100 text-gray-500' :
@@ -764,7 +772,7 @@ function EventsTab({ committee }) {
                   </div>
                 </div>
               </div>
-              <div className="flex gap-2 shrink-0">
+              <div className="flex gap-2 shrink-0 self-start sm:self-auto">
                 <Link to={`/events/${ev.slug}`} target="_blank" className="p-2 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-700">
                   <ExternalLink size={15} />
                 </Link>
@@ -846,8 +854,8 @@ function DocumentsTab({ committee }) {
       {/* Upload Section */}
       <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
         <h3 className="font-semibold text-gray-900 mb-4">Upload Document</h3>
-        <div className="grid grid-cols-3 gap-4 mb-4">
-          <div className="col-span-3 sm:col-span-1">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+          <div>
             <Label>Document Title</Label>
             <input className="input" placeholder="e.g. Meeting Minutes Jan 2026" value={meta.title} onChange={e => setMeta(f => ({...f, title: e.target.value}))} />
           </div>
@@ -981,12 +989,12 @@ function AnnouncementsTab({ committee }) {
 
   return (
     <div className="max-w-3xl">
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-6">
         <div>
           <h2 className="font-bold text-gray-900">Announcements</h2>
           <p className="text-sm text-gray-500">Committee-specific announcements shown on the public page</p>
         </div>
-        <button onClick={() => setForm(v => !v)} className="btn btn-primary flex items-center gap-2">
+        <button onClick={() => setForm(v => !v)} className="btn btn-primary flex items-center justify-center gap-2 self-start sm:self-auto">
           {showForm ? <X size={16} /> : <Plus size={16} />}
           {showForm ? 'Cancel' : 'New Announcement'}
         </button>
@@ -1090,12 +1098,12 @@ function AchievementsTab({ committee }) {
 
   return (
     <div className="max-w-3xl">
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-6">
         <div>
           <h2 className="font-bold text-gray-900">Achievements & Milestones</h2>
           <p className="text-sm text-gray-500">Highlight committee accomplishments on the public page</p>
         </div>
-        <button onClick={() => setForm(v => !v)} className="btn btn-primary flex items-center gap-2">
+        <button onClick={() => setForm(v => !v)} className="btn btn-primary flex items-center justify-center gap-2 self-start sm:self-auto">
           {showForm ? <X size={16} /> : <Plus size={16} />}
           {showForm ? 'Cancel' : 'Add Achievement'}
         </button>
@@ -1142,7 +1150,7 @@ function AchievementsTab({ committee }) {
       ) : items.length === 0 ? (
         <EmptyState icon={Award} message="No achievements yet" sub="Add milestones and accomplishments for this committee" />
       ) : (
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {items.map(item => (
             <div key={item.id} className="bg-white rounded-xl border border-gray-200 p-4 relative group">
               <button onClick={() => remove(item.id)} className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 text-gray-300 hover:text-red-500 transition-all">

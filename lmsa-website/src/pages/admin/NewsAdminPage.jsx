@@ -137,7 +137,7 @@ export default function NewsAdminPage() {
   return (
     <div className="max-w-6xl mx-auto p-6 space-y-6">
       {/* ── Header ──────────────────────────────────────────────────── */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-lmsa-600 flex items-center justify-center">
             <Newspaper size={20} className="text-white" />
@@ -152,7 +152,7 @@ export default function NewsAdminPage() {
             </p>
           </div>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           {activeFilter !== 'all' && (
             <button
               onClick={() => setActiveFilter('all')}
@@ -243,7 +243,7 @@ function PostCard({ post, expanded, onToggle, onEdit, onDelete, onQuickStatus })
     <div className="bg-white rounded-xl border border-gray-200 overflow-hidden transition-all">
       {/* Card Header */}
       <div
-        className="p-4 flex items-center justify-between cursor-pointer hover:bg-gray-50 transition-colors"
+        className="p-4 flex flex-col sm:flex-row sm:items-center justify-between cursor-pointer hover:bg-gray-50 transition-colors"
         onClick={onToggle}
       >
         <div className="flex items-center gap-4 flex-1 min-w-0">
@@ -290,7 +290,7 @@ function PostCard({ post, expanded, onToggle, onEdit, onDelete, onQuickStatus })
         </div>
 
         {/* Expand */}
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex items-center gap-2 shrink-0 mt-2 sm:mt-0 sm:ml-3">
           {expanded ? <ChevronUp size={16} className="text-gray-400" /> : <ChevronDown size={16} className="text-gray-400" />}
         </div>
       </div>
