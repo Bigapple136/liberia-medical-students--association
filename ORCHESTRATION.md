@@ -103,7 +103,7 @@ so this entire authentication path was silently broken the whole time.
 | T19 | Backend executive positions API (`LeadershipPage.jsx` real data + admin assignment) | none | **done** |
 | T20 | Frontend: real `LeadershipPage.jsx` + admin executive-position management | T19 | **done** |
 | T21 | Site-wide newsletter signup | none | **done — migration applied, fully live** |
-| T22 | Migrate email delivery from nodemailer/Gmail SMTP to Brevo's HTTP API | none | **assigned — priority** |
+| T22 | Migrate email delivery from nodemailer/Gmail SMTP to Brevo's HTTP API | none | **code done — Brevo setup deferred by Stone** |
 
 **T22 flagged priority.** Render permanently blocks outbound SMTP ports
 (25/465/587) on free-tier web services since September 2025 — confirmed
@@ -3551,8 +3551,31 @@ of scope here.
 ## T22 — Migrate email delivery to Brevo's HTTP API
 
 **Branch:** `task/t22-brevo-email-migration`
-**Status:** assigned — priority
+**Status:** code done — merged, Brevo account setup deferred by Stone until later
 **Depends on:** none
+
+### Orchestrator review
+
+Independently verified: `node --check` clean on both touched backend
+files, `npx eslint` 0 errors/0 warnings, `nodemailer` confirmed fully
+gone (`grep -rn "import.*nodemailer"` returns nothing). Read the full
+rewritten `email.js` directly — correct Brevo API field names
+(`sender.email`/`sender.name`, `to[].email`, `htmlContent`), correct
+error handling (throws on non-2xx, matching what every caller's
+`try/catch` already expects), correct non-crashing startup warning if
+`BREVO_API_KEY` is unset rather than the old nodemailer version's
+verify-on-boot behavior. Spot-checked one of the four call sites
+(`membership.controller.js`) directly against the new signature —
+confirmed compatible, not just trusting the report's claim.
+`package.json`/`.env.example` changes both correct and complete.
+
+Approved and merged to `main`. **Stone has explicitly deferred setting
+up the Brevo account** (currently only has one under a different email
+than the LMSA mailbox) — not blocking, code is ready and waiting
+whenever that happens. Until `BREVO_API_KEY` is set on Render, email
+sending will fail the same way it did before (caught by the existing
+non-critical-secondary-action resilience pattern throughout the app —
+nothing else breaks, emails just won't send).
 
 ### Context
 
