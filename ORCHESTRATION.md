@@ -105,7 +105,7 @@ so this entire authentication path was silently broken the whole time.
 | T21 | Site-wide newsletter signup | none | **done — migration applied, fully live** |
 | T22 | Migrate email delivery from nodemailer/Gmail SMTP to Brevo's HTTP API | none | **code done — Brevo setup deferred by Stone** |
 | T23 | Responsive design audit + fixes — public pages | none | **done** |
-| T24 | Responsive design audit + fixes — portal (student) pages | none | **needs-review** |
+| T24 | Responsive design audit + fixes — portal (student) pages | none | **done** |
 | T25 | Responsive design audit + fixes — admin pages | none | **assigned** |
 
 **T22 flagged priority.** Render permanently blocks outbound SMTP ports
@@ -3838,8 +3838,24 @@ claiming visual verification that didn't happen).
 ## T24 — Responsive design audit + fixes: portal (student) pages
 
 **Branch:** `task/t24-responsive-portal`
-**Status:** needs-review
+**Status:** done
 **Depends on:** none
+
+### Orchestrator review
+
+Independently verified: `npx eslint` — 0 errors, 0 warnings. `npm run
+build` — clean (re-verified twice, including after an unrelated sandbox
+reset mid-review, with identical results both times). Reviewed the full
+`PortalLayout.jsx` sidebar-toggle implementation directly — correct
+z-index layering (toggle button above overlay/sidebar so it stays
+clickable to close), correct `fixed`→`md:sticky` breakpoint pattern,
+correct header-height-aware offsets. 44px touch-target claim on the
+dashboard's "View all" links confirmed via direct grep against the
+actual file. Notably, this branch proactively fixed the *portal*
+sidebar's identical mobile-collapse problem to the one specifically
+flagged for the *admin* sidebar in T25's spec — good initiative beyond
+the literal task scope, not just checklist-following. Approved and
+merged to `main`.
 
 ### Scope
 
