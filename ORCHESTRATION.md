@@ -3846,13 +3846,28 @@ patterns in the other admin pages.
 ### Acceptance criteria
 
 Same as T23's, plus:
-- [ ] The `AdminLayout.jsx` sidebar specifically confirmed to have a
+- [x] The `AdminLayout.jsx` sidebar specifically confirmed to have a
       reasonable mobile treatment (collapsed/toggleable), or explicitly
       confirmed already fine if it turns out it was — don't skip this
       check.
-- [ ] The specific `MembershipAdminPage.jsx` flex-row issue fixed and
+- [x] The specific `MembershipAdminPage.jsx` flex-row issue fixed and
       confirmed in the report.
 
 ### Report
 
-*(Agent: fill this in before pushing)*
+- **Status:** in-progress → needs-review
+- **Files modified:**
+  - `lmsa-website/src/layouts/AdminLayout.jsx` — **admin sidebar mobile treatment (highest-impact fix, acceptance criterion #1).** Previously the sidebar was a permanently visible `w-64` fixed column that consumed most of a phone's width. Rewrote to an **off-canvas drawer**: on mobile (`<lg`) the sidebar is hidden (`-translate-x-full`) behind a mobile top bar with a hamburger button (`Menu` icon, matching `Header.jsx`'s pattern) that slides the drawer in (`translate-x-0`) with a `bg-black/40` backdrop tap-to-close, a close (`X`) button in the sidebar header, and auto-closing on any nav/link click. On desktop (`lg+`) it stays permanently sticky via `lg:sticky lg:translate-x-0 lg:flex`. No nav items, links, or routing changed — only layout/wrapping.
+  - `lmsa-website/src/pages/admin/MembershipAdminPage.jsx` — **flagged flex-row issue fixed (acceptance criterion #2).** The card header was `p-4 flex items-center justify-between` with no stacking breakpoint; the applicant-info block and the date/expand controls could cramp on narrow screens. Changed header to `flex flex-col sm:flex-row sm:items-center`, made the applicant meta line (`flex items-center gap-3`) `flex flex-wrap`, gave the date/expand column `mt-2 sm:mt-0 sm:ml-3`, and made the expanded approve/reject buttons `flex flex-wrap gap-3`. Also stacked the page header (`flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between`) so the title block and "View Pending Queue" button don't fight for width.
+  - `lmsa-website/src/pages/admin/NewsAdminPage.jsx` — page header stacked (`flex flex-col gap-3 sm:flex-row ...`), action button group made `flex flex-wrap gap-2`, and the post card header changed to `flex flex-col sm:flex-row sm:items-center` with the expand control `mt-2 sm:mt-0 sm:ml-3`.
+  - `lmsa-website/src/pages/admin/EventsAdminPage.jsx` — page header stacked (title + "New Event" buttons), action group `flex flex-wrap gap-2`, event card header `flex flex-col sm:flex-row sm:items-center` with expand `mt-2 sm:mt-0 sm:ml-3`, and the registration rows changed from `flex items-center justify-between` to `flex flex-col sm:flex-row` so the name/email block and status badge stack on narrow screens.
+  - `lmsa-website/src/pages/admin/ExecutiveAdminPage.jsx` — page header stacked (title + "Add Position"), position card header `flex flex-col sm:flex-row sm:items-center` with expand `mt-2 sm:mt-0 sm:ml-3`, and the holder meta line made `flex flex-wrap`.
+  - `lmsa-website/src/pages/admin/CommitteeAdminDashboard.jsx` — top bar stacked (`flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between`, "View Public Page" button `self-start sm:self-auto`); the four tab headers (Members / Events / Announcements / Achievements) all stacked; event list items changed to `flex flex-col sm:flex-row` with the info block `min-w-0` and action icons `self-start sm:self-auto`; forms changed from `grid grid-cols-2`/`grid grid-cols-3` to `grid-cols-1 sm:grid-cols-2`/`sm:grid-cols-3` (Details basic info, key activities, event form, achievement grid, document upload form); and the committee sidebar now **defaults to collapsed on load when the viewport is < 640px** (via a mount `useEffect` checking `window.innerWidth`) so the committee list doesn't eat most of a phone's width while still retaining its existing manual collapse toggle.
+- **Deviations from spec (and why):**
+  - The `CommitteeAdminDashboard.jsx` owns a *second*, committee-list sidebar (separate from `AdminLayout.jsx`'s nav sidebar, which the ORCHESTRATION specifically calls out). That one already had a manual collapse toggle; I didn't rebuild it as a drawer (out of stated scope) but defaulted it reduced on small screens for the mobile-first benefit. `AdminLayout.jsx`'s nav sidebar is the one given the off-canvas drawer treatment.
+- **Verification:**
+  - `npm run build` (vite) — succeeds (1577 modules transformed).
+  - `npx eslint <all six admin files + AdminLayout.jsx> --max-warnings 0` — 0 errors, 0 warnings.
+  - Acceptance criterion #1 (sidebar has reasonable mobile treatment — collapsed/toggleable): **confirmed** — now an off-canvas hamburger drawer on `<lg`, persistently visible on `lg+`.
+  - Acceptance criterion #2 (`MembershipAdminPage.jsx` flex-row issue fixed): **confirmed** — stack-on-mobile applied to the card header row.
+  - Cannot be visually verified on a real phone in this headless environment — logic confirmed via class/breakpoint review and successful production build.
