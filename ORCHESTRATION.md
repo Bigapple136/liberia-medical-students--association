@@ -103,7 +103,7 @@ so this entire authentication path was silently broken the whole time.
 | T19 | Backend executive positions API (`LeadershipPage.jsx` real data + admin assignment) | none | **done** |
 | T20 | Frontend: real `LeadershipPage.jsx` + admin executive-position management | T19 | **done** |
 | T21 | Site-wide newsletter signup | none | **done — migration applied, fully live** |
-| T22 | Migrate email delivery from nodemailer/Gmail SMTP to Brevo's HTTP API | none | **assigned — priority** |
+| T22 | Migrate email delivery from nodemailer/Gmail SMTP to Brevo's HTTP API | none | **code done — Brevo setup deferred by Stone** |
 
 **T22 flagged priority.** Render permanently blocks outbound SMTP ports
 (25/465/587) on free-tier web services since September 2025 — confirmed
@@ -3551,8 +3551,31 @@ of scope here.
 ## T22 — Migrate email delivery to Brevo's HTTP API
 
 **Branch:** `task/t22-brevo-email-migration`
-**Status:** assigned — priority
+**Status:** code done — merged, Brevo account setup deferred by Stone until later
 **Depends on:** none
+
+### Orchestrator review
+
+Independently verified: `node --check` clean on both touched backend
+files, `npx eslint` 0 errors/0 warnings, `nodemailer` confirmed fully
+gone (`grep -rn "import.*nodemailer"` returns nothing). Read the full
+rewritten `email.js` directly — correct Brevo API field names
+(`sender.email`/`sender.name`, `to[].email`, `htmlContent`), correct
+error handling (throws on non-2xx, matching what every caller's
+`try/catch` already expects), correct non-crashing startup warning if
+`BREVO_API_KEY` is unset rather than the old nodemailer version's
+verify-on-boot behavior. Spot-checked one of the four call sites
+(`membership.controller.js`) directly against the new signature —
+confirmed compatible, not just trusting the report's claim.
+`package.json`/`.env.example` changes both correct and complete.
+
+Approved and merged to `main`. **Stone has explicitly deferred setting
+up the Brevo account** (currently only has one under a different email
+than the LMSA mailbox) — not blocking, code is ready and waiting
+whenever that happens. Until `BREVO_API_KEY` is set on Render, email
+sending will fail the same way it did before (caught by the existing
+non-critical-secondary-action resilience pattern throughout the app —
+nothing else breaks, emails just won't send).
 
 ### Context
 
@@ -3644,4 +3667,25 @@ that only `email.js` itself imports it directly).
 
 ### Report
 
-*(Agent: fill this in before pushing)*
+- **Status:** in-progress → needs-review
+- **Files modified:**
+  - `lmsa-api/src/config/email.js` — full rewrite: removed `nodemailer` import/transporter, replaced with `fetch()` POST to `https://api.brevo.com/v3/smtp/email`. Header: `api-key: BREVO_API_KEY`. Body: `sender: { email, name }`, `to: [{ email }]`, `subject`, `htmlContent`, `textContent` (optional). Error handling parses Brevo's JSON error body for useful messages. Startup warning if `BREVO_API_KEY` is unset. **Exported `sendEmail({ to, subject, html, text })` signature is identical to the old nodemailer version** — no caller changes needed.
+  - `lmsa-api/package.json` — removed `"nodemailer": "^8.0.5"` from dependencies.
+  - `lmsa-api/.env.example` — replaced `EMAIL_HOST`/`EMAIL_PORT`/`EMAIL_USER`/`EMAIL_PASSWORD`/`EMAIL_FROM` with `BREVO_API_KEY`, `BREVO_SENDER_EMAIL`, `BREVO_SENDER_NAME`.
+- **Deviations from spec (and why):**
+  - None. Field names verified against Brevo's official API reference (`https://developers.brevo.com/reference/send-transac-email`): `api-key` header, `sender.email`/`sender.name`, `to[].email`, `subject`, `htmlContent`, `textContent` — all exact matches.
+- **Signature preservation — verified all 4 call sites need zero changes:**
+  - `auth.controller.js` — `sendEmail({ to: email, subject: '...', html: '...' })` ✅
+  - `committee.controller.js` (×2) — `sendEmail({ to: committeeEmail, subject: '...', html: '...' })` and `sendEmail({ to: email, subject: '...', html: '...' })` ✅
+  - `contact.controller.js` — `sendEmail({ to: contactEmail, subject: '...', html: '...' })` and `sendEmail({ to: email, subject: '...', html: '...' })` ✅
+  - `membership.controller.js` — `sendEmail({ to: user.email, subject: '...', html: '...' })` ✅
+  - All use `{ to, subject, html }` — the `text` param is never passed by any caller but remains supported as an optional field.
+- **Verification:**
+  - `node --check src/config/email.js` — passes.
+  - `node --check src/server.js` — passes.
+  - `npx eslint src/config/email.js` — 0 errors, 0 warnings.
+  - `grep -rn "import.*nodemailer\|require.*nodemailer" lmsa-api/src/` — returns nothing (exit code 1). Only 3 remaining mentions of "nodemailer" are in code comments (server.js IPv6 note, email.js JSDoc).
+  - `nodemailer` fully removed from `package.json` dependencies.
+- **Cannot be live-tested without Stone's real Brevo API key** — this is expected and noted per acceptance criteria. Stone will do the real end-to-end test after merge and env var setup (`BREVO_API_KEY`, `BREVO_SENDER_EMAIL`, `BREVO_SENDER_NAME` on Render). The old `EMAIL_*` vars can be left set (harmless) or removed at Stone's discretion.
+
+---
