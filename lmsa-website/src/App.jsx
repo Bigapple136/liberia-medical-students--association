@@ -3,12 +3,14 @@ import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './context/AuthContext';
 import AppRoutes from './routes';
 import ErrorBoundary from '@components/common/ErrorBoundary';
+import PageMeta from '@components/common/PageMeta';
 
 function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
         <ErrorBoundary>
+          <PageMeta />
           <AppRoutes />
           <Toaster
             position="top-right"

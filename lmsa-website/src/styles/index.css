@@ -86,4 +86,96 @@
   .card-accent {
     @apply bg-lmsa-50 border-2 border-lmsa-600 rounded-xl p-6;
   }
+
+  .page-hero {
+    @apply relative overflow-hidden border-b border-white/10;
+  }
+
+  .page-hero::after {
+    content: '';
+    @apply absolute right-0 top-0 h-full w-1/3 border-l border-white/10 opacity-60 pointer-events-none;
+  }
+
+  .page-hero-grid {
+    @apply relative z-10 grid items-center gap-10 py-16 md:grid-cols-[minmax(0,1fr)_280px] md:py-20 lg:gap-20 lg:py-24;
+  }
+
+  .page-hero-copy {
+    @apply max-w-3xl;
+  }
+
+  .page-hero-mark {
+    @apply h-px w-10;
+  }
+
+  .page-hero-eyebrow {
+    @apply text-xs font-semibold uppercase tracking-[0.18em] opacity-80;
+  }
+
+  .page-hero-title {
+    @apply max-w-3xl text-4xl font-bold leading-[1.08] tracking-tight md:text-6xl;
+  }
+
+  .page-hero-description {
+    @apply mt-6 max-w-2xl text-lg leading-8 opacity-85 md:text-xl;
+  }
+
+  .page-hero-primary,
+  .page-hero-secondary {
+    @apply mt-8 inline-flex min-h-12 items-center justify-center gap-2 rounded-lg px-5 py-3 text-sm font-semibold transition-colors;
+  }
+
+  .page-hero-primary {
+    @apply bg-white text-gray-900 hover:bg-gray-100;
+  }
+
+  .page-hero-secondary {
+    @apply border border-white/40 text-white hover:bg-white/10;
+  }
+
+  .page-hero-visual {
+    @apply relative flex min-h-[220px] items-center justify-center;
+  }
+
+  .page-hero-icon-wrap {
+    @apply flex h-44 w-44 items-center justify-center rounded-full border border-white/20 bg-white/10;
+  }
+
+  .page-hero-icon-wrap::before,
+  .page-hero-icon-wrap::after {
+    content: '';
+    @apply absolute rounded-full border border-white/15;
+  }
+
+  .page-hero-icon-wrap::before {
+    @apply h-56 w-56;
+  }
+
+  .page-hero-icon-wrap::after {
+    @apply h-72 w-72;
+  }
+
+  .page-hero-index {
+    @apply absolute bottom-0 right-0 flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.2em] opacity-60;
+  }
+
+  .page-hero-index-line {
+    @apply h-px w-8 bg-current;
+  }
+
+  .page-hero-stats {
+    @apply relative z-10 grid border-t border-white/20 sm:grid-cols-3;
+  }
+
+  .page-hero-stat {
+    @apply flex items-baseline gap-3 border-b border-white/20 py-4 sm:border-b-0 sm:border-r sm:px-6 sm:first:pl-0 sm:last:border-r-0;
+  }
+
+  .page-hero-stat strong {
+    @apply text-2xl font-semibold;
+  }
+
+  .page-hero-stat span {
+    @apply text-xs uppercase tracking-[0.14em] opacity-70;
+  }
 }

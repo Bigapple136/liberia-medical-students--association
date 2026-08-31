@@ -18,36 +18,8 @@ import Card from '@components/common/Card';
 
 export default function HomePage() {
   return (
-    <div id="main-content">
-      {/* 1. Hero Section */}
-      <section className="bg-gradient-to-br from-lmsa-50 to-lmsa-100 py-20 md:py-24">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="inline-block px-4 py-2 bg-lmsa-600 text-white text-sm rounded-full mb-6 font-medium">
-            Established 1972
-          </div>
-          <h1 className="text-5xl md:text-6xl font-bold mb-6 tracking-tight uppercase">
-            The Voice of Medical Students in Liberia
-          </h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8 text-balance">
-            Uniting future physicians at A.M. Dogliotti College of Medicine to promote
-            excellence, advocate for student welfare, and advance healthcare in Liberia.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/register">
-              <Button variant="primary" size="lg">
-                Become a Member
-              </Button>
-            </Link>
-            <Link to="/about">
-              <Button variant="secondary" size="lg" rightIcon={<ChevronRight size={16} />}>
-                Learn More
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* 2. Persona Selector */}
+    <div>
+      {/* 1. Persona Selector */}
       <section className="py-12 bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-8">
@@ -69,7 +41,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 3. Service Pillars */}
+      {/* 2. Service Pillars */}
       <section className="py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
@@ -92,7 +64,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 4. Statement of Belonging Banner */}
+      {/* 3. Statement of Belonging Banner */}
       <section className="py-16 bg-lmsa-600 text-white">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <blockquote className="text-2xl md:text-3xl font-serif italic mb-6 text-balance">
@@ -104,7 +76,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 5. Dual Value Proposition Tiles */}
+      {/* 4. Dual Value Proposition Tiles */}
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-2 gap-8">
@@ -145,7 +117,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 6. Benefits Grid (Why Join LMSA?) */}
+      {/* 5. Benefits Grid (Why Join LMSA?) */}
       <section className="py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
@@ -177,7 +149,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 7. Quick-Access Resource Tiles */}
+      {/* 6. Quick-Access Resource Tiles */}
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
@@ -200,7 +172,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 8. Blog/News Feed */}
+      {/* 7. Blog/News Feed */}
       <section className="py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
