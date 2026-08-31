@@ -107,9 +107,9 @@ so this entire authentication path was silently broken the whole time.
 | T23 | Responsive design audit + fixes — public pages | none | **done** |
 | T24 | Responsive design audit + fixes — portal (student) pages | none | **done** |
 | T25 | Responsive design audit + fixes — admin pages | none | **done** |
-| T26 | Backend general (non-committee) documents API | none | **assigned** |
-| T27 | Public document library page | T26 | blocked |
-| T28 | Admin document upload/management page | T26 | blocked |
+| T26 | Backend general (non-committee) documents API | none | **done** |
+| T27 | Public document library page | T26 | **assigned** |
+| T28 | Admin document upload/management page | T26 | **assigned** |
 
 **T22 flagged priority.** Render permanently blocks outbound SMTP ports
 (25/465/587) on free-tier web services since September 2025 — confirmed
@@ -4015,8 +4015,39 @@ Same as T23's, plus:
 ## T26 — Backend general (non-committee) documents API
 
 **Branch:** `task/t26-documents-backend`
-**Status:** assigned
+**Status:** done — with one real fix applied before merge
 **Depends on:** none
+
+### Orchestrator review
+
+Independently verified: `node --check` clean, `npx eslint` 0 errors/0
+warnings across all touched files, `server.js` wiring correct.
+`committee_id IS NULL` scoping confirmed correct on every relevant
+query, preventing leakage into/from T1's committee-scoped documents.
+
+**One real, meaningful bug found and fixed before merge:** the public
+routes (`GET /`, `GET /:id/download`) had no `authenticate` middleware
+at all, on the reasoning that the controller reads `req.user` directly
+when present. But `req.user` is *only ever* populated by `authenticate`
+itself — with no auth middleware on a route, `req.user` can never be
+set regardless of whether the client sends a valid Bearer token, since
+nothing ever decodes it. This meant `canAccess()`'s `access_level:
+'members'` check (`!!user`) would always evaluate against `null`,
+making every `'members'`-level document — **the default access level
+for newly created documents** — permanently invisible via the public
+endpoints to literally everyone, including actually logged-in members.
+Not a hypothetical edge case; it's what happens by default the moment
+an admin uploads a document without manually overriding access_level to
+`'public'`.
+
+Fixed by adding a new `optionalAuthenticate` middleware to
+`auth.middleware.js` — populates `req.user` when a valid token is
+present, same as `authenticate`, but never rejects the request when a
+token is missing/invalid, unlike the strict version. Applied it to both
+public document routes. This is a reusable pattern worth remembering
+for any future genuinely-public-but-role-aware endpoint.
+
+Approved and merged to `main`. Unblocks T27 and T28.
 
 ### Context
 

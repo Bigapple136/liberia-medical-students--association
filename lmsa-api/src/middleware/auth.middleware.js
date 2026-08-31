@@ -56,6 +56,50 @@ export const authenticate = async (req, res, next) => {
   }
 };
 
+// Like `authenticate`, but never blocks the request. If a valid Bearer
+// token is present, `req.user` is populated exactly as it would be by
+// `authenticate`; if the token is missing, invalid, or expired, the
+// request simply proceeds with `req.user` left unset (`undefined`) —
+// the route itself decides what an anonymous visitor can see, rather
+// than being rejected outright. This exists specifically for endpoints
+// that are genuinely public but read `req.user` to vary the response
+// (e.g. document.controller.js's access-level filtering, where an
+// anonymous visitor and a logged-in member should legitimately see
+// different results from the same endpoint) — a route with no auth
+// middleware at all can never have `req.user` populated regardless of
+// whether the client sends a token, since nothing ever decodes it.
+export const optionalAuthenticate = async (req, res, next) => {
+  try {
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return next();
+    }
+
+    const token = authHeader.split(' ')[1];
+    const { data: authData, error: authError } = await supabase.auth.getUser(token);
+
+    if (authError || !authData?.user) {
+      return next();
+    }
+
+    const { data: user, error } = await supabase
+      .from('users')
+      .select('*')
+      .eq('id', authData.user.id)
+      .single();
+
+    if (!error && user) {
+      req.user = user;
+    }
+
+    next();
+  } catch (error) {
+    // Never fail the request over a broken optional-auth attempt.
+    next();
+  }
+};
+
 export const authorize = (...roles) => {
   return (req, res, next) => {
     if (!req.user) {
