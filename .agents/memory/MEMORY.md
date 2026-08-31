@@ -1,1 +1,2 @@
 - [GitHub publishing](github-publishing.md) — the Replit Git panel may succeed when connector API writes are blocked by the proxy.
+- [AMSA-inspired LMSA design](lmsa-design-system.md) — public pages use audience-first navigation and editorial storytelling with LMSA branding.
