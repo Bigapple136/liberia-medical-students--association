@@ -338,6 +338,19 @@ export default function Header() {
               )}
             </div>
 
+            {/* Documents */}
+            <Link
+              to="/documents"
+              onClick={closeMenu}
+              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                isActive('/documents')
+                  ? 'text-lmsa-600 bg-lmsa-50'
+                  : 'text-gray-700 hover:text-lmsa-600 hover:bg-gray-50'
+              }`}
+            >
+              Documents
+            </Link>
+
             {/* Contact */}
             <Link
               to="/contact"
@@ -431,6 +444,14 @@ export default function Header() {
             </Link>
 
             <MobileNavSection title="Get Involved" items={getInvolvedItems} closeMenu={closeMenu} />
+
+            <Link
+              to="/documents"
+              onClick={closeMenu}
+              className="block px-4 py-2 text-gray-700 hover:bg-lmsa-50 hover:text-lmsa-600 rounded-lg"
+            >
+              Documents
+            </Link>
 
             <Link
               to="/contact"

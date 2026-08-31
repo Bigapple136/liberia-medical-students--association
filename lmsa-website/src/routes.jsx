@@ -31,6 +31,7 @@ import JoinCommitteePage from './pages/public/JoinCommitteePage';
 import CommitteePageTemplate from './pages/committees/CommitteePageTemplate';
 import PartnershipPage from './pages/public/PartnershipPage';
 import ContactPage from './pages/public/ContactPage';
+import DocumentsPage from './pages/public/DocumentsPage';
 import NotFoundPage from './pages/public/NotFoundPage';
 
 // Auth pages
@@ -96,6 +97,9 @@ function AppRoutes() {
         <Route path="/get-involved/leadership" element={<LeadershipOpportunitiesPage />} />
         <Route path="/get-involved/committees" element={<JoinCommitteePage />} />
         <Route path="/partnership" element={<PartnershipPage />} />
+        
+        {/* Documents route */}
+        <Route path="/documents" element={<DocumentsPage />} />
         
         {/* Contact route */}
         <Route path="/contact" element={<ContactPage />} />
