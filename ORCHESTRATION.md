@@ -108,7 +108,7 @@ so this entire authentication path was silently broken the whole time.
 | T24 | Responsive design audit + fixes — portal (student) pages | none | **done** |
 | T25 | Responsive design audit + fixes — admin pages | none | **done** |
 | T26 | Backend general (non-committee) documents API | none | **done** |
-| T27 | Public document library page | T26 | **needs-review** |
+| T27 | Public document library page | T26 | **done** |
 | T28 | Admin document upload/management page | T26 | **assigned** |
 
 **T22 flagged priority.** Render permanently blocks outbound SMTP ports
@@ -4162,8 +4162,18 @@ downloads, committee_id, created_at, updated_at
 ## T27 — Public document library page
 
 **Branch:** `task/t27-documents-public`
-**Status:** blocked (needs T26 done)
-**Depends on:** T26
+**Status:** done
+**Depends on:** T26 (done — merged to main)
+
+### Orchestrator review
+
+Independently verified: `npx eslint` on all 4 touched files — 0 errors,
+0 warnings. `npm run build` — clean, matches report exactly.
+`document.service.js` confirmed correct against T26's actual merged
+endpoints, method-by-method. `window.open` download approach is a
+sound, well-reasoned choice — correctly avoided a forced `<a download>`
+that would fail against cross-origin Supabase Storage URLs without extra
+CORS config. Approved and merged to `main`.
 
 ### Context
 
