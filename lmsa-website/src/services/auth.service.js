@@ -10,6 +10,10 @@ export const authService = {
 
   // Login user
   async login(email, password) {
+    if (!supabase) {
+      throw new Error('Member login is temporarily unavailable. Please try again later.');
+    }
+
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
@@ -26,11 +30,13 @@ export const authService = {
 
   // Logout user
   async logout() {
+    if (!supabase) return;
     await supabase.auth.signOut();
   },
 
   // Get current user
   async getCurrentUser() {
+    if (!supabase) return null;
     const { data, error } = await supabase.auth.getUser();
     if (error) throw error;
     return data.user;

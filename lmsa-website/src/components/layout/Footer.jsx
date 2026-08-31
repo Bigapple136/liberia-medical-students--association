@@ -32,29 +32,39 @@ export default function Footer() {
   };
 
   return (
-    <footer className="bg-gray-900 text-gray-300">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 mb-8">
+    <footer className="site-footer">
+      <div className="site-container site-footer-container">
+        <div className="footer-intro">
+          <div>
+            <p className="section-kicker section-kicker-light">Stay connected</p>
+            <h2>Keep learning. Keep leading. Keep showing up.</h2>
+          </div>
+          <Link to="/register" className="footer-join-link">
+            Join the LMSA community <ExternalLink size={16} aria-hidden="true" />
+          </Link>
+        </div>
+
+        <div className="footer-grid">
           {/* Brand Column */}
-          <div className="lg:col-span-2">
-            <h3 className="text-2xl font-bold text-white mb-4">LMSA</h3>
-            <p className="text-sm text-gray-400 mb-4 max-w-xs">
+          <div className="footer-brand">
+            <h3>LMSA</h3>
+            <p className="footer-description">
               Liberia Medical Students&apos; Association<br />
               Uniting future physicians at A.M. Dogliotti College of Medicine
             </p>
-            <div className="space-y-3 text-sm">
-              <div className="flex items-center gap-2">
-                <MapPin size={16} className="text-lmsa-400 flex-shrink-0" />
+            <div className="footer-contact-list">
+              <div>
+                <MapPin size={16} aria-hidden="true" />
                 <span>A.M. Dogliotti College of Medicine, Monrovia</span>
               </div>
-              <div className="flex items-center gap-2">
-                <Mail size={16} className="text-lmsa-400 flex-shrink-0" />
+              <div>
+                <Mail size={16} aria-hidden="true" />
                 <a href="mailto:dev.lmsa@gmail.com" className="hover:text-lmsa-400 transition-colors duration-200">
                   dev.lmsa@gmail.com
                 </a>
               </div>
-              <div className="flex items-center gap-2">
-                <Phone size={16} className="text-lmsa-400 flex-shrink-0" />
+              <div>
+                <Phone size={16} aria-hidden="true" />
                 <a href="tel:+231770000000" className="hover:text-lmsa-400 transition-colors duration-200">
                   +231 77 000 0000
                 </a>
@@ -62,24 +72,24 @@ export default function Footer() {
             </div>
 
             {/* Social Icons */}
-            <div className="flex gap-4 mt-6">
+            <div className="footer-socials">
               <a
                 href="#"
-                className="p-2 bg-gray-800 rounded-lg hover:bg-lmsa-600 transition-colors duration-200"
+                className="footer-social-link"
                 aria-label="Facebook"
               >
                 <Facebook size={20} />
               </a>
               <a
                 href="#"
-                className="p-2 bg-gray-800 rounded-lg hover:bg-lmsa-600 transition-colors duration-200"
+                className="footer-social-link"
                 aria-label="Twitter"
               >
                 <Twitter size={20} />
               </a>
               <a
                 href="#"
-                className="p-2 bg-gray-800 rounded-lg hover:bg-lmsa-600 transition-colors duration-200"
+                className="footer-social-link"
                 aria-label="Instagram"
               >
                 <Instagram size={20} />
@@ -87,23 +97,23 @@ export default function Footer() {
             </div>
 
             {/* Newsletter Signup */}
-            <form onSubmit={handleSubscribe} className="mt-6">
-              <label htmlFor="newsletter-email" className="block text-sm font-medium text-white mb-2">
+            <form onSubmit={handleSubscribe} className="footer-newsletter">
+              <label htmlFor="newsletter-email">
                 Subscribe to our newsletter
               </label>
-              <div className="flex gap-2">
+              <div>
                 <input
                   id="newsletter-email"
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="your@email.com"
-                  className="flex-1 px-3 py-2 text-sm rounded-lg bg-gray-800 text-white placeholder-gray-500 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-lmsa-500"
+                  className="footer-newsletter-input"
                 />
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="px-4 py-2 text-sm font-semibold rounded-lg bg-lmsa-600 text-white hover:bg-lmsa-500 transition-colors duration-200 disabled:opacity-60"
+                  className="footer-newsletter-button"
                 >
                   {submitting ? '...' : 'Subscribe'}
                 </button>
@@ -113,8 +123,8 @@ export default function Footer() {
 
           {/* About Column */}
           <div>
-            <h4 className="font-semibold text-white mb-4">About</h4>
-            <ul className="space-y-2 text-sm">
+            <h4 className="footer-column-title">About</h4>
+            <ul className="footer-links">
               <li>
                 <Link to="/about" className="hover:text-lmsa-400 transition-colors duration-200">
                   Our Mission
@@ -140,8 +150,8 @@ export default function Footer() {
 
           {/* Membership Column */}
           <div>
-            <h4 className="font-semibold text-white mb-4">Membership</h4>
-            <ul className="space-y-2 text-sm">
+            <h4 className="footer-column-title">Membership</h4>
+            <ul className="footer-links">
               <li>
                 <Link to="/membership" className="hover:text-lmsa-400 transition-colors duration-200">
                   Join LMSA
@@ -167,8 +177,8 @@ export default function Footer() {
 
           {/* Resources Column */}
           <div>
-            <h4 className="font-semibold text-white mb-4">Resources</h4>
-            <ul className="space-y-2 text-sm">
+            <h4 className="footer-column-title">Resources</h4>
+            <ul className="footer-links">
               <li>
                 <a href="#" className="hover:text-lmsa-400 transition-colors duration-200 flex items-center gap-1">
                   Constitution <ExternalLink size={12} />
@@ -199,11 +209,11 @@ export default function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-sm text-gray-400">
+        <div className="footer-bottom">
+          <p>
             © {currentYear} Liberia Medical Students&apos; Association. All rights reserved.
           </p>
-          <div className="flex gap-6 text-sm">
+          <div>
             <a href="#" className="hover:text-lmsa-400 transition-colors duration-200">
               Privacy Policy
             </a>
