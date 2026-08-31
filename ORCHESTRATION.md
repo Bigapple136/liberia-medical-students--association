@@ -107,6 +107,9 @@ so this entire authentication path was silently broken the whole time.
 | T23 | Responsive design audit + fixes — public pages | none | **done** |
 | T24 | Responsive design audit + fixes — portal (student) pages | none | **done** |
 | T25 | Responsive design audit + fixes — admin pages | none | **done** |
+| T26 | Backend general (non-committee) documents API | none | **assigned** |
+| T27 | Public document library page | T26 | blocked |
+| T28 | Admin document upload/management page | T26 | blocked |
 
 **T22 flagged priority.** Render permanently blocks outbound SMTP ports
 (25/465/587) on free-tier web services since September 2025 — confirmed
@@ -4006,3 +4009,185 @@ Same as T23's, plus:
   - Acceptance criterion #1 (sidebar has reasonable mobile treatment — collapsed/toggleable): **confirmed** — now an off-canvas hamburger drawer on `<lg`, persistently visible on `lg+`.
   - Acceptance criterion #2 (`MembershipAdminPage.jsx` flex-row issue fixed): **confirmed** — stack-on-mobile applied to the card header row.
   - Cannot be visually verified on a real phone in this headless environment — logic confirmed via class/breakpoint review and successful production build.
+
+---
+
+## T26 — Backend general (non-committee) documents API
+
+**Branch:** `task/t26-documents-backend`
+**Status:** assigned
+**Depends on:** none
+
+### Context
+
+Per-committee document upload/management is **already fully built and
+working** (T1) — real Supabase Storage upload
+(`committeeService.uploadDocument`), backend CRUD
+(`committee.controller.js`'s `getDocuments`/`createDocument`/
+`deleteDocument`), and a working admin UI (`CommitteeAdminDashboard.jsx`'s
+`DocumentsTab`). Read all three of those first — this task adds the
+**general, org-wide equivalent** (constitution, general bylaws, org-wide
+reports/journals — items not tied to any single committee), reusing the
+exact same `documents` table (which already has a nullable
+`committee_id` FK from `002_committee_additions.sql`) and the exact same
+proven upload pattern, just without a committee scope.
+
+`AdminLayout.jsx`'s sidebar has had a dead `/admin/documents` link since
+before any of this project's task-based work began.
+
+### Schema reference (already live, do not modify)
+
+```sql
+-- documents (committee_id is nullable — NULL means general/org-wide)
+id, title, description, file_url, file_type, file_size,
+category ('constitution'|'bylaws'|'report'|'journal'|'newsletter'|'study_material'|'other'),
+uploaded_by, access_level ('public'|'members'|'executive'|'admin'),
+downloads, committee_id, created_at, updated_at
+```
+
+### Files to create
+
+**`lmsa-api/src/controllers/document.controller.js`**
+
+- `getAll(req, res)` — `GET /` — **public**, but respect `access_level`:
+  unauthenticated requests only see `access_level: 'public'` documents;
+  authenticated requests see `public` + `members` (and `executive`/
+  `admin` only if the requester's role qualifies — check `req.user?.role`,
+  this route needs to work for both logged-out and logged-in visitors, so
+  don't put `authenticate` middleware on it — read `req.user` only if
+  present). Only documents where `committee_id IS NULL` (general ones —
+  committee-scoped documents stay reachable via T1's existing
+  per-committee endpoints, don't duplicate them here). Support optional
+  `?category=` filter. Response: `{ success: true, documents: [...] }`.
+- `download(req, res)` — `GET /:id/download` — public (same access-level
+  logic as above for the single document). Increment `downloads` by 1
+  (fire-and-forget, non-blocking — same pattern as news view-count
+  increments), then respond with `{ success: true, file_url }` (the
+  actual file lives in Supabase Storage at a public URL already — this
+  endpoint's job is tracking the download count and returning the URL
+  for the frontend to redirect to, not streaming the file itself).
+- `getAllAdmin(req, res)` — `GET /admin/all` — admin-only
+  (`authorize('admin', 'executive', 'super_admin')`). All general
+  documents regardless of access_level. Response:
+  `{ success: true, documents: [...] }`.
+- `create(req, res)` — `POST /` — admin-only. Body: `{ title,
+  description, category, access_level, file_url, file_type, file_size }`
+  — mirrors `committee.controller.js`'s `createDocument` exactly, minus
+  `committee_id` (left `null`). Response:
+  `{ success: true, document: {...} }`.
+- `deleteDocument(req, res)` — `DELETE /:id` — admin-only. Response:
+  `{ success: true }`.
+
+**`lmsa-api/src/routes/document.routes.js`**
+
+- Public (no `authenticate`, but read `req.user` if a token happens to be
+  present — check how other public-but-role-aware endpoints in this
+  codebase handle optional auth, or keep it simple and just don't
+  differentiate by role on the public route if that's cleaner — your
+  call, note the choice in your report): `GET /`, `GET /:id/download`
+- Admin-only: `GET /admin/all`, `POST /`, `DELETE /:id`
+
+### Files to modify
+
+**`lmsa-api/src/server.js`** — add `documentRoutes` import and
+`app.use('/api/documents', documentRoutes)`.
+
+### Acceptance criteria
+
+- [ ] `node --check` / `npx eslint` — clean.
+- [ ] Committee-scoped documents (`committee_id` set) never leak into
+      this general endpoint's results — verify with a real committee
+      document and confirm it's absent from `GET /api/documents`.
+- [ ] Access-level filtering works correctly for logged-out vs logged-in
+      requests — test both.
+- [ ] Admin-only routes reject unauthenticated (401) and non-admin (403).
+- [ ] Download count increments correctly, non-blocking on failure.
+
+### Report
+
+*(Agent: fill this in before pushing)*
+
+---
+
+## T27 — Public document library page
+
+**Branch:** `task/t27-documents-public`
+**Status:** blocked (needs T26 done)
+**Depends on:** T26
+
+### Context
+
+No public page for browsing/downloading general documents exists at
+all — this is entirely new, not a static-to-real conversion like most
+prior public-page tasks. Read `NewsPage.jsx` for the closest structural
+reference (filterable list, real API-backed).
+
+### Files to create
+
+**`lmsa-website/src/services/document.service.js`** — matching
+established conventions. Cover: `getAll`, `download` (calls the backend
+endpoint to get the file URL + track the count, then triggers the actual
+browser download/redirect to that URL).
+
+**`lmsa-website/src/pages/public/DocumentsPage.jsx`** — a filterable
+list/grid of documents (category filter using the `Select.jsx`
+component), each with title, description, file type/size, and a
+download button. Add a route for it in `routes.jsx` and a nav entry
+somewhere sensible (check `Header.jsx`'s existing dropdown structure —
+this likely belongs under an existing menu like "About" or a new
+"Resources" entry, your call, keep it consistent with the existing nav
+patterns).
+
+### Acceptance criteria
+
+- [ ] `npx eslint` / `npm run build` — clean, actually verified.
+- [ ] Download button actually downloads/opens the file and the count
+      increments (test against live backend if credentials allow, or
+      flag for Stone's live verification).
+- [ ] Empty state handled gracefully (no documents uploaded yet).
+
+### Report
+
+*(Agent: fill this in before pushing)*
+
+---
+
+## T28 — Admin document upload/management page
+
+**Branch:** `task/t28-documents-admin`
+**Status:** blocked (needs T26 done)
+**Depends on:** T26
+
+### Context
+
+Read `CommitteeAdminDashboard.jsx`'s `DocumentsTab` component first —
+this task is almost a direct adaptation of that already-working UI,
+minus the committee scope. Reuse the same Supabase Storage upload
+pattern from `committeeService.uploadDocument` (add the equivalent
+method to `document.service.js` from T27 if it's merged, or create it
+yourself and flag the likely merge coordination in your report — same
+pattern as prior multi-branch service-file coordination on this board).
+
+### Files to create/modify
+
+**`lmsa-website/src/pages/admin/DocumentsAdminPage.jsx`** (new) — list of
+general documents (admin view, all access levels) + an upload form
+(file picker, title, description, category, access_level) using the
+proven Storage-upload-then-record-in-DB pattern. Delete with
+confirmation.
+
+**`lmsa-website/src/routes.jsx`** — wire in under `/admin`, matching the
+existing dead `/admin/documents` sidebar link (no change needed to the
+link itself if the path matches).
+
+### Acceptance criteria
+
+- [ ] `npx eslint` / `npm run build` — clean, actually verified.
+- [ ] Admin can upload a real file and see it appear in the list, and
+      (once T27 is live) on the public documents page — full loop test
+      if credentials allow, or flag for Stone's live verification.
+- [ ] Non-admin cannot reach this page.
+
+### Report
+
+*(Agent: fill this in before pushing)*
