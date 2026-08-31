@@ -1,311 +1,335 @@
 import { Link } from 'react-router-dom';
 import {
-  BookOpen,
-  GraduationCap,
-  Users,
-  Globe,
-  ChevronRight,
+  ArrowRight,
+  ArrowUpRight,
   Award,
-  Heart,
-  Lightbulb,
+  BookOpen,
+  CalendarDays,
   FileText,
-  Calendar,
+  Globe,
+  GraduationCap,
+  HeartPulse,
+  Lightbulb,
+  Megaphone,
   MessageCircle,
-  ArrowRight
+  Network,
+  Stethoscope,
+  Users,
 } from 'lucide-react';
-import Button from '@components/common/Button';
-import Card from '@components/common/Card';
 
 export default function HomePage() {
   return (
-    <div>
-      {/* 1. Persona Selector */}
-      <section className="py-12 bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-8">
-            <h2 className="text-2xl font-bold mb-2 uppercase tracking-tight">I Am A...</h2>
-            <p className="text-gray-600">Select your role to find relevant information</p>
+    <div className="home-page">
+      <section className="home-audience section-shell" aria-labelledby="audience-title">
+        <div className="home-section-heading home-audience-heading">
+          <div>
+            <p className="section-kicker">Find your way in</p>
+            <h2 id="audience-title">Start with what brings you here.</h2>
           </div>
-          <div className="flex flex-wrap justify-center gap-3">
-            {personas.map((persona, index) => (
-              <Link
-                key={index}
-                to={persona.link}
-                className="flex items-center gap-2 px-6 py-3 bg-gray-100 rounded-lg hover:bg-lmsa-600 hover:text-white text-gray-700 transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
-              >
-                {persona.icon}
-                <span className="font-medium">{persona.label}</span>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* 2. Service Pillars */}
-      <section className="py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 uppercase tracking-tight">What We Do</h2>
-            <p className="text-gray-600 text-balance">Supporting medical students through four core pillars</p>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {pillars.map((pillar, index) => (
-              <Card key={index} className="hover:shadow-lg hover:-translate-y-1 transition-all duration-200">
-                <div className="text-lmsa-600 mb-4">{pillar.icon}</div>
-                <h3 className="text-xl font-semibold mb-2">{pillar.title}</h3>
-                <p className="text-gray-600 text-sm mb-4">{pillar.description}</p>
-                <Link to={pillar.link} className="text-lmsa-600 hover:text-lmsa-700 font-medium inline-flex items-center gap-1 transition-colors duration-200">
-                  Learn More <ArrowRight size={16} />
-                </Link>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* 3. Statement of Belonging Banner */}
-      <section className="py-16 bg-lmsa-600 text-white">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <blockquote className="text-2xl md:text-3xl font-serif italic mb-6 text-balance">
-            &quot;Together, we are shaping the future of healthcare in Liberia—one student, one community, one mission at a time.&quot;
-          </blockquote>
-          <p className="text-lmsa-100 text-lg">
-            — LMSA Mission Statement
+          <p>
+            Whether you are preparing for your first clinical rotation, building a
+            partnership, or looking for ways to serve, LMSA has a place for you.
           </p>
         </div>
-      </section>
 
-      {/* 4. Dual Value Proposition Tiles */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid md:grid-cols-2 gap-8">
-            <Card className="card-accent hover:shadow-lg hover:-translate-y-1 transition-all duration-200">
-              <div className="flex items-start gap-4">
-                <div className="p-3 bg-lmsa-600 rounded-lg text-white flex-shrink-0">
-                  <Award size={24} />
-                </div>
-                <div>
-                  <h3 className="text-xl font-semibold mb-2">Member Benefits</h3>
-                  <p className="text-gray-600 mb-4 text-balance">
-                    Access exclusive resources, events, and networking opportunities designed to support your medical journey.
-                  </p>
-                  <Link to="/membership" className="text-lmsa-600 hover:text-lmsa-700 font-medium inline-flex items-center gap-1 transition-colors duration-200">
-                    Explore Benefits <ArrowRight size={16} />
-                  </Link>
-                </div>
-              </div>
-            </Card>
-
-            <Card className="card-accent hover:shadow-lg hover:-translate-y-1 transition-all duration-200">
-              <div className="flex items-start gap-4">
-                <div className="p-3 bg-lmsa-600 rounded-lg text-white flex-shrink-0">
-                  <Users size={24} />
-                </div>
-                <div>
-                  <h3 className="text-xl font-semibold mb-2">Chapter Resources</h3>
-                  <p className="text-gray-600 mb-4 text-balance">
-                    Everything your chapter needs to thrive: guidelines, templates, event planning tools, and leadership support.
-                  </p>
-                  <Link to="/portal#resources" className="text-lmsa-600 hover:text-lmsa-700 font-medium inline-flex items-center gap-1 transition-colors duration-200">
-                    View Resources <ArrowRight size={16} />
-                  </Link>
-                </div>
-              </div>
-            </Card>
-          </div>
-        </div>
-      </section>
-
-      {/* 5. Benefits Grid (Why Join LMSA?) */}
-      <section className="py-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 uppercase tracking-tight">Why Join LMSA?</h2>
-            <p className="text-gray-600 text-balance">Discover what makes our community exceptional</p>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-            {benefits.map((benefit, index) => (
-              <div key={index} className="flex items-start gap-4">
-                <div className="flex-shrink-0 w-12 h-12 bg-lmsa-100 rounded-lg flex items-center justify-center text-lmsa-600">
-                  {benefit.icon}
-                </div>
-                <div>
-                  <h3 className="font-semibold text-lg mb-1">{benefit.title}</h3>
-                  <p className="text-gray-600 text-sm text-balance">{benefit.description}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div className="text-center">
-            <Link to="/register">
-              <Button variant="primary" size="lg" rightIcon={<ChevronRight size={16} />}>
-                Join Now
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* 6. Quick-Access Resource Tiles */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 uppercase tracking-tight">Quick Access</h2>
-            <p className="text-gray-600 text-balance">Jump to the resources you need</p>
-          </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-            {resources.map((resource, index) => (
-              <Link
-                key={index}
-                to={resource.link}
-                className="flex flex-col items-center gap-3 p-6 bg-gray-50 rounded-xl hover:bg-lmsa-50 hover:shadow-md transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
-              >
-                <div className="text-lmsa-600">{resource.icon}</div>
-                <span className="text-sm font-medium text-center text-gray-700">{resource.label}</span>
+        <div className="audience-grid">
+          {audiences.map((audience, index) => {
+            const Icon = audience.icon;
+            return (
+              <Link key={audience.label} to={audience.link} className="audience-card">
+                <span className="audience-card-number">0{index + 1}</span>
+                <span className="audience-card-icon">
+                  <Icon size={22} strokeWidth={1.6} aria-hidden="true" />
+                </span>
+                <span className="audience-card-title">{audience.label}</span>
+                <span className="audience-card-description">{audience.description}</span>
+                <span className="audience-card-action">
+                  Explore your path <ArrowUpRight size={16} aria-hidden="true" />
+                </span>
               </Link>
+            );
+          })}
+        </div>
+      </section>
+
+      <section className="home-manifesto" aria-labelledby="manifesto-title">
+        <div className="section-shell home-manifesto-grid">
+          <div className="home-manifesto-copy">
+            <p className="section-kicker section-kicker-light">Medical education, amplified in Liberia</p>
+            <h2 id="manifesto-title">Become the physician your community needs.</h2>
+            <p>
+              LMSA is a student-led community helping future physicians learn with
+              purpose, lead with confidence, and serve with compassion.
+            </p>
+            <div className="home-action-row">
+              <Link to="/about" className="button-light">
+                Discover LMSA <ArrowRight size={17} aria-hidden="true" />
+              </Link>
+              <Link to="/register" className="button-outline-light">
+                Become a member
+              </Link>
+            </div>
+          </div>
+
+          <div className="home-manifesto-note">
+            <span className="home-note-index">01</span>
+            <div className="home-note-rule" aria-hidden="true" />
+            <p>
+              We believe medical training is bigger than exams. It is preparation
+              for a lifetime of service.
+            </p>
+            <span className="home-note-signature">LMSA / Since 1972</span>
+          </div>
+        </div>
+      </section>
+
+      <section className="home-focus section-shell" aria-labelledby="focus-title">
+        <div className="home-section-heading">
+          <div>
+            <p className="section-kicker">What moves us forward</p>
+            <h2 id="focus-title">One community. Many ways to grow.</h2>
+          </div>
+          <Link to="/about/mission-vision" className="text-link">
+            Read our mission <ArrowRight size={16} aria-hidden="true" />
+          </Link>
+        </div>
+
+        <div className="focus-grid">
+          {focusAreas.map((area, index) => {
+            const Icon = area.icon;
+            return (
+              <article key={area.title} className={`focus-card focus-card-${index + 1}`}>
+                <div className="focus-card-topline">
+                  <span>0{index + 1}</span>
+                  <Icon size={25} strokeWidth={1.4} aria-hidden="true" />
+                </div>
+                <h3>{area.title}</h3>
+                <p>{area.description}</p>
+                <Link to={area.link} className="text-link">
+                  Learn more <ArrowRight size={16} aria-hidden="true" />
+                </Link>
+              </article>
+            );
+          })}
+        </div>
+      </section>
+
+      <section className="home-impact" aria-labelledby="impact-title">
+        <div className="section-shell home-impact-grid">
+          <div className="home-impact-copy">
+            <p className="section-kicker">The work behind the name</p>
+            <h2 id="impact-title">Student leadership with a lasting impact.</h2>
+            <p>
+              From the classroom to the community, LMSA creates practical ways for
+              medical students to make a difference now and prepare for what comes
+              next.
+            </p>
+            <Link to="/get-involved/volunteer" className="text-link">
+              See how we serve <ArrowRight size={16} aria-hidden="true" />
+            </Link>
+          </div>
+
+          <div className="impact-stat-list">
+            {impactStats.map((stat) => (
+              <div className="impact-stat" key={stat.label}>
+                <strong>{stat.value}</strong>
+                <span>{stat.label}</span>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* 7. Blog/News Feed */}
-      <section className="py-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 uppercase tracking-tight">Latest from LMSA</h2>
-            <p className="text-gray-600 text-balance">Stay updated with our newest stories and announcements</p>
+      <section className="home-resources section-shell" aria-labelledby="resources-title">
+        <div className="home-section-heading">
+          <div>
+            <p className="section-kicker">Looking to</p>
+            <h2 id="resources-title">Make your next move.</h2>
           </div>
+          <p>Useful starting points for your studies, leadership, and life in LMSA.</p>
+        </div>
 
-          <div className="grid md:grid-cols-3 gap-8 mb-8">
-            {news.map((item, index) => (
-              <Card key={index} className="hover:shadow-lg hover:-translate-y-1 transition-all duration-200 overflow-hidden">
-                <div className="aspect-video bg-lmsa-100 rounded-lg mb-4 flex items-center justify-center">
-                  <FileText size={48} className="text-lmsa-400" />
+        <div className="resource-grid">
+          {resourcePaths.map((resource) => {
+            const Icon = resource.icon;
+            return (
+              <Link key={resource.title} to={resource.link} className="resource-path">
+                <Icon size={21} strokeWidth={1.5} aria-hidden="true" />
+                <span>
+                  <strong>{resource.title}</strong>
+                  <small>{resource.description}</small>
+                </span>
+                <ArrowUpRight size={17} aria-hidden="true" />
+              </Link>
+            );
+          })}
+        </div>
+      </section>
+
+      <section className="home-stories section-shell" aria-labelledby="stories-title">
+        <div className="home-section-heading">
+          <div>
+            <p className="section-kicker">From our community</p>
+            <h2 id="stories-title">The latest from LMSA.</h2>
+          </div>
+          <Link to="/news" className="text-link">
+            View all stories <ArrowRight size={16} aria-hidden="true" />
+          </Link>
+        </div>
+
+        <div className="story-grid">
+          <article className="story-feature">
+            <div className="story-art story-art-feature">
+              <span>2026</span>
+              <Megaphone size={50} strokeWidth={1.1} aria-hidden="true" />
+            </div>
+            <div className="story-content">
+              <p className="story-category">Featured story</p>
+              <h3>{stories[0].title}</h3>
+              <p>{stories[0].excerpt}</p>
+              <Link to={stories[0].link} className="text-link">
+                Read the story <ArrowRight size={16} aria-hidden="true" />
+              </Link>
+            </div>
+          </article>
+
+          <div className="story-list">
+            {stories.slice(1).map((story, index) => (
+              <article className="story-list-item" key={story.title}>
+                <span className="story-list-index">0{index + 2}</span>
+                <div>
+                  <p className="story-category">{story.category}</p>
+                  <h3>{story.title}</h3>
+                  <p>{story.excerpt}</p>
+                  <Link to={story.link} className="text-link">
+                    Read more <ArrowRight size={15} aria-hidden="true" />
+                  </Link>
                 </div>
-                <div className="inline-block px-3 py-1 bg-lmsa-100 text-lmsa-700 text-xs rounded-full mb-3 font-medium">
-                  {item.category}
-                </div>
-                <h3 className="text-lg font-semibold mb-2">{item.title}</h3>
-                <p className="text-gray-600 text-sm mb-4 text-balance">{item.excerpt}</p>
-                <Link to={item.link} className="text-lmsa-600 hover:text-lmsa-700 font-medium inline-flex items-center gap-1 transition-colors duration-200">
-                  Read More <ArrowRight size={16} />
-                </Link>
-              </Card>
+              </article>
             ))}
           </div>
+        </div>
+      </section>
 
-          <div className="text-center">
-            <Link to="/news">
-              <Button variant="secondary" rightIcon={<ArrowRight size={16} />}>
-                View All News
-              </Button>
-            </Link>
+      <section className="home-join" aria-labelledby="join-title">
+        <div className="section-shell home-join-inner">
+          <div>
+            <p className="section-kicker section-kicker-light">Your next chapter starts here</p>
+            <h2 id="join-title">There is more to medical school when we move together.</h2>
           </div>
+          <Link to="/register" className="button-light">
+            Join LMSA <ArrowUpRight size={17} aria-hidden="true" />
+          </Link>
         </div>
       </section>
     </div>
   );
 }
 
-// Data
-const personas = [
-  { icon: <GraduationCap size={20} />, label: 'Medical Student', link: '/portal' },
-  { icon: <Users size={20} />, label: 'Faculty Member', link: '/about' },
-  { icon: <Award size={20} />, label: 'Alumni', link: '/portal#alumni' },
-  { icon: <Heart size={20} />, label: 'Chapter Leader', link: '/portal#chapters' },
-  { icon: <Globe size={20} />, label: 'Partner', link: '/contact' },
+const audiences = [
+  {
+    icon: GraduationCap,
+    label: 'Medical student',
+    description: 'Find support, resources, and a community for every stage of training.',
+    link: '/membership',
+  },
+  {
+    icon: Users,
+    label: 'Faculty member',
+    description: 'Connect with the students and programs shaping Liberia’s medical future.',
+    link: '/about',
+  },
+  {
+    icon: Award,
+    label: 'Alumni',
+    description: 'Keep building the next generation of physicians through your experience.',
+    link: '/leadership/past-presidents',
+  },
+  {
+    icon: Globe,
+    label: 'Partner or donor',
+    description: 'Invest in medical education, student leadership, and community health.',
+    link: '/partnership',
+  },
 ];
 
-const pillars = [
+const focusAreas = [
   {
-    icon: <BookOpen size={32} strokeWidth={1.5} />,
-    title: 'Academic Excellence',
-    description: 'Study resources, symposia, mentorship programs, and academic support',
-    link: '/portal#academics'
+    icon: BookOpen,
+    title: 'Learn',
+    description: 'Study resources, symposia, research guidance, and peer mentorship for the road ahead.',
+    link: '/academics/resources',
   },
   {
-    icon: <GraduationCap size={32} strokeWidth={1.5} />,
-    title: 'Professional Development',
-    description: 'Leadership opportunities, research support, and international exchanges',
-    link: '/portal#development'
+    icon: Lightbulb,
+    title: 'Lead',
+    description: 'Build the confidence and practical skills to lead with purpose in medicine and beyond.',
+    link: '/get-involved/leadership',
   },
   {
-    icon: <Users size={32} strokeWidth={1.5} />,
-    title: 'Student Welfare',
-    description: 'Advocacy, grievance support, mental health resources, and accommodation',
-    link: '/portal#welfare'
+    icon: HeartPulse,
+    title: 'Serve',
+    description: 'Turn your training into action through outreach, advocacy, and student welfare.',
+    link: '/get-involved/volunteer',
   },
   {
-    icon: <Globe size={32} strokeWidth={1.5} />,
-    title: 'Community Impact',
-    description: 'Medical camps, blood drives, health education, and outreach programs',
-    link: '/portal#community'
-  }
+    icon: Network,
+    title: 'Connect',
+    description: 'Find your people through committees, events, and a network that stays with you.',
+    link: '/leadership/committees',
+  },
 ];
 
-const benefits = [
-  {
-    icon: <BookOpen size={24} strokeWidth={1.5} />,
-    title: 'Study Resources',
-    description: 'Access past papers, notes, and tutoring programs from senior students'
-  },
-  {
-    icon: <Calendar size={24} strokeWidth={1.5} />,
-    title: 'Exclusive Events',
-    description: 'Participate in symposia, workshops, and networking events'
-  },
-  {
-    icon: <Users size={24} strokeWidth={1.5} />,
-    title: 'Peer Network',
-    description: 'Connect with fellow students and mentors across all years'
-  },
-  {
-    icon: <Lightbulb size={24} strokeWidth={1.5} />,
-    title: 'Research Support',
-    description: 'Get guidance and funding for your research projects'
-  },
-  {
-    icon: <MessageCircle size={24} strokeWidth={1.5} />,
-    title: 'Advocacy',
-    description: 'Your voice matters—we represent student interests at all levels'
-  },
-  {
-    icon: <Award size={24} strokeWidth={1.5} />,
-    title: 'Career Guidance',
-    description: 'Internship placements, residency guidance, and job opportunities'
-  }
+const impactStats = [
+  { value: '1972', label: 'LMSA founded' },
+  { value: '04', label: 'Areas of focus' },
+  { value: '01', label: 'Student voice' },
 ];
 
-const resources = [
-  { icon: <FileText size={24} />, label: 'Constitution', link: '/resources/constitution' },
-  { icon: <Calendar size={24} />, label: 'Events', link: '/portal#events' },
-  { icon: <Users size={24} />, label: 'Mentorship', link: '/portal#mentorship' },
-  { icon: <Award size={24} />, label: 'Career Center', link: '/portal#careers' },
-  { icon: <BookOpen size={24} />, label: 'Study Materials', link: '/portal#study' },
-  { icon: <MessageCircle size={24} />, label: 'Support', link: '/contact' },
+const resourcePaths = [
+  {
+    icon: CalendarDays,
+    title: 'Attend an event',
+    description: 'See what is happening across LMSA',
+    link: '/events',
+  },
+  {
+    icon: MessageCircle,
+    title: 'Find a mentor',
+    description: 'Learn from someone one step ahead',
+    link: '/academics/mentorship',
+  },
+  {
+    icon: FileText,
+    title: 'Explore resources',
+    description: 'Tools for your academic journey',
+    link: '/academics/resources',
+  },
+  {
+    icon: Stethoscope,
+    title: 'Join a committee',
+    description: 'Find the work that matters to you',
+    link: '/get-involved/committees',
+  },
 ];
 
-const news = [
+const stories = [
   {
     category: 'Announcement',
     title: 'LMSA Annual Symposium 2026',
-    excerpt: 'Join us for three days of medical excellence, workshops, and networking opportunities.',
-    link: '/news/symposium-2026'
+    excerpt: 'Three days of medical excellence, workshops, and conversations about the future of healthcare in Liberia.',
+    link: '/news/symposium-2026',
   },
   {
     category: 'Achievement',
-    title: 'Students Win Regional Research Competition',
-    excerpt: 'Our team took first place at the West African Medical Students Research Challenge.',
-    link: '/news/research-competition'
+    title: 'Students win regional research competition',
+    excerpt: 'Our student researchers are showing what is possible when curiosity meets community.',
+    link: '/news/research-competition',
   },
   {
     category: 'Community',
-    title: 'Free Medical Camp Serves 500+ Patients',
-    excerpt: 'LMSA volunteers provided free healthcare services to communities in Montserrado County.',
-    link: '/news/medical-camp'
-  }
+    title: 'Free medical camp serves 500+ patients',
+    excerpt: 'LMSA volunteers bring care, health education, and practical support to Montserrado County.',
+    link: '/news/medical-camp',
+  },
 ];

@@ -12,6 +12,13 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     let mounted = true;
 
+    if (!supabase) {
+      setLoading(false);
+      return () => {
+        mounted = false;
+      };
+    }
+
     // Fetch the full profile row (role, membership_status, etc.) from the
     // backend.  Merges those fields onto the Supabase auth user so downstream
     // components (e.g. ProtectedRoute) can read `user.role` directly.

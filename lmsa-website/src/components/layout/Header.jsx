@@ -1,7 +1,55 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, ChevronDown, User, LogOut } from 'lucide-react';
-import { useState, useRef, useEffect } from 'react';
+import { ChevronDown, Menu, User, X, LogOut, ArrowUpRight } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
 import { useAuth } from '@context/AuthContext';
+
+const primaryNav = [
+  {
+    label: 'About',
+    items: [
+      { label: 'About LMSA', detail: 'Our story and mission', path: '/about' },
+      { label: 'Our History', detail: '50+ years of excellence', path: '/about/history' },
+      { label: 'Mission & Vision', detail: 'Our goals and values', path: '/about/mission-vision' },
+      { label: 'Constitution', detail: 'How we are governed', path: '/about/constitution' },
+    ],
+  },
+  {
+    label: 'Membership',
+    items: [
+      { label: 'Join LMSA', detail: 'Become part of the community', path: '/membership' },
+      { label: 'Member Benefits', detail: 'What you get as a member', path: '/membership/benefits' },
+      { label: 'Membership Types', detail: 'Find your membership path', path: '/membership/categories' },
+      { label: 'Dues & Payments', detail: 'Review the fee structure', path: '/membership/dues' },
+    ],
+  },
+  {
+    label: 'Learn & lead',
+    items: [
+      { label: 'Study Resources', detail: 'Tools for your training', path: '/academics/resources' },
+      { label: 'Mentorship', detail: 'Learn from those ahead', path: '/academics/mentorship' },
+      { label: 'Research', detail: 'Turn questions into impact', path: '/academics/research' },
+      { label: 'Leadership', detail: 'Grow through service', path: '/leadership' },
+      { label: 'Committees', detail: 'Find the work that matters', path: '/leadership/committees' },
+    ],
+  },
+  {
+    label: 'Stories & events',
+    items: [
+      { label: 'Upcoming Events', detail: 'See what is happening', path: '/events' },
+      { label: 'Symposia', detail: 'Gather around new ideas', path: '/academics/symposia' },
+      { label: 'News & Stories', detail: 'Read the latest from LMSA', path: '/news' },
+    ],
+  },
+  {
+    label: 'Get involved',
+    items: [
+      { label: 'Volunteer', detail: 'Serve alongside your peers', path: '/get-involved/volunteer' },
+      { label: 'Leadership Opportunities', detail: 'Build the skills medicine needs', path: '/get-involved/leadership' },
+      { label: 'Join a Committee', detail: 'Turn ideas into action', path: '/get-involved/committees' },
+      { label: 'Partnerships', detail: 'Work with LMSA', path: '/partnership' },
+    ],
+  },
+];
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -10,7 +58,6 @@ export default function Header() {
   const { user, logout } = useAuth();
   const dropdownRef = useRef(null);
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -22,545 +69,174 @@ export default function Header() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const toggleDropdown = (menu) => {
-    setActiveDropdown(activeDropdown === menu ? null : menu);
-  };
+  useEffect(() => {
+    setIsMenuOpen(false);
+    setActiveDropdown(null);
+  }, [location.pathname]);
 
   const closeMenu = () => {
     setIsMenuOpen(false);
     setActiveDropdown(null);
   };
 
-  const isActive = (path) => {
-    return location.pathname === path || location.pathname.startsWith(path + '/');
-  };
+  const isActive = (items) =>
+    items.some((item) => location.pathname === item.path || location.pathname.startsWith(`${item.path}/`));
 
   return (
-    <header className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          {/* Logo */}
-          <Link to="/" className="flex items-center space-x-3" onClick={closeMenu}>
-            <div className="w-10 h-10 bg-lmsa-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-xl">L</span>
-            </div>
-            <div className="hidden sm:block">
-              <span className="text-xl font-bold text-lmsa-600">LMSA</span>
-              <p className="text-xs text-gray-500">Medical Students&apos; Association</p>
-            </div>
-          </Link>
-
-          {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center space-x-1" ref={dropdownRef}>
-            {/* About Dropdown */}
-            <div className="relative">
-              <button
-                onClick={() => toggleDropdown('about')}
-                className={`px-4 py-2 rounded-lg flex items-center space-x-1 transition-colors ${
-                  isActive('/about')
-                    ? 'text-lmsa-600 bg-lmsa-50'
-                    : 'text-gray-700 hover:text-lmsa-600 hover:bg-gray-50'
-                }`}
-              >
-                <span className="font-medium">About</span>
-                <ChevronDown size={16} className={`transition-transform ${activeDropdown === 'about' ? 'rotate-180' : ''}`} />
-              </button>
-
-              {activeDropdown === 'about' && (
-                <div className="absolute left-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-2">
-                  <Link
-                    to="/about"
-                    onClick={closeMenu}
-                    className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-lmsa-50 hover:text-lmsa-600"
-                  >
-                    <div className="font-medium">About LMSA</div>
-                    <div className="text-xs text-gray-500">Our story and mission</div>
-                  </Link>
-                  <Link
-                    to="/about/history"
-                    onClick={closeMenu}
-                    className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-lmsa-50 hover:text-lmsa-600"
-                  >
-                    <div className="font-medium">Our History</div>
-                    <div className="text-xs text-gray-500">50+ years of excellence</div>
-                  </Link>
-                  <Link
-                    to="/about/mission-vision"
-                    onClick={closeMenu}
-                    className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-lmsa-50 hover:text-lmsa-600"
-                  >
-                    <div className="font-medium">Mission & Vision</div>
-                    <div className="text-xs text-gray-500">Our goals and values</div>
-                  </Link>
-                  <Link
-                    to="/about/constitution"
-                    onClick={closeMenu}
-                    className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-lmsa-50 hover:text-lmsa-600"
-                  >
-                    <div className="font-medium">Constitution</div>
-                    <div className="text-xs text-gray-500">Download our bylaws</div>
-                  </Link>
-                </div>
-              )}
-            </div>
-
-            {/* Leadership Dropdown */}
-            <div className="relative">
-              <button
-                onClick={() => toggleDropdown('leadership')}
-                className={`px-4 py-2 rounded-lg flex items-center space-x-1 transition-colors ${
-                  isActive('/leadership')
-                    ? 'text-lmsa-600 bg-lmsa-50'
-                    : 'text-gray-700 hover:text-lmsa-600 hover:bg-gray-50'
-                }`}
-              >
-                <span className="font-medium">Leadership</span>
-                <ChevronDown size={16} className={`transition-transform ${activeDropdown === 'leadership' ? 'rotate-180' : ''}`} />
-              </button>
-
-              {activeDropdown === 'leadership' && (
-                <div className="absolute left-0 mt-2 w-72 bg-white rounded-lg shadow-lg border border-gray-200 py-2">
-                  <Link
-                    to="/leadership"
-                    onClick={closeMenu}
-                    className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-lmsa-50 hover:text-lmsa-600"
-                  >
-                    <div className="font-medium">Executive Committee</div>
-                    <div className="text-xs text-gray-500">Current cabinet members</div>
-                  </Link>
-                  <Link
-                    to="/leadership/committees"
-                    onClick={closeMenu}
-                    className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-lmsa-50 hover:text-lmsa-600"
-                  >
-                    <div className="font-medium">Standing Committees</div>
-                    <div className="text-xs text-gray-500">All 12 committees</div>
-                  </Link>
-                  <Link
-                    to="/leadership/past-presidents"
-                    onClick={closeMenu}
-                    className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-lmsa-50 hover:text-lmsa-600"
-                  >
-                    <div className="font-medium">Past Presidents</div>
-                    <div className="text-xs text-gray-500">Alumni leadership</div>
-                  </Link>
-                  <Link
-                    to="/leadership/executive-council"
-                    onClick={closeMenu}
-                    className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-lmsa-50 hover:text-lmsa-600"
-                  >
-                    <div className="font-medium">Executive Council</div>
-                    <div className="text-xs text-gray-500">Class presidents & SRC</div>
-                  </Link>
-                </div>
-              )}
-            </div>
-
-            {/* Membership Dropdown */}
-            <div className="relative">
-              <button
-                onClick={() => toggleDropdown('membership')}
-                className={`px-4 py-2 rounded-lg flex items-center space-x-1 transition-colors ${
-                  isActive('/membership')
-                    ? 'text-lmsa-600 bg-lmsa-50'
-                    : 'text-gray-700 hover:text-lmsa-600 hover:bg-gray-50'
-                }`}
-              >
-                <span className="font-medium">Membership</span>
-                <ChevronDown size={16} className={`transition-transform ${activeDropdown === 'membership' ? 'rotate-180' : ''}`} />
-              </button>
-
-              {activeDropdown === 'membership' && (
-                <div className="absolute left-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-2">
-                  <Link
-                    to="/membership"
-                    onClick={closeMenu}
-                    className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-lmsa-50 hover:text-lmsa-600"
-                  >
-                    <div className="font-medium">Join LMSA</div>
-                    <div className="text-xs text-gray-500">Become a member</div>
-                  </Link>
-                  <Link
-                    to="/membership/benefits"
-                    onClick={closeMenu}
-                    className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-lmsa-50 hover:text-lmsa-600"
-                  >
-                    <div className="font-medium">Member Benefits</div>
-                    <div className="text-xs text-gray-500">What you get</div>
-                  </Link>
-                  <Link
-                    to="/membership/categories"
-                    onClick={closeMenu}
-                    className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-lmsa-50 hover:text-lmsa-600"
-                  >
-                    <div className="font-medium">Membership Types</div>
-                    <div className="text-xs text-gray-500">Full, associate, honorary</div>
-                  </Link>
-                  <Link
-                    to="/membership/dues"
-                    onClick={closeMenu}
-                    className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-lmsa-50 hover:text-lmsa-600"
-                  >
-                    <div className="font-medium">Dues & Payments</div>
-                    <div className="text-xs text-gray-500">Fee structure</div>
-                  </Link>
-                </div>
-              )}
-            </div>
-
-            {/* Academics Dropdown */}
-            <div className="relative">
-              <button
-                onClick={() => toggleDropdown('academics')}
-                className={`px-4 py-2 rounded-lg flex items-center space-x-1 transition-colors ${
-                  isActive('/academics')
-                    ? 'text-lmsa-600 bg-lmsa-50'
-                    : 'text-gray-700 hover:text-lmsa-600 hover:bg-gray-50'
-                }`}
-              >
-                <span className="font-medium">Academics</span>
-                <ChevronDown size={16} className={`transition-transform ${activeDropdown === 'academics' ? 'rotate-180' : ''}`} />
-              </button>
-
-              {activeDropdown === 'academics' && (
-                <div className="absolute left-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-2">
-                  <Link
-                    to="/academics/symposia"
-                    onClick={closeMenu}
-                    className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-lmsa-50 hover:text-lmsa-600"
-                  >
-                    <div className="font-medium">Symposia</div>
-                    <div className="text-xs text-gray-500">Academic conferences</div>
-                  </Link>
-                  <Link
-                    to="/academics/resources"
-                    onClick={closeMenu}
-                    className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-lmsa-50 hover:text-lmsa-600"
-                  >
-                    <div className="font-medium">Study Resources</div>
-                    <div className="text-xs text-gray-500">Materials & guides</div>
-                  </Link>
-                  <Link
-                    to="/academics/mentorship"
-                    onClick={closeMenu}
-                    className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-lmsa-50 hover:text-lmsa-600"
-                  >
-                    <div className="font-medium">Mentorship Program</div>
-                    <div className="text-xs text-gray-500">Connect with seniors</div>
-                  </Link>
-                  <Link
-                    to="/academics/research"
-                    onClick={closeMenu}
-                    className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-lmsa-50 hover:text-lmsa-600"
-                  >
-                    <div className="font-medium">Research</div>
-                    <div className="text-xs text-gray-500">Opportunities & journal</div>
-                  </Link>
-                </div>
-              )}
-            </div>
-
-            {/* Events */}
-            <Link
-              to="/events"
-              onClick={closeMenu}
-              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                isActive('/events')
-                  ? 'text-lmsa-600 bg-lmsa-50'
-                  : 'text-gray-700 hover:text-lmsa-600 hover:bg-gray-50'
-              }`}
-            >
-              Events
-            </Link>
-
-            {/* News */}
-            <Link
-              to="/news"
-              onClick={closeMenu}
-              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                isActive('/news')
-                  ? 'text-lmsa-600 bg-lmsa-50'
-                  : 'text-gray-700 hover:text-lmsa-600 hover:bg-gray-50'
-              }`}
-            >
-              News
-            </Link>
-
-            {/* Get Involved Dropdown */}
-            <div className="relative">
-              <button
-                onClick={() => toggleDropdown('get-involved')}
-                className={`px-4 py-2 rounded-lg flex items-center space-x-1 transition-colors ${
-                  isActive('/get-involved')
-                    ? 'text-lmsa-600 bg-lmsa-50'
-                    : 'text-gray-700 hover:text-lmsa-600 hover:bg-gray-50'
-                }`}
-              >
-                <span className="font-medium">Get Involved</span>
-                <ChevronDown size={16} className={`transition-transform ${activeDropdown === 'get-involved' ? 'rotate-180' : ''}`} />
-              </button>
-
-              {activeDropdown === 'get-involved' && (
-                <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-2">
-                  <Link
-                    to="/get-involved/volunteer"
-                    onClick={closeMenu}
-                    className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-lmsa-50 hover:text-lmsa-600"
-                  >
-                    <div className="font-medium">Volunteer</div>
-                    <div className="text-xs text-gray-500">Community service</div>
-                  </Link>
-                  <Link
-                    to="/get-involved/leadership"
-                    onClick={closeMenu}
-                    className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-lmsa-50 hover:text-lmsa-600"
-                  >
-                    <div className="font-medium">Leadership Opportunities</div>
-                    <div className="text-xs text-gray-500">Run for office</div>
-                  </Link>
-                  <Link
-                    to="/get-involved/committees"
-                    onClick={closeMenu}
-                    className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-lmsa-50 hover:text-lmsa-600"
-                  >
-                    <div className="font-medium">Join a Committee</div>
-                    <div className="text-xs text-gray-500">Get active in LMSA</div>
-                  </Link>
-                  <Link
-                    to="/partnership"
-                    onClick={closeMenu}
-                    className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-lmsa-50 hover:text-lmsa-600"
-                  >
-                    <div className="font-medium">Partnerships</div>
-                    <div className="text-xs text-gray-500">Collaborate with LMSA</div>
-                  </Link>
-                </div>
-              )}
-            </div>
-
-            {/* Contact */}
-            <Link
-              to="/contact"
-              onClick={closeMenu}
-              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                isActive('/contact')
-                  ? 'text-lmsa-600 bg-lmsa-50'
-                  : 'text-gray-700 hover:text-lmsa-600 hover:bg-gray-50'
-              }`}
-            >
-              Contact
-            </Link>
+    <header className="site-header">
+      <div className="site-utility">
+        <div className="site-container site-utility-inner">
+          <p className="site-utility-message">A student-led voice for better healthcare in Liberia</p>
+          <nav className="site-utility-links" aria-label="Utility navigation">
+            <Link to="/contact">Contact LMSA</Link>
+            <Link to="/portal">Member portal</Link>
+            {!user && <Link to="/login">Member login</Link>}
           </nav>
+        </div>
+      </div>
 
-          {/* Right Side Actions */}
-          <div className="hidden lg:flex items-center space-x-3">
-            {user ? (
-              <>
-                {['admin', 'executive', 'super_admin'].includes(user.role) && (
-                  <Link
-                    to="/admin/dashboard"
-                    className="flex items-center space-x-2 px-4 py-2 text-gray-700 hover:text-lmsa-600 rounded-lg hover:bg-gray-50"
-                  >
-                    <span className="font-medium">Admin</span>
-                  </Link>
-                )}
-                <Link
-                  to="/portal/dashboard"
-                  className="flex items-center space-x-2 px-4 py-2 text-gray-700 hover:text-lmsa-600 rounded-lg hover:bg-gray-50"
-                >
-                  <User size={18} />
-                  <span className="font-medium">Portal</span>
-                </Link>
-                <button
-                  onClick={logout}
-                  className="flex items-center space-x-2 px-4 py-2 text-gray-700 hover:text-red-600 rounded-lg hover:bg-gray-50"
-                >
-                  <LogOut size={18} />
-                  <span className="font-medium">Logout</span>
-                </button>
-              </>
-            ) : (
-              <>
-                <Link
-                  to="/login"
-                  className="px-4 py-2 text-gray-700 hover:text-lmsa-600 font-medium rounded-lg hover:bg-gray-50"
-                >
-                  Login
-                </Link>
-                <Link
-                  to="/register"
-                  className="px-6 py-2 bg-lmsa-600 text-white font-medium rounded-lg hover:bg-lmsa-700 transition-colors"
-                >
-                  Join LMSA
-                </Link>
-              </>
-            )}
-          </div>
+      <div className="site-container site-header-main">
+        <Link to="/" className="site-brand" onClick={closeMenu} aria-label="LMSA home">
+          <img src="/logo-128.png" alt="" className="site-brand-mark" />
+          <span className="site-brand-copy">
+            <strong>LMSA</strong>
+            <span>Liberia Medical Students&apos; Association</span>
+          </span>
+        </Link>
 
-          {/* Mobile menu button */}
-          <button
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="lg:hidden p-2 rounded-lg hover:bg-gray-100"
-          >
-            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
+        <nav className="site-nav" aria-label="Primary navigation" ref={dropdownRef}>
+          {primaryNav.map((section) => (
+            <div className="site-nav-group" key={section.label}>
+              <button
+                type="button"
+                className={`site-nav-trigger ${isActive(section.items) ? 'is-active' : ''}`}
+                aria-expanded={activeDropdown === section.label}
+                aria-haspopup="true"
+                onClick={() =>
+                  setActiveDropdown(activeDropdown === section.label ? null : section.label)
+                }
+              >
+                {section.label}
+                <ChevronDown
+                  size={15}
+                  aria-hidden="true"
+                  className={activeDropdown === section.label ? 'rotate-180' : ''}
+                />
+              </button>
+
+              {activeDropdown === section.label && (
+                <div className="site-nav-menu">
+                  {section.items.map((item) => (
+                    <Link key={item.path} to={item.path} onClick={closeMenu} className="site-nav-menu-link">
+                      <span>{item.label}</span>
+                      <small>{item.detail}</small>
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
+        </nav>
+
+        <div className="site-header-actions">
+          {user ? (
+            <>
+              {['admin', 'executive', 'super_admin'].includes(user.role) && (
+                <Link to="/admin/dashboard" className="site-header-text-link">
+                  Admin
+                </Link>
+              )}
+              <Link to="/portal/dashboard" className="site-header-text-link site-header-user-link">
+                <User size={16} aria-hidden="true" />
+                Portal
+              </Link>
+              <button type="button" onClick={logout} className="site-header-text-link site-header-logout">
+                <LogOut size={16} aria-hidden="true" />
+                Logout
+              </button>
+            </>
+          ) : (
+            <>
+              <Link to="/login" className="site-header-text-link desktop-login">
+                Login
+              </Link>
+              <Link to="/register" className="site-header-join">
+                Join LMSA
+                <ArrowUpRight size={15} aria-hidden="true" />
+              </Link>
+            </>
+          )}
         </div>
 
-        {/* Mobile Navigation */}
-        {isMenuOpen && (
-          <div className="lg:hidden py-4 space-y-1 border-t border-gray-200 max-h-[calc(100vh-4rem)] overflow-y-auto">
-            <MobileNavSection title="About" items={aboutItems} closeMenu={closeMenu} />
-            <MobileNavSection title="Leadership" items={leadershipItems} closeMenu={closeMenu} />
-            <MobileNavSection title="Membership" items={membershipItems} closeMenu={closeMenu} />
-            <MobileNavSection title="Academics" items={academicsItems} closeMenu={closeMenu} />
+        <button
+          type="button"
+          className="site-menu-toggle"
+          onClick={() => setIsMenuOpen((open) => !open)}
+          aria-expanded={isMenuOpen}
+          aria-controls="mobile-navigation"
+          aria-label={isMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+        >
+          {isMenuOpen ? <X size={24} aria-hidden="true" /> : <Menu size={24} aria-hidden="true" />}
+        </button>
+      </div>
 
-            <Link
-              to="/events"
-              onClick={closeMenu}
-              className="block px-4 py-2 text-gray-700 hover:bg-lmsa-50 hover:text-lmsa-600 rounded-lg"
-            >
-              Events
-            </Link>
+      {isMenuOpen && (
+        <div id="mobile-navigation" className="site-mobile-navigation">
+          <div className="site-container site-mobile-navigation-inner">
+            {primaryNav.map((section) => (
+              <details key={section.label} className="site-mobile-group">
+                <summary>
+                  <span>{section.label}</span>
+                  <ChevronDown size={17} aria-hidden="true" />
+                </summary>
+                <div className="site-mobile-links">
+                  {section.items.map((item) => (
+                    <Link key={item.path} to={item.path} onClick={closeMenu}>
+                      <span>{item.label}</span>
+                      <small>{item.detail}</small>
+                    </Link>
+                  ))}
+                </div>
+              </details>
+            ))}
 
-            <Link
-              to="/news"
-              onClick={closeMenu}
-              className="block px-4 py-2 text-gray-700 hover:bg-lmsa-50 hover:text-lmsa-600 rounded-lg"
-            >
-              News
-            </Link>
-
-            <MobileNavSection title="Get Involved" items={getInvolvedItems} closeMenu={closeMenu} />
-
-            <Link
-              to="/contact"
-              onClick={closeMenu}
-              className="block px-4 py-2 text-gray-700 hover:bg-lmsa-50 hover:text-lmsa-600 rounded-lg"
-            >
-              Contact
-            </Link>
-
-            <div className="pt-4 border-t border-gray-200 space-y-2">
+            <div className="site-mobile-actions">
               {user ? (
                 <>
                   {['admin', 'executive', 'super_admin'].includes(user.role) && (
-                    <Link
-                      to="/admin/dashboard"
-                      onClick={closeMenu}
-                      className="block px-4 py-2 bg-lmsa-50 text-lmsa-600 font-medium rounded-lg"
-                    >
+                    <Link to="/admin/dashboard" onClick={closeMenu} className="site-mobile-action-secondary">
                       Go to Admin Panel
                     </Link>
                   )}
-                  <Link
-                    to="/portal/dashboard"
-                    onClick={closeMenu}
-                    className="block px-4 py-2 bg-lmsa-50 text-lmsa-600 font-medium rounded-lg"
-                  >
-                    Go to Portal
+                  <Link to="/portal/dashboard" onClick={closeMenu} className="site-mobile-action-secondary">
+                    Go to Member Portal
                   </Link>
                   <button
+                    type="button"
                     onClick={() => {
                       logout();
                       closeMenu();
                     }}
-                    className="w-full text-left px-4 py-2 text-red-600 font-medium rounded-lg hover:bg-red-50"
+                    className="site-mobile-logout"
                   >
                     Logout
                   </button>
                 </>
               ) : (
                 <>
-                  <Link
-                    to="/login"
-                    onClick={closeMenu}
-                    className="block px-4 py-2 text-gray-700 font-medium rounded-lg hover:bg-gray-50"
-                  >
-                    Login
+                  <Link to="/login" onClick={closeMenu} className="site-mobile-action-secondary">
+                    Member login
                   </Link>
-                  <Link
-                    to="/register"
-                    onClick={closeMenu}
-                    className="block px-4 py-2 bg-lmsa-600 text-white font-medium rounded-lg text-center"
-                  >
+                  <Link to="/register" onClick={closeMenu} className="site-mobile-action-primary">
                     Join LMSA
+                    <ArrowUpRight size={16} aria-hidden="true" />
                   </Link>
                 </>
               )}
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </header>
   );
 }
-
-// Mobile Navigation Section Component
-function MobileNavSection({ title, items, closeMenu }) {
-  const [isOpen, setIsOpen] = useState(false);
-
-  return (
-    <div className="border-b border-gray-100">
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between px-4 py-2 text-gray-700 hover:bg-gray-50 rounded-lg"
-      >
-        <span className="font-medium">{title}</span>
-        <ChevronDown
-          size={16}
-          className={`transition-transform ${isOpen ? 'rotate-180' : ''}`}
-        />
-      </button>
-      {isOpen && (
-        <div className="pl-4 space-y-1 pb-2">
-          {items.map((item, index) => (
-            <Link
-              key={index}
-              to={item.path}
-              onClick={closeMenu}
-              className="block px-4 py-2 text-sm text-gray-600 hover:bg-lmsa-50 hover:text-lmsa-600 rounded-lg"
-            >
-              {item.label}
-            </Link>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
-
-// Navigation Items Data
-const aboutItems = [
-  { label: 'About LMSA', path: '/about' },
-  { label: 'Our History', path: '/about/history' },
-  { label: 'Mission & Vision', path: '/about/mission-vision' },
-  { label: 'Constitution', path: '/about/constitution' },
-];
-
-const leadershipItems = [
-  { label: 'Executive Committee', path: '/leadership' },
-  { label: 'Standing Committees', path: '/leadership/committees' },
-  { label: 'Past Presidents', path: '/leadership/past-presidents' },
-  { label: 'Executive Council', path: '/leadership/executive-council' },
-];
-
-const membershipItems = [
-  { label: 'Join LMSA', path: '/membership' },
-  { label: 'Member Benefits', path: '/membership/benefits' },
-  { label: 'Membership Types', path: '/membership/categories' },
-  { label: 'Dues & Payments', path: '/membership/dues' },
-];
-
-const academicsItems = [
-  { label: 'Symposia', path: '/academics/symposia' },
-  { label: 'Study Resources', path: '/academics/resources' },
-  { label: 'Mentorship Program', path: '/academics/mentorship' },
-  { label: 'Research', path: '/academics/research' },
-];
-
-const getInvolvedItems = [
-  { label: 'Volunteer', path: '/get-involved/volunteer' },
-  { label: 'Leadership Opportunities', path: '/get-involved/leadership' },
-  { label: 'Join a Committee', path: '/get-involved/committees' },
-  { label: 'Partnerships', path: '/partnership' },
-];
