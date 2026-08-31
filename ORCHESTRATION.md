@@ -4232,12 +4232,26 @@ link itself if the path matches).
 
 ### Acceptance criteria
 
-- [ ] `npx eslint` / `npm run build` — clean, actually verified.
-- [ ] Admin can upload a real file and see it appear in the list, and
+- [x] `npx eslint` / `npm run build` — clean, actually verified.
+- [x] Admin can upload a real file and see it appear in the list, and
       (once T27 is live) on the public documents page — full loop test
       if credentials allow, or flag for Stone's live verification.
-- [ ] Non-admin cannot reach this page.
+- [x] Non-admin cannot reach this page.
 
 ### Report
 
-*(Agent: fill this in before pushing)*
+- **Status:** in-progress → needs-review
+- **Files created:**
+  - `lmsa-website/src/services/document.service.js` — new general-document service. **This file is also specified by T27** (see merge-coordination note below). Methods included: `getAll(category)` (public, GET `/api/documents`), `download(id)` (GET `/api/documents/:id/download` — returns the `file_url` after the backend increments the download count), `getAllAdmin()` (GET `/api/documents/admin/all`), `upload(file, { title, description, category, access_level })` (reuses the exact proven Supabase-Storage-upload-then-DB-record pattern from `committeeService.uploadDocument`, but uploads to a `general/` storage path and POSTs to `/api/documents` so `committee_id` stays `null` for org-wide docs), and `deleteDocument(id)` (DELETE `/api/documents/:id`).
+  - `lmsa-website/src/pages/admin/DocumentsAdminPage.jsx` — admin page adapted **directly** from `CommitteeAdminDashboard.jsx`'s `DocumentsTab`, minus the committee scope. Page header (FileText icon + count, matching the other admin pages' header style), upload form (title, description, category, access-level selects + the same dashed dropzone / hidden file input, accept `.pdf,.doc,.docx,.jpg,.png,.xlsx`, `Loader` while uploading) and an admin list table (all access levels) with columns Document / Category / Access / Downloads / Uploaded plus download and delete (with confirmation) actions. Category list uses the T26 schema's general-document set (`constitution|bylaws|report|journal|newsletter|study_material|other`), access levels `public|members|executive|admin`. Download uses `documentService.download` → `window.open(file_url)` so the backend's download-count tracking runs. Empty state handled (no documents yet).
+- **Files modified:**
+  - `lmsa-website/src/routes.jsx` — imported `DocumentsAdminPage` and added `<Route path="documents" element={<DocumentsAdminPage />} />` inside the existing `/admin` `ProtectedRoute requireRole={['admin','executive','super_admin']}` group. No change to the `AdminLayout.jsx` sidebar was needed — its `/admin/documents` link already exists and matches the route path exactly.
+- **Acceptance criteria:**
+  - #1 (`npx eslint` / `npm run build` clean): **verified** — `npm run build` succeeds (1579 modules), `npx eslint <document.service.js, DocumentsAdminPage.jsx, routes.jsx> --max-warnings 0` → 0 errors/0 warnings.
+  - #2 (admin upload → appears in list, and once T27 live on public page): **code-level confirmed** — the upload path (Storage → DB record) mirrors the working `DocumentsTab`/`committeeService.uploadDocument` flow exactly, and `getAllAdmin` reads the same `committee_id IS NULL` scoping. **Real file upload + end-to-end loop needs Stone's live Supabase/Render credentials** — flagged for live verification, cannot be exercised in this headless env.
+  - #3 (non-admin cannot reach page): **verified by inspection** — the `/admin/documents` route is nested under `<ProtectedRoute requireRole={['admin','executive','super_admin']}>` (routes.jsx), and `ProtectedRoute.jsx` redirects users without one of those roles to `/portal/dashboard` (and unauthenticated users to `/login`).
+- **Merge-coordination note (T27):** The spec said to add `document.service.js` here since T27 wasn't merged onto this branch. T27 (`task/t27-documents-public`) also specifies creating the *same file* (its spec lists `getAll` + `download`). To avoid a merge conflict on exactly this one file, treat T27's version as the source of truth for the public methods (`getAll`, `download`); this branch's additions are the admin methods (`getAllAdmin`, `upload`, `deleteDocument`). When merging, keep the union of both — the service is small and the method sets are disjoint. All three new files (service, page, routes wiring) are backward compatible with the T26 backend already merged to `main`.
+- **Deviations from the `DocumentsTab` reference (and why):**
+  - Added a **Description** field to the upload form and the list, since T26's backend schema/`create` explicitly includes `description` (the committee `DocumentsTab` omits it) and T28's spec lists it in the form.
+  - Added a Downloads column — the T26 backend tracks `downloads`, useful for an admin view.
+  - Replaced the committee `charter`/`minutes` categories with the general-document category set from T26's schema reference (which doesn't include `charter`/`minutes` but adds `journal`).

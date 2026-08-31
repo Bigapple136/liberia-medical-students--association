@@ -43,6 +43,7 @@ import DashboardPage from './pages/portal/DashboardPage';
 // Admin pages
 import AdminDashboard from './pages/admin/AdminDashboard';
 import CommitteeAdminDashboard from './pages/admin/CommitteeAdminDashboard';
+import DocumentsAdminPage from './pages/admin/DocumentsAdminPage';
 import MembershipAdminPage from './pages/admin/MembershipAdminPage';
 import NewsAdminPage from './pages/admin/NewsAdminPage';
 import EventsAdminPage from './pages/admin/EventsAdminPage';
@@ -130,6 +131,7 @@ function AppRoutes() {
         <Route index element={<Navigate to="/admin/dashboard" replace />} />
         <Route path="dashboard" element={<AdminDashboard />} />
         <Route path="committees" element={<CommitteeAdminDashboard />} />
+        <Route path="documents" element={<DocumentsAdminPage />} />
         <Route path="membership" element={<MembershipAdminPage />} />
         <Route path="news" element={<NewsAdminPage />} />
         <Route path="events" element={<EventsAdminPage />} />
