@@ -26,6 +26,7 @@ const primaryNav = [
     label: 'Learn & lead',
     items: [
       { label: 'Study Resources', detail: 'Tools for your training', path: '/academics/resources' },
+      { label: 'Documents', detail: 'Browse the resource library', path: '/documents' },
       { label: 'Mentorship', detail: 'Learn from those ahead', path: '/academics/mentorship' },
       { label: 'Research', detail: 'Turn questions into impact', path: '/academics/research' },
       { label: 'Leadership', detail: 'Grow through service', path: '/leadership' },

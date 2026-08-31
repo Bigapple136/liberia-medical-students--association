@@ -108,7 +108,7 @@ so this entire authentication path was silently broken the whole time.
 | T24 | Responsive design audit + fixes — portal (student) pages | none | **done** |
 | T25 | Responsive design audit + fixes — admin pages | none | **done** |
 | T26 | Backend general (non-committee) documents API | none | **done** |
-| T27 | Public document library page | T26 | **assigned** |
+| T27 | Public document library page | T26 | **done** |
 | T28 | Admin document upload/management page | T26 | **assigned** |
 
 **T22 flagged priority.** Render permanently blocks outbound SMTP ports
@@ -4162,8 +4162,18 @@ downloads, committee_id, created_at, updated_at
 ## T27 — Public document library page
 
 **Branch:** `task/t27-documents-public`
-**Status:** blocked (needs T26 done)
-**Depends on:** T26
+**Status:** done
+**Depends on:** T26 (done — merged to main)
+
+### Orchestrator review
+
+Independently verified: `npx eslint` on all 4 touched files — 0 errors,
+0 warnings. `npm run build` — clean, matches report exactly.
+`document.service.js` confirmed correct against T26's actual merged
+endpoints, method-by-method. `window.open` download approach is a
+sound, well-reasoned choice — correctly avoided a forced `<a download>`
+that would fail against cross-origin Supabase Storage URLs without extra
+CORS config. Approved and merged to `main`.
 
 ### Context
 
@@ -4198,7 +4208,27 @@ patterns).
 
 ### Report
 
-*(Agent: fill this in before pushing)*
+- **Status:** in-progress → needs-review
+- **Files created:**
+  - `lmsa-website/src/services/document.service.js` — 5 methods (getAll, download, getAllAdmin, create, delete)
+  - `lmsa-website/src/pages/public/DocumentsPage.jsx` — filterable document library page with category filter, download buttons, empty state
+- **Files modified:**
+  - `lmsa-website/src/routes.jsx` — added `DocumentsPage` import and `<Route path="/documents" />` under public routes
+  - `lmsa-website/src/components/layout/Header.jsx` — added "Documents" nav link in both desktop and mobile navigation (between Get Involved and Contact)
+- **Deviations from spec (and why):**
+  - **Download opens in new tab (`window.open`) instead of triggering a direct download:** The backend endpoint returns `{ success: true, file_url }` — the actual file lives at a public Supabase Storage URL. Using `window.open(file_url, '_blank')` is the simplest reliable approach that works across file types (PDFs open in-browser, images display, etc.). A forced `<a download>` approach would fail for cross-origin Supabase Storage URLs without additional CORS configuration. The download count still increments via the backend endpoint before the redirect.
+  - **Category filter uses `Select.jsx` component:** Per spec. The filter triggers a fresh `getAll` call with `?category=` param — no client-side filtering, keeps it consistent with how NewsPage handles category filtering.
+  - **Nav placement:** Added as a top-level link alongside Events and News (not inside a dropdown), since documents are a first-class public section. Placed before Contact for logical grouping (content sections before interaction sections).
+- **Manual test results:**
+  - `npx eslint` on all 4 touched files — 0 errors, 0 warnings.
+  - `npm run build` — passes clean (only the pre-existing chunk-size warning).
+  - All service methods cross-checked against T26's `document.routes.js` endpoint paths and response shapes — confirmed match.
+  - Empty state renders correctly when no documents are returned (graceful message, no crash).
+  - Category filter clears back to all documents when "All Categories" is selected (empty string param omitted from request).
+- **Open questions / blockers for orchestrator:**
+  - No new npm dependencies added.
+  - T28 can now be unblocked — the `documentService` is live and the public page exists for the full upload→browse→download loop.
+  - Live download verification needs Supabase Storage credentials — flag for Stone's live testing.
 
 ---
 
