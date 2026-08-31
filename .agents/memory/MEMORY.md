@@ -1,0 +1,1 @@
+- [GitHub publishing](github-publishing.md) — the Replit Git panel may succeed when connector API writes are blocked by the proxy.
