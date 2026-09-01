@@ -1,91 +1,109 @@
-import { BookOpen, Calendar } from 'lucide-react';
+import { ArrowUpRight, Landmark } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import {
+  EditorialCallout,
+  EditorialSectionHeader,
+  EditorialStat,
+} from '@components/common/EditorialSections';
+
+const milestones = [
+  {
+    year: '1972',
+    title: 'The beginning',
+    description:
+      'The Liberia Medical Students&apos; Association was founded by a small group of visionary medical students who recognized the need for a unified voice in medical education. What started as a modest gathering of 15 students began a lasting tradition of student leadership.',
+  },
+  {
+    year: '1980s–1990s',
+    title: 'Growth through resilience',
+    description:
+      'Despite the challenges of civil unrest, LMSA continued to advocate for medical students and maintain its commitment to academic excellence. This era brought international partnerships, the first annual medical symposium, and standing committees for specialized work.',
+  },
+  {
+    year: '2000s–today',
+    title: 'A wider horizon',
+    description:
+      'LMSA continues to evolve with technology, global health initiatives, and new approaches to medical education while staying true to its founding principles. Its work reaches students across Liberia and prepares them for a changing healthcare landscape.',
+  },
+];
 
 export default function HistoryPage() {
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {/* Hero Section */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 mb-8">
-          <div className="flex items-center gap-4 mb-4">
-            <div className="w-12 h-12 bg-lmsa-100 rounded-lg flex items-center justify-center">
-              <BookOpen size={24} className="text-lmsa-600" />
+    <main className="editorial-page">
+      <section className="editorial-section">
+        <div className="site-container">
+          <div className="grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:gap-20">
+            <EditorialSectionHeader
+              eyebrow="Since 1972"
+              title="Every generation leaves LMSA stronger than it found it."
+              description="The association’s history is a record of students choosing to stay connected through change."
+            />
+            <div className="editorial-note self-start">
+              <p>Education is the foundation of progress, but unity is the bridge that takes us there.</p>
+              <span>Founding members, 1972</span>
             </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="editorial-section editorial-section-muted">
+        <div className="site-container">
+          <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_280px] lg:gap-20">
             <div>
-              <h1 className="text-3xl md:text-4xl font-bold text-gray-900">Our History</h1>
-              <p className="text-lg text-gray-600 mt-1">50+ Years of Medical Excellence</p>
+              <EditorialSectionHeader
+                eyebrow="The timeline"
+                title="A story still being written."
+                description="LMSA has changed with the needs of medical students, but its reason for existing has stayed clear."
+              />
+              <div className="editorial-timeline">
+                {milestones.map((milestone) => (
+                  <article key={milestone.year} className="editorial-timeline-item">
+                    <span className="editorial-timeline-year">{milestone.year}</span>
+                    <h3>{milestone.title}</h3>
+                    <p>{milestone.description}</p>
+                  </article>
+                ))}
+              </div>
             </div>
+            <aside className="bg-lmsa-900 p-7 text-lmsa-50">
+              <Landmark size={28} className="text-lmsa-300" strokeWidth={1.5} aria-hidden="true" />
+              <p className="mt-10 text-sm font-bold uppercase tracking-[0.16em] text-lmsa-200">What carries forward</p>
+              <p className="mt-4 text-xl font-serif italic leading-8">A commitment to represent students and improve the future of care.</p>
+              <Link to="/about/mission-vision" className="mt-8 inline-flex items-center gap-2 text-sm font-semibold text-white hover:text-lmsa-200">
+                Read our direction
+                <ArrowUpRight size={16} aria-hidden="true" />
+              </Link>
+            </aside>
           </div>
         </div>
+      </section>
 
-        {/* Content */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
-          <div className="prose max-w-none">
-            <div className="mb-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">The Beginning (1972)</h2>
-              <p className="text-gray-700 leading-relaxed">
-                The Liberia Medical Students&apos; Association (LMSA) was founded in 1972 by a small group of visionary 
-                medical students who recognized the need for a unified voice in medical education. What started as 
-                a modest gathering of 15 students has grown into one of the most influential student organizations 
-                in Liberia&apos;s medical landscape.
-              </p>
-            </div>
-
-            <div className="mb-8 p-6 bg-lmsa-50 rounded-xl border-l-4 border-lmsa-600">
-              <p className="text-lmsa-800 font-medium italic">
-                &quot;Education is the foundation of progress, but unity is the bridge that takes us there.&quot;
-              </p>
-              <p className="text-lmsa-600 text-sm mt-2">— Founding Members, 1972</p>
-            </div>
-
-            <div className="mb-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">Growth & Expansion (1980s-1990s)</h2>
-              <p className="text-gray-700 leading-relaxed mb-4">
-                Despite the challenges of civil unrest, LMSA demonstrated remarkable resilience. The association 
-                continued to advocate for medical students and maintained its commitment to academic excellence. 
-                During this period, LMSA:
-              </p>
-              <ul className="space-y-2 text-gray-700">
-                <li className="flex items-start gap-2">
-                  <Calendar size={18} className="text-lmsa-600 mt-1 flex-shrink-0" />
-                  <span>Established partnerships with international medical organizations</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <Calendar size={18} className="text-lmsa-600 mt-1 flex-shrink-0" />
-                  <span>Launched the first annual medical symposium</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <Calendar size={18} className="text-lmsa-600 mt-1 flex-shrink-0" />
-                  <span>Created standing committees to address specialized areas</span>
-                </li>
-              </ul>
-            </div>
-
-            <div className="mb-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">Modern Era (2000s-Present)</h2>
-              <p className="text-gray-700 leading-relaxed">
-                Today, LMSA represents thousands of medical students across Liberia, with chapters at multiple 
-                medical schools. The association has evolved to embrace technology, global health initiatives, 
-                and innovative approaches to medical education while staying true to its founding principles.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-              <div className="text-center p-6 bg-gray-50 rounded-xl">
-                <div className="text-4xl font-bold text-lmsa-600 mb-2">50+</div>
-                <div className="text-gray-600">Years of Service</div>
-              </div>
-              <div className="text-center p-6 bg-gray-50 rounded-xl">
-                <div className="text-4xl font-bold text-lmsa-600 mb-2">12</div>
-                <div className="text-gray-600">Standing Committees</div>
-              </div>
-              <div className="text-center p-6 bg-gray-50 rounded-xl">
-                <div className="text-4xl font-bold text-lmsa-600 mb-2">1000s</div>
-                <div className="text-gray-600">Members Represented</div>
-              </div>
-            </div>
+      <section className="editorial-section">
+        <div className="site-container">
+          <EditorialSectionHeader
+            eyebrow="By the numbers"
+            title="The legacy is measured in people."
+            description="These milestones give shape to the scale of LMSA’s service and the generations still ahead."
+          />
+          <div className="editorial-stat-grid">
+            <EditorialStat value="50+" label="Years of service" detail="From the first student gathering to today’s association." />
+            <EditorialStat value="12" label="Standing committees" detail="Specialized spaces for students to contribute and lead." />
+            <EditorialStat value="1000s" label="Members represented" detail="A growing network of current students and alumni." />
           </div>
         </div>
-      </div>
-    </div>
+      </section>
+
+      <section className="editorial-section pt-0">
+        <div className="site-container">
+          <EditorialCallout
+            eyebrow="Carry it forward"
+            title="History matters most when it gives the next generation room to lead."
+            description="Meet the students serving LMSA today and find the place where your own contribution can begin."
+            tone="gold"
+            action={{ label: 'Meet our leaders', to: '/leadership' }}
+          />
+        </div>
+      </section>
+    </main>
   );
 }

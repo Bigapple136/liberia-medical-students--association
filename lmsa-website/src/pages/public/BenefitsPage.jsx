@@ -1,97 +1,96 @@
-import { CheckCircle, Star, BookOpen, Users, Calendar, Heart } from 'lucide-react';
+import { BookOpen, Calendar, CheckCircle, Heart, Star, Users } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { EditorialCallout, EditorialLinkCard, EditorialSectionHeader } from '@components/common/EditorialSections';
 
 const benefits = [
-  {
-    icon: BookOpen,
-    title: 'Academic Resources',
-    description: 'Access exclusive study materials, past exams, and learning resources',
-  },
-  {
-    icon: Users,
-    title: 'Networking Opportunities',
-    description: 'Connect with peers, mentors, and medical professionals across Liberia',
-  },
-  {
-    icon: Calendar,
-    title: 'Events & Conferences',
-    description: 'Attend symposia, workshops, and medical conferences at member rates',
-  },
-  {
-    icon: Heart,
-    title: 'Mentorship Program',
-    description: 'Get paired with senior students for academic and career guidance',
-  },
-  {
-    icon: Star,
-    title: 'Leadership Development',
-    description: 'Run for office, join committees, and build leadership skills',
-  },
-  {
-    icon: CheckCircle,
-    title: 'Professional Recognition',
-    description: 'Receive certificates and recognition for academic achievements',
-  },
+  { icon: BookOpen, title: 'Academic resources', description: 'Access exclusive study materials, past exams, and learning resources.' },
+  { icon: Users, title: 'Networking opportunities', description: 'Connect with peers, mentors, and medical professionals across Liberia.' },
+  { icon: Calendar, title: 'Events & conferences', description: 'Attend symposia, workshops, and medical conferences at member rates.' },
+  { icon: Heart, title: 'Mentorship program', description: 'Get paired with senior students for academic and career guidance.' },
+  { icon: Star, title: 'Leadership development', description: 'Run for office, join committees, and build leadership skills.' },
+  { icon: CheckCircle, title: 'Professional recognition', description: 'Receive certificates and recognition for academic achievements.' },
+];
+
+const perks = [
+  'Discounted medical textbooks and resources',
+  'Free access to online medical databases',
+  'Priority registration for workshops and training',
+  'Eligibility for LMSA scholarships and grants',
+  'Representation in national medical forums',
+  'Access to alumni network and career opportunities',
+  'Invitation to exclusive social and professional events',
+  'Voting rights in LMSA elections',
 ];
 
 export default function BenefitsPage() {
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {/* Hero */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Member Benefits</h1>
-          <p className="text-lg text-gray-600">What You Get as an LMSA Member</p>
+    <main className="editorial-page">
+      <section className="editorial-section">
+        <div className="site-container">
+          <EditorialSectionHeader
+            eyebrow="Membership / Benefits"
+            title="The value of membership is in what it helps you do next."
+            description="LMSA membership is designed to be useful in the classroom, in community, and in the leadership opportunities between them."
+          />
+          <div className="grid gap-4 md:grid-cols-3">
+            <EditorialLinkCard to="/academics/resources" eyebrow="Learn" title="Study with more support" description="Find tools and people that make the work of medical school more navigable." icon={BookOpen} />
+            <EditorialLinkCard to="/academics/mentorship" eyebrow="Connect" title="Meet people ahead of you" description="Build relationships with peers, mentors, and the alumni network." icon={Users} />
+            <EditorialLinkCard to="/get-involved/leadership" eyebrow="Lead" title="Practice responsibility" description="Use committees, elections, and service to grow beyond the classroom." icon={Star} />
+          </div>
         </div>
+      </section>
 
-        {/* Benefits Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-          {benefits.map((benefit, index) => {
-            const Icon = benefit.icon;
-            return (
-              <div key={index} className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
-                <div className="w-12 h-12 bg-lmsa-100 rounded-lg flex items-center justify-center mb-4">
-                  <Icon size={24} className="text-lmsa-600" />
+      <section className="editorial-section editorial-section-muted">
+        <div className="site-container">
+          <EditorialSectionHeader eyebrow="The everyday benefits" title="Six ways LMSA can move with you." description="Membership follows the real shape of student life: learning, belonging, contribution, and preparation." />
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {benefits.map(({ icon: Icon, title, description }, index) => (
+              <article key={title} className="editorial-link-card">
+                <span className="editorial-link-card-icon" aria-hidden="true"><Icon size={22} strokeWidth={1.6} /></span>
+                <div className="editorial-link-card-copy">
+                  <span className="editorial-card-eyebrow">0{index + 1} / Benefit</span>
+                  <h3>{title}</h3>
+                  <p>{description}</p>
                 </div>
-                <h3 className="text-lg font-bold text-gray-900 mb-2">{benefit.title}</h3>
-                <p className="text-gray-600 text-sm">{benefit.description}</p>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Additional Benefits */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 mb-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">Additional Perks</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {[
-              'Discounted medical textbooks and resources',
-              'Free access to online medical databases',
-              'Priority registration for workshops and training',
-              'Eligibility for LMSA scholarships and grants',
-              'Representation in national medical forums',
-              'Access to alumni network and career opportunities',
-              'Invitation to exclusive social and professional events',
-              'Voting rights in LMSA elections',
-            ].map((perk, index) => (
-              <div key={index} className="flex items-start gap-3 p-4 bg-gray-50 rounded-lg">
-                <CheckCircle size={20} className="text-lmsa-600 mt-0.5 flex-shrink-0" />
-                <p className="text-gray-700">{perk}</p>
-              </div>
+              </article>
             ))}
           </div>
         </div>
+      </section>
 
-        {/* CTA */}
-        <div className="bg-lmsa-50 rounded-2xl border-2 border-lmsa-200 p-8 text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Ready to Join?</h2>
-          <p className="text-gray-700 mb-6">
-            Become a member today and start enjoying these benefits
-          </p>
-          <a href="/membership" className="btn btn-primary inline-block">
-            Join LMSA Now
-          </a>
+      <section className="editorial-section">
+        <div className="site-container">
+          <div className="editorial-split">
+            <EditorialSectionHeader
+              eyebrow="Beyond the headline"
+              title="Small advantages add up over a year of training."
+              description="The additional perks make it easier to stay informed, participate fully, and keep building a professional network."
+            />
+            <div className="grid gap-3 sm:grid-cols-2">
+              {perks.map((perk, index) => (
+                <div key={perk} className="flex gap-3 border-b border-gray-200 pb-4">
+                  <span className="text-sm font-bold text-lmsa-700">0{index + 1}</span>
+                  <p className="text-sm leading-6 text-gray-700">{perk}</p>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
+      </section>
+
+      <section className="editorial-section pt-0">
+        <div className="site-container">
+          <EditorialCallout
+            eyebrow="Put the benefits to work"
+            title="Choose the membership path that fits your next season."
+            description="Review the categories, then start your application when you are ready."
+            action={{ label: 'Explore membership', to: '/membership' }}
+          />
+          <p className="mt-5 text-center text-sm text-gray-500">
+            Need the practical details? <Link to="/membership/dues" className="font-semibold text-lmsa-700 hover:text-lmsa-900">View dues and payment options</Link>
+          </p>
+        </div>
+      </section>
+    </main>
   );
 }

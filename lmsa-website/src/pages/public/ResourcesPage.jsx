@@ -1,8 +1,10 @@
 import { BookOpen, Download, FileText, Video } from 'lucide-react';
+import { EditorialCallout, EditorialSectionHeader } from '@components/common/EditorialSections';
 
 const resources = [
   {
     category: 'Pre-Clinical Years',
+    note: 'Build a reliable foundation for the science behind practice.',
     items: [
       { title: 'Anatomy Study Guide', type: 'PDF', icon: FileText },
       { title: 'Biochemistry Notes', type: 'Document', icon: FileText },
@@ -12,6 +14,7 @@ const resources = [
   },
   {
     category: 'Clinical Years',
+    note: 'Translate knowledge into confidence at the bedside.',
     items: [
       { title: 'Clinical Skills Handbook', type: 'PDF', icon: FileText },
       { title: 'Case Studies Collection', type: 'Document', icon: FileText },
@@ -21,6 +24,7 @@ const resources = [
   },
   {
     category: 'Exam Preparation',
+    note: 'Study with structure when the stakes feel highest.',
     items: [
       { title: 'Past Exam Papers (2020-2025)', type: 'Archive', icon: Download },
       { title: 'MCQ Practice Bank', type: 'Online', icon: FileText },
@@ -32,62 +36,63 @@ const resources = [
 
 export default function ResourcesPage() {
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {/* Hero */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Study Resources</h1>
-          <p className="text-lg text-gray-600">Materials & Guides for Medical Students</p>
+    <main className="editorial-page">
+      <section className="editorial-section">
+        <div className="site-container">
+          <EditorialSectionHeader
+            eyebrow="Learn & lead / Study resources"
+            title="The right resource can change how a difficult week feels."
+            description="LMSA curates practical study materials, guides, and shared knowledge for the realities of medical training."
+          />
+          <div className="editorial-note max-w-3xl">
+            <p>These resources are contributed by senior students, faculty, and alumni who remember what it feels like to learn something for the first time.</p>
+            <span>Shared knowledge, made useful</span>
+          </div>
         </div>
+      </section>
 
-        {/* Introduction */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 mb-8">
-          <p className="text-gray-700 leading-relaxed">
-            Access a comprehensive collection of study materials, guides, and resources curated by 
-            LMSA to support your medical education journey. These resources are contributed by senior 
-            students, faculty, and alumni.
-          </p>
-        </div>
-
-        {/* Resources by Category */}
-        <div className="space-y-8">
-          {resources.map((section, index) => (
-            <div key={index}>
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">{section.category}</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                {section.items.map((item, itemIndex) => {
-                  const Icon = item.icon;
-                  return (
-                    <div
-                      key={itemIndex}
-                      className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow"
-                    >
-                      <div className="w-10 h-10 bg-lmsa-100 rounded-lg flex items-center justify-center mb-3">
-                        <Icon size={20} className="text-lmsa-600" />
+      <section className="editorial-section editorial-section-muted">
+        <div className="site-container">
+          <EditorialSectionHeader eyebrow="Browse the library" title="Find support for the stage you are in." description="Start with your current year, then use these materials to study with more focus and less friction." />
+          <div className="space-y-12">
+            {resources.map((section, sectionIndex) => (
+              <div key={section.category}>
+                <div className="mb-5 flex flex-wrap items-baseline justify-between gap-3 border-b border-gray-300 pb-4">
+                  <h2 className="text-2xl font-semibold tracking-[-0.03em] text-lmsa-900">{section.category}</h2>
+                  <p className="text-sm text-gray-600">{section.note}</p>
+                </div>
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                  {section.items.map(({ title, type, icon: Icon }) => (
+                    <article key={title} className="editorial-link-card">
+                      <span className="editorial-link-card-icon" aria-hidden="true"><Icon size={21} strokeWidth={1.5} /></span>
+                      <div className="editorial-link-card-copy">
+                        <span className="editorial-card-eyebrow">0{sectionIndex + 1} / {type}</span>
+                        <h3>{title}</h3>
                       </div>
-                      <h3 className="font-semibold text-gray-900 mb-2">{item.title}</h3>
-                      <p className="text-sm text-gray-500 mb-3">{item.type}</p>
-                      <button className="text-lmsa-600 font-medium text-sm hover:underline flex items-center gap-1">
-                        <Download size={14} />
-                        Access
+                      <button type="button" className="mt-6 inline-flex items-center gap-2 self-start text-sm font-semibold text-lmsa-700 hover:text-lmsa-900">
+                        <Download size={15} aria-hidden="true" />
+                        Access resource
                       </button>
-                    </div>
-                  );
-                })}
+                    </article>
+                  ))}
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
+      </section>
 
-        {/* Contribution CTA */}
-        <div className="mt-8 bg-lmsa-50 rounded-2xl border-2 border-lmsa-200 p-8 text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Contribute Resources</h2>
-          <p className="text-gray-700 mb-6">
-            Have study materials to share? Help fellow students by contributing to our resource library
-          </p>
-          <button className="btn btn-primary">Submit Resources</button>
+      <section className="editorial-section pt-0">
+        <div className="site-container">
+          <EditorialCallout
+            eyebrow="Keep the library growing"
+            title="Have a study guide or resource that helped you?"
+            description="Share it with the next student who needs a clearer way in."
+            tone="green"
+            action={{ label: 'Contact LMSA', to: '/contact' }}
+          />
         </div>
-      </div>
-    </div>
+      </section>
+    </main>
   );
 }

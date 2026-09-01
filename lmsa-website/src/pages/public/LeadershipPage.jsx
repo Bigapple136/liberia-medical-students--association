@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
-import { User, Loader, Crown } from 'lucide-react';
-import Card from '@components/common/Card';
+import { useEffect, useState } from 'react';
+import { Crown, Loader, User } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { EditorialCallout, EditorialSectionHeader, EditorialStat } from '@components/common/EditorialSections';
 import { executiveService } from '@services/executive.service';
 
-// ─── Static fallback (only used if API call fails or is empty) ────────────
 const FALLBACK_EXECUTIVES = [
   { position_name: 'President', position_rank: 1, holder_name: 'Student Name', holder_photo_url: null, bio: 'Final year medical student passionate about student advocacy' },
   { position_name: 'Vice President', position_rank: 2, holder_name: 'Student Name', holder_photo_url: null, bio: 'Fourth year student focused on academic excellence' },
@@ -29,7 +29,6 @@ export default function LeadershipPage() {
       if (data && data.length > 0) {
         setExecutives(data);
       } else {
-        // No positions assigned yet — show fallback placeholders
         setExecutives(FALLBACK_EXECUTIVES);
       }
     } catch {
@@ -40,105 +39,103 @@ export default function LeadershipPage() {
     }
   }
 
-  // Determine the current academic year from the data, or default
   const currentYear = executives[0]?.academic_year || '2025-2026';
 
   return (
-    <div>
-      {/* Hero Section */}
-      <section className="bg-gradient-to-br from-lmsa-50 to-lmsa-100 py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-3xl md:text-5xl font-bold mb-6 uppercase tracking-tight">LMSA Leadership</h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto text-balance">
-            Meet the dedicated leaders guiding our association towards excellence
-          </p>
+    <main className="editorial-page">
+      <section className="editorial-section">
+        <div className="site-container">
+          <div className="editorial-split">
+            <EditorialSectionHeader
+              eyebrow="Learn & lead / Leadership"
+              title="Leadership is service made visible."
+              description="Meet the students and officers turning shared priorities into action for the LMSA community."
+            />
+            <div className="editorial-prose">
+              <p>
+                LMSA leadership is a chance to practice listening, responsibility, and
+                follow-through while helping the association serve its members well.
+              </p>
+              <div className="editorial-stat-grid mt-8">
+                <EditorialStat value={currentYear} label="Academic year" />
+                <EditorialStat value={executives.length || '—'} label="Leadership roles" />
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* Executive Leadership */}
-      <section className="py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-2xl md:text-3xl font-bold mb-4 uppercase tracking-tight">Executive Committee</h2>
-            <p className="text-gray-600">Academic Year {currentYear}</p>
-          </div>
-
+      <section className="editorial-section editorial-section-muted">
+        <div className="site-container">
+          <EditorialSectionHeader eyebrow={`Executive committee / ${currentYear}`} title="The students carrying the work forward." description="Leadership changes each year, but the responsibility to represent peers thoughtfully remains." />
           {loading ? (
-            <div className="flex items-center justify-center h-48">
-              <Loader className="animate-spin text-lmsa-600" size={28} />
+            <div className="flex h-48 items-center justify-center">
+              <Loader className="animate-spin text-lmsa-600" size={28} aria-label="Loading leadership" />
             </div>
           ) : (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               {executives.map((exec, index) => (
-                <Card key={exec.id || index} className="text-center hover:shadow-lg hover:-translate-y-1 transition-all duration-200">
-                  <div className="w-32 h-32 mx-auto mb-4 rounded-full bg-lmsa-50 flex items-center justify-center overflow-hidden">
-                    {exec.holder_photo_url ? (
-                      <img
-                        src={exec.holder_photo_url}
-                        alt={exec.holder_name || exec.position_name}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <User size={48} className="text-lmsa-600" strokeWidth={1.5} />
-                    )}
+                <article key={exec.id || index} className="border border-gray-200 bg-white p-6">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-full bg-lmsa-50 text-lmsa-700">
+                      {exec.holder_photo_url ? (
+                        <img src={exec.holder_photo_url} alt={exec.holder_name || exec.position_name} className="h-full w-full object-cover" />
+                      ) : (
+                        <User size={29} strokeWidth={1.4} />
+                      )}
+                    </div>
+                    {exec.position_rank <= 2 && <Crown size={18} className="text-amber-500" aria-label="Senior executive role" />}
                   </div>
-                  <h3 className="text-xl font-semibold mb-1">
-                    {exec.holder_name || 'Position Available'}
-                  </h3>
-                  <p className="text-lmsa-600 font-medium mb-2 flex items-center justify-center gap-1.5">
-                    {exec.position_rank <= 2 && <Crown size={14} className="text-amber-500" />}
-                    {exec.position_name}
-                  </p>
-                  {exec.bio && (
-                    <p className="text-sm text-gray-600 text-balance">{exec.bio}</p>
-                  )}
-                  {exec.holder_year_level && (
-                    <p className="text-xs text-gray-400 mt-1">Year {exec.holder_year_level}</p>
-                  )}
-                  {error && (
-                    <p className="text-xs text-amber-500 mt-2">Using placeholder data</p>
-                  )}
-                </Card>
+                  <p className="mt-8 text-xs font-bold uppercase tracking-[0.15em] text-lmsa-700">{exec.position_name}</p>
+                  <h3 className="mt-2 text-xl font-semibold text-lmsa-900">{exec.holder_name || 'Position Available'}</h3>
+                  {exec.bio && <p className="mt-3 text-sm leading-6 text-gray-600">{exec.bio}</p>}
+                  {exec.holder_year_level && <p className="mt-4 text-xs text-gray-500">Year {exec.holder_year_level}</p>}
+                  {error && <p className="mt-4 text-xs text-amber-600">Using placeholder data</p>}
+                </article>
               ))}
             </div>
           )}
+        </div>
+      </section>
 
-          {/* Organizational Structure */}
-          <div className="max-w-4xl mx-auto">
-            <h2 className="text-2xl md:text-3xl font-bold mb-6 text-center uppercase tracking-tight">Organizational Structure</h2>
-            <Card>
-              <div className="space-y-4">
-                <div className="border-l-4 border-lmsa-600 pl-4">
-                  <h3 className="font-bold text-lg">General Assembly</h3>
-                  <p className="text-gray-600 text-sm text-balance">
-                    Supreme decision-making body comprising all registered members
-                  </p>
-                </div>
-                <div className="border-l-4 border-lmsa-400 pl-4 ml-8">
-                  <h3 className="font-bold text-lg">Executive Committee</h3>
-                  <p className="text-gray-600 text-sm text-balance">
-                    Elected officers responsible for day-to-day operations
-                  </p>
-                </div>
-                <div className="border-l-4 border-lmsa-200 pl-4 ml-16">
-                  <h3 className="font-bold text-lg">Standing Committees</h3>
-                  <p className="text-gray-600 text-sm text-balance">
-                    Academic, Finance, Welfare, Events, and Public Relations
-                  </p>
-                </div>
-              </div>
-            </Card>
-          </div>
-
-          {/* Join Leadership */}
-          <div className="mt-16 text-center">
-            <h2 className="text-2xl font-bold mb-4 uppercase tracking-tight">Interested in Leadership?</h2>
-            <p className="text-gray-600 mb-6 text-balance">
-              Elections are held annually. Get involved and make a difference!
-            </p>
+      <section className="editorial-section">
+        <div className="site-container">
+          <div className="editorial-split">
+            <EditorialSectionHeader eyebrow="How the work is organized" title="A shared structure keeps leadership accountable." description="Different bodies carry different responsibilities, but each one exists to keep members represented and the work moving." />
+            <div className="editorial-timeline">
+              <article className="editorial-timeline-item">
+                <span className="editorial-timeline-year">01 / General assembly</span>
+                <h3>The members decide.</h3>
+                <p>The supreme decision-making body comprising all registered members.</p>
+              </article>
+              <article className="editorial-timeline-item">
+                <span className="editorial-timeline-year">02 / Executive committee</span>
+                <h3>The officers deliver.</h3>
+                <p>Elected officers responsible for day-to-day operations and representation.</p>
+              </article>
+              <article className="editorial-timeline-item">
+                <span className="editorial-timeline-year">03 / Standing committees</span>
+                <h3>The teams deepen the work.</h3>
+                <p>Academic, Finance, Welfare, Events, and Public Relations teams focused on specific priorities.</p>
+              </article>
+            </div>
           </div>
         </div>
       </section>
-    </div>
+
+      <section className="editorial-section pt-0">
+        <div className="site-container">
+          <EditorialCallout
+            eyebrow="Your turn to lead"
+            title="Elections are held annually. Start by finding the work that matters to you."
+            description="Committees are a practical first step into meaningful responsibility and student service."
+            action={{ label: 'Explore committees', to: '/leadership/committees' }}
+          />
+          <p className="mt-5 text-center text-sm text-gray-500">
+            Interested in opportunities? <Link to="/get-involved/leadership" className="font-semibold text-lmsa-700 hover:text-lmsa-900">See leadership pathways</Link>
+          </p>
+        </div>
+      </section>
+    </main>
   );
 }

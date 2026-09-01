@@ -1,12 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { BookOpen, Briefcase, LogIn, Target, Users } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { BookOpen, Target, Users, Briefcase, LogIn } from 'lucide-react';
-import { useAuth } from '@context/AuthContext';
 import toast from 'react-hot-toast';
-import Button from '@components/common/Button';
-import Card from '@components/common/Card';
-import Select from '@components/common/Select';
 import Alert from '@components/common/Alert';
+import Button from '@components/common/Button';
+import Select from '@components/common/Select';
+import { EditorialCallout, EditorialSectionHeader, EditorialStat } from '@components/common/EditorialSections';
+import { useAuth } from '@context/AuthContext';
 import { membershipService } from '@services/membership.service';
 
 const MEMBERSHIP_TYPE_OPTIONS = [
@@ -16,17 +16,54 @@ const MEMBERSHIP_TYPE_OPTIONS = [
   { value: 'veteran', label: 'Veteran Member — alumni & past members' },
 ];
 
+const membershipTypes = [
+  {
+    name: 'Full Member',
+    description: 'For currently enrolled medical students',
+    featured: true,
+    benefits: ['Voting rights', 'Access to all events', 'Study resources', 'Member portal access'],
+  },
+  {
+    name: 'Associate Member',
+    description: 'For prospective students and affiliates',
+    benefits: ['Event participation', 'Newsletter access', 'Networking opportunities'],
+  },
+  {
+    name: 'Honorary Member',
+    description: 'For distinguished supporters',
+    benefits: ['Recognition at events', 'Advisory role', 'Network access'],
+  },
+  {
+    name: 'Veteran Member',
+    description: 'For alumni and past members',
+    benefits: ['Alumni network', 'Mentorship opportunities', 'Reunion events'],
+  },
+];
+
+const benefits = [
+  { icon: BookOpen, title: 'Academic resources', description: 'Access study materials, past papers, and tutoring programs.' },
+  { icon: Target, title: 'Professional development', description: 'Find leadership training, research opportunities, and conferences.' },
+  { icon: Users, title: 'A stronger network', description: 'Connect with peers, mentors, and medical professionals across Liberia.' },
+  { icon: Briefcase, title: 'Career support', description: 'Explore internship placements, residency guidance, and opportunities.' },
+];
+
+const eligibility = [
+  'Currently enrolled at A.M. Dogliotti College of Medicine, University of Liberia',
+  'Good academic standing with satisfactory progress',
+  'Payment of annual membership dues',
+  'Agreement to abide by LMSA constitution and code of conduct',
+  'Completion of registration process through the member portal',
+];
+
 export default function MembershipPage() {
   const { user, loading: authLoading } = useAuth();
-
   const [application, setApplication] = useState(null);
   const [loadingStatus, setLoadingStatus] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [selectedType, setSelectedType] = useState('full');
 
-  // Logged-in visitors: fetch their current application status on mount.
   useEffect(() => {
-    if (!user) return;
+    if (!user) return undefined;
     let mounted = true;
     const loadStatus = async () => {
       try {
@@ -34,17 +71,19 @@ export default function MembershipPage() {
         const status = await membershipService.getStatus();
         if (mounted) setApplication(status);
       } catch {
-        // Status is best-effort; the apply form still works regardless.
+        // The application form remains available if status lookup fails.
       } finally {
         if (mounted) setLoadingStatus(false);
       }
     };
     loadStatus();
-    return () => { mounted = false; };
+    return () => {
+      mounted = false;
+    };
   }, [user]);
 
-  const handleApply = async (e) => {
-    e.preventDefault();
+  const handleApply = async (event) => {
+    event.preventDefault();
     try {
       setSubmitting(true);
       const submitted = await membershipService.apply(selectedType);
@@ -58,16 +97,14 @@ export default function MembershipPage() {
     }
   };
 
-  // ─── Apply section rendering (auth-gated) ──────────────────────────────
   const renderApplySection = () => {
-    // Logged-out visitor: gate the form — don't let them hit a 401 on submit.
     if (!authLoading && !user) {
       return (
         <Alert variant="info">
-          <p className="font-semibold mb-2">Log in to apply for membership</p>
+          <p className="mb-2 font-semibold">Log in to apply for membership</p>
           <p className="mb-3">
-            Submitting an application requires a member account. Please sign in or create
-            an account to continue.
+            Submitting an application requires a member account. Please sign in or create an
+            account to continue.
           </p>
           <div className="flex flex-wrap gap-3">
             <Link to="/login">
@@ -82,59 +119,50 @@ export default function MembershipPage() {
     }
 
     if (loadingStatus) {
-      return (
-        <div className="flex justify-center py-8">
-          <span className="text-gray-500">Checking your application status…</span>
-        </div>
-      );
+      return <p className="py-8 text-center text-gray-500">Checking your application status…</p>;
     }
 
-    // Already pending — show status instead of the form.
     if (application?.application_status === 'pending') {
       return (
         <Alert variant="warning">
           <p className="font-semibold">Application under review</p>
           <p>
             You already have a <strong>pending</strong> membership application
-            ({(application.membership_type || '').replace(/^\w/, c => c.toUpperCase())}).
+            ({(application.membership_type || '').replace(/^\w/, (character) => character.toUpperCase())}).
             We&apos;ll notify you by email once it&apos;s reviewed.
           </p>
         </Alert>
       );
     }
 
-    // Already approved — confirm their standing.
     if (application?.application_status === 'approved') {
       return (
         <Alert variant="success">
           <p className="font-semibold">You&apos;re a member!</p>
           <p>
-            Your <strong>{(application.membership_type || '').replace(/^\w/, c => c.toUpperCase())}</strong>{' '}
+            Your <strong>{(application.membership_type || '').replace(/^\w/, (character) => character.toUpperCase())}</strong>{' '}
             membership application has been approved. Welcome to LMSA!
           </p>
         </Alert>
       );
     }
 
-    // Not applied, or previously rejected — show the apply form (reapply allowed).
     return (
-      <form onSubmit={handleApply} className="max-w-xl mx-auto space-y-5">
+      <form onSubmit={handleApply} className="mx-auto max-w-xl space-y-5">
         <Select
           label="Membership type"
           required
           value={selectedType}
-          onChange={(e) => setSelectedType(e.target.value)}
+          onChange={(event) => setSelectedType(event.target.value)}
           options={MEMBERSHIP_TYPE_OPTIONS}
           placeholder="Select a membership type"
           disabled={submitting}
         />
-        <div>
-          <Button type="submit" variant="primary" loading={submitting} fullWidth>
-            {submitting ? 'Submitting…' : 'Submit application'}
-          </Button>
-        </div>
+        <Button type="submit" variant="primary" loading={submitting} fullWidth>
+          {submitting ? 'Submitting…' : 'Submit application'}
+        </Button>
         {application?.application_status === 'rejected' && (
-          <p className="text-sm text-gray-600 text-center">
+          <p className="text-center text-sm text-gray-600">
             Your previous application was not approved. You may submit a new one below.
           </p>
         )}
@@ -143,165 +171,124 @@ export default function MembershipPage() {
   };
 
   return (
-    <div>
-      {/* Hero Section */}
-      <section className="bg-gradient-to-br from-lmsa-50 to-lmsa-100 py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-3xl md:text-5xl font-bold mb-6 uppercase tracking-tight">Membership</h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto text-balance">
-            Join the Liberia Medical Students&apos; Association and become part of our community
-          </p>
+    <main className="editorial-page">
+      <section className="editorial-section">
+        <div className="site-container">
+          <div className="editorial-split">
+            <EditorialSectionHeader
+              eyebrow="A community for the journey"
+              title="Membership should make medical school feel less like a solo experience."
+              description="LMSA gives students a place to find support, build relationships, and turn their time in training into something shared."
+            />
+            <div className="editorial-prose">
+              <p>
+                Whether you are currently enrolled, preparing for medical school, supporting
+                students, or carrying the LMSA story as an alum, there is a way to stay connected.
+              </p>
+              <div className="editorial-stat-grid mt-8">
+                <EditorialStat value="4" label="Membership paths" />
+                <EditorialStat value="1" label="Student community" />
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* Membership Types */}
-      <section className="py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4 uppercase tracking-tight">Membership Categories</h2>
-            <p className="text-gray-600 text-balance">Choose the membership type that fits your status</p>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
+      <section className="editorial-section editorial-section-muted">
+        <div className="site-container">
+          <EditorialSectionHeader
+            eyebrow="Choose your path"
+            title="Find the membership that fits your place in the community."
+            description="Every category comes with a different relationship to LMSA, but each one creates a way to participate."
+          />
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             {membershipTypes.map((type, index) => (
-              <Card key={index} className={`hover:shadow-lg hover:-translate-y-1 transition-all duration-200 ${type.featured ? 'border-2 border-lmsa-600' : ''}`}>
-                {type.featured && (
-                  <div className="inline-block px-3 py-1 bg-lmsa-600 text-white text-xs rounded-full mb-3">
-                    Most Common
-                  </div>
-                )}
-                <h3 className="text-xl font-bold mb-2">{type.name}</h3>
-                <p className="text-gray-600 text-sm mb-4">{type.description}</p>
-                <ul className="space-y-2 text-sm">
-                  {type.benefits.map((benefit, idx) => (
-                    <li key={idx} className="flex items-start">
-                      <span className="text-lmsa-600 mr-2 font-bold" aria-hidden="true">✓</span>
-                      <span className="text-gray-700">{benefit}</span>
-                    </li>
-                  ))}
-                </ul>
-              </Card>
+              <article key={type.name} className={`editorial-link-card ${type.featured ? 'border-t-4 border-t-lmsa-600' : ''}`}>
+                {type.featured && <span className="editorial-card-eyebrow text-lmsa-700">Most common</span>}
+                <div className="editorial-link-card-copy">
+                  <span className="mt-2 block text-xs font-bold text-gray-500">0{index + 1}</span>
+                  <h3>{type.name}</h3>
+                  <p>{type.description}</p>
+                  <ul className="mt-5 space-y-2 text-sm text-gray-700">
+                    {type.benefits.map((benefit) => (
+                      <li key={benefit} className="flex items-start gap-2">
+                        <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-lmsa-600" aria-hidden="true" />
+                        <span>{benefit}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </article>
             ))}
           </div>
+        </div>
+      </section>
 
-          {/* Benefits Section */}
-          <div className="mb-16">
-            <h2 className="text-3xl font-bold mb-8 text-center uppercase tracking-tight">Member Benefits</h2>
-            <div className="grid md:grid-cols-2 gap-8">
-              {benefits.map((benefit, index) => (
-                <div key={index} className="flex items-start space-x-4">
-                  <div className="text-lmsa-600 flex-shrink-0">{benefit.icon}</div>
-                  <div>
-                    <h3 className="font-semibold text-lg mb-1">{benefit.title}</h3>
-                    <p className="text-gray-600 text-sm">{benefit.description}</p>
-                  </div>
+      <section className="editorial-section">
+        <div className="site-container">
+          <EditorialSectionHeader
+            eyebrow="What membership unlocks"
+            title="Useful support, not just a name on a list."
+            description="The best membership benefits are the ones that help you move through the week with more confidence."
+          />
+          <div className="grid gap-4 md:grid-cols-2">
+            {benefits.map(({ icon: Icon, title, description }) => (
+              <article key={title} className="flex gap-4 border-t border-gray-200 pt-5">
+                <span className="flex h-11 w-11 shrink-0 items-center justify-center bg-lmsa-50 text-lmsa-700">
+                  <Icon size={22} strokeWidth={1.6} />
+                </span>
+                <div>
+                  <h3 className="text-xl font-semibold text-lmsa-900">{title}</h3>
+                  <p className="mt-2 text-sm leading-6 text-gray-600">{description}</p>
                 </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Eligibility */}
-          <div className="max-w-4xl mx-auto mb-16">
-            <h2 className="text-3xl font-bold mb-6 text-center uppercase tracking-tight">Eligibility Requirements</h2>
-            <Card>
-              <ul className="space-y-3">
-                {eligibility.map((item, index) => (
-                  <li key={index} className="flex items-start">
-                    <span className="text-lmsa-600 mr-3 font-bold" aria-hidden="true">•</span>
-                    <span className="text-gray-700">{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </Card>
-          </div>
-
-          {/* CTA / Apply */}
-          <div className="text-center">
-            <h2 className="text-2xl font-bold mb-4 uppercase tracking-tight">Ready to Join?</h2>
-            <p className="text-gray-600 mb-6 text-balance">
-              Start your journey with LMSA today
-            </p>
-            <div className="max-w-3xl mx-auto">
-              {renderApplySection()}
-            </div>
+              </article>
+            ))}
           </div>
         </div>
       </section>
-    </div>
+
+      <section className="editorial-section editorial-section-muted">
+        <div className="site-container">
+          <div className="grid gap-10 lg:grid-cols-[0.75fr_1.25fr] lg:gap-20">
+            <EditorialSectionHeader
+              eyebrow="Before you apply"
+              title="A clear start makes for a better membership experience."
+              description="Review the basic requirements, then choose the membership path that best describes you."
+            />
+            <ul className="editorial-article-list">
+              {eligibility.map((item, index) => (
+                <li key={item} className="editorial-article-row">
+                  <strong>0{index + 1}</strong>
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section id="apply" className="editorial-section">
+        <div className="site-container">
+          <EditorialSectionHeader
+            eyebrow="Your next step"
+            title="Ready to become part of LMSA?"
+            description="Sign in to submit an application, or create your member account first."
+            align="center"
+          />
+          <div className="mx-auto max-w-3xl">{renderApplySection()}</div>
+        </div>
+      </section>
+
+      <section className="editorial-section pt-0">
+        <div className="site-container">
+          <EditorialCallout
+            eyebrow="Still deciding?"
+            title="See the full benefits and fee structure before you choose."
+            description="Take the next practical step with a closer look at what membership includes and how dues work."
+            action={{ label: 'Review membership benefits', to: '/membership/benefits' }}
+          />
+        </div>
+      </section>
+    </main>
   );
 }
-
-const membershipTypes = [
-  {
-    name: 'Full Member',
-    description: 'For currently enrolled medical students',
-    featured: true,
-    benefits: [
-      'Voting rights',
-      'Access to all events',
-      'Study resources',
-      'Member portal access'
-    ]
-  },
-  {
-    name: 'Associate Member',
-    description: 'For prospective students and affiliates',
-    featured: false,
-    benefits: [
-      'Event participation',
-      'Newsletter access',
-      'Networking opportunities'
-    ]
-  },
-  {
-    name: 'Honorary Member',
-    description: 'For distinguished supporters',
-    featured: false,
-    benefits: [
-      'Recognition at events',
-      'Advisory role',
-      'Network access'
-    ]
-  },
-  {
-    name: 'Veteran Member',
-    description: 'For alumni and past members',
-    featured: false,
-    benefits: [
-      'Alumni network',
-      'Mentorship opportunities',
-      'Reunion events'
-    ]
-  }
-];
-
-const benefits = [
-  {
-    icon: <BookOpen size={32} strokeWidth={1.5} />,
-    title: 'Academic Resources',
-    description: 'Access to study materials, past papers, and tutoring programs'
-  },
-  {
-    icon: <Target size={32} strokeWidth={1.5} />,
-    title: 'Professional Development',
-    description: 'Leadership training, research opportunities, and conferences'
-  },
-  {
-    icon: <Users size={32} strokeWidth={1.5} />,
-    title: 'Networking',
-    description: 'Connect with peers, mentors, and medical professionals'
-  },
-  {
-    icon: <Briefcase size={32} strokeWidth={1.5} />,
-    title: 'Career Support',
-    description: 'Internship placements, residency guidance, and job opportunities'
-  }
-];
-
-const eligibility = [
-  'Currently enrolled at A.M. Dogliotti College of Medicine, University of Liberia',
-  'Good academic standing with satisfactory progress',
-  'Payment of annual membership dues',
-  'Agreement to abide by LMSA constitution and code of conduct',
-  'Completion of registration process through the member portal'
-];

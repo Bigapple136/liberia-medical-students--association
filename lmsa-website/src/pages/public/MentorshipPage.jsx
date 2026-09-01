@@ -1,124 +1,93 @@
-import { Users, Heart, CheckCircle, MessageCircle } from 'lucide-react';
+import { CheckCircle, Heart, MessageCircle, Users } from 'lucide-react';
+import { EditorialCallout, EditorialSectionHeader } from '@components/common/EditorialSections';
+
+const steps = [
+  { title: 'Apply', description: 'Fill out the mentorship application form', icon: MessageCircle },
+  { title: 'Get matched', description: 'We pair you with a compatible mentor', icon: Users },
+  { title: 'Connect', description: 'Meet regularly with your mentor', icon: Heart },
+  { title: 'Grow', description: 'Achieve your academic and career goals', icon: CheckCircle },
+];
+
+const benefits = [
+  'Academic support and study strategies',
+  'Career guidance and specialty exploration',
+  'Emotional support during challenging times',
+  'Networking opportunities',
+  'Research collaboration opportunities',
+  'Leadership skill development',
+  'Transition support between clinical years',
+  'Exam preparation assistance',
+];
 
 export default function MentorshipPage() {
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {/* Hero */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 mb-8">
-          <div className="flex items-center gap-4 mb-4">
-            <div className="w-12 h-12 bg-lmsa-100 rounded-lg flex items-center justify-center">
-              <Heart size={24} className="text-lmsa-600" />
-            </div>
-            <div>
-              <h1 className="text-3xl md:text-4xl font-bold text-gray-900">Mentorship Program</h1>
-              <p className="text-lg text-gray-600 mt-1">Connect with Senior Students</p>
+    <main className="editorial-page">
+      <section className="editorial-section">
+        <div className="site-container">
+          <div className="editorial-split">
+            <EditorialSectionHeader
+              eyebrow="Learn & lead / Mentorship"
+              title="You should not have to figure out medical school alone."
+              description="The LMSA Mentorship Program connects junior students with senior students who can offer guidance, perspective, and honest support."
+            />
+            <div className="editorial-prose">
+              <p>
+                Mentors are matched based on academic interests, career goals, and personal
+                preferences to help relationships become productive and meaningful.
+              </p>
+              <p>
+                Peer guidance can make a demanding season feel more navigable—and can give
+                experienced students a way to turn what they have learned into support for someone else.
+              </p>
             </div>
           </div>
         </div>
+      </section>
 
-        {/* Introduction */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 mb-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">About the Program</h2>
-          <p className="text-gray-700 leading-relaxed mb-4">
-            The LMSA Mentorship Program pairs junior medical students with senior students who provide 
-            academic guidance, career advice, and personal support. This peer-to-peer mentorship has 
-            been one of our most successful initiatives, helping thousands of students navigate the 
-            challenges of medical school.
-          </p>
-          <p className="text-gray-700 leading-relaxed">
-            Mentors are carefully matched based on academic interests, career goals, and personal 
-            preferences to ensure productive and meaningful relationships.
-          </p>
-        </div>
-
-        {/* How It Works */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 mb-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">How It Works</h2>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            {[
-              {
-                step: '1',
-                title: 'Apply',
-                desc: 'Fill out the mentorship application form',
-                icon: MessageCircle,
-              },
-              {
-                step: '2',
-                title: 'Get Matched',
-                desc: 'We pair you with a compatible mentor',
-                icon: Users,
-              },
-              {
-                step: '3',
-                title: 'Connect',
-                desc: 'Meet regularly with your mentor',
-                icon: Heart,
-              },
-              {
-                step: '4',
-                title: 'Grow',
-                desc: 'Achieve your academic and career goals',
-                icon: CheckCircle,
-              },
-            ].map((step, index) => {
-              const Icon = step.icon;
-              return (
-                <div key={index} className="text-center p-6 bg-gray-50 rounded-xl">
-                  <div className="w-16 h-16 bg-lmsa-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Icon size={28} className="text-lmsa-600" />
-                  </div>
-                  <div className="text-3xl font-bold text-lmsa-600 mb-2">Step {step.step}</div>
-                  <h3 className="text-lg font-bold text-gray-900 mb-2">{step.title}</h3>
-                  <p className="text-gray-600 text-sm">{step.desc}</p>
+      <section className="editorial-section editorial-section-muted">
+        <div className="site-container">
+          <EditorialSectionHeader eyebrow="How it works" title="A simple process, a meaningful relationship." description="The program is structured enough to help you begin and flexible enough to grow with the people involved." />
+          <div className="grid gap-4 md:grid-cols-4">
+            {steps.map(({ title, description, icon: Icon }, index) => (
+              <article key={title} className="editorial-link-card">
+                <span className="editorial-link-card-icon" aria-hidden="true"><Icon size={21} strokeWidth={1.5} /></span>
+                <div className="editorial-link-card-copy">
+                  <span className="editorial-card-eyebrow">Step 0{index + 1}</span>
+                  <h3>{title}</h3>
+                  <p>{description}</p>
                 </div>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Benefits */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 mb-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">Benefits of Mentorship</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {[
-              'Academic support and study strategies',
-              'Career guidance and specialty exploration',
-              'Emotional support during challenging times',
-              'Networking opportunities',
-              'Research collaboration opportunities',
-              'Leadership skill development',
-              'Transition support between clinical years',
-              'Exam preparation assistance',
-            ].map((benefit, index) => (
-              <div key={index} className="flex items-start gap-3 p-4 bg-gray-50 rounded-lg">
-                <CheckCircle size={20} className="text-lmsa-600 mt-0.5 flex-shrink-0" />
-                <p className="text-gray-700">{benefit}</p>
-              </div>
+              </article>
             ))}
           </div>
         </div>
+      </section>
 
-        {/* CTA */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-lmsa-50 rounded-2xl border-2 border-lmsa-200 p-8 text-center">
-            <Users size={48} className="text-lmsa-600 mx-auto mb-4" />
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Find a Mentor</h2>
-            <p className="text-gray-700 mb-6">
-              Junior students: Get matched with an experienced mentor
-            </p>
-            <button className="btn btn-primary">Apply as Mentee</button>
-          </div>
-          <div className="bg-white rounded-2xl border-2 border-gray-200 p-8 text-center">
-            <Heart size={48} className="text-lmsa-600 mx-auto mb-4" />
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Become a Mentor</h2>
-            <p className="text-gray-700 mb-6">
-              Senior students: Share your knowledge and experience
-            </p>
-            <button className="btn btn-primary">Apply as Mentor</button>
+      <section className="editorial-section">
+        <div className="site-container">
+          <div className="editorial-split">
+            <EditorialSectionHeader eyebrow="What support can look like" title="The best mentorship is practical, personal, and mutual." description="Some conversations are about exams. Others are about finding your confidence or making a decision about what comes next." />
+            <div className="grid gap-3 sm:grid-cols-2">
+              {benefits.map((benefit, index) => (
+                <div key={benefit} className="flex gap-3 border-b border-gray-200 pb-4">
+                  <span className="text-sm font-bold text-lmsa-700">0{index + 1}</span>
+                  <p className="text-sm leading-6 text-gray-700">{benefit}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
-      </div>
-    </div>
+      </section>
+
+      <section className="editorial-section pt-0">
+        <div className="site-container">
+          <EditorialCallout
+            eyebrow="Find your place"
+            title="Need support—or ready to share what you know?"
+            description="Both mentees and mentors help make the LMSA community more generous."
+            action={{ label: 'Contact LMSA', to: '/contact' }}
+          />
+        </div>
+      </section>
+    </main>
   );
 }
