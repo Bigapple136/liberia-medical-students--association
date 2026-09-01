@@ -109,7 +109,7 @@ so this entire authentication path was silently broken the whole time.
 | T25 | Responsive design audit + fixes — admin pages | none | **done** |
 | T26 | Backend general (non-committee) documents API | none | **done** |
 | T27 | Public document library page | T26 | **done** |
-| T28 | Admin document upload/management page | T26 | **assigned** |
+| T28 | Admin document upload/management page | T26 | **done** |
 
 **T22 flagged priority.** Render permanently blocks outbound SMTP ports
 (25/465/587) on free-tier web services since September 2025 — confirmed
@@ -4235,8 +4235,41 @@ patterns).
 ## T28 — Admin document upload/management page
 
 **Branch:** `task/t28-documents-admin`
-**Status:** blocked (needs T26 done)
-**Depends on:** T26
+**Status:** done
+**Depends on:** T26 (done — merged to main)
+
+### Orchestrator review
+
+This merge landed on top of a significant, unplanned event: Stone's
+`improvement/ui-frontend` branch (a full UI redesign — new
+`Header.jsx`, `HomePage.jsx`, `PageHero.jsx`/`PageMeta.jsx`,
+`Footer.jsx`, styling overhaul) was merged directly to `main` outside
+this task board's normal review flow, landing between T27 and T28. This
+caused two real merge conflicts, both resolved by the orchestrator:
+`Header.jsx` (T27, resolved by taking the redesign wholesale and
+re-applying the "Documents" nav entry on the new data-driven
+`primaryNav` array) and `document.service.js` (T28 vs. T27 — both
+branches independently created it; resolved by taking the union, since
+the method sets were genuinely disjoint — public methods from T27,
+admin methods from T28 — exactly as this report's own
+merge-coordination note anticipated in advance).
+
+Independently verified: `npx eslint` — 0 errors, 0 warnings. `npm run
+build` — clean. `document.service.js` cross-checked against both
+`DocumentsPage.jsx` (T27) and `DocumentsAdminPage.jsx` (T28) call sites
+— every method name/signature matches exactly.
+
+**One real, contained issue found and fixed before merge:** the
+documents table had no horizontal-scroll wrapper — its outer container
+used `overflow-hidden` (for rounded corners) with nothing providing
+`overflow-x-auto` around the actual `<table>`, meaning a 6-column table
+would get clipped rather than scrollable on a narrow screen. This page
+was built after T25's responsive-admin audit, so it never got that
+scrutiny. Fixed by wrapping the table in its own `overflow-x-auto` div
+nested inside the outer rounded container.
+
+Approved and merged to `main`. **Completes the documents feature
+end-to-end** (T26 backend + T27 public library + T28 admin management).
 
 ### Context
 
