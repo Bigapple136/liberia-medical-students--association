@@ -795,6 +795,18 @@
     @apply text-lmsa-200;
   }
 
+  .story-art-feature {
+    @apply min-h-[280px];
+  }
+
+  .story-art-feature span {
+    @apply relative z-10;
+  }
+
+  .story-art-feature svg {
+    @apply relative z-10;
+  }
+
   .story-content {
     @apply p-7 md:p-9;
   }

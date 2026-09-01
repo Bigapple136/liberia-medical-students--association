@@ -1,3 +1,7 @@
+/**
+ * TODO: STOCK PHOTOS — Replace all images in stockPhotos with real LMSA photography
+ * before shipping. See src/config/images.js for the full list and replacement plan.
+ */
 import {
   ArrowRight,
   BookOpen,
@@ -18,18 +22,22 @@ import {
   Users,
 } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
+import { stockPhotos } from '@config/images';
+import { PatternBackground } from './SvgPatterns';
 
 const heroPages = [
   {
     match: (path) => path === '/',
-    eyebrow: 'Liberia Medical Students’ Association',
-    title: 'The voice of Liberia’s future physicians',
+    eyebrow: 'Liberia Medical Students\u2019 Association',
+    title: 'The voice of Liberia\u2019s future physicians',
     description:
       'A student-led community advancing medical education, welfare, leadership, and better health outcomes across Liberia.',
     action: { label: 'Become a member', to: '/register' },
     secondary: { label: 'Discover LMSA', to: '/about' },
     accent: 'green',
     icon: Stethoscope,
+    photoKey: 'home',
+    pattern: 'dots',
     stats: [
       ['1972', 'Founded'],
       ['4', 'Core pillars'],
@@ -41,10 +49,12 @@ const heroPages = [
     eyebrow: 'About LMSA',
     title: 'More than an association',
     description:
-      'We bring Liberia’s medical students together to learn, lead, advocate, and serve the communities that need us most.',
+      'We bring Liberia\u2019s medical students together to learn, lead, advocate, and serve the communities that need us most.',
     action: { label: 'Explore our history', to: '/about/history' },
     accent: 'green',
     icon: Landmark,
+    photoKey: 'about',
+    pattern: 'crosses',
   },
   {
     match: (path) => path === '/about/history',
@@ -55,6 +65,8 @@ const heroPages = [
     action: { label: 'Meet our leaders', to: '/leadership' },
     accent: 'gold',
     icon: History,
+    photoKey: 'leadership',
+    pattern: 'diagonal',
   },
   {
     match: (path) => path === '/about/mission-vision',
@@ -65,6 +77,8 @@ const heroPages = [
     action: { label: 'Read our constitution', to: '/about/constitution' },
     accent: 'blue',
     icon: Target,
+    photoKey: 'about',
+    pattern: 'grid',
   },
   {
     match: (path) => path === '/about/constitution',
@@ -75,6 +89,8 @@ const heroPages = [
     action: { label: 'View leadership', to: '/leadership' },
     accent: 'ink',
     icon: FileText,
+    photoKey: 'leadership',
+    pattern: 'grid',
   },
   {
     match: (path) => path === '/leadership',
@@ -85,6 +101,8 @@ const heroPages = [
     action: { label: 'Explore committees', to: '/leadership/committees' },
     accent: 'green',
     icon: Users,
+    photoKey: 'leadership',
+    pattern: 'crosses',
   },
   {
     match: (path) => path === '/leadership/committees',
@@ -95,6 +113,8 @@ const heroPages = [
     action: { label: 'Join a committee', to: '/get-involved/committees' },
     accent: 'blue',
     icon: Network,
+    photoKey: 'mentorship',
+    pattern: 'diamonds',
   },
   {
     match: (path) => path === '/leadership/past-presidents',
@@ -102,9 +122,11 @@ const heroPages = [
     title: 'A legacy of service',
     description:
       'The leaders who came before us continue to shape the standards and spirit of LMSA.',
-    action: { label: 'Meet today’s council', to: '/leadership/executive-council' },
+    action: { label: 'Meet today\u2019s council', to: '/leadership/executive-council' },
     accent: 'gold',
     icon: Trophy,
+    photoKey: 'leadership',
+    pattern: 'diagonal',
   },
   {
     match: (path) => path === '/leadership/executive-council',
@@ -115,6 +137,8 @@ const heroPages = [
     action: { label: 'See all leadership', to: '/leadership' },
     accent: 'green',
     icon: ShieldCheck,
+    photoKey: 'leadership',
+    pattern: 'crosses',
   },
   {
     match: (path) => path === '/membership',
@@ -126,6 +150,8 @@ const heroPages = [
     secondary: { label: 'View benefits', to: '/membership/benefits' },
     accent: 'green',
     icon: Sparkles,
+    photoKey: 'membership',
+    pattern: 'circles',
   },
   {
     match: (path) => path === '/membership/benefits',
@@ -136,6 +162,8 @@ const heroPages = [
     action: { label: 'Choose your membership', to: '/membership/categories' },
     accent: 'gold',
     icon: HeartPulse,
+    photoKey: 'membership',
+    pattern: 'dots',
   },
   {
     match: (path) => path === '/membership/categories',
@@ -146,6 +174,8 @@ const heroPages = [
     action: { label: 'Review dues', to: '/membership/dues' },
     accent: 'blue',
     icon: Users,
+    photoKey: 'membership',
+    pattern: 'grid',
   },
   {
     match: (path) => path === '/membership/dues',
@@ -156,6 +186,8 @@ const heroPages = [
     action: { label: 'Start membership', to: '/register' },
     accent: 'green',
     icon: FileText,
+    photoKey: 'membership',
+    pattern: 'dots',
   },
   {
     match: (path) => path === '/academics/symposia',
@@ -166,6 +198,8 @@ const heroPages = [
     action: { label: 'See upcoming events', to: '/events' },
     accent: 'blue',
     icon: CalendarDays,
+    photoKey: 'events',
+    pattern: 'hexagons',
   },
   {
     match: (path) => path === '/academics/resources',
@@ -176,6 +210,8 @@ const heroPages = [
     action: { label: 'Find a mentor', to: '/academics/mentorship' },
     accent: 'green',
     icon: BookOpen,
+    photoKey: 'about',
+    pattern: 'grid',
   },
   {
     match: (path) => path === '/academics/mentorship',
@@ -186,6 +222,8 @@ const heroPages = [
     action: { label: 'Explore research', to: '/academics/research' },
     accent: 'gold',
     icon: Users,
+    photoKey: 'mentorship',
+    pattern: 'circles',
   },
   {
     match: (path) => path === '/academics/research',
@@ -196,16 +234,20 @@ const heroPages = [
     action: { label: 'View academic resources', to: '/academics/resources' },
     accent: 'blue',
     icon: Lightbulb,
+    photoKey: 'research',
+    pattern: 'hexagons',
   },
   {
     match: (path) => path === '/events',
     eyebrow: 'Events',
-    title: 'What’s happening across LMSA',
+    title: 'What\u2019s happening across LMSA',
     description:
       'Stay close to the conversations, workshops, and service activities shaping our student community.',
     action: { label: 'Explore academic events', to: '/academics/symposia' },
     accent: 'gold',
     icon: CalendarDays,
+    photoKey: 'events',
+    pattern: 'diamonds',
   },
   {
     match: (path) => path === '/news',
@@ -216,16 +258,20 @@ const heroPages = [
     action: { label: 'Get involved', to: '/get-involved/volunteer' },
     accent: 'green',
     icon: Megaphone,
+    photoKey: 'news',
+    pattern: 'wave',
   },
   {
     match: (path) => path === '/get-involved/volunteer',
     eyebrow: 'Get involved / Volunteer',
-    title: 'Your time can improve someone’s care',
+    title: 'Your time can improve someone\u2019s care',
     description:
       'Bring your skills and energy to outreach, health education, and community service with LMSA.',
     action: { label: 'Join a committee', to: '/get-involved/committees' },
     accent: 'rose',
     icon: HeartPulse,
+    photoKey: 'volunteer',
+    pattern: 'circles',
   },
   {
     match: (path) => path === '/get-involved/leadership',
@@ -236,6 +282,8 @@ const heroPages = [
     action: { label: 'Meet the leadership team', to: '/leadership' },
     accent: 'gold',
     icon: Trophy,
+    photoKey: 'leadership',
+    pattern: 'diagonal',
   },
   {
     match: (path) => path === '/get-involved/committees',
@@ -246,16 +294,20 @@ const heroPages = [
     action: { label: 'Browse committees', to: '/leadership/committees' },
     accent: 'blue',
     icon: Network,
+    photoKey: 'mentorship',
+    pattern: 'crosses',
   },
   {
     match: (path) => path === '/partnership',
     eyebrow: 'Partnerships',
-    title: 'Let’s strengthen healthcare together',
+    title: 'Let\u2019s strengthen healthcare together',
     description:
       'Partner with LMSA to invest in medical education, student leadership, research, and community health.',
     action: { label: 'Start a conversation', to: '/contact' },
     accent: 'green',
     icon: Users,
+    photoKey: 'partnership',
+    pattern: 'diamonds',
   },
   {
     match: (path) => path === '/contact',
@@ -266,15 +318,17 @@ const heroPages = [
     action: { label: 'Send a message', to: '#contact-form' },
     accent: 'ink',
     icon: Mail,
+    photoKey: 'partnership',
+    pattern: 'grid',
   },
 ];
 
 const accentStyles = {
-  green: { surface: 'bg-lmsa-900', text: 'text-lmsa-50', mark: 'bg-lmsa-400', icon: 'text-lmsa-200' },
-  blue: { surface: 'bg-blue-800', text: 'text-white', mark: 'bg-blue-400', icon: 'text-blue-100' },
-  gold: { surface: 'bg-amber-800', text: 'text-white', mark: 'bg-amber-400', icon: 'text-amber-100' },
-  rose: { surface: 'bg-rose-800', text: 'text-white', mark: 'bg-rose-400', icon: 'text-rose-100' },
-  ink: { surface: 'bg-gray-900', text: 'text-white', mark: 'bg-lmsa-400', icon: 'text-lmsa-200' },
+  green: { surface: 'bg-lmsa-900', text: 'text-lmsa-50', mark: 'bg-lmsa-400', icon: 'text-lmsa-200', overlay: 'from-lmsa-900/95 via-lmsa-900/80 to-lmsa-800/60' },
+  blue: { surface: 'bg-blue-800', text: 'text-white', mark: 'bg-blue-400', icon: 'text-blue-100', overlay: 'from-blue-900/95 via-blue-800/80 to-blue-700/60' },
+  gold: { surface: 'bg-amber-800', text: 'text-white', mark: 'bg-amber-400', icon: 'text-amber-100', overlay: 'from-amber-900/95 via-amber-800/80 to-amber-700/60' },
+  rose: { surface: 'bg-rose-800', text: 'text-white', mark: 'bg-rose-400', icon: 'text-rose-100', overlay: 'from-rose-900/95 via-rose-800/80 to-rose-700/60' },
+  ink: { surface: 'bg-gray-900', text: 'text-white', mark: 'bg-lmsa-400', icon: 'text-lmsa-200', overlay: 'from-gray-900/95 via-gray-900/80 to-lmsa-900/60' },
 };
 
 function getHero(pathname) {
@@ -297,6 +351,8 @@ function getHero(pathname) {
       action: { label: 'Browse all events', to: '/events' },
       accent: 'gold',
       icon: CalendarDays,
+      photoKey: 'events',
+      pattern: 'diamonds',
     };
   }
 
@@ -308,6 +364,8 @@ function getHero(pathname) {
       action: { label: 'Back to news', to: '/news' },
       accent: 'green',
       icon: Megaphone,
+      photoKey: 'news',
+      pattern: 'wave',
     };
   }
 
@@ -319,6 +377,8 @@ function getHero(pathname) {
       action: { label: 'Browse committees', to: '/leadership/committees' },
       accent: 'blue',
       icon: Network,
+      photoKey: 'mentorship',
+      pattern: 'crosses',
     };
   }
 
@@ -334,10 +394,32 @@ export default function PageHero() {
   const styles = accentStyles[hero.accent];
   const Icon = hero.icon;
   const isHome = pathname === '/';
+  const photo = hero.photoKey ? stockPhotos.hero[hero.photoKey] : null;
 
   return (
-    <section className={`page-hero ${styles.surface} ${styles.text}`} aria-labelledby="page-hero-title">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section
+      className={`page-hero ${styles.surface} ${styles.text} relative`}
+      aria-labelledby="page-hero-title"
+    >
+      {/* Background photo with gradient overlay */}
+      {photo && (
+        <div className="absolute inset-0" aria-hidden="true">
+          <img
+            src={photo.src}
+            alt=""
+            loading="eager"
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+          <div className={`absolute inset-0 bg-gradient-to-r ${styles.overlay}`} />
+          <PatternBackground
+            pattern={hero.pattern || 'dots'}
+            color="white"
+            opacity={0.04}
+          />
+        </div>
+      )}
+
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="page-hero-grid">
           <div className="page-hero-copy">
             <div className="flex items-center gap-3 mb-6">

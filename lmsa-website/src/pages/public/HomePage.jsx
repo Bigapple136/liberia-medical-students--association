@@ -1,3 +1,8 @@
+/**
+ * TODO: STOCK PHOTOS — Replace all images with real LMSA photography before launch.
+ * Current stock photos come from Unsplash (see src/config/images.js).
+ * Replace with: real event photos, student portraits, campus shots, volunteer work.
+ */
 import { Link } from 'react-router-dom';
 import {
   ArrowRight,
@@ -16,6 +21,9 @@ import {
   Stethoscope,
   Users,
 } from 'lucide-react';
+import { stockPhotos } from '@config/images';
+import Photo from '@components/common/Photo';
+import { PatternBackground } from '@components/common/SvgPatterns';
 
 export default function HomePage() {
   return (
@@ -52,8 +60,9 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="home-manifesto" aria-labelledby="manifesto-title">
-        <div className="section-shell home-manifesto-grid">
+      <section className="home-manifesto relative overflow-hidden" aria-labelledby="manifesto-title">
+        <PatternBackground pattern="crosses" color="white" opacity={0.03} />
+        <div className="section-shell home-manifesto-grid relative z-10">
           <div className="home-manifesto-copy">
             <p className="section-kicker section-kicker-light">Medical education, amplified in Liberia</p>
             <h2 id="manifesto-title">Become the physician your community needs.</h2>
@@ -179,10 +188,19 @@ export default function HomePage() {
 
         <div className="story-grid">
           <article className="story-feature">
-            <div className="story-art story-art-feature">
-              <span>2026</span>
-              <Megaphone size={50} strokeWidth={1.1} aria-hidden="true" />
-            </div>
+            {/* Featured story with photo */}
+            <Photo
+              src={stockPhotos.stories.symposium.src}
+              alt={stockPhotos.stories.symposium.alt}
+              className="story-art story-art-feature"
+              fallbackGradient="bg-gradient-to-br from-lmsa-900 to-lmsa-700"
+              overlay="bg-gradient-to-t from-lmsa-900/80 via-lmsa-900/20 to-transparent"
+            >
+              <div className="relative z-10 flex min-h-[230px] items-center justify-between p-8 text-lmsa-100">
+                <span className="self-start text-5xl font-semibold tracking-[-0.06em] text-lmsa-200">2026</span>
+                <Megaphone size={50} strokeWidth={1.1} className="text-lmsa-200" aria-hidden="true" />
+              </div>
+            </Photo>
             <div className="story-content">
               <p className="story-category">Featured story</p>
               <h3>{stories[0].title}</h3>
@@ -211,8 +229,9 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="home-join" aria-labelledby="join-title">
-        <div className="section-shell home-join-inner">
+      <section className="home-join relative overflow-hidden" aria-labelledby="join-title">
+        <PatternBackground pattern="dots" color="white" opacity={0.05} />
+        <div className="section-shell home-join-inner relative z-10">
           <div>
             <p className="section-kicker section-kicker-light">Your next chapter starts here</p>
             <h2 id="join-title">There is more to medical school when we move together.</h2>
@@ -236,7 +255,7 @@ const audiences = [
   {
     icon: Users,
     label: 'Faculty member',
-    description: 'Connect with the students and programs shaping Liberia’s medical future.',
+    description: 'Connect with the students and programs shaping Liberia\u2019s medical future.',
     link: '/about',
   },
   {
