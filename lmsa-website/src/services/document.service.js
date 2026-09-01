@@ -1,16 +1,30 @@
+// ============================================
+// FILE: src/services/document.service.js
+// Service for general (non-committee) documents.
+// Reuses the proven Supabase Storage upload + DB record pattern from
+// committeeService.uploadDocument, but with no committee scope
+// (committee_id is left null).
+// ============================================
 import api from './api';
+import { supabase } from './supabase';
 
 export const documentService = {
 
   // ─── Public ─────────────────────────────────────────────────────────────
 
-  /** Get general documents (supports ?category= filter) */
+  /** Get general documents (supports { category } filter) */
   async getAll(params = {}) {
     const response = await api.get('/documents', { params });
     return response.data.documents;
   },
 
-  /** Get file URL and increment download count, then trigger browser download */
+  /**
+   * Increment the download count, open the file in a new tab, and also
+   * return the file_url in case the caller wants to do something else
+   * with it (e.g. DocumentsAdminPage.jsx uses the return value directly;
+   * the public DocumentsPage.jsx just relies on the window.open side
+   * effect and ignores the return value — both are satisfied).
+   */
   async download(id) {
     const response = await api.get(`/documents/${id}/download`);
     const { file_url } = response.data;
@@ -28,14 +42,37 @@ export const documentService = {
     return response.data.documents;
   },
 
-  /** Create a new general document (admin) */
-  async create(docData) {
-    const response = await api.post('/documents', docData);
+  /** Upload a file to Supabase Storage and record it as a general document */
+  async upload(file, { title, description, category, access_level }) {
+    // 1. Upload file to Supabase Storage
+    const fileName = `general/${Date.now()}-${file.name}`;
+    const { error: storageError } = await supabase.storage
+      .from('documents')
+      .upload(fileName, file);
+
+    if (storageError) throw storageError;
+
+    // 2. Get public URL
+    const { data: { publicUrl } } = supabase.storage
+      .from('documents')
+      .getPublicUrl(fileName);
+
+    // 3. Save record in DB (committee_id left null = general/org-wide)
+    const response = await api.post('/documents', {
+      title,
+      description,
+      category,
+      access_level,
+      file_url: publicUrl,
+      file_type: file.name.split('.').pop(),
+      file_size: file.size,
+    });
+
     return response.data.document;
   },
 
   /** Delete a general document (admin) */
-  async delete(id) {
+  async deleteDocument(id) {
     await api.delete(`/documents/${id}`);
   },
 };
