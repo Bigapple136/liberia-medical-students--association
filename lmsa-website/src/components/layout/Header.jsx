@@ -45,7 +45,7 @@ const primaryNav = [
     label: 'Get involved',
     items: [
       { label: 'Volunteer', detail: 'Serve alongside your peers', path: '/get-involved/volunteer' },
-      { label: 'Leadership Opportunities', detail: 'Build the skills medicine needs', path: '/get-involved/leadership' },
+      { label: 'Leadership Opportunities', detail: 'Build the skills medicine needs', path: '/leadership#stand' },
       { label: 'Join a Committee', detail: 'Turn ideas into action', path: '/get-involved/committees' },
       { label: 'Partnerships', detail: 'Work with LMSA', path: '/partnership' },
     ],

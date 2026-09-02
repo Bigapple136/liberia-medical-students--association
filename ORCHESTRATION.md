@@ -156,6 +156,7 @@ so this entire authentication path was silently broken the whole time.
 | T28 | Admin document upload/management page | T26 | **done** |
 | T29 | Partnership page — design critique + re-composition | none | **needs-review** (pushed on `arena/01a0618c-...`, not a `task/` branch — see T29) |
 | T30 | Committee applications: real apply flow + one committee list | none | **needs-review** — ⏳ **blocked on Stone running migration 004** |
+| T31 | Leadership: expression-of-interest flow + merged `/leadership` | T30 | **needs-review** — ⏳ **blocked on Stone running migration 005** |
 
 **T22 flagged priority.** Render permanently blocks outbound SMTP ports
 (25/465/587) on free-tier web services since September 2025 — confirmed
@@ -4775,11 +4776,184 @@ dependencies, the honest-fallback note, and a 2026-09-02 status entry.
      public slugs nor the API's. It's only used for icon/colour defaults, so
      nothing is visibly broken — but it's a third committee list, and it
      should go the same way as the other two.
-  3. **Login redirect**: "Log in to apply" sends you to `/login` and no
-     further. `LoginPage` doesn't read a `?next=` param, so you don't land
-     back on the committee page. Small, but it's the difference between an
-     apply flow and a dead end.
+  3. ~~**Login redirect**~~ **— fixed in T31.** `LoginPage` now honours a
+     `?next=` param (same-origin paths only, so it can't be used as an open
+     redirect), and the committee and leadership CTAs both pass one.
   4. **Email delivery** for the confirmation and review notices is
      best-effort and still subject to T22 — Render blocks outbound SMTP, so
      these only send once Brevo is configured. Applications work regardless.
   5. **Nested `<main>`** on the remaining 27 editorial pages (see T29).
+
+## T31 — Leadership: a real expression-of-interest flow, and one page instead of two
+
+**Branch:** `arena/01a0618c-liberia-medical-students-assoc`
+**Status:** needs-review — ⏳ **blocked on Stone running `database/005_leadership_nominations.sql`**
+**Depends on:** T30 (the committee-application pattern this generalises)
+
+> **Branch-naming deviation:** same as T29/T30 — this session is pinned to an
+> `arena/...` branch and cannot rename it. Flow is otherwise unchanged.
+
+### Context
+
+Critiqued `/get-involved/leadership` (`LeadershipOpportunitiesPage.jsx`) with
+the `impeccable` skill's `critique` command — **17/36 (Poor)**, 1 P0 and 2 P1s
+(snapshot:
+`.impeccable/critique/2026-09-02T11-29-09Z__e-src-pages-public-leadershipopportunitiespage-jsx.md`).
+
+The findings that drove the work:
+
+1. **P0 — nothing to do.** The page described three leadership levels and
+   offered one link in the body, "Explore committees" →
+   `/leadership/committees`, which is a *different task*. No nomination route,
+   no per-level action, no form.
+2. **P1 — no process and no dates.** "Elections are held annually" was the
+   entire description of how to stand. No year, no window, no cycle.
+   Constitution Article IV ("Elections & Appointments") exists at
+   `/about/constitution` and was linked from neither leadership page.
+   Meanwhile `/leadership` *did* show a real academic year — from
+   `executives[0].academic_year` — so the two pages disagreed.
+3. **P1 — near-duplicate of `/leadership`.** Same closing sentence, same
+   "Explore committees" button, and neither page linked
+   `/leadership/executive-council` or `/leadership/past-presidents`.
+4. **P2 — hardcoded executive titles** next to a page that renders the real
+   ones from `executiveService`, and **"Committee Chairs — Appointed by
+   Executive Committee" listed as an opportunity** you can pursue.
+
+### Decisions taken (asked, not assumed)
+
+- **`eoi_flow`** — build the full expression-of-interest flow: new table,
+  new endpoint, a nomination window with real dates, per-level actions, and
+  admin review. Generalises the committee-application pattern from T30.
+- **`merge`** — merge `/get-involved/leadership` into `/leadership`. One route
+  carries both the current office-holders *and* how to stand; the old route
+  redirects to `/leadership#stand`.
+- **`api`** — election/nomination dates come from the API with a real
+  open/closed state, same shape as the committee windows.
+
+### What changed
+
+**Data (`lmsa-website/database/005_leadership_nominations.sql`, new):**
+
+- `election_cycles` — `academic_year` (unique), `nomination_opens`,
+  `nomination_closes`, `election_date`, and an `accepting_nominations`
+  master switch that is independent of the dates (a round can be paused
+  without editing the calendar).
+- `leadership_nominations` — `level` (`executive` | `class_rep`),
+  `position_name`, statement, year level, phone, status, and review fields.
+  Committee chairs are deliberately absent: they are appointed, not elected.
+- Partial unique index on `(cycle_id, position_name, user_id) WHERE status IN
+  ('pending','approved')` — one live nomination per person per position, but a
+  rejected nominee keeps their history and can stand again.
+- RLS: cycle calendar is public read; nominees read/insert their own;
+  admins and executives read and review everything.
+
+**API (`lmsa-api/`):**
+
+- `src/controllers/nomination.controller.js` (new) — `getCycle`, `saveCycle`,
+  `nominate`, `getAll`, `updateStatus`.
+- `src/routes/nomination.routes.js` (new), mounted at `/api/nominations` in
+  `server.js`.
+- Window rules, in priority order: no cycle → closed; `accepting_nominations`
+  false → closed; today before `nomination_opens` → "Nominations open on
+  <date>"; today after `nomination_closes` → "Nominations closed on <date>";
+  otherwise open. `describeCycle()` derives the state server-side, so the
+  frontend never recomputes it and never invents a date.
+- POST is refused with **409** when the window is not open, quoting the real
+  date — the frontend surfaces that message verbatim rather than a generic
+  failure. Emails (submission confirmation, accept/reject notice) are
+  best-effort and never fail the request.
+
+**Frontend (`lmsa-website/src/`):**
+
+- `config/leadership.js` (new) — the three levels with term, eligibility and
+  summary; executive position names are derived from
+  `executiveService.getAll()` at runtime, so they can no longer drift from
+  `/leadership`; committee chairs are marked `appointed: true` and get no
+  nomination action.
+- `components/leadership/NominationDialog.jsx` (new) — statement (required,
+  2000 char cap), year level, phone; Escape closes, body scroll locks, focus
+  moves to the textarea, `role="dialog"`/`aria-modal`, success state replaces
+  the form.
+- `pages/public/LeadershipPage.jsx` — now carries both jobs. Executive cards
+  come from the API and each gets a "Stand for this role" action when the
+  window is open (a sign-in link when it is not). A new `#stand` section adds
+  the election-cycle panel (state badge, three real dates, link to
+  Constitution Article IV) and the three level cards, each with a position
+  select and the right action for the current state. The closing callout now
+  links the constitution, the executive council and the committees.
+- `pages/public/LeadershipOpportunitiesPage.jsx` — reduced to a
+  `<Navigate to="/leadership#stand" replace />`.
+- `services/nomination.service.js` (new).
+- `components/admin/NominationsAdminPanel.jsx` (new) + a view toggle in
+  `ExecutiveAdminPage.jsx` — set the cycle, filter by status, accept/reject
+  with reviewer notes that are emailed to the nominee.
+- `pages/auth/LoginPage.jsx` — now honours `?next=` (same-origin paths only),
+  which closes the T30 follow-up #3 for both flows.
+- `styles/index.css` — `.editorial-panel` / `.editorial-panel-grid`.
+
+**Links, not duplicates:** `Header.jsx`, `HomePage.jsx` and `BenefitsPage.jsx`
+now point at `/leadership#stand`; the `heroPages` and `pageMeta` entries for
+`/get-involved/leadership` were removed rather than left to rot.
+
+### Verification
+
+- **90 jsdom behavioural checks, all passing** (no browser; the sandbox has
+  no route to one):
+  - *55 on `LeadershipPage`* — closed / scheduled / open-signed-out /
+    open-signed-in states; executive options sourced from the API; dialog
+    a11y; empty-statement refusal with nothing sent; one POST carrying the
+    chosen position, level, statement and year level; success state; a 409
+    refusal that shows the server's message, keeps the typed statement and
+    does not fake success; Escape closes; cycle-endpoint-offline fallback;
+    the redirect page renders nothing of its own.
+  - *29 on `NominationsAdminPanel`* — cycle prefill, accept with notes,
+    reject without, PUT targets and payloads, blank-year guard, offline.
+  - *6 on `LoginPage`* — default destination, `?next=` round-trip for both
+    flows, and rejection of absolute and protocol-relative URLs.
+- **25 contrast probes** against the built CSS across all three panel states
+  and the dialog — all pass. Two real defects were caught this way and fixed:
+  `text-amber-800` is `#C68400` in this theme (2.95:1 on `amber-50`), and
+  `amber-900` is not in the palette at all, so the amber state now uses
+  `bg-amber-100 text-gray-900`; and white-on-`lmsa-600` is 4.46:1, so the new
+  buttons use `lmsa-700` like the committee apply button already did.
+- `npx eslint src` clean repo-wide; `npm run build` clean; all touched modules
+  transform 200 through the dev server.
+
+### Acceptance criteria
+
+1. Migration 005 applied to the live Supabase project (Stone).
+2. One `election_cycles` row created with real dates and
+   `accepting_nominations = true` (Admin → Executive → Nominations & election
+   cycle).
+3. A real nomination round: a member nominates themselves from
+   `/leadership#stand`, it appears in the admin panel, and they are notified.
+
+### Deviations
+
+- **`/leadership` keeps its own `EditorialSectionHeader`s** rather than
+  inheriting one hero, because the merged page now has four sections and one
+  hero cannot label them all. The `heroPages`/`pageMeta` entries for
+  `/leadership` are unchanged.
+- **Class-representative roles stay a constant** (`Class President`,
+  `Assistant Class President`) because nothing models per-class roles yet.
+  Executive positions are data-driven; these two are not. Flagged rather than
+  papered over.
+
+### Follow-ups
+
+1. **`.btn-primary` is 4.46:1 site-wide** (white on `lmsa-600`). Every primary
+   button on the site is a hair under AA for normal text. Fixing it means one
+   line in `index.css` (`lmsa-700`) and a visual change everywhere, so it is
+   a decision for a human, not a drive-by. The new components already use
+   `lmsa-700`.
+2. **`.editorial-callout-gold` is white on `amber-800` (#C68400)** — about
+   2.6:1. Same class of pre-existing defect, same reason for not fixing it
+   unilaterally.
+3. **Approval does not seat the nominee** on `executives` the way committee
+   approval seats a member on `committee_members`. Deliberate: an accepted
+   nomination puts you *on the ballot*, and only the election result should
+   write an office-holder row. The admin copy says "accept", not "appoint".
+4. **`SymposiaPage.jsx` stale dates** and **`CommitteeAdminDashboard.jsx`
+   third slug set** are still open from T29/T30.
+5. **No human has looked at any of these pages.** Every check above is
+   programmatic; composition, imagery and tone still want a human eye.

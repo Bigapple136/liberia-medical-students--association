@@ -139,12 +139,6 @@ const pageMeta = [
       'Find volunteer opportunities with LMSA and help deliver health education, outreach, and community service in Liberia.',
   },
   {
-    match: (path) => path === '/get-involved/leadership',
-    title: 'Build the skills medicine needs | LMSA',
-    description:
-      'Discover leadership opportunities that help LMSA members develop the skills needed to serve patients and communities.',
-  },
-  {
     match: (path) => path === '/get-involved/committees',
     title: 'Find the work that matters to you | LMSA',
     description:

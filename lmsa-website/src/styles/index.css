@@ -1326,3 +1326,36 @@
     }
   }
 }
+
+@layer components {
+  /* ---- Leadership page: election cycle panel ---- */
+
+  /* The panel takes one of three state classes (open / scheduled / closed),
+     so its body text must inherit the state colour rather than set its own —
+     every combination below is a dark tone on a 50-weight tint. */
+  .editorial-panel {
+    @apply mt-10 border p-6 md:p-8;
+  }
+
+  .editorial-panel-grid {
+    @apply mt-6 grid gap-4 border-t border-gray-300 pt-6 sm:grid-cols-3;
+  }
+
+  .editorial-panel-grid dt {
+    @apply text-xs font-bold uppercase tracking-[0.15em];
+  }
+
+  .editorial-panel-grid dd {
+    @apply mt-1 text-lg font-semibold;
+  }
+
+  .editorial-panel a {
+    @apply underline decoration-2 underline-offset-4 transition-opacity hover:opacity-70;
+  }
+
+  /* Level cards on the "how to stand" grid hold a select plus a full-width
+     action, so the action sits flush with the bottom of the card. */
+  .leadership-level-field {
+    @apply block;
+  }
+}

@@ -9,7 +9,7 @@ const articles = [
   { number: 'Article I', title: 'Name and Purpose', description: 'Official name and organizational objectives' },
   { number: 'Article II', title: 'Membership', description: 'Eligibility, categories, and member rights' },
   { number: 'Article III', title: 'Governance Structure', description: 'Executive committee and organizational hierarchy' },
-  { number: 'Article IV', title: 'Elections & Appointments', description: 'Democratic processes and term limits' },
+  { number: 'Article IV', id: 'elections', title: 'Elections & Appointments', description: 'Democratic processes and term limits' },
   { number: 'Article V', title: 'Committees', description: 'Standing and ad-hoc committee structures' },
   { number: 'Article VI', title: 'Financial Management', description: 'Dues, budgeting, and fiscal responsibility' },
   { number: 'Article VII', title: 'Amendments', description: 'Process for constitutional changes' },
@@ -61,7 +61,7 @@ export default function ConstitutionPage() {
           />
           <div className="editorial-article-list">
             {articles.map((article) => (
-              <div key={article.number} className="editorial-article-row">
+              <div key={article.number} id={article.id} className="editorial-article-row scroll-mt-28">
                 <strong>{article.number}</strong>
                 <div>
                   <h3 className="text-lg font-semibold text-lmsa-900">{article.title}</h3>

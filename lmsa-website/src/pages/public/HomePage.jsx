@@ -283,7 +283,7 @@ const focusAreas = [
     icon: Lightbulb,
     title: 'Lead',
     description: 'Build the confidence and practical skills to lead with purpose in medicine and beyond.',
-    link: '/get-involved/leadership',
+    link: '/leadership#stand',
   },
   {
     icon: HeartPulse,

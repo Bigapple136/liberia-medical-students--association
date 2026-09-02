@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Mail, Lock, Eye, EyeOff, ArrowLeft } from 'lucide-react';
 import { useAuth } from '@context/AuthContext';
 import toast from 'react-hot-toast';
@@ -14,6 +14,16 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  // `?next=` is how the committee and leadership pages send a signed-out member
+  // back to what they were doing. Only same-origin paths are honoured, so the
+  // parameter can never be used as an open redirect.
+  const nextParam = searchParams.get('next');
+  const destination =
+    nextParam && /^\/[^/]/.test(nextParam) && !nextParam.startsWith('//')
+      ? nextParam
+      : '/portal/dashboard';
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -22,7 +32,7 @@ export default function LoginPage() {
     try {
       await login(email, password);
       toast.success('Login successful!');
-      navigate('/portal/dashboard');
+      navigate(destination);
     } catch (error) {
       toast.error(error.message || 'Invalid email or password');
     } finally {
