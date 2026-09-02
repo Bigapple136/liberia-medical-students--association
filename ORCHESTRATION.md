@@ -20,14 +20,14 @@ Claude (orchestrator), and any implementing agents (Claude Code, etc.).
 
 ## Critical bugs found and fixed directly (outside the task board)
 
-**2026-09-02 addendum — news, symposia, events, committees, research, mentorship, documents, resources, dues, categories + benefits design-review pass
+**2026-09-02 addendum — news, symposia, events, committees, research, mentorship, documents, resources, dues, categories, benefits + membership design-review pass
 (Arena agent session, branch
 `arena/01a06232-liberia-medical-students-assoc`, NOT merged to
 `main`):** an Arena coding agent ran structured design critiques
 (heuristic scoring + deterministic detector, reports archived in
-`.impeccable/critique/`) against the news, symposia, events, committees, research, mentorship, documents, resources, dues, membership-categories, and membership-benefits pages
+`.impeccable/critique/`) against the news, symposia, events, committees, research, mentorship, documents, resources, dues, membership-categories, membership-benefits, and membership pages
 and shipped fixes on the session branch. **Awaiting lead-developer
-review before any merge to `main`.** Eleven content commits (plus
+review before any merge to `main`.** Twelve content commits (plus
 board-bookkeeping commits touching only this file; the branch tip is
 the latest bookkeeping commit):
 
@@ -205,7 +205,18 @@ the latest bookkeeping commit):
   (third instance of that class misuse). Org-level perk claims left
   verbatim — see the new content-verification note in decision item 5.
 
-Verification on all eleven content commits: `npm run build` clean,
+- `d587dc2` — **Membership page: policy alignment on the apply flow**
+  (critique 31/40 — strongest transactional surface of the session;
+  snapshot in `.impeccable/critique/`). The apply loop was already the
+  real thing (five honest states, real service calls); findings were
+  consistency-level. The Select offered Honorary despite two sibling
+  pages publishing "by invitation — no application"; option removed,
+  Honorary card gains a "By invitation" eyebrow. "past papers" claim
+  reworded (same family as benefits). Fourth link-card affordance
+  misuse removed. See new decision item 6: the membership taxonomy is
+  split — backend knows four types, categories/dues publish three.
+
+Verification on all twelve content commits: `npm run build` clean,
 ESLint clean, design-detector scan clean.
 
 **How to review:** `git fetch origin && git checkout
@@ -231,7 +242,9 @@ longer offers an application, and that restrictions render with muted
 minus icons rather than green checks), and `/membership/benefits`
 (claim-level edits only — confirm the copy still reads well and that
 the org-level perks flagged in decision item 5 get content-team
-review).
+review), and `/membership` (the apply form no longer offers Honorary;
+exercise the five apply states — signed-out, loading, pending,
+approved, rejected — against the real API).
 With no backend running, `/news` and `/events` should show their new
 error state with a working "Try again" (previously both rendered a
 false "nothing here yet" empty state on fetch failure — worth
@@ -271,7 +284,17 @@ Not done (flagged, not fixed — needs a decision or a specced task):
    product artifacts, so they were left verbatim rather than reworded
    into mush. Someone who knows the org's actual commitments should
    confirm each one before launch.
-6. **`documentService.download` opens the file via `window.open` after
+6. **Membership taxonomy split: four types vs three.** The backend
+   (VALID_MEMBERSHIP_TYPES) and the membership page's apply flow know
+   full, associate, honorary, and veteran; the categories page and
+   dues table publish only three — Veteran Member appears nowhere
+   else on the site and has no listed dues. Either Veteran is real
+   (categories/dues must add it, with a fee decision) or it is not
+   (backend and apply options should drop it). Related: the UI no
+   longer lets users apply for Honorary (matching the published
+   invitation-only policy), but the backend still accepts
+   'honorary' applications submitted directly.
+7. **`documentService.download` opens the file via `window.open` after
    an awaited request** — the click gesture context is lost by the time
    the tab opens, so popup blockers can silently eat it. Shared by the
    public documents page and `DocumentsAdminPage`, so it was flagged
@@ -279,7 +302,7 @@ Not done (flagged, not fixed — needs a decision or a specced task):
    open the window synchronously on click and set its `location` after
    the await, or resolve to an anchor-click download.
 
-**Session close (2026-09-02):** all eleven surfaces above are shipped,
+**Session close (2026-09-02):** all twelve surfaces above are shipped,
 verified (build / ESLint / detector clean on every content commit), and
 pushed. The session branch is ready for end-to-end review as a single
 unit; suggested review order is the diff shortcut above, then the
