@@ -4,12 +4,14 @@ import { AuthProvider } from './context/AuthContext';
 import AppRoutes from './routes';
 import ErrorBoundary from '@components/common/ErrorBoundary';
 import PageMeta from '@components/common/PageMeta';
+import ScrollManager from '@components/common/ScrollManager';
 
 function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
         <ErrorBoundary>
+          <ScrollManager />
           <PageMeta />
           <AppRoutes />
           <Toaster
