@@ -20,14 +20,14 @@ Claude (orchestrator), and any implementing agents (Claude Code, etc.).
 
 ## Critical bugs found and fixed directly (outside the task board)
 
-**2026-09-02 addendum — news, symposia, events, committees + research design-review pass
+**2026-09-02 addendum — news, symposia, events, committees, research + mentorship design-review pass
 (Arena agent session, branch
 `arena/01a06232-liberia-medical-students-assoc`, NOT merged to
 `main`):** an Arena coding agent ran structured design critiques
 (heuristic scoring + deterministic detector, reports archived in
-`.impeccable/critique/`) against the news, symposia, events, committees, and research pages
+`.impeccable/critique/`) against the news, symposia, events, committees, research, and mentorship pages
 and shipped fixes on the session branch. **Awaiting lead-developer
-review before any merge to `main`.** Five content commits (plus
+review before any merge to `main`.** Six content commits (plus
 board-bookkeeping commits touching only this file; the branch tip is
 the latest bookkeeping commit):
 
@@ -109,7 +109,19 @@ the latest bookkeeping commit):
   the hardcoded "reviewed quarterly" / "accepted year-round" claims
   can't be verified from the codebase — confirm or soften the copy.
 
-Verification on all five content commits: `npm run build` clean,
+- `574f6a2` — **Mentorship page polish** (critique 22/32 — the
+  healthiest surface this session; snapshot in `.impeccable/critique/`).
+  Step 01 promised "the mentorship application form" — no such form
+  exists anywhere in the codebase — so the step now describes the real
+  contact path; the callout CTA was clarified to "Ask about mentorship"
+  and addresses both mentees and prospective mentors. Step cards no
+  longer borrow editorial-link-card's hover lift (false clickability on
+  static content); steps are an <ol>, benefits a <ul>, h1 added, and
+  the steps grid loosened to sm:2/lg:4. Decision point for the board:
+  if a real mentorship application form is wanted (portal form + API),
+  it needs a specced task — the copy now honestly reflects its absence.
+
+Verification on all six content commits: `npm run build` clean,
 ESLint clean, design-detector scan clean.
 
 **How to review:** `git fetch origin && git checkout
@@ -120,7 +132,7 @@ npm run dev` in `lmsa-website/`. The touched routes are `/news`,
 committee card previously dead-ended on a blank page — worth clicking
 a few), and `/academics/research` (its four opportunity cards were
 link-styled with no destination; verify each action link lands
-somewhere sensible).
+somewhere sensible), and `/academics/mentorship`.
 With no backend running, `/news` and `/events` should show their new
 error state with a working "Try again" (previously both rendered a
 false "nothing here yet" empty state on fetch failure — worth
@@ -146,7 +158,7 @@ Not done (flagged, not fixed — needs a decision or a specced task):
    live in the repo — same keep-or-remove workflow question as the
    earlier `.replit`/`.agents` flag.
 
-**Session close (2026-09-02):** all five surfaces above are shipped,
+**Session close (2026-09-02):** all six surfaces above are shipped,
 verified (build / ESLint / detector clean on every content commit), and
 pushed. The session branch is ready for end-to-end review as a single
 unit; suggested review order is the diff shortcut above, then the
