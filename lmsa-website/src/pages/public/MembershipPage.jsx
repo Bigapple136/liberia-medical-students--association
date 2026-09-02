@@ -12,7 +12,6 @@ import { membershipService } from '@services/membership.service';
 const MEMBERSHIP_TYPE_OPTIONS = [
   { value: 'full', label: 'Full Member — currently enrolled medical students' },
   { value: 'associate', label: 'Associate Member — prospective students & affiliates' },
-  { value: 'honorary', label: 'Honorary Member — distinguished supporters' },
   { value: 'veteran', label: 'Veteran Member — alumni & past members' },
 ];
 
@@ -31,6 +30,7 @@ const membershipTypes = [
   {
     name: 'Honorary Member',
     description: 'For distinguished supporters',
+    invitationOnly: true,
     benefits: ['Recognition at events', 'Advisory role', 'Network access'],
   },
   {
@@ -41,7 +41,7 @@ const membershipTypes = [
 ];
 
 const benefits = [
-  { icon: BookOpen, title: 'Academic resources', description: 'Access study materials, past papers, and tutoring programs.' },
+  { icon: BookOpen, title: 'Academic resources', description: 'Access study materials and learning resources through the member library.' },
   { icon: Target, title: 'Professional development', description: 'Find leadership training, research opportunities, and conferences.' },
   { icon: Users, title: 'A stronger network', description: 'Connect with peers, mentors, and medical professionals across Liberia.' },
   { icon: Briefcase, title: 'Career support', description: 'Explore internship placements, residency guidance, and opportunities.' },
@@ -163,7 +163,7 @@ export default function MembershipPage() {
         </Button>
         {application?.application_status === 'rejected' && (
           <p className="text-center text-sm text-gray-600">
-            Your previous application was not approved. You may submit a new one below.
+            Your previous application was not approved. You may submit a new one.
           </p>
         )}
       </form>
@@ -203,12 +203,13 @@ export default function MembershipPage() {
           />
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             {membershipTypes.map((type, index) => (
-              <article key={type.name} className={`editorial-link-card ${type.featured ? 'border-t-4 border-t-lmsa-600' : ''}`}>
+              <article key={type.name} className={`flex flex-col border border-gray-200 bg-white p-6 ${type.featured ? 'border-t-4 border-t-lmsa-600' : ''}`}>
                 {type.featured && <span className="editorial-card-eyebrow text-lmsa-700">Most common</span>}
-                <div className="editorial-link-card-copy">
+                {type.invitationOnly && <span className="editorial-card-eyebrow text-gray-500">By invitation</span>}
+                <div>
                   <span className="mt-2 block text-xs font-bold text-gray-500">0{index + 1}</span>
-                  <h3>{type.name}</h3>
-                  <p>{type.description}</p>
+                  <h3 className="mt-2 text-lg font-semibold tracking-[-0.02em] text-lmsa-900">{type.name}</h3>
+                  <p className="mt-2 text-sm leading-6 text-gray-600">{type.description}</p>
                   <ul className="mt-5 space-y-2 text-sm text-gray-700">
                     {type.benefits.map((benefit) => (
                       <li key={benefit} className="flex items-start gap-2">
