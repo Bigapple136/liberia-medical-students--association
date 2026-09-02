@@ -20,14 +20,14 @@ Claude (orchestrator), and any implementing agents (Claude Code, etc.).
 
 ## Critical bugs found and fixed directly (outside the task board)
 
-**2026-09-02 addendum — news, symposia, events + committees design-review pass
+**2026-09-02 addendum — news, symposia, events, committees + research design-review pass
 (Arena agent session, branch
 `arena/01a06232-liberia-medical-students-assoc`, NOT merged to
 `main`):** an Arena coding agent ran structured design critiques
 (heuristic scoring + deterministic detector, reports archived in
-`.impeccable/critique/`) against the news, symposia, events, and committees pages
+`.impeccable/critique/`) against the news, symposia, events, committees, and research pages
 and shipped fixes on the session branch. **Awaiting lead-developer
-review before any merge to `main`.** Four content commits (plus
+review before any merge to `main`.** Five content commits (plus
 board-bookkeeping commits touching only this file; the branch tip is
 the latest bookkeeping commit):
 
@@ -98,16 +98,29 @@ the latest bookkeeping commit):
   `EditorialLinkCard`, the 001–012 numbering defect is fixed, and the
   page has an h1. Verified: build, ESLint, detector clean.
 
-Verification on all four content commits: `npm run build` clean,
+- `d14b3e1` — **Research page dead-affordance fix** (critique 19/32;
+  snapshot in `.impeccable/critique/`). All four opportunity cards were
+  `EditorialLinkCard`s rendered with no `to` prop — link-styled
+  affordances navigating nowhere — while each card's data defined an
+  `action` label that was never rendered. Cards are now static article
+  cards with real labeled action links (grants → /contact,
+  collaboration/journal → the Research & Journal Committee page,
+  training → /academics/symposia), plus the h1. Flagged, not fixed:
+  the hardcoded "reviewed quarterly" / "accepted year-round" claims
+  can't be verified from the codebase — confirm or soften the copy.
+
+Verification on all five content commits: `npm run build` clean,
 ESLint clean, design-detector scan clean.
 
 **How to review:** `git fetch origin && git checkout
 arena/01a06232-liberia-medical-students-assoc`, then `npm install &&
 npm run dev` in `lmsa-website/`. The touched routes are `/news`,
 `/news/:slug`, `/academics/symposia`, `/events`, `/events/:slug`,
-`/leadership/committees`, and `/leadership/committees/:slug` (every
+`/leadership/committees`, `/leadership/committees/:slug` (every
 committee card previously dead-ended on a blank page — worth clicking
-a few).
+a few), and `/academics/research` (its four opportunity cards were
+link-styled with no destination; verify each action link lands
+somewhere sensible).
 With no backend running, `/news` and `/events` should show their new
 error state with a working "Try again" (previously both rendered a
 false "nothing here yet" empty state on fetch failure — worth
@@ -133,7 +146,7 @@ Not done (flagged, not fixed — needs a decision or a specced task):
    live in the repo — same keep-or-remove workflow question as the
    earlier `.replit`/`.agents` flag.
 
-**Session close (2026-09-02):** all four surfaces above are shipped,
+**Session close (2026-09-02):** all five surfaces above are shipped,
 verified (build / ESLint / detector clean on every content commit), and
 pushed. The session branch is ready for end-to-end review as a single
 unit; suggested review order is the diff shortcut above, then the
