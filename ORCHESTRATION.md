@@ -20,14 +20,14 @@ Claude (orchestrator), and any implementing agents (Claude Code, etc.).
 
 ## Critical bugs found and fixed directly (outside the task board)
 
-**2026-09-02 addendum — news, symposia, events, committees, research, mentorship, documents, resources, dues + categories design-review pass
+**2026-09-02 addendum — news, symposia, events, committees, research, mentorship, documents, resources, dues, categories + benefits design-review pass
 (Arena agent session, branch
 `arena/01a06232-liberia-medical-students-assoc`, NOT merged to
 `main`):** an Arena coding agent ran structured design critiques
 (heuristic scoring + deterministic detector, reports archived in
-`.impeccable/critique/`) against the news, symposia, events, committees, research, mentorship, documents, resources, dues, and membership-categories pages
+`.impeccable/critique/`) against the news, symposia, events, committees, research, mentorship, documents, resources, dues, membership-categories, and membership-benefits pages
 and shipped fixes on the session branch. **Awaiting lead-developer
-review before any merge to `main`.** Ten content commits (plus
+review before any merge to `main`.** Eleven content commits (plus
 board-bookkeeping commits touching only this file; the branch tip is
 the latest bookkeeping commit):
 
@@ -193,7 +193,19 @@ the latest bookkeeping commit):
   phrasing. Link-card hover-lift affordance removed from non-clickable
   cards.
 
-Verification on all ten content commits: `npm run build` clean,
+- `da5c5fa` — **Benefits page: unbacked claims removed** (critique
+  24/32; snapshot in `.impeccable/critique/`). Perfect link integrity
+  (first correct EditorialLinkCard usage of the session), but three
+  product claims had no mechanism behind them: "at member rates" (the
+  events backend has one fee field, no member pricing — same family as
+  categories' removed "Event discounts"), "past exams" (none verified
+  in the library), and "Priority registration" (no priority mechanism
+  exists). All reworded to what the product delivers. Perks are now a
+  real ol/li; benefit cards lose the hover-lift link-card affordance
+  (third instance of that class misuse). Org-level perk claims left
+  verbatim — see the new content-verification note in decision item 5.
+
+Verification on all eleven content commits: `npm run build` clean,
 ESLint clean, design-detector scan clean.
 
 **How to review:** `git fetch origin && git checkout
@@ -216,7 +228,10 @@ also ships the site-wide ScrollManager: verify that the dues page's
 page, and that the browser back button still restores scroll
 position), and `/membership/categories` (check the Honorary card no
 longer offers an application, and that restrictions render with muted
-minus icons rather than green checks).
+minus icons rather than green checks), and `/membership/benefits`
+(claim-level edits only — confirm the copy still reads well and that
+the org-level perks flagged in decision item 5 get content-team
+review).
 With no backend running, `/news` and `/events` should show their new
 error state with a working "Try again" (previously both rendered a
 false "nothing here yet" empty state on fetch failure — worth
@@ -248,7 +263,15 @@ Not done (flagged, not fixed — needs a decision or a specced task):
    the categories commit — membership@lmsa.org. Which family is real
    and monitored? Needs one canonical answer and a constants file;
    mail sent to a dead mailbox is a silent support failure.
-5. **`documentService.download` opens the file via `window.open` after
+5. **Org-level benefit claims need content-team verification.** The
+   benefits page promises textbook discounts, free medical-database
+   access, scholarships/grants, national-forum representation, an
+   alumni network, and exclusive social events. The codebase can
+   neither back nor refute these — they are organizational facts, not
+   product artifacts, so they were left verbatim rather than reworded
+   into mush. Someone who knows the org's actual commitments should
+   confirm each one before launch.
+6. **`documentService.download` opens the file via `window.open` after
    an awaited request** — the click gesture context is lost by the time
    the tab opens, so popup blockers can silently eat it. Shared by the
    public documents page and `DocumentsAdminPage`, so it was flagged
@@ -256,7 +279,7 @@ Not done (flagged, not fixed — needs a decision or a specced task):
    open the window synchronously on click and set its `location` after
    the await, or resolve to an anchor-click download.
 
-**Session close (2026-09-02):** all ten surfaces above are shipped,
+**Session close (2026-09-02):** all eleven surfaces above are shipped,
 verified (build / ESLint / detector clean on every content commit), and
 pushed. The session branch is ready for end-to-end review as a single
 unit; suggested review order is the diff shortcut above, then the
