@@ -152,6 +152,24 @@ pushed. The session branch is ready for end-to-end review as a single
 unit; suggested review order is the diff shortcut above, then the
 manual state checks. Nothing else on this branch is in flight.
 
+**Orchestrator pattern observation (recommend a specced task):** three
+of the five surfaces reviewed this session had a *dead primary
+call-to-action* — symposia's "Register now" button was wired to
+nothing, all twelve committee cards linked slugs the detail route
+couldn't resolve, and the research page's four opportunity cards were
+link-styled components with no destination. All were token-clean and
+invisible to the design detector; each was found only by tracing the
+click path in source. The remaining public pages (About cluster,
+Membership cluster, Resources, Mentorship, Leadership pages,
+Partnership, JoinCommitteePage, etc.) have not had this trace done.
+Recommend a systematic dead-affordance audit: for every `<Link>`,
+`<button>`, and link-styled card on public pages, verify the
+destination route exists in `routes.jsx` and the handler does
+something. Cheap to script partially (extract `to="..."` targets and
+diff against the route table — the 2026-09-01 addendum's link audit
+covered hrefs, but not undefined `to` props, no-op buttons, or
+slug-registry mismatches, which is exactly what bit this session).
+
 **2026-09-01 addendum — review of two direct-to-main pushes:** Stone
 pushed two large batches directly to `main` (a UI redesign — new
 `Header.jsx`/`HomePage.jsx`/`PageHero.jsx`/`PageMeta.jsx`/`Footer.jsx` —
