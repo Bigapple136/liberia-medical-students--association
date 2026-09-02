@@ -20,14 +20,14 @@ Claude (orchestrator), and any implementing agents (Claude Code, etc.).
 
 ## Critical bugs found and fixed directly (outside the task board)
 
-**2026-09-02 addendum — news, symposia, events, committees, research, mentorship, documents + resources design-review pass
+**2026-09-02 addendum — news, symposia, events, committees, research, mentorship, documents, resources + dues design-review pass
 (Arena agent session, branch
 `arena/01a06232-liberia-medical-students-assoc`, NOT merged to
 `main`):** an Arena coding agent ran structured design critiques
 (heuristic scoring + deterministic detector, reports archived in
-`.impeccable/critique/`) against the news, symposia, events, committees, research, mentorship, documents, and resources pages
+`.impeccable/critique/`) against the news, symposia, events, committees, research, mentorship, documents, resources, and dues pages
 and shipped fixes on the session branch. **Awaiting lead-developer
-review before any merge to `main`.** Eight content commits (plus
+review before any merge to `main`.** Nine content commits (plus
 board-bookkeeping commits touching only this file; the branch tip is
 the latest bookkeeping commit):
 
@@ -150,7 +150,22 @@ the latest bookkeeping commit):
   window.open-after-await caveat in decision item 4). h1 restored,
   link-card affordance misuse removed. No schema/API changes.
 
-Verification on all eight content commits: `npm run build` clean,
+- `6cf4373` — **Dues page refinements + site-wide ScrollManager**
+  (critique 25/32 — the session's healthiest surface; snapshot in
+  `.impeccable/critique/`). First page reviewed with an intact primary
+  promise and honest content; findings were an h1 miss, weak fee-table
+  semantics (scope/caption), and one site-wide discovery: the app had
+  NO scroll handling on client-side navigation — hash links like the
+  dues callout's /membership#apply landed at the top of the target
+  page, and every route change preserved the previous page's scroll
+  offset. New ScrollManager (mounted in App) scrolls to the hash
+  target when present, to top on PUSH/REPLACE, and leaves POP alone
+  for native restoration. Benefits every route, not just dues.
+  Left as-is and worth a content-review pass: "Payment portal
+  (coming soon)" — hedged, not false, but "coming soon" copy rots
+  silently.
+
+Verification on all nine content commits: `npm run build` clean,
 ESLint clean, design-detector scan clean.
 
 **How to review:** `git fetch origin && git checkout
@@ -166,7 +181,12 @@ still fully in the legacy visual world; check the chip filter and the
 error-state retry with the backend down), and `/academics/resources`
 (its twelve 'resources' were fabricated and every button was dead; the
 live study-materials shelf and its empty/error states are the things to
-exercise).
+exercise), and `/membership/dues` (mostly refinements — but its commit
+also ships the site-wide ScrollManager: verify that the dues page's
+"Start your membership" CTA now lands on the Apply section of
+/membership, that ordinary navigation starts at the top of the new
+page, and that the browser back button still restores scroll
+position).
 With no backend running, `/news` and `/events` should show their new
 error state with a working "Try again" (previously both rendered a
 false "nothing here yet" empty state on fetch failure — worth
@@ -199,7 +219,7 @@ Not done (flagged, not fixed — needs a decision or a specced task):
    open the window synchronously on click and set its `location` after
    the await, or resolve to an anchor-click download.
 
-**Session close (2026-09-02):** all eight surfaces above are shipped,
+**Session close (2026-09-02):** all nine surfaces above are shipped,
 verified (build / ESLint / detector clean on every content commit), and
 pushed. The session branch is ready for end-to-end review as a single
 unit; suggested review order is the diff shortcut above, then the
