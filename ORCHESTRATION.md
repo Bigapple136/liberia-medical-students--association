@@ -165,6 +165,21 @@ the latest bookkeeping commit):
   (coming soon)" — hedged, not false, but "coming soon" copy rots
   silently.
 
+- `080cb54` — **Correction: double h1s on eight hero-configured
+  routes** (self-inflicted this session, now fixed). PublicLayout
+  mounts PageHero, which already renders the h1 for 24 configured
+  routes; the session's critiques scored "no h1 in the page file"
+  without tracing the layout, and the resulting page-level as="h1"
+  additions put two h1s on /news, /academics/symposia, /events,
+  /leadership/committees, /academics/research, /academics/mentorship,
+  /academics/resources, and /membership/dues. All eight reverted to
+  the h2 default; /documents correctly keeps its own h1 (no hero
+  config). Verified: every public route now renders exactly one h1.
+  Reviewer takeaway for the promise-audit task: heuristics that assert
+  on a page file in isolation are unreliable in this codebase —
+  PageHero (h1s, hero CTAs) and PublicLayout own real page content,
+  so audits must evaluate the composed route, not the component.
+
 Verification on all nine content commits: `npm run build` clean,
 ESLint clean, design-detector scan clean.
 
