@@ -20,14 +20,14 @@ Claude (orchestrator), and any implementing agents (Claude Code, etc.).
 
 ## Critical bugs found and fixed directly (outside the task board)
 
-**2026-09-02 addendum — news, symposia, events, committees, research, mentorship + documents design-review pass
+**2026-09-02 addendum — news, symposia, events, committees, research, mentorship, documents + resources design-review pass
 (Arena agent session, branch
 `arena/01a06232-liberia-medical-students-assoc`, NOT merged to
 `main`):** an Arena coding agent ran structured design critiques
 (heuristic scoring + deterministic detector, reports archived in
-`.impeccable/critique/`) against the news, symposia, events, committees, research, mentorship, and documents pages
+`.impeccable/critique/`) against the news, symposia, events, committees, research, mentorship, documents, and resources pages
 and shipped fixes on the session branch. **Awaiting lead-developer
-review before any merge to `main`.** Seven content commits (plus
+review before any merge to `main`.** Eight content commits (plus
 board-bookkeeping commits touching only this file; the branch tip is
 the latest bookkeeping commit):
 
@@ -136,7 +136,21 @@ the latest bookkeeping commit):
   DocumentsAdminPage; needs a small specced fix, e.g. deriving an
   anchor click or opening the window before the await).
 
-Verification on all seven content commits: `npm run build` clean,
+- `27b758f` — **Resources page: fabricated library replaced with the
+  real one** (critique 13/36, session low; snapshot in
+  `.impeccable/critique/`). Already in the editorial world and
+  detector-clean, but all twelve listed resources were invented and
+  every "Access resource" button had no handler — both promise-failure
+  variants on one page, linked from the header nav, homepage (x2),
+  benefits, mission, and the documents callout. Now: stage framing kept
+  as honest guidance (focus areas, no artifact claims), plus a live
+  "From the library" shelf fetching real `category=study_material`
+  documents via the existing public API with skeleton / error-retry /
+  honest-empty states and working per-item downloads (inherits the
+  window.open-after-await caveat in decision item 4). h1 restored,
+  link-card affordance misuse removed. No schema/API changes.
+
+Verification on all eight content commits: `npm run build` clean,
 ESLint clean, design-detector scan clean.
 
 **How to review:** `git fetch origin && git checkout
@@ -149,7 +163,10 @@ a few), and `/academics/research` (its four opportunity cards were
 link-styled with no destination; verify each action link lands
 somewhere sensible), `/academics/mentorship`, and `/documents` (was
 still fully in the legacy visual world; check the chip filter and the
-error-state retry with the backend down).
+error-state retry with the backend down), and `/academics/resources`
+(its twelve 'resources' were fabricated and every button was dead; the
+live study-materials shelf and its empty/error states are the things to
+exercise).
 With no backend running, `/news` and `/events` should show their new
 error state with a working "Try again" (previously both rendered a
 false "nothing here yet" empty state on fetch failure — worth
@@ -182,15 +199,19 @@ Not done (flagged, not fixed — needs a decision or a specced task):
    open the window synchronously on click and set its `location` after
    the await, or resolve to an anchor-click download.
 
-**Session close (2026-09-02):** all seven surfaces above are shipped,
+**Session close (2026-09-02):** all eight surfaces above are shipped,
 verified (build / ESLint / detector clean on every content commit), and
 pushed. The session branch is ready for end-to-end review as a single
 unit; suggested review order is the diff shortcut above, then the
 manual state checks. Nothing else on this branch is in flight.
 
-**Orchestrator pattern observation (recommend a specced task):** four
-of the seven surfaces reviewed this session had a *broken primary
-promise*, in two variants. Dead controls: symposia's "Register now"
+**Orchestrator pattern observation (recommend a specced task):** five
+of the eight surfaces reviewed this session had a *broken primary
+promise*, in two variants — and the resources page combined both at
+once (twelve fabricated items AND twelve handler-less buttons), scoring
+the session's lowest critique despite being fully in the correct visual
+world; world migration alone is not a proxy for health. Dead controls:
+symposia's "Register now"
 button was wired to nothing, all twelve committee cards linked slugs
 the detail route couldn't resolve, and the research page's four
 opportunity cards were link-styled components with no destination.
