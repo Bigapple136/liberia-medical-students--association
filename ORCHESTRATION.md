@@ -20,13 +20,15 @@ Claude (orchestrator), and any implementing agents (Claude Code, etc.).
 
 ## Critical bugs found and fixed directly (outside the task board)
 
-**2026-09-02 addendum — news + symposia design-review pass (Arena agent
-session, branch `arena/01a06232-liberia-medical-students-assoc`, NOT
-merged to `main`):** an Arena coding agent ran structured design
-critiques (heuristic scoring + deterministic detector, reports archived
-in `.impeccable/critique/`) against the news and symposia pages and
-shipped fixes on the session branch. **Awaiting lead-developer review
-before any merge to `main`.** Two commits:
+**2026-09-02 addendum — news, symposia + events design-review pass
+(Arena agent session, branch
+`arena/01a06232-liberia-medical-students-assoc`, NOT merged to
+`main`):** an Arena coding agent ran structured design critiques
+(heuristic scoring + deterministic detector, reports archived in
+`.impeccable/critique/`) against the news, symposia, and events pages
+and shipped fixes on the session branch. **Awaiting lead-developer
+review before any merge to `main`.** Three content commits (plus two
+board-bookkeeping commits touching only this file):
 
 - `392e7fb` — **News index + detail redesign** (critique score 21/36).
   Index: removed the filler stat band ("1 Student voice" / "∞ More to
@@ -76,9 +78,24 @@ before any merge to `main`.** Two commits:
   Fetch is cancellation-safe with scroll reset. Verified: build, ESLint,
   detector all clean.
 
-Verification on both commits: `npm run build` clean, ESLint clean,
-design-detector scan clean. Not done (flagged, not fixed — needs a
-decision or a specced task):
+Verification on all three content commits: `npm run build` clean,
+ESLint clean, design-detector scan clean.
+
+**How to review:** `git fetch origin && git checkout
+arena/01a06232-liberia-medical-students-assoc`, then `npm install &&
+npm run dev` in `lmsa-website/`. The touched routes are `/news`,
+`/news/:slug`, `/academics/symposia`, `/events`, and `/events/:slug`.
+With no backend running, `/news` and `/events` should show their new
+error state with a working "Try again" (previously both rendered a
+false "nothing here yet" empty state on fetch failure — worth
+verifying). With the real API up, check the events detail registration
+panel against an event with a deadline/capacity, a concluded event, and
+a signed-out session. Full critique reports with heuristic scores and
+per-finding severity are in `.impeccable/critique/*.md`. Diff review
+shortcut: `git diff main...arena/01a06232-liberia-medical-students-assoc
+-- lmsa-website/src`.
+
+Not done (flagged, not fixed — needs a decision or a specced task):
 
 1. **Symposia data is still a hardcoded array** — the date-derived
    status stops it lying, but content updates still require a code
