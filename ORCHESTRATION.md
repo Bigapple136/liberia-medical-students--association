@@ -58,6 +58,24 @@ before any merge to `main`.** Two commits:
   an orphaned right-aligned span to a subtitle, `<time>` elements, and
   empty states for both sections.
 
+- `bfb3b28` — **Events index + detail polish** (critique 20/36,
+  snapshot in `.impeccable/critique/`). Index: "Upcoming events" was
+  calling `getAll()` with no params, so ALL events — oldest past events
+  first — rendered under the upcoming banner; now partitioned into
+  "Coming up" and a "Recently held" archive (concluded chip, desaturated
+  imagery), with h1, honest error state + retry, skeletons, `<time>`
+  elements, and an empty state that invites event suggestions.
+  Detail: migrated off the legacy gray/rounded world onto the editorial
+  pattern (same drift class as the news detail); the register button had
+  no padding (`.btn` supplies none). Registration panel is now honest:
+  uses `registration_deadline`, `fee`, `max_attendees`,
+  `registration_count`, and `image_url` (all previously fetched or
+  available but never displayed), hides/explains registration for
+  concluded, deadline-passed, and full events, and signed-out visitors
+  get "Sign in to register" instead of a silent 401 bounce to /login.
+  Fetch is cancellation-safe with scroll reset. Verified: build, ESLint,
+  detector all clean.
+
 Verification on both commits: `npm run build` clean, ESLint clean,
 design-detector scan clean. Not done (flagged, not fixed — needs a
 decision or a specced task):
@@ -67,9 +85,7 @@ decision or a specced task):
    change. Recommend a task to move symposia into the existing events
    API/admin (offered during the session; deliberately not done without
    orchestrator sign-off since it touches schema/admin scope).
-2. **Events pages share the old uniform-grid pattern** the news index
-   just left behind — candidate for the same treatment.
-3. `.impeccable/` critique snapshots and the skill's hook config now
+2. `.impeccable/` critique snapshots and the skill's hook config now
    live in the repo — same keep-or-remove workflow question as the
    earlier `.replit`/`.agents` flag.
 
