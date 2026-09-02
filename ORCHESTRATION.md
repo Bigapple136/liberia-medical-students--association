@@ -20,14 +20,14 @@ Claude (orchestrator), and any implementing agents (Claude Code, etc.).
 
 ## Critical bugs found and fixed directly (outside the task board)
 
-**2026-09-02 addendum — news, symposia + events design-review pass
+**2026-09-02 addendum — news, symposia, events + committees design-review pass
 (Arena agent session, branch
 `arena/01a06232-liberia-medical-students-assoc`, NOT merged to
 `main`):** an Arena coding agent ran structured design critiques
 (heuristic scoring + deterministic detector, reports archived in
-`.impeccable/critique/`) against the news, symposia, and events pages
+`.impeccable/critique/`) against the news, symposia, events, and committees pages
 and shipped fixes on the session branch. **Awaiting lead-developer
-review before any merge to `main`.** Three content commits (plus two
+review before any merge to `main`.** Four content commits (plus two
 board-bookkeeping commits touching only this file):
 
 - `392e7fb` — **News index + detail redesign** (critique score 21/36).
@@ -78,13 +78,35 @@ board-bookkeeping commits touching only this file):
   Fetch is cancellation-safe with scroll reset. Verified: build, ESLint,
   detector all clean.
 
-Verification on all three content commits: `npm run build` clean,
+- `149aaf2` — **Committees page truth restoration** (critique 15/36 —
+  the worst surface this session; snapshot in `.impeccable/critique/`).
+  Two showstoppers: (1) all twelve committee links pointed at slugs
+  with zero overlap with the registry `CommitteePageTemplate` actually
+  understands, and the template's offline fallback spread `undefined`
+  into a truthy object, so every click landed on a blank, nameless
+  committee shell; (2) the twelve committees named on the page were
+  not LMSA's constitutional standing committees — names, per-card
+  member counts, and the "101 Active members" / "48+ Initiatives"
+  stats were all invented. `ALL_COMMITTEES_DATA` is now extracted to
+  `src/utils/committeesData.js` as the single source of truth, the
+  index renders the twelve real committees, header stats are derived
+  from the registry (12 / 72 / 72), unknown slugs now render Not
+  Found, the template's related-committees footer linked the
+  nonexistent `/committees/:slug` route (fixed to
+  `/leadership/committees/:slug`), cards use the shared
+  `EditorialLinkCard`, the 001–012 numbering defect is fixed, and the
+  page has an h1. Verified: build, ESLint, detector clean.
+
+Verification on all four content commits: `npm run build` clean,
 ESLint clean, design-detector scan clean.
 
 **How to review:** `git fetch origin && git checkout
 arena/01a06232-liberia-medical-students-assoc`, then `npm install &&
 npm run dev` in `lmsa-website/`. The touched routes are `/news`,
-`/news/:slug`, `/academics/symposia`, `/events`, and `/events/:slug`.
+`/news/:slug`, `/academics/symposia`, `/events`, `/events/:slug`,
+`/leadership/committees`, and `/leadership/committees/:slug` (every
+committee card previously dead-ended on a blank page — worth clicking
+a few).
 With no backend running, `/news` and `/events` should show their new
 error state with a working "Try again" (previously both rendered a
 false "nothing here yet" empty state on fetch failure — worth
@@ -97,12 +119,16 @@ shortcut: `git diff main...arena/01a06232-liberia-medical-students-assoc
 
 Not done (flagged, not fixed — needs a decision or a specced task):
 
-1. **Symposia data is still a hardcoded array** — the date-derived
+1. **JoinCommitteePage still shows the fabricated committee list**
+   (invented names, openings, and deadlines) that the committees index
+   just dropped — needs the same registry treatment plus a decision on
+   where "openings/deadline" truth should come from.
+2. **Symposia data is still a hardcoded array** — the date-derived
    status stops it lying, but content updates still require a code
    change. Recommend a task to move symposia into the existing events
    API/admin (offered during the session; deliberately not done without
    orchestrator sign-off since it touches schema/admin scope).
-2. `.impeccable/` critique snapshots and the skill's hook config now
+3. `.impeccable/` critique snapshots and the skill's hook config now
    live in the repo — same keep-or-remove workflow question as the
    earlier `.replit`/`.agents` flag.
 
