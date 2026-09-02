@@ -174,6 +174,13 @@ Not done (flagged, not fixed — needs a decision or a specced task):
 3. `.impeccable/` critique snapshots and the skill's hook config now
    live in the repo — same keep-or-remove workflow question as the
    earlier `.replit`/`.agents` flag.
+4. **`documentService.download` opens the file via `window.open` after
+   an awaited request** — the click gesture context is lost by the time
+   the tab opens, so popup blockers can silently eat it. Shared by the
+   public documents page and `DocumentsAdminPage`, so it was flagged
+   rather than patched from the page-polish commit. Small specced fix:
+   open the window synchronously on click and set its `location` after
+   the await, or resolve to an anchor-click download.
 
 **Session close (2026-09-02):** all seven surfaces above are shipped,
 verified (build / ESLint / detector clean on every content commit), and
@@ -182,7 +189,7 @@ unit; suggested review order is the diff shortcut above, then the
 manual state checks. Nothing else on this branch is in flight.
 
 **Orchestrator pattern observation (recommend a specced task):** four
-of the six surfaces reviewed this session had a *broken primary
+of the seven surfaces reviewed this session had a *broken primary
 promise*, in two variants. Dead controls: symposia's "Register now"
 button was wired to nothing, all twelve committee cards linked slugs
 the detail route couldn't resolve, and the research page's four
@@ -202,7 +209,12 @@ verify the artifact exists. Cheap to script partially (extract
 `to="..."` targets and diff against the route table — the 2026-09-01
 addendum's link audit covered hrefs, but not undefined `to` props,
 no-op buttons, slug-registry mismatches, or copy-level promises, which
-is exactly what bit this session).
+is exactly what bit this session). The documents page is the useful
+counter-example: its primary promise held (list, filter, and download
+all wired to a real API) — but its download delivery is still fragile
+via the `window.open`-after-await issue in item 4 above, a third,
+subtler variant the audit should also catch: control wired, delivery
+mechanism unreliable.
 
 **2026-09-01 addendum — review of two direct-to-main pushes:** Stone
 pushed two large batches directly to `main` (a UI redesign — new
