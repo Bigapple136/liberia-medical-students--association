@@ -303,7 +303,7 @@ const heroPages = [
     title: 'Let\u2019s strengthen healthcare together',
     description:
       'Partner with LMSA to invest in medical education, student leadership, research, and community health.',
-    action: { label: 'Start a conversation', to: '/contact' },
+    action: { label: 'Start a conversation', to: '/contact?topic=partnership' },
     accent: 'green',
     icon: Users,
     photoKey: 'partnership',

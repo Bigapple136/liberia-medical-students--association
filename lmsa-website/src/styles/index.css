@@ -360,6 +360,177 @@
     @apply text-base leading-7 text-gray-700;
   }
 
+  /* ---- Partnership page ---- */
+
+  .partnership-page ::selection {
+    @apply bg-lmsa-200 text-lmsa-900;
+  }
+
+  .partnership-subhead {
+    @apply text-xl font-semibold tracking-[-0.02em] text-lmsa-900;
+  }
+
+  .partnership-ledger {
+    @apply mt-8 border-t border-lmsa-200;
+  }
+
+  .partnership-ledger li {
+    @apply grid gap-2 py-6 md:grid-cols-[minmax(0,13rem)_1fr] md:gap-8;
+  }
+
+  .partnership-ledger h3,
+  .partnership-ledger-title {
+    @apply text-base font-semibold leading-7 text-lmsa-900;
+  }
+
+  .partnership-ledger p {
+    @apply max-w-[62ch] text-sm leading-7 text-gray-700;
+  }
+
+  .partnership-seeking {
+    @apply border-t border-lmsa-200;
+  }
+
+  .partnership-seeking-row {
+    @apply flex items-start gap-4 border-b border-lmsa-200 py-5;
+  }
+
+  .partnership-seeking-icon {
+    @apply mt-1 flex h-9 w-9 shrink-0 items-center justify-center bg-white text-lmsa-700;
+  }
+
+  .partnership-seeking h3 {
+    @apply text-base font-semibold tracking-[-0.01em] text-lmsa-900;
+  }
+
+  .partnership-seeking p {
+    @apply mt-1 max-w-[52ch] text-sm leading-6 text-gray-700;
+  }
+
+  .partnership-figure {
+    @apply h-full min-h-[280px];
+  }
+
+  .partnership-figure-caption {
+    @apply absolute inset-x-0 bottom-0 p-6 text-sm leading-6 text-lmsa-50;
+  }
+
+  .partnership-levels {
+    @apply grid border border-lmsa-200 bg-white lg:grid-cols-3;
+  }
+
+  .partnership-level {
+    @apply flex flex-col border-b border-lmsa-200 p-6 last:border-b-0 lg:border-b-0 lg:border-r lg:p-8 lg:last:border-r-0;
+  }
+
+  .partnership-level-featured {
+    @apply bg-lmsa-900 text-lmsa-50;
+  }
+
+  .partnership-level-badge {
+    @apply mb-5 inline-flex bg-lmsa-100 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-lmsa-900;
+  }
+
+  .partnership-level h3 {
+    @apply text-3xl font-semibold tracking-[-0.03em];
+  }
+
+  .partnership-level-summary {
+    @apply mt-2 text-sm font-medium uppercase tracking-[0.12em] text-lmsa-700;
+  }
+
+  .partnership-level-featured .partnership-level-summary {
+    @apply text-lmsa-200;
+  }
+
+  .partnership-level-best {
+    @apply mt-7 border-t border-lmsa-200 pt-5 text-sm leading-6 text-gray-700;
+  }
+
+  .partnership-level-best span {
+    @apply mb-2 block text-[11px] font-bold uppercase tracking-[0.16em] text-lmsa-700;
+  }
+
+  .partnership-level-featured .partnership-level-best {
+    @apply border-lmsa-800 text-lmsa-100;
+  }
+
+  .partnership-level-featured .partnership-level-best span {
+    @apply text-lmsa-200;
+  }
+
+  .partnership-level-list {
+    @apply mt-7 flex-1;
+  }
+
+  .partnership-level-list li {
+    @apply flex items-start gap-3 border-b border-lmsa-100 py-3 text-sm leading-6 text-gray-700 last:border-b-0;
+  }
+
+  .partnership-level-list svg {
+    @apply mt-1 shrink-0 text-lmsa-700;
+  }
+
+  .partnership-level-list li.partnership-level-absent {
+    @apply text-gray-500;
+  }
+
+  .partnership-level-absent svg {
+    @apply text-gray-500;
+  }
+
+  .partnership-level-featured .partnership-level-list li {
+    @apply border-lmsa-800 text-lmsa-50;
+  }
+
+  .partnership-level-featured .partnership-level-list svg {
+    @apply text-lmsa-200;
+  }
+
+  .partnership-level-featured .partnership-level-list li.partnership-level-absent {
+    @apply text-lmsa-100/70;
+  }
+
+  .partnership-level-commitment {
+    @apply mt-7 border-t border-lmsa-200 pt-5 text-xs font-bold uppercase tracking-[0.14em] text-lmsa-700;
+  }
+
+  .partnership-level-featured .partnership-level-commitment {
+    @apply border-lmsa-800 text-lmsa-200;
+  }
+
+  .partnership-level-cta {
+    @apply mt-6 inline-flex w-full items-center justify-center bg-lmsa-700 px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-lmsa-800;
+  }
+
+  .partnership-level-featured .partnership-level-cta {
+    @apply bg-lmsa-50 text-lmsa-900 hover:bg-white;
+  }
+
+  .partnership-steps {
+    @apply grid gap-10 border-t border-lmsa-200 pt-10 md:grid-cols-3 md:gap-8;
+  }
+
+  .partnership-step .partnership-step-index {
+    @apply text-[11px] font-bold uppercase tracking-[0.18em] text-lmsa-700;
+  }
+
+  .partnership-step h3 {
+    @apply mt-4 max-w-[22ch] text-xl font-semibold leading-8 tracking-[-0.02em] text-lmsa-900;
+  }
+
+  .partnership-step p {
+    @apply mt-3 max-w-[46ch] text-sm leading-7 text-gray-700;
+  }
+
+  .partnership-contact {
+    @apply mt-6 grid gap-3 sm:grid-cols-2;
+  }
+
+  .partnership-contact a {
+    @apply flex items-center gap-4 border border-gray-200 bg-white p-5 transition-colors hover:border-lmsa-400 hover:bg-lmsa-50/40;
+  }
+
   .site-container {
     @apply mx-auto w-full max-w-7xl px-5 sm:px-8 lg:px-10;
   }

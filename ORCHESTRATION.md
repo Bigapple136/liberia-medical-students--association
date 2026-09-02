@@ -154,6 +154,7 @@ so this entire authentication path was silently broken the whole time.
 | T26 | Backend general (non-committee) documents API | none | **done** |
 | T27 | Public document library page | T26 | **done** |
 | T28 | Admin document upload/management page | T26 | **done** |
+| T29 | Partnership page — design critique + re-composition | none | **needs-review** (pushed on `arena/01a0618c-...`, not a `task/` branch — see T29) |
 
 **T22 flagged priority.** Render permanently blocks outbound SMTP ports
 (25/465/587) on free-tier web services since September 2025 — confirmed
@@ -4362,3 +4363,201 @@ link itself if the path matches).
   - Added a **Description** field to the upload form and the list, since T26's backend schema/`create` explicitly includes `description` (the committee `DocumentsTab` omits it) and T28's spec lists it in the form.
   - Added a Downloads column — the T26 backend tracks `downloads`, useful for an admin view.
   - Replaced the committee `charter`/`minutes` categories with the general-document category set from T26's schema reference (which doesn't include `charter`/`minutes` but adds `journal`).
+
+---
+
+## T29 — Partnership page: design critique, then re-composition
+
+**Branch:** `arena/01a0618c-liberia-medical-students-assoc`
+**Status:** needs-review
+**Depends on:** none
+
+> **Branch-naming deviation, flagged deliberately.** The board's rule is
+> task branches (`task/t29-...`). This work was done on an
+> `arena/...` session branch that this session is pinned to and cannot
+> rename. Everything else about the flow is unchanged: the Report block
+> is below, and the diff is pushed for orchestrator review rather than
+> merged to `main`.
+
+### Context
+
+`/partnership` was reviewed with the `impeccable` design skill's
+`critique` command (snapshot archived at
+`.impeccable/critique/2026-09-02T10-25-23Z__lmsa-website-src-pages-public-partnershippage-jsx.md`,
+also committed). Heuristic score: **21/36 (Acceptable)**, with 1 P0 and
+3 P1 issues. Mode for this surface is **Persuade**, so heuristic 7
+(Flexibility and Efficiency) was scored `n/a` and the total is out of 36.
+
+The three findings that drove the rebuild:
+
+1. **P0 — unverifiable institutional claims + a placeholder phone
+   number.** The page asserted collaborations with the Ministry of
+   Health and the WHO Liberia Office, and listed Liberia Medical
+   Association, Red Cross Liberia, AMAMU Medical College and Liberia
+   College of Physicians as current partners, with nothing anywhere in
+   the repo corroborating any of them. The only telephone number was
+   `+231 77 000 0000`. Publishing named institutional affiliations
+   that aren't confirmed is a reputational and legal exposure for a
+   student association, and it is the first thing a visiting partner
+   checks.
+2. **P1 — six near-identical sections.** Eight sections, six of them
+   the same overline + statement-headline + card-grid block,
+   distinguished only by alternating `#f7f6f2` / `#ebeae4` banding. No
+   visual peak, so the page had no peak-end memory at all.
+3. **P1 — the conversion path was a dead end.** Three "Get started"
+   buttons plus the closing callout all pointed at a generic
+   `/contact` with a free-text `Subject` field, so clicking Gold told
+   LMSA nothing about the enquiry.
+
+**Two critique findings were wrong and are retracted here.** I reported
+"no `<h1>` on the page" and "no per-page `<title>`". Both are false:
+`PublicLayout.jsx` renders `<PageHero />` (which supplies the `<h1>` and
+the photographic hero) and `App.jsx` renders `<PageMeta />` globally, so
+every public page has both. The accurate version of the imagery finding
+is *no imagery below the hero*. The accurate version of the h1 finding
+is *no defect*. I had also briefly added a duplicate `<PageHero />` and
+`<PageMeta />` to the page itself before finding the layout; that was
+reverted before commit.
+
+### Decisions taken by Stone (2026-09-02)
+
+Asked to choose a direction after the critique, Stone chose:
+
+- **Composition & imagery first** — break the repeated-section rhythm,
+  add imagery, make the tiers the visual peak.
+- **Partners are mostly aspirational** — reframe the section as the
+  partners LMSA is *seeking*, not holding.
+- **Drop public prices** — present levels of engagement, discuss
+  numbers privately.
+
+### Files modified
+
+**`lmsa-website/src/pages/public/PartnershipPage.jsx`** — re-composed
+from eight sections into five distinct movements, all inside the
+existing editorial world (same palette, type scale,
+`EditorialSectionHeader`, `site-container`):
+
+1. *Why partner with LMSA* — asymmetric split (headline left, prose
+   right) ending in a hairline ledger list instead of three icon cards.
+2. *Who we are looking for* — the six named institutions are **gone**
+   (that was the P0). Six organisation *types*, each with a concrete
+   ask, set against a photograph (`stockPhotos.sections.connect`) whose
+   caption invites existing collaborators to send their logo. Framing
+   is honest: "LMSA is building its formal partnerships now."
+3. *Ways to give* — the old "Ways to work together" and "In-kind
+   support" card grids collapsed into one section of two hairline
+   lists (financial / in-kind). One full card grid removed.
+4. *Levels of engagement* — the visual peak, and the only element that
+   reads as a table: Silver / Gold / Platinum as one connected block
+   with shared hairlines, seven identical rows so levels can be
+   compared by scanning, `Check`/`Minus` icons plus `sr-only`
+   "Included / Not included" text (meaning never carried by colour
+   alone). Gold is inverted to `lmsa-900` and badged "A good place to
+   start". **No prices** — each level carries scope ("Best for…") and
+   "Commitment agreed together, in writing."
+5. *How it works* — three numbered steps, which closes the "what
+   happens next" gap without inventing an SLA.
+
+Also: the placeholder phone number is deleted (email contact retained,
+second contact card now asks for a call with the External Relations
+Committee), and every CTA carries intent —
+`/contact?topic=partnership&level=gold`.
+
+**`lmsa-website/src/styles/index.css`** — new `.partnership-*` block in
+`@layer components`: ledger, seeking rows, figure caption, levels
+table, steps, contact cards. Plus `::selection` themed to
+`lmsa-200` / `lmsa-900` on this page.
+
+**`lmsa-website/src/components/common/PageHero.jsx`** — one line: the
+`/partnership` hero's action now points at
+`/contact?topic=partnership` instead of `/contact`.
+
+**`lmsa-website/src/pages/public/PartnershipPage.jsx`** (same file,
+second change) — the page's own `<main>` became a `<div>`.
+`PublicLayout` already wraps every public page in
+`<main id="main-content">`, so all 28 editorial pages currently nest
+two `main` landmarks. Fixed here; **the same one-line fix still needs
+applying to the other 27 pages.**
+
+### Acceptance criteria
+
+- [x] `npx eslint` on touched JS/JSX — 0 errors, 0 warnings.
+- [x] `npm run build` — clean (1586 modules).
+- [x] Every text/background pair on the page ≥4.5:1 (measured, table
+      in the Report below) — the two AA failures found in the critique
+      (2.15:1 "Most popular" badge, 4.46:1 tier CTA) are gone.
+- [x] No unverified institutional claim and no placeholder contact
+      detail remains on the page.
+- [x] Impeccable detector introduces **0** new findings for the page.
+- [ ] **Live visual check at desktop and mobile widths — not done, and
+      it cannot be done from this environment.** See the verification
+      note below; this one is on Stone.
+
+### Report
+
+- **Status:** needs-review
+- **Files modified:** `lmsa-website/src/pages/public/PartnershipPage.jsx`,
+  `lmsa-website/src/styles/index.css`,
+  `lmsa-website/src/components/common/PageHero.jsx`,
+  `ORCHESTRATION.md` (this addendum).
+  `package.json` / `package-lock.json` were touched transiently by an
+  aborted tooling install and are **restored** — no dependency changes
+  are in this diff.
+- **Also committed:** `.impeccable/critique/2026-09-02T10-25-23Z__lmsa-website-src-pages-public-partnershippage-jsx.md`
+  — the archived critique snapshot. It is the design record for this
+  run and is what a later `$impeccable polish` pass would read as its
+  backlog. Remove it if you'd rather not carry tool metadata in the
+  repo; nothing in the app depends on it.
+- **Verification (and what could not be verified):** **no screenshots
+  were taken — there is no browser in this environment.** No browser
+  automation is exposed, and Chromium could not be provisioned:
+  Playwright's and Puppeteer's download CDNs are unreachable from the
+  sandbox (the npm registry is proxied, general internet is not), and
+  extracting the binary out of the `@sparticuz/chromium` npm tarball
+  got as far as a real ELF executable before dying on missing system
+  libraries (`libnss3.so`, `libnspr4.so`, and the rest of the X/NSS
+  stack — not installable without root or Debian mirror access). In
+  place of pixels, the rendered result was verified three ways:
+  1. **SSR render** of `PageHero` + `PartnershipPage` at `/partnership`
+     via `react-dom/server` + `StaticRouter`: 1 `h1`, 6 `h2`, 17 `h3`,
+     7 `h4`, 2 images, 0 prices, 0 phone numbers, 0 named
+     institutions, 36 `aria-hidden` icons, and all 6 CTAs carrying
+     `?topic=partnership`.
+  2. **jsdom computed styles** against the built CSS. Measured: body
+     greys 8.55–9.53:1, not-included rows 4.83:1, featured-column
+     accents 6.85–9.91:1, badge 8.24:1, level CTAs 5.92:1 and 9.91:1,
+     "not included" text on the dark column 4.88:1. This step caught
+     two real CSS bugs that review-by-eye would have shipped:
+     `.partnership-step p` was overriding the step-index colour, and
+     `.partnership-level-list li` was beating the "not included"
+     styling on specificity. Both fixed.
+  3. **Impeccable detector** on the rendered HTML plus the full
+     stylesheet: 17 findings, all of them present in a baseline run
+     against an empty body with the same bundle — i.e. **0 findings
+     introduced by the page**. (For contrast: the original JSX scan
+     returned 3 findings, all false positives from line-level
+     co-occurrence on the single-line tier map.)
+- **Stock photography:** the section image is
+  `stockPhotos.sections.connect` from the existing curated Unsplash
+  set — same pre-launch replacement item already tracked for
+  `PageHero.jsx` / `config/images.js`. Not new debt.
+- **Open items for Stone (all small):**
+  1. **`ContactPage.jsx` does not yet read the query string.** The
+     CTAs now carry `?topic=partnership&level=gold` but the form still
+     has only a free-text `Subject`, so that context is currently
+     inert. This is the other half of the P1 conversion fix — read
+     `useSearchParams`, add an enquiry-type select, prefill the
+     subject. Worth folding into the same pass as T15's contact
+     plumbing.
+  2. **A real phone number**, if LMSA wants one published. The slot is
+     gone rather than filled with another placeholder.
+  3. **Partner logos and one attributed partner quote.** The page is
+     now honest rather than empty; it becomes persuasive the moment a
+     confirmed partner exists. The "Who we are looking for" caption
+     already invites them.
+  4. **The nested `<main>` fix** on the other 27 editorial pages.
+  5. **Detector noise worth knowing about, not acting on:** the
+     bundled stylesheet trips `overused-font` (Inter — a brand
+     decision, and changing it is a `typeset` conversation) and some
+     `ai-color-palette` / `side-tab` / `border-accent-on-rounded`
+     hits from other pages' components. None are on this page.
