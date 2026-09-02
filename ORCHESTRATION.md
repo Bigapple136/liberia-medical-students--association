@@ -20,6 +20,59 @@ Claude (orchestrator), and any implementing agents (Claude Code, etc.).
 
 ## Critical bugs found and fixed directly (outside the task board)
 
+**2026-09-02 addendum — news + symposia design-review pass (Arena agent
+session, branch `arena/01a06232-liberia-medical-students-assoc`, NOT
+merged to `main`):** an Arena coding agent ran structured design
+critiques (heuristic scoring + deterministic detector, reports archived
+in `.impeccable/critique/`) against the news and symposia pages and
+shipped fixes on the session branch. **Awaiting lead-developer review
+before any merge to `main`.** Two commits:
+
+- `392e7fb` — **News index + detail redesign** (critique score 21/36).
+  Index: removed the filler stat band ("1 Student voice" / "∞ More to
+  come"), added an `h1` (new `as` prop on `EditorialSectionHeader`,
+  backwards-compatible), added category filter chips backed by the
+  `?category=` param `news.service.js` already supported, newest post
+  now renders as a lead feature card, fetch failures now show a real
+  error state with retry instead of masquerading as the "no news yet"
+  empty state, "Load more" only advances its page counter on success
+  (previously a failed load silently skipped a page), plus "Showing X
+  of Y", skeleton loading, and race-guarded requests.
+  `NewsDetailPage.jsx` was rebuilt into the editorial visual world (it
+  was still the legacy gray/rounded style), now shows
+  `featured_image_url` (previously fetched but never rendered), and
+  both pages share `src/utils/newsCategories.js` to stop badge-style
+  drift. Also added a dev-only `/api` → `localhost:5000` proxy +
+  `host: '0.0.0.0'` in `vite.config.js` (review point: confirm you're
+  happy with these staying).
+- `ba762fc` — **Symposia page truth/wiring fixes** (critique score
+  17/32). The page's statuses were hand-typed strings and had already
+  rotted — both "Upcoming" symposia dates were in the past while one
+  still showed a Register button; "Register now" was a `<button>` wired
+  to nothing. Status is now derived from start/end dates at render
+  time, the CTA is an honest "Register your interest" link to
+  `/contact` (symposia aren't in the events API, so an in-app
+  registration call would have been fiction), h1 added, wayfinding
+  eyebrow corrected from "Stories & events" to "Learn & lead" to match
+  the `/academics/symposia` route and its siblings, theme promoted from
+  an orphaned right-aligned span to a subtitle, `<time>` elements, and
+  empty states for both sections.
+
+Verification on both commits: `npm run build` clean, ESLint clean,
+design-detector scan clean. Not done (flagged, not fixed — needs a
+decision or a specced task):
+
+1. **Symposia data is still a hardcoded array** — the date-derived
+   status stops it lying, but content updates still require a code
+   change. Recommend a task to move symposia into the existing events
+   API/admin (offered during the session; deliberately not done without
+   orchestrator sign-off since it touches schema/admin scope).
+2. **Events pages share the old uniform-grid pattern** the news index
+   just left behind — candidate for the same treatment.
+3. `.impeccable/` critique snapshots and the skill's hook config now
+   live in the repo — same keep-or-remove workflow question as the
+   earlier `.replit`/`.agents` flag.
+
 **2026-09-01 addendum — review of two direct-to-main pushes:** Stone
 pushed two large batches directly to `main` (a UI redesign — new
 `Header.jsx`/`HomePage.jsx`/`PageHero.jsx`/`PageMeta.jsx`/`Footer.jsx` —
