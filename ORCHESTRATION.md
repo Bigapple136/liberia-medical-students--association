@@ -20,14 +20,14 @@ Claude (orchestrator), and any implementing agents (Claude Code, etc.).
 
 ## Critical bugs found and fixed directly (outside the task board)
 
-**2026-09-02 addendum — news, symposia, events, committees, research, mentorship, documents, resources, dues, categories, benefits, membership + admin-dashboard design-review pass
+**2026-09-02 addendum — news, symposia, events, committees, research, mentorship, documents, resources, dues, categories, benefits, membership + admin/member-dashboard design-review pass
 (Arena agent session, branch
 `arena/01a06232-liberia-medical-students-assoc`, NOT merged to
 `main`):** an Arena coding agent ran structured design critiques
 (heuristic scoring + deterministic detector, reports archived in
-`.impeccable/critique/`) against the news, symposia, events, committees, research, mentorship, documents, resources, dues, membership-categories, membership-benefits, and membership pages, plus the admin dashboard
+`.impeccable/critique/`) against the news, symposia, events, committees, research, mentorship, documents, resources, dues, membership-categories, membership-benefits, and membership pages, plus the admin and member dashboards
 and shipped fixes on the session branch. **Awaiting lead-developer
-review before any merge to `main`.** Thirteen content commits (plus
+review before any merge to `main`.** Fourteen content commits (plus
 board-bookkeeping commits touching only this file; the branch tip is
 the latest bookkeeping commit):
 
@@ -232,7 +232,19 @@ the latest bookkeeping commit):
   Note: the admin Card idiom was deliberately kept; the editorial
   world is public-site vocabulary.
 
-Verification on all thirteen content commits: `npm run build` clean,
+- `6bdebef` — **Member dashboard: resilience + affordance polish**
+  (critique 31/40 — tied for healthiest surface; snapshot in
+  `.impeccable/critique/`). The honest sibling of the admin dashboard:
+  zero fabrication, all data real. Fixed: all-or-nothing Promise.all
+  (one failed source blanked all four and rendered zeros as data —
+  sixth error-as-zeros instance) replaced with allSettled +
+  per-section unavailable states + retry banner; full-page spinner ->
+  in-layout skeletons; my-event rows now link to /events/:slug (API
+  already returned slug); membership-status card offers an apply link
+  instead of a dead em-dash; MapPin/Newspaper icon fixes; jargon
+  label renamed.
+
+Verification on all fourteen content commits: `npm run build` clean,
 ESLint clean, design-detector scan clean.
 
 **How to review:** `git fetch origin && git checkout
@@ -264,7 +276,11 @@ approved, rejected — against the real API), and `/admin/dashboard`
 (sign in with an admin account: stats and the recent-applications
 feed are now real API data — verify against /admin/membership, and
 kill the API to confirm figures show as an em-dash with a retry
-banner rather than zeros).
+banner rather than zeros), and `/portal/dashboard` (sign in as a
+member: event rows should link to their detail pages, a member with
+no application should see an apply link in the status card, and
+partial API failure should show per-section unavailable states, not
+zeros).
 With no backend running, `/news` and `/events` should show their new
 error state with a working "Try again" (previously both rendered a
 false "nothing here yet" empty state on fetch failure — worth
@@ -322,7 +338,7 @@ Not done (flagged, not fixed — needs a decision or a specced task):
    open the window synchronously on click and set its `location` after
    the await, or resolve to an anchor-click download.
 
-**Session close (2026-09-02):** all thirteen surfaces above are shipped,
+**Session close (2026-09-02):** all fourteen surfaces above are shipped,
 verified (build / ESLint / detector clean on every content commit), and
 pushed. The session branch is ready for end-to-end review as a single
 unit; suggested review order is the diff shortcut above, then the
