@@ -27,8 +27,9 @@ Claude (orchestrator), and any implementing agents (Claude Code, etc.).
 (heuristic scoring + deterministic detector, reports archived in
 `.impeccable/critique/`) against the news, symposia, events, and committees pages
 and shipped fixes on the session branch. **Awaiting lead-developer
-review before any merge to `main`.** Four content commits (plus two
-board-bookkeeping commits touching only this file):
+review before any merge to `main`.** Four content commits (plus
+board-bookkeeping commits touching only this file; the branch tip is
+the latest bookkeeping commit):
 
 - `392e7fb` — **News index + detail redesign** (critique score 21/36).
   Index: removed the filler stat band ("1 Student voice" / "∞ More to
@@ -131,6 +132,12 @@ Not done (flagged, not fixed — needs a decision or a specced task):
 3. `.impeccable/` critique snapshots and the skill's hook config now
    live in the repo — same keep-or-remove workflow question as the
    earlier `.replit`/`.agents` flag.
+
+**Session close (2026-09-02):** all four surfaces above are shipped,
+verified (build / ESLint / detector clean on every content commit), and
+pushed. The session branch is ready for end-to-end review as a single
+unit; suggested review order is the diff shortcut above, then the
+manual state checks. Nothing else on this branch is in flight.
 
 **2026-09-01 addendum — review of two direct-to-main pushes:** Stone
 pushed two large batches directly to `main` (a UI redesign — new
