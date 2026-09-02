@@ -20,14 +20,14 @@ Claude (orchestrator), and any implementing agents (Claude Code, etc.).
 
 ## Critical bugs found and fixed directly (outside the task board)
 
-**2026-09-02 addendum — news, symposia, events, committees, research, mentorship, documents, resources, dues, categories, benefits + membership design-review pass
+**2026-09-02 addendum — news, symposia, events, committees, research, mentorship, documents, resources, dues, categories, benefits, membership + admin-dashboard design-review pass
 (Arena agent session, branch
 `arena/01a06232-liberia-medical-students-assoc`, NOT merged to
 `main`):** an Arena coding agent ran structured design critiques
 (heuristic scoring + deterministic detector, reports archived in
-`.impeccable/critique/`) against the news, symposia, events, committees, research, mentorship, documents, resources, dues, membership-categories, membership-benefits, and membership pages
+`.impeccable/critique/`) against the news, symposia, events, committees, research, mentorship, documents, resources, dues, membership-categories, membership-benefits, and membership pages, plus the admin dashboard
 and shipped fixes on the session branch. **Awaiting lead-developer
-review before any merge to `main`.** Twelve content commits (plus
+review before any merge to `main`.** Thirteen content commits (plus
 board-bookkeeping commits touching only this file; the branch tip is
 the latest bookkeeping commit):
 
@@ -216,7 +216,23 @@ the latest bookkeeping commit):
   misuse removed. See new decision item 6: the membership taxonomy is
   split — backend knows four types, categories/dues publish three.
 
-Verification on all twelve content commits: `npm run build` clean,
+- `634e7da` — **Admin dashboard: fabrication removed from the
+  operational surface** (critique 20/40; snapshot in
+  `.impeccable/critique/`). Highest-stakes fake data of the session:
+  a hardcoded activity feed (invented people, an eternal "2 hours
+  ago", and a "$25.00 payment processed" when no payment system
+  exists), three dead cursor-pointer Quick Actions including a
+  "View Reports" card for a feature that exists nowhere, "Total
+  Members" derived by summing committee member_count (double-counts
+  people), and API errors rendering as zeros. Now: pending/approved
+  stats and a recent-applications feed from the real applications
+  API, Promise.allSettled with em-dash + retry banner for failed
+  sources, and three real quick-action Links. Reports card removed —
+  if the org wants reports, that is a specced feature, not a card.
+  Note: the admin Card idiom was deliberately kept; the editorial
+  world is public-site vocabulary.
+
+Verification on all thirteen content commits: `npm run build` clean,
 ESLint clean, design-detector scan clean.
 
 **How to review:** `git fetch origin && git checkout
@@ -244,7 +260,11 @@ minus icons rather than green checks), and `/membership/benefits`
 the org-level perks flagged in decision item 5 get content-team
 review), and `/membership` (the apply form no longer offers Honorary;
 exercise the five apply states — signed-out, loading, pending,
-approved, rejected — against the real API).
+approved, rejected — against the real API), and `/admin/dashboard`
+(sign in with an admin account: stats and the recent-applications
+feed are now real API data — verify against /admin/membership, and
+kill the API to confirm figures show as an em-dash with a retry
+banner rather than zeros).
 With no backend running, `/news` and `/events` should show their new
 error state with a working "Try again" (previously both rendered a
 false "nothing here yet" empty state on fetch failure — worth
@@ -302,7 +322,7 @@ Not done (flagged, not fixed — needs a decision or a specced task):
    open the window synchronously on click and set its `location` after
    the await, or resolve to an anchor-click download.
 
-**Session close (2026-09-02):** all twelve surfaces above are shipped,
+**Session close (2026-09-02):** all thirteen surfaces above are shipped,
 verified (build / ESLint / detector clean on every content commit), and
 pushed. The session branch is ready for end-to-end review as a single
 unit; suggested review order is the diff shortcut above, then the
