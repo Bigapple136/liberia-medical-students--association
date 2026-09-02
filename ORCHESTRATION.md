@@ -164,23 +164,28 @@ pushed. The session branch is ready for end-to-end review as a single
 unit; suggested review order is the diff shortcut above, then the
 manual state checks. Nothing else on this branch is in flight.
 
-**Orchestrator pattern observation (recommend a specced task):** three
-of the five surfaces reviewed this session had a *dead primary
-call-to-action* — symposia's "Register now" button was wired to
-nothing, all twelve committee cards linked slugs the detail route
-couldn't resolve, and the research page's four opportunity cards were
-link-styled components with no destination. All were token-clean and
-invisible to the design detector; each was found only by tracing the
-click path in source. The remaining public pages (About cluster,
-Membership cluster, Resources, Mentorship, Leadership pages,
-Partnership, JoinCommitteePage, etc.) have not had this trace done.
-Recommend a systematic dead-affordance audit: for every `<Link>`,
-`<button>`, and link-styled card on public pages, verify the
-destination route exists in `routes.jsx` and the handler does
-something. Cheap to script partially (extract `to="..."` targets and
-diff against the route table — the 2026-09-01 addendum's link audit
-covered hrefs, but not undefined `to` props, no-op buttons, or
-slug-registry mismatches, which is exactly what bit this session).
+**Orchestrator pattern observation (recommend a specced task):** four
+of the six surfaces reviewed this session had a *broken primary
+promise*, in two variants. Dead controls: symposia's "Register now"
+button was wired to nothing, all twelve committee cards linked slugs
+the detail route couldn't resolve, and the research page's four
+opportunity cards were link-styled components with no destination.
+Unbacked copy: the mentorship page's step one told users to "fill out
+the mentorship application form" — no such form exists anywhere in the
+codebase. All four were token-clean and invisible to the design
+detector; each was found only by tracing the promise (click path or
+copy claim) back to source. The remaining public pages (About cluster,
+Membership cluster, Resources, Leadership pages, Partnership,
+JoinCommitteePage, etc.) have not had this trace done. Recommend a
+systematic promise audit: for every `<Link>`, `<button>`, and
+link-styled card, verify the destination route exists in `routes.jsx`
+and the handler does something; and for every copy claim naming an
+artifact or action ("form", "apply", "submit", "register", "download"),
+verify the artifact exists. Cheap to script partially (extract
+`to="..."` targets and diff against the route table — the 2026-09-01
+addendum's link audit covered hrefs, but not undefined `to` props,
+no-op buttons, slug-registry mismatches, or copy-level promises, which
+is exactly what bit this session).
 
 **2026-09-01 addendum — review of two direct-to-main pushes:** Stone
 pushed two large batches directly to `main` (a UI redesign — new
