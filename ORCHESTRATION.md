@@ -20,6 +20,50 @@ Claude (orchestrator), and any implementing agents (Claude Code, etc.).
 
 ## Critical bugs found and fixed directly (outside the task board)
 
+**2026-09-01 addendum — review of two direct-to-main pushes:** Stone
+pushed two large batches directly to `main` (a UI redesign — new
+`Header.jsx`/`HomePage.jsx`/`PageHero.jsx`/`PageMeta.jsx`/`Footer.jsx` —
+followed by a ~34-file SEO/content overhaul rewriting most public
+pages), bypassing the task-board review flow. Stone has confirmed this
+won't recur going forward. This caused two real merge conflicts against
+in-flight T27/T28 work (both resolved correctly — see T27/T28's own
+review notes) and, once merged, was given the same independent review
+rigor as every task branch on this board:
+
+- `supabase.js` was changed to export `null` (instead of throwing) when
+  Supabase env vars are missing — a reasonable defensive change,
+  correctly threaded through `AuthContext.jsx`/`api.js`/
+  `auth.service.js`. But two other direct consumers of
+  `supabase.storage` (`committee.service.js`'s `uploadDocument`,
+  `document.service.js`'s `upload`) were missed, and would have thrown a
+  less-helpful null-reference error in exactly the scenario this change
+  was meant to guard against. Fixed with matching null-guards.
+- The new `PageMeta.jsx` (SEO meta tags) silently falls back to
+  `https://lmsa.org.lr` for canonical/OG/Twitter URLs if `VITE_SITE_URL`
+  isn't set — undocumented anywhere, and not necessarily the actual live
+  domain (`https://lmsa-online.stone-yegan.workers.dev` is what's
+  actually deployed right now). Documented in `.env.example`; **Stone
+  still needs to decide/set the real value** — not fixed further since
+  the correct domain is a business decision, not a code bug.
+- Found and confirmed **not** a bug: `HomePage.jsx` has no real
+  news/events data fetching — checked the pre-redesign version, it was
+  already fully static before this rewrite too, so this is a pre-
+  existing gap, not a regression introduced here.
+- Systematic link-audit across every rewritten page (`grep`-extracted
+  every `to="..."` target, cross-referenced against `routes.jsx`) found
+  zero broken internal links.
+- `PageHero.jsx`/`config/images.js` use Unsplash stock photography as
+  placeholders — legitimately licensed (free for commercial use, no
+  attribution required) and clearly self-documented with TODOs to
+  replace before real launch. Not a bug; flagged to Stone as a tracked
+  pre-launch item.
+- `.replit` (Replit-platform dev config) and `.agents/skills/grill-me/`
+  (AI-coding-tool metadata) landed in the repo — neither affects the
+  actual Render/Cloudflare deployment, but neither is really "app code"
+  either. Flagged to Stone to decide whether to keep or remove; not
+  removed unilaterally since it's a workflow-preference question, not a
+  functional issue.
+
 **2026-08-29 addendum:** after Stone set up a real mailbox and updated
 Render's email env vars, production logs showed email sending still
 failing — `ETIMEDOUT` and `ENETUNREACH` on an IPv6 address for Gmail's
