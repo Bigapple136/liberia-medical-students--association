@@ -17,8 +17,17 @@ export default defineConfig({
     },
   },
   server: {
+    host: '0.0.0.0',
     port: 5173,
     open: true,
     allowedHosts: true,
+    // Dev convenience: lets VITE_API_URL=/api work by forwarding to a
+    // locally running backend (lmsa-api defaults to port 5000).
+    proxy: {
+      '/api': {
+        target: 'http://localhost:5000',
+        changeOrigin: true,
+      },
+    },
   },
 });

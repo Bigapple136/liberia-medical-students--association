@@ -199,6 +199,7 @@
     @apply mx-auto text-center;
   }
 
+  .editorial-section-header h1,
   .editorial-section-header h2 {
     @apply mt-3 text-3xl font-semibold leading-tight tracking-[-0.03em] text-lmsa-900 md:text-4xl;
   }
