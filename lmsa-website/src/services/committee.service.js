@@ -83,6 +83,10 @@ export const committeeService = {
 
   /** Upload a document to Supabase Storage and record in DB */
   async uploadDocument(committeeId, file, { title, category, access_level }) {
+    if (!supabase) {
+      throw new Error('File upload is temporarily unavailable. Please try again later.');
+    }
+
     // 1. Upload file to Supabase Storage
     const fileName = `committees/${committeeId}/${Date.now()}-${file.name}`;
     const { error: storageError } = await supabase.storage

@@ -44,6 +44,10 @@ export const documentService = {
 
   /** Upload a file to Supabase Storage and record it as a general document */
   async upload(file, { title, description, category, access_level }) {
+    if (!supabase) {
+      throw new Error('File upload is temporarily unavailable. Please try again later.');
+    }
+
     // 1. Upload file to Supabase Storage
     const fileName = `general/${Date.now()}-${file.name}`;
     const { error: storageError } = await supabase.storage
