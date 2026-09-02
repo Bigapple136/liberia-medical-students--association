@@ -155,6 +155,7 @@ so this entire authentication path was silently broken the whole time.
 | T27 | Public document library page | T26 | **done** |
 | T28 | Admin document upload/management page | T26 | **done** |
 | T29 | Partnership page — design critique + re-composition | none | **needs-review** (pushed on `arena/01a0618c-...`, not a `task/` branch — see T29) |
+| T30 | Committee applications: real apply flow + one committee list | none | **needs-review** — ⏳ **blocked on Stone running migration 004** |
 
 **T22 flagged priority.** Render permanently blocks outbound SMTP ports
 (25/465/587) on free-tier web services since September 2025 — confirmed
@@ -4561,3 +4562,224 @@ applying to the other 27 pages.**
      decision, and changing it is a `typeset` conversation) and some
      `ai-color-palette` / `side-tab` / `border-accent-on-rounded`
      hits from other pages' components. None are on this page.
+
+---
+
+## T30 — Committee applications: real apply flow + one committee list
+
+**Branch:** `arena/01a0618c-liberia-medical-students-assoc`
+**Status:** needs-review — ⏳ **blocked on Stone running `database/004_committee_applications.sql`**
+**Depends on:** none (adds a new table; nothing existing was changed in place)
+
+> **Branch-naming deviation:** same as T29 — this session is pinned to an
+> `arena/...` branch and cannot rename it. Flow is otherwise unchanged.
+
+### Context
+
+Critiqued `/get-involved/committees` (`JoinCommitteePage.jsx`) with the
+`impeccable` skill's `critique` command — **19/36 (Acceptable)**, 2 P0s and
+2 P1s (snapshot:
+`.impeccable/critique/2026-09-02T11-02-33Z__msa-website-src-pages-public-joincommitteepage-jsx.md`).
+
+The two P0s:
+
+1. **"Apply now" was inert.** Seven `<button type="button">` elements with no
+   handler and no destination — verified in the rendered DOM, not just read
+   off the source. No committee application flow existed anywhere:
+   `committee.service.js` has no apply method, and the one comparable CTA on
+   the site (`CategoriesPage.jsx`) is a real `<Link to="/membership#apply">`.
+   The page existed to collect applications and could not collect one.
+2. **The deadline was three months stale.** "Applications are open through
+   May 31, 2026", rendered eight times, on 2026-09-02. The page had no
+   vocabulary for "closed" because the date was hardcoded seven times in a
+   data array. (`SymposiaPage.jsx` carries the same rot — "March 20-21, 2026"
+   still marked `Upcoming`. Not fixed here; see follow-ups.)
+
+The two P1s: `/leadership/committees` listed 12 committees (with slugs and
+links to real detail pages) while this page listed 7 of them with different
+focus copy and invented opening counts; and this page linked to none of the
+seven detail pages that already exist.
+
+**Decisions taken by Stone (2026-09-02):** build a real application flow
+(form + backend, mirroring T9/T10's membership application); drive deadlines
+and openings from the committee API rather than code; unify both committee
+pages onto one list.
+
+### Files created
+
+**`lmsa-website/database/004_committee_applications.sql`** (new migration)
+
+- `committees`: + `openings INTEGER DEFAULT 0`, `application_deadline DATE`,
+  `accepting_applications BOOLEAN DEFAULT false`.
+- New `committee_applications`: `committee_id`, `user_id`, `year_level`,
+  `phone`, `statement` (required), `interests`, `status`
+  (`pending|approved|rejected|withdrawn`), `review_notes`, `reviewed_by`,
+  `reviewed_at`, timestamps.
+- **Partial** unique index on `(committee_id, user_id) WHERE status IN
+  ('pending','approved')` — one live application per person per committee,
+  while a rejected or withdrawn applicant can reapply without destroying
+  history.
+- `updated_at` trigger (reuses 001's `update_updated_at_column()`, guarded so
+  a re-run doesn't duplicate it).
+- RLS: insert-own, read-own, plus admin/executive read + update matching the
+  `users.role IN (...)` convention from 001. The API uses the service-role
+  key and bypasses RLS, so these are defence in depth for direct client
+  access.
+
+**`lmsa-website/src/config/committees.js`** (new) — the single source for
+*presentation* that can't live in the database: slug → lucide icon and
+fallback one-liner, `isAcceptingApplications()`, `hasDeadlinePassed()`,
+`formatDeadline()`, and `committeeFallbackList` for when the API is
+unreachable. The fallback carries **no deadline** and
+`accepting_applications: false` by design — a hardcoded date going stale was
+the bug this replaced.
+
+### Files modified
+
+**`lmsa-api/src/controllers/committee.controller.js`** — three new handlers:
+
+- `applyToCommittee` (`POST /committees/:slug/apply`, authenticated).
+  Validates the statement, resolves the committee by slug, then enforces
+  capacity in priority order: `accepting_applications` false → 409; deadline
+  in the past → 409 *with the date*; `openings > 0` caps **approved**
+  applications → 409 "filled all N positions". `openings = 0` with
+  `accepting_applications` true means *no stated cap* (open recruitment) —
+  necessary because the column defaults to 0 and every existing committee
+  would otherwise be full on day one. Duplicate pending/approved → 400,
+  distinguishing "already pending" from "already a member". Confirmation
+  email is best-effort and never fails the submission.
+- `getApplications` (`GET /committees/:id/applications`, admin) — flattened
+  with applicant name/email/year/student id, same shape as
+  `membership.controller.js`.
+- `updateApplicationStatus` (`PUT /committees/applications/:id`, admin) —
+  approve/reject with review notes, and on approval upserts the
+  `committee_members` row so the applicant is actually seated (best-effort;
+  a duplicate is not an error thanks to the existing unique constraint).
+  Review notification email is best-effort.
+
+**`lmsa-api/src/routes/committee.routes.js`** — wired the three above;
+committed is admin-gated via the existing `authorize('admin','executive','super_admin')`
+array.
+
+**`lmsa-website/src/services/committee.service.js`** — `applyToCommittee`,
+`getApplications`, `updateApplicationStatus`.
+
+**`lmsa-website/src/pages/public/JoinCommitteePage.jsx`** — rewritten:
+
+- Committees, openings and deadlines come from `GET /api/committees`. The
+  section header's closing date is derived from the data, and says "Each
+  committee lists its own closing date" when they differ.
+- Every card carries a real state: `N openings` / `Open recruitment` +
+  closing date; `Applications closed` + the date it closed; `Not recruiting`;
+  `Application received`. No card can claim to be open when it isn't.
+- "Apply now" opens an accessible dialog (`role="dialog"`, `aria-modal`,
+  labelled by its heading, focus moved to the textarea, Escape closes,
+  body scroll locked): statement (required, 2000-char counter), optional
+  year level and phone. Submitting shows a spinner; failures render the
+  **server's own message** next to the submit button and leave the answers
+  in the form; success replaces the form with next steps.
+- Unauthenticated visitors get "Log in to apply" instead of a dead button.
+- Every card links to `/leadership/committees/:slug` ("Read more first" /
+  "What this committee does") — the detail pages existed and were unlinked.
+- The CTA moved from `bg-lmsa-600` (4.46:1, a marginal AA fail) to
+  `bg-lmsa-700` (5.48:1).
+- FAQ is now a `<dl>` (`<dt>` question / `<dd>` answer) so the questions are
+  real terms rather than `<b>` + `<br>`; decorative `01`–`07` numbering
+  dropped; process grid is 2-up at `md` instead of a cramped 4-up; stat grid
+  sized to its two items.
+
+**`lmsa-website/src/pages/public/CommitteesPage.jsx`** — now renders
+`GET /api/committees` too, so 12 vs 7 can't drift again. Stats are computed
+(committees, total members, recruiting now) instead of the hardcoded
+"101 Active members / 48+ Initiatives" (the latter was unverifiable and is
+gone). Cards show member count plus an openings badge when recruiting.
+
+**`lmsa-website/src/pages/admin/CommitteeAdminDashboard.jsx`** — new
+**Applications** tab: pending/approved/rejected filter, expandable rows
+showing the applicant's statement, review-notes field, and Approve & add /
+Reject actions (reject confirms first). Without this the loop would be open
+— applications would arrive and nobody could read them.
+
+**`lmsa-website/src/styles/index.css`** — `.committee-*` block (card,
+states, apply button, dialog, fields, error) and `.join-committee-page`
+selection colour and FAQ `dt`/`dd` rules. The card deliberately does **not**
+reuse `editorial-link-card`: it isn't a link, so it gets no hover lift, no
+arrow and no promise of clickability.
+
+**`lmsa-website/database/README.md`** — migration 004 documented with its
+dependencies, the honest-fallback note, and a 2026-09-02 status entry.
+
+### Acceptance criteria
+
+- [x] `npx eslint` — 0 errors / 0 warnings, run repo-wide over `src`, not
+      just the touched files. `npx eslint` on the two touched API files: 0.
+- [x] `npm run build` — clean.
+- [x] No deadline, opening count or committee list is hardcoded on the
+      public pages any more.
+- [x] Apply path verified end-to-end in a real DOM (see below): 34 checks,
+      all passing.
+- [x] Contrast: CTA 5.48:1 (was 4.46:1).
+- [ ] **Migration 004 applied to the live Supabase project** — Stone. Not
+      applied, and the pages are deliberately inert-but-honest until it is.
+- [ ] **A committee set to recruiting in the database** — Stone. All three
+      new columns default to closed/0/null, so someone has to open a round.
+- [ ] Real end-to-end with a logged-in member against the live API.
+
+### Report
+
+- **Status:** needs-review, blocked on the two Stone items above.
+- **How this was verified (no browser in this environment):** the sandbox has
+  no browser and Chromium cannot be provisioned (Playwright's and Puppeteer's
+  CDNs are unreachable; the `@sparticuz/chromium` npm binary dies on missing
+  system libraries — same wall as T29). So instead of screenshots, the real
+  components were mounted in **jsdom** through `react-dom/client` with only
+  the network layer and auth context stubbed, then driven like a user:
+  - **19 checks** on the happy path: cards render from API data; an open
+    committee shows "5 openings · Closes 31 December 2026"; a past deadline
+    renders "Applications closed · Closed 31 May 2026" and not an open CTA;
+    a non-recruiting committee says so; an uncapped one reads "Open
+    recruitment"; stats are computed (2 recruiting, 5 openings); no stale
+    date string anywhere; all four cards link to detail pages; the dialog
+    opens with `aria-modal` and an existing label; focus lands on the
+    textarea; an empty statement is refused with an inline `role="alert"`
+    error and nothing is sent; a valid submission posts exactly once with the
+    right slug; success replaces the form; the card flips to "Application
+    received"; Escape closes.
+  - **4 checks** on the refusal path: a 409 from the server shows the
+    server's own message, keeps the typed statement in the form, announces
+    via `role="alert"`, and shows no false success.
+  - **5 checks** on the offline path: the notice appears, all 12 committees
+    still render, nothing claims to be recruiting, no date is invented, and
+    the stats report 0 rather than a guess.
+  - **6 checks** on `CommitteesPage`: 12 cards from the API, 12 detail
+    links, stats computed (12 / 101 / 2 recruiting), openings badges only on
+    recruiting committees, fallback copy filling empty descriptions.
+- **Deviations:**
+  - `openings = 0` means "no cap" rather than "full", because the column
+    defaults to 0. Documented in the controller and the migration.
+  - The static fallback list remains in `config/committees.js`, but stripped
+    of recruitment data. It exists so the pages don't break before migration
+    004 is applied; it is not a second source of truth for openings.
+  - Approval seats the applicant immediately on `committee_members`. If LMSA
+    would rather approve-then-invite, that's a one-line change in
+    `updateApplicationStatus`.
+- **Not fixed here (follow-ups):**
+  1. **`SymposiaPage.jsx` has the same stale-date problem** — "March 20-21,
+     2026" marked `Upcoming`, "Annual Medical Symposium 2026" on 15-17
+     August 2026. Same class of defect as the committee deadline; the fix
+     wants the same treatment (data-driven dates + a past-event state).
+  2. **`CommitteeAdminDashboard.jsx` has its own `COMMITTEE_DEFAULTS` slug
+     set** (`academic`, `health`, `research-journal`, `social-program`,
+     `dietary`, `judicial`, `sports`, `auditing`, `foreign-affairs`,
+     `membership`, `media-publicity`, `welfare`) which matches neither the
+     public slugs nor the API's. It's only used for icon/colour defaults, so
+     nothing is visibly broken — but it's a third committee list, and it
+     should go the same way as the other two.
+  3. **Login redirect**: "Log in to apply" sends you to `/login` and no
+     further. `LoginPage` doesn't read a `?next=` param, so you don't land
+     back on the committee page. Small, but it's the difference between an
+     apply flow and a dead end.
+  4. **Email delivery** for the confirmation and review notices is
+     best-effort and still subject to T22 — Render blocks outbound SMTP, so
+     these only send once Brevo is configured. Applications work regardless.
+  5. **Nested `<main>`** on the remaining 27 editorial pages (see T29).

@@ -11,6 +11,17 @@ new numbered files are added.
 | 001 | `001_base_schema.sql` | Creates all core tables (`users`, `events`, `committees`, `committee_members`, `documents`, `news_posts`, `event_registrations`, etc.), indexes, RLS policies, and triggers. Must run first — everything else depends on these tables existing. |
 | 002 | `002_committee_additions.sql` | Adds `committee_id` FK columns to `events` and `documents`, extra columns on `committees` (`key_activities`, `email`, `meeting_schedule`, `views`), and creates `committee_announcements`, `committee_achievements`, `committee_subscribers` tables. Depends on 001 being applied first. |
 | 003 | `003_newsletter.sql` | Creates the site-wide `newsletter_subscribers` table (separate from the per-committee `committee_subscribers`), its email index, RLS, and a public insert policy so the unauthenticated footer signup can write. Depends on 001 being applied first (RLS enabled; no FK dependencies). |
+| 004 | `004_committee_applications.sql` | Makes "Apply now" a real flow. Adds `openings`, `application_deadline` and `accepting_applications` to `committees`, creates `committee_applications` (statement, year level, phone, status, review fields) with a partial unique index allowing one live application per person per committee, plus RLS. Depends on 001 (`committees`, `users`, and the `update_updated_at_column()` trigger function). |
+
+## Status as of 2026-09-02
+
+- ⏳ **004 not yet applied.** Written and committed on branch
+  `arena/01a0618c-liberia-medical-students-assoc`, awaiting Stone to run it
+  in the Supabase SQL Editor. Until then the committee pages render the
+  static fallback described above and no deadline is published.
+  After running it, set `accepting_applications = true`, `openings`, and
+  `application_deadline` on whichever committees are recruiting — all three
+  default to closed / 0 / null, so the pages stay honest until you do.
 
 ## Status as of 2026-08-17
 
@@ -32,4 +43,13 @@ new numbered files are added.
 4. Open `003_newsletter.sql`, copy the full contents, paste into a new
    query, run it. Confirm no errors — you should see a `newsletter_subscribers`
    table appear under **Table Editor**.
-5. Update the status line above once confirmed.
+5. Open `004_committee_applications.sql`, same process. Confirm no errors —
+   three new columns on `committees`, a `committee_applications` table, and
+   four policies on it.
+6. Update the status line above once confirmed.
+
+Until 004 is applied, `/get-involved/committees` and `/leadership/committees`
+fall back to a static committee list with **no** recruitment window (nothing
+claims to be recruiting and no deadline is shown). That is deliberate: the
+defect this replaced was a hardcoded "May 31, 2026" deadline that silently
+went stale, so the honest fallback is "not open yet", not an invented date.

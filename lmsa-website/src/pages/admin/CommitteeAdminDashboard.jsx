@@ -9,7 +9,7 @@ import {
   Trophy, DollarSign, Globe, UserPlus, Megaphone, HeartHandshake,
   Edit3, Plus, Trash2, Upload, Save, X, Eye,
   Bell, Award, BarChart2, Calendar, Download, Search,
-  Check, ExternalLink,
+  Check, ExternalLink, Inbox,
   Loader, ArrowLeft, Settings
 } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -40,6 +40,7 @@ const COMMITTEE_DEFAULTS = {
 const TABS = [
   { id: 'details',       label: 'Details',       icon: Edit3 },
   { id: 'members',       label: 'Members',       icon: Users },
+  { id: 'applications',  label: 'Applications',  icon: Inbox },
   { id: 'events',        label: 'Events',        icon: Calendar },
   { id: 'documents',     label: 'Documents',     icon: FileText },
   { id: 'announcements', label: 'Announcements', icon: Bell },
@@ -215,6 +216,7 @@ export default function CommitteeAdminDashboard() {
             <div className="flex-1 overflow-y-auto p-6">
               {activeTab === 'details'       && <DetailsTab committee={activeCommittee} onSave={handleCommitteeUpdate} />}
               {activeTab === 'members'       && <MembersTab committee={activeCommittee} onUpdate={handleCommitteeUpdate} />}
+              {activeTab === 'applications'  && <ApplicationsTab committee={activeCommittee} />}
               {activeTab === 'events'        && <EventsTab  committee={activeCommittee} />}
               {activeTab === 'documents'     && <DocumentsTab committee={activeCommittee} />}
               {activeTab === 'announcements' && <AnnouncementsTab committee={activeCommittee} />}
@@ -1253,6 +1255,166 @@ function LoadingScreen() {
         <Loader size={32} className="animate-spin text-lmsa-600 mx-auto mb-3" />
         <p className="text-gray-500">Loading committees...</p>
       </div>
+    </div>
+  );
+}
+
+// ─── Tab: Applications ────────────────────────────────────────────────────────
+// Join requests submitted from /get-involved/committees. Approving seats the
+// applicant on the committee (the backend upserts the committee_members row).
+function ApplicationsTab({ committee }) {
+  const [applications, setApplications] = useState([]);
+  const [loading, setLoading]           = useState(true);
+  const [filter, setFilter]             = useState('pending');
+  const [notes, setNotes]               = useState({});
+  const [busyId, setBusyId]             = useState(null);
+  const [expanded, setExpanded]         = useState(null);
+
+  /* eslint-disable react-hooks/exhaustive-deps */
+  useEffect(() => {
+    loadApplications();
+    setNotes({});
+    setExpanded(null);
+  }, [committee.id, filter]);
+  /* eslint-enable react-hooks/exhaustive-deps */
+
+  async function loadApplications() {
+    setLoading(true);
+    try {
+      const data = await committeeService.getApplications(committee.id, filter);
+      setApplications(data);
+    } catch {
+      toast.error('Failed to load applications');
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function review(id, status) {
+    if (status === 'rejected' && !confirm('Reject this application?')) return;
+    setBusyId(id);
+    try {
+      await committeeService.updateApplicationStatus(id, status, notes[id] || null);
+      toast.success(status === 'approved' ? 'Applicant added to the committee' : 'Application rejected');
+      setApplications(a => a.filter(x => x.id !== id));
+      setExpanded(null);
+    } catch (error) {
+      toast.error(error?.response?.data?.message || 'Failed to update application');
+    } finally {
+      setBusyId(null);
+    }
+  }
+
+  const FILTERS = ['pending', 'approved', 'rejected'];
+
+  return (
+    <div className="max-w-4xl">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-6">
+        <div>
+          <h2 className="font-bold text-gray-900">Committee applications</h2>
+          <p className="text-sm text-gray-500">
+            {applications.length} {filter} {applications.length === 1 ? 'application' : 'applications'}
+          </p>
+        </div>
+        <div className="flex gap-1 self-start sm:self-auto">
+          {FILTERS.map(f => (
+            <button
+              key={f}
+              onClick={() => setFilter(f)}
+              className={`px-3 py-1.5 text-sm font-medium rounded-lg capitalize transition-colors ${
+                filter === f ? 'bg-lmsa-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              {f}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {loading ? (
+        <div className="flex items-center justify-center h-32">
+          <Loader className="animate-spin text-lmsa-600" />
+        </div>
+      ) : applications.length === 0 ? (
+        <div className="bg-white rounded-xl border border-gray-200 py-12 text-center text-gray-400">
+          <Inbox size={32} className="mx-auto mb-2 opacity-40" />
+          <p className="text-sm">No {filter} applications</p>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {applications.map(app => (
+            <div key={app.id} className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+              <button
+                type="button"
+                onClick={() => setExpanded(expanded === app.id ? null : app.id)}
+                className="w-full flex items-start justify-between gap-4 px-4 py-4 text-left hover:bg-gray-50 transition-colors"
+                aria-expanded={expanded === app.id}
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-full bg-lmsa-100 flex items-center justify-center text-lmsa-700 font-bold text-sm shrink-0">
+                    {(app.applicant_name || '?').split(' ').map(n => n[0]).join('').slice(0, 2)}
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-gray-900">{app.applicant_name || 'Unnamed applicant'}</p>
+                    <p className="text-xs text-gray-400">{app.applicant_email}</p>
+                  </div>
+                </div>
+                <div className="text-right shrink-0">
+                  <p className="text-xs text-gray-400">
+                    {new Date(app.submitted_at).toLocaleDateString()}
+                  </p>
+                  {app.applicant_year_level && (
+                    <p className="text-xs text-gray-500 mt-0.5">{app.applicant_year_level}</p>
+                  )}
+                </div>
+              </button>
+
+              {expanded === app.id && (
+                <div className="px-4 pb-4 border-t border-gray-100 pt-4">
+                  <p className="text-xs font-semibold text-gray-500 uppercase mb-2">Why this committee</p>
+                  <p className="text-sm text-gray-700 whitespace-pre-wrap">{app.statement}</p>
+
+                  {app.phone && (
+                    <p className="text-sm text-gray-600 mt-3">Phone: {app.phone}</p>
+                  )}
+
+                  {filter === 'pending' ? (
+                    <>
+                      <textarea
+                        className="input mt-4"
+                        rows={2}
+                        placeholder="Review notes (shared with the applicant)"
+                        value={notes[app.id] || ''}
+                        onChange={e => setNotes(n => ({ ...n, [app.id]: e.target.value }))}
+                      />
+                      <div className="flex gap-2 mt-3">
+                        <button
+                          onClick={() => review(app.id, 'approved')}
+                          disabled={busyId === app.id}
+                          className="btn btn-primary flex items-center gap-2 disabled:opacity-60"
+                        >
+                          <Check size={15} /> Approve &amp; add
+                        </button>
+                        <button
+                          onClick={() => review(app.id, 'rejected')}
+                          disabled={busyId === app.id}
+                          className="px-4 py-2 text-sm font-medium text-red-600 border border-red-200 rounded-lg hover:bg-red-50 disabled:opacity-60"
+                        >
+                          Reject
+                        </button>
+                      </div>
+                    </>
+                  ) : (
+                    app.review_notes && (
+                      <p className="text-sm text-gray-600 mt-3">Review notes: {app.review_notes}</p>
+                    )
+                  )}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
