@@ -20,14 +20,14 @@ Claude (orchestrator), and any implementing agents (Claude Code, etc.).
 
 ## Critical bugs found and fixed directly (outside the task board)
 
-**2026-09-02 addendum — news, symposia, events, committees, research, mentorship, documents, resources + dues design-review pass
+**2026-09-02 addendum — news, symposia, events, committees, research, mentorship, documents, resources, dues + categories design-review pass
 (Arena agent session, branch
 `arena/01a06232-liberia-medical-students-assoc`, NOT merged to
 `main`):** an Arena coding agent ran structured design critiques
 (heuristic scoring + deterministic detector, reports archived in
-`.impeccable/critique/`) against the news, symposia, events, committees, research, mentorship, documents, resources, and dues pages
+`.impeccable/critique/`) against the news, symposia, events, committees, research, mentorship, documents, resources, dues, and membership-categories pages
 and shipped fixes on the session branch. **Awaiting lead-developer
-review before any merge to `main`.** Nine content commits (plus
+review before any merge to `main`.** Ten content commits (plus
 board-bookkeeping commits touching only this file; the branch tip is
 the latest bookkeeping commit):
 
@@ -180,7 +180,20 @@ the latest bookkeeping commit):
   PageHero (h1s, hero CTAs) and PublicLayout own real page content,
   so audits must evaluate the composed route, not the component.
 
-Verification on all nine content commits: `npm run build` clean,
+- `0236caf` — **Categories page: comparison semantics fixed**
+  (critique 23/32, second-healthiest; snapshot in
+  `.impeccable/critique/`). Honorary Member simultaneously said "By
+  invitation" and offered an "Apply now" CTA — resolved (invitation
+  note + contact link instead). Green checkmarks were rendered on
+  restrictions ("No voting rights", "Cannot hold elected office");
+  features now split into included (Check) vs limits (muted Minus),
+  eligibility moved to a "For ..." line. Off-canon
+  membership@lmsa.org mailto replaced with a /contact link. "Event
+  discounts" (no paid events exist) replaced with registration-backed
+  phrasing. Link-card hover-lift affordance removed from non-clickable
+  cards.
+
+Verification on all ten content commits: `npm run build` clean,
 ESLint clean, design-detector scan clean.
 
 **How to review:** `git fetch origin && git checkout
@@ -201,7 +214,9 @@ also ships the site-wide ScrollManager: verify that the dues page's
 "Start your membership" CTA now lands on the Apply section of
 /membership, that ordinary navigation starts at the top of the new
 page, and that the browser back button still restores scroll
-position).
+position), and `/membership/categories` (check the Honorary card no
+longer offers an application, and that restrictions render with muted
+minus icons rather than green checks).
 With no backend running, `/news` and `/events` should show their new
 error state with a working "Try again" (previously both rendered a
 false "nothing here yet" empty state on fetch failure — worth
@@ -226,7 +241,14 @@ Not done (flagged, not fixed — needs a decision or a specced task):
 3. `.impeccable/` critique snapshots and the skill's hook config now
    live in the repo — same keep-or-remove workflow question as the
    earlier `.replit`/`.agents` flag.
-4. **`documentService.download` opens the file via `window.open` after
+4. **Contact email fragmentation (site-wide).** Four addresses across
+   three domain families are published: dev.lmsa@gmail.com
+   (ContactPage, Footer), support@lmsa.org.lr (ErrorBoundary,
+   LoginPage), partnerships@lmsa.org.lr (PartnershipPage), and — until
+   the categories commit — membership@lmsa.org. Which family is real
+   and monitored? Needs one canonical answer and a constants file;
+   mail sent to a dead mailbox is a silent support failure.
+5. **`documentService.download` opens the file via `window.open` after
    an awaited request** — the click gesture context is lost by the time
    the tab opens, so popup blockers can silently eat it. Shared by the
    public documents page and `DocumentsAdminPage`, so it was flagged
@@ -234,7 +256,7 @@ Not done (flagged, not fixed — needs a decision or a specced task):
    open the window synchronously on click and set its `location` after
    the await, or resolve to an anchor-click download.
 
-**Session close (2026-09-02):** all nine surfaces above are shipped,
+**Session close (2026-09-02):** all ten surfaces above are shipped,
 verified (build / ESLint / detector clean on every content commit), and
 pushed. The session branch is ready for end-to-end review as a single
 unit; suggested review order is the diff shortcut above, then the
