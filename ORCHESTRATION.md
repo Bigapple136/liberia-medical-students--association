@@ -20,14 +20,14 @@ Claude (orchestrator), and any implementing agents (Claude Code, etc.).
 
 ## Critical bugs found and fixed directly (outside the task board)
 
-**2026-09-02 addendum — news, symposia, events, committees, research + mentorship design-review pass
+**2026-09-02 addendum — news, symposia, events, committees, research, mentorship + documents design-review pass
 (Arena agent session, branch
 `arena/01a06232-liberia-medical-students-assoc`, NOT merged to
 `main`):** an Arena coding agent ran structured design critiques
 (heuristic scoring + deterministic detector, reports archived in
-`.impeccable/critique/`) against the news, symposia, events, committees, research, and mentorship pages
+`.impeccable/critique/`) against the news, symposia, events, committees, research, mentorship, and documents pages
 and shipped fixes on the session branch. **Awaiting lead-developer
-review before any merge to `main`.** Six content commits (plus
+review before any merge to `main`.** Seven content commits (plus
 board-bookkeeping commits touching only this file; the branch tip is
 the latest bookkeeping commit):
 
@@ -121,7 +121,22 @@ the latest bookkeeping commit):
   if a real mentorship application form is wanted (portal form + API),
   it needs a specced task — the copy now honestly reflects its absence.
 
-Verification on all six content commits: `npm run build` clean,
+- `3378083` — **Documents page world migration** (critique 22/36;
+  snapshot in `.impeccable/critique/`). Functionally the most complete
+  surface reviewed (real API, working category filter, per-item
+  download states, server-side access filtering) but still fully in
+  the legacy gray/rounded visual world. Migrated to the editorial
+  pattern; filter is now the /news-style chip row (the old Select was
+  rendered with no label — an anonymous combobox to screen readers);
+  fetch errors get a retry state instead of the false "No documents
+  available yet"; skeletons, <time>, filter-aware empty states, and a
+  PageMeta entry for /documents added. Flagged, not fixed:
+  documentService.download opens the file via window.open AFTER an
+  awaited request — popup blockers can eat the tab (shared with
+  DocumentsAdminPage; needs a small specced fix, e.g. deriving an
+  anchor click or opening the window before the await).
+
+Verification on all seven content commits: `npm run build` clean,
 ESLint clean, design-detector scan clean.
 
 **How to review:** `git fetch origin && git checkout
@@ -132,7 +147,9 @@ npm run dev` in `lmsa-website/`. The touched routes are `/news`,
 committee card previously dead-ended on a blank page — worth clicking
 a few), and `/academics/research` (its four opportunity cards were
 link-styled with no destination; verify each action link lands
-somewhere sensible), and `/academics/mentorship`.
+somewhere sensible), `/academics/mentorship`, and `/documents` (was
+still fully in the legacy visual world; check the chip filter and the
+error-state retry with the backend down).
 With no backend running, `/news` and `/events` should show their new
 error state with a working "Try again" (previously both rendered a
 false "nothing here yet" empty state on fetch failure — worth
@@ -158,7 +175,7 @@ Not done (flagged, not fixed — needs a decision or a specced task):
    live in the repo — same keep-or-remove workflow question as the
    earlier `.replit`/`.agents` flag.
 
-**Session close (2026-09-02):** all six surfaces above are shipped,
+**Session close (2026-09-02):** all seven surfaces above are shipped,
 verified (build / ESLint / detector clean on every content commit), and
 pushed. The session branch is ready for end-to-end review as a single
 unit; suggested review order is the diff shortcut above, then the
