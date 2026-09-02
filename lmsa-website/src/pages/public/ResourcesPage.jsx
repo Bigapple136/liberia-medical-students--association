@@ -98,7 +98,6 @@ export default function ResourcesPage() {
       <section className="editorial-section">
         <div className="site-container">
           <EditorialSectionHeader
-            as="h1"
             eyebrow="Learn & lead / Study resources"
             title="The right resource can change how a difficult week feels."
             description="LMSA curates practical study materials, guides, and shared knowledge for the realities of medical training."

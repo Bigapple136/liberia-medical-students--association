@@ -164,7 +164,6 @@ export default function NewsPage() {
       <section className="editorial-section">
         <div className="site-container">
           <EditorialSectionHeader
-            as="h1"
             eyebrow="Stories & events / News"
             title="Stories from the people making medical education matter."
             description="News, announcements, achievements, and opportunities from the LMSA community — the ideas and moments moving healthcare forward in Liberia."

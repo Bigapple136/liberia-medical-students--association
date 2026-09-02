@@ -100,7 +100,6 @@ export default function SymposiaPage() {
       <section className="editorial-section">
         <div className="site-container">
           <EditorialSectionHeader
-            as="h1"
             eyebrow="Learn & lead / Symposia"
             title="Ideas become momentum when we gather around them."
             description="LMSA symposia create space for students to present research, learn from experts, and connect with professionals."

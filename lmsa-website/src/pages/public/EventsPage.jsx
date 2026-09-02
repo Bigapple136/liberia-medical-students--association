@@ -124,7 +124,6 @@ export default function EventsPage() {
       <section className="editorial-section">
         <div className="site-container">
           <EditorialSectionHeader
-            as="h1"
             eyebrow="Stories & events / Upcoming events"
             title="The moments where LMSA becomes a room full of people."
             description="Stay close to the conversations, workshops, service activities, and gatherings shaping our student community."

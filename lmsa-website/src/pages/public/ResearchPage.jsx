@@ -66,7 +66,6 @@ export default function ResearchPage() {
         <div className="site-container">
           <div className="editorial-split">
             <EditorialSectionHeader
-              as="h1"
               eyebrow="Learn & lead / Research"
               title="Better questions can lead to better care."
               description="LMSA supports students who want to investigate the challenges shaping healthcare in Liberia and contribute to the knowledge that can change them."

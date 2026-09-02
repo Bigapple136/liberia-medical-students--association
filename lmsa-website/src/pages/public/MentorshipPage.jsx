@@ -26,7 +26,6 @@ export default function MentorshipPage() {
         <div className="site-container">
           <div className="editorial-split">
             <EditorialSectionHeader
-              as="h1"
               eyebrow="Learn & lead / Mentorship"
               title="You should not have to figure out medical school alone."
               description="The LMSA Mentorship Program connects junior students with senior students who can offer guidance, perspective, and honest support."

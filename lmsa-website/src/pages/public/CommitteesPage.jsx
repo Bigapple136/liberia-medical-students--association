@@ -35,7 +35,6 @@ export default function CommitteesPage() {
         <div className="site-container">
           <div className="editorial-split">
             <EditorialSectionHeader
-              as="h1"
               eyebrow="Learn & lead / Committees"
               title="Where ideas become work that people can feel."
               description="LMSA committees create focused spaces for students to contribute to academic life, welfare, advocacy, service, and community."

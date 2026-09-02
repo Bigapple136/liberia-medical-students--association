@@ -20,7 +20,6 @@ export default function DuesPage() {
       <section className="editorial-section">
         <div className="site-container">
           <EditorialSectionHeader
-            as="h1"
             eyebrow="Membership / Dues"
             title="A transparent contribution to a shared student infrastructure."
             description="Review the current fee structure, payment routes, and the practical details that keep your membership active."
