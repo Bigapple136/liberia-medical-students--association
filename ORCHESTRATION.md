@@ -154,6 +154,7 @@ so this entire authentication path was silently broken the whole time.
 | T26 | Backend general (non-committee) documents API | none | **done** |
 | T27 | Public document library page | T26 | **done** |
 | T28 | Admin document upload/management page | T26 | **done** |
+| T29 | Committee applications + leadership nominations (submitted via `arena/01a0618c-...` branch) | none | **done** |
 
 **T22 flagged priority.** Render permanently blocks outbound SMTP ports
 (25/465/587) on free-tier web services since September 2025 — confirmed
@@ -4362,3 +4363,52 @@ link itself if the path matches).
   - Added a **Description** field to the upload form and the list, since T26's backend schema/`create` explicitly includes `description` (the committee `DocumentsTab` omits it) and T28's spec lists it in the form.
   - Added a Downloads column — the T26 backend tracks `downloads`, useful for an admin view.
   - Replaced the committee `charter`/`minutes` categories with the general-document category set from T26's schema reference (which doesn't include `charter`/`minutes` but adds `journal`).
+
+---
+
+## T29 — Committee applications + leadership nominations
+
+**Branch:** `arena/01a0618c-liberia-medical-students-assoc` (submitted
+outside the normal task-branch flow — Stone pushed a set of pre-built
+branches directly for review, confirmed this is meant to go through the
+same independent review as any task)
+**Status:** done
+**Depends on:** none
+
+### What this adds
+
+Two genuinely new, complementary features (not duplicates of prior
+work — T9–T11 was about *membership type* applications; this is about
+applying to join a *specific committee*, and nominating yourself for a
+*leadership position*):
+
+- `004_committee_applications.sql` / `005_leadership_nominations.sql` —
+  new migrations, both idempotent (`IF NOT EXISTS` throughout).
+- `committee.controller.js`'s new `applyToCommittee` — includes a
+  capacity check (committee openings limit) that wasn't explicitly
+  asked for anywhere, a thoughtful addition.
+- `nomination.controller.js` (new) — a full election-cycle system
+  (nomination windows, admin-configurable cycle dates, review/approve
+  flow), unusually well-documented with a module-level docblock
+  explaining the window-priority rules.
+- Consolidated `LeadershipOpportunitiesPage.jsx` and `LeadershipPage.jsx`
+  (previously near-duplicates) into one page, with the old route kept
+  alive as a documented redirect (`/get-involved/leadership` →
+  `/leadership#stand`) rather than silently breaking old links/bookmarks.
+
+### Orchestrator review
+
+Independently verified: `npx eslint` (frontend + backend) — 0 errors, 0
+warnings. `npm run build` — clean. `node --check` on every touched
+backend file — clean. This is genuinely high-quality work throughout —
+every file checked (both migrations, both controllers, both routes
+files, `server.js` wiring, both service files, the consuming pages) was
+correct, consistent with this codebase's established conventions
+(partial unique indexes for reapplication-after-rejection, matching
+T9's pattern; embedded-join-then-flatten for admin list views, matching
+the fix applied to T14's `getAllAdmin`; the email-resilience pattern
+from the production incidents log), and well-documented. No bugs found.
+Verified the `#stand` anchor target exists on `LeadershipPage.jsx`
+(same check applied to `/membership#apply` earlier in this project).
+
+Approved and merged to `main`.
