@@ -274,18 +274,6 @@ const heroPages = [
     pattern: 'circles',
   },
   {
-    match: (path) => path === '/get-involved/leadership',
-    eyebrow: 'Get involved / Leadership',
-    title: 'Build the skills medicine needs',
-    description:
-      'Take on meaningful responsibility and develop the leadership habits that will serve your future patients.',
-    action: { label: 'Meet the leadership team', to: '/leadership' },
-    accent: 'gold',
-    icon: Trophy,
-    photoKey: 'leadership',
-    pattern: 'diagonal',
-  },
-  {
     match: (path) => path === '/get-involved/committees',
     eyebrow: 'Get involved / Committees',
     title: 'Find the work that matters to you',
@@ -303,7 +291,7 @@ const heroPages = [
     title: 'Let\u2019s strengthen healthcare together',
     description:
       'Partner with LMSA to invest in medical education, student leadership, research, and community health.',
-    action: { label: 'Start a conversation', to: '/contact' },
+    action: { label: 'Start a conversation', to: '/contact?topic=partnership' },
     accent: 'green',
     icon: Users,
     photoKey: 'partnership',

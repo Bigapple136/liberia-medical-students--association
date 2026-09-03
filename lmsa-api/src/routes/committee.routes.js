@@ -12,6 +12,11 @@ router.get('/:slug', cc.getBySlug);
 router.post('/:id/contact', cc.submitContactForm);
 router.post('/:id/subscribe', cc.subscribe);
 
+// ─── Authenticated: apply to join a committee ────────────────────────────────
+// Note: '/:slug/apply' must stay distinct from the '/:id/...' routes below —
+// Express matches on path shape, and ':slug' here is only ever a committee slug.
+router.post('/:slug/apply', authenticate, cc.applyToCommittee);
+
 // ─── Authenticated: read committee data ──────────────────────────────────────
 router.get('/:id/members', authenticate, cc.getMembers);
 router.get('/:id/events', authenticate, cc.getEvents);
@@ -40,6 +45,10 @@ router.delete('/:id/documents/:documentId', ...isAdmin, cc.deleteDocument);
 // Announcements
 router.post('/:id/announcements', ...isAdmin, cc.createAnnouncement);
 router.delete('/:id/announcements/:announcementId', ...isAdmin, cc.deleteAnnouncement);
+
+// Applications (join requests from members)
+router.get('/:id/applications', ...isAdmin, cc.getApplications);
+router.put('/applications/:id', ...isAdmin, cc.updateApplicationStatus);
 
 // Achievements
 router.post('/:id/achievements', ...isAdmin, cc.createAchievement);

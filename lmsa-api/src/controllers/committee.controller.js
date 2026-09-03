@@ -809,3 +809,337 @@ export const subscribe = async (req, res) => {
     });
   }
 };
+
+// ═════════════════════════════════════════════════════════════════════════════
+// COMMITTEE APPLICATIONS
+//
+// "Apply now" on /get-involved/committees used to be a button with no handler.
+// This is the real flow: a member submits an application for one committee, an
+// admin reviews it, and approving it seats the applicant on the committee.
+//
+// Capacity rules, in priority order:
+//   1. `accepting_applications` false  -> closed, no applications accepted.
+//   2. `application_deadline` in the past -> closed, with the date reported.
+//   3. `openings > 0` acts as a hard cap on *approved* applications. Zero means
+//      "no stated cap" (open recruitment), because the column defaults to 0 and
+//      every existing committee would otherwise be full on day one.
+// ═════════════════════════════════════════════════════════════════════════════
+
+const VALID_APPLICATION_STATUSES = ['approved', 'rejected'];
+const MAX_STATEMENT_LENGTH = 2000;
+
+const today = () => new Date().toISOString().split('T')[0];
+
+// ─── POST /api/committees/:slug/apply ────────────────────────────────────────
+export const applyToCommittee = async (req, res) => {
+  try {
+    const { slug } = req.params;
+    const userId = req.user.id;
+    const { statement, year_level, phone, interests } = req.body || {};
+
+    const trimmedStatement = typeof statement === 'string' ? statement.trim() : '';
+    if (!trimmedStatement) {
+      return res.status(400).json({
+        success: false,
+        message: 'Tell us why you want to join — a short statement is required',
+      });
+    }
+    if (trimmedStatement.length > MAX_STATEMENT_LENGTH) {
+      return res.status(400).json({
+        success: false,
+        message: `Your statement must be ${MAX_STATEMENT_LENGTH} characters or fewer`,
+      });
+    }
+
+    const { data: committee, error: committeeError } = await supabase
+      .from('committees')
+      .select('id, name, slug, status, accepting_applications, application_deadline, openings')
+      .eq('slug', slug)
+      .single();
+
+    if (committeeError || !committee || committee.status !== 'active') {
+      return res.status(404).json({
+        success: false,
+        message: 'Committee not found',
+      });
+    }
+
+    if (!committee.accepting_applications) {
+      return res.status(409).json({
+        success: false,
+        message: `${committee.name} is not accepting applications right now`,
+      });
+    }
+
+    if (committee.application_deadline && committee.application_deadline < today()) {
+      return res.status(409).json({
+        success: false,
+        message: `Applications for ${committee.name} closed on ${committee.application_deadline}`,
+      });
+    }
+
+    // Duplicate guard — one live application per person per committee
+    const { data: existing } = await supabase
+      .from('committee_applications')
+      .select('id, status')
+      .eq('committee_id', committee.id)
+      .eq('user_id', userId)
+      .in('status', ['pending', 'approved'])
+      .maybeSingle();
+
+    if (existing) {
+      return res.status(400).json({
+        success: false,
+        message:
+          existing.status === 'approved'
+            ? `You are already a member of ${committee.name}`
+            : `You already have a pending application for ${committee.name}`,
+      });
+    }
+
+    // Capacity check — openings > 0 caps approved applications
+    if (committee.openings > 0) {
+      const { count, error: countError } = await supabase
+        .from('committee_applications')
+        .select('id', { count: 'exact', head: true })
+        .eq('committee_id', committee.id)
+        .eq('status', 'approved');
+
+      if (!countError && (count ?? 0) >= committee.openings) {
+        return res.status(409).json({
+          success: false,
+          message: `${committee.name} has filled all ${committee.openings} of its open positions`,
+        });
+      }
+    }
+
+    const { data, error } = await supabase
+      .from('committee_applications')
+      .insert({
+        committee_id: committee.id,
+        user_id: userId,
+        statement: trimmedStatement,
+        year_level: year_level || null,
+        phone: phone || null,
+        interests: interests || null,
+        status: 'pending',
+      })
+      .select()
+      .single();
+
+    if (error) {
+      return res.status(400).json({
+        success: false,
+        message: 'Failed to submit your application',
+      });
+    }
+
+    // Best-effort confirmation — never fails the submission (see T22: outbound
+    // SMTP is blocked on Render, so email may be unverified in some environments)
+    try {
+      const { data: applicant } = await supabase
+        .from('users')
+        .select('full_name, email')
+        .eq('id', userId)
+        .single();
+
+      if (applicant?.email) {
+        await sendEmail({
+          to: applicant.email,
+          subject: `Your application to ${committee.name}`,
+          html: `
+            <h1>Application received</h1>
+            <p>Hi ${applicant.full_name},</p>
+            <p>Your application to join <strong>${committee.name}</strong> has been received and is pending review.</p>
+            ${committee.application_deadline ? `<p>The committee is reviewing applications through ${committee.application_deadline}.</p>` : ''}
+            <p>You can withdraw it from the committee page if your plans change.</p>
+          `,
+        });
+      }
+    } catch (emailError) {
+      console.error('Committee application confirmation email failed (submission still succeeded):', emailError);
+    }
+
+    res.status(201).json({
+      success: true,
+      application: data,
+      committee: { id: committee.id, name: committee.name, slug: committee.slug },
+    });
+  } catch (error) {
+    console.error('Apply to committee error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to submit your application',
+    });
+  }
+};
+
+// ─── GET /api/committees/:id/applications ────────────────────────────────────
+export const getApplications = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.query;
+
+    let query = supabase
+      .from('committee_applications')
+      .select(`
+        *,
+        user:user_id ( id, full_name, email, year_level, student_id )
+      `)
+      .eq('committee_id', id)
+      .order('submitted_at', { ascending: false });
+
+    if (status && ['pending', 'approved', 'rejected', 'withdrawn'].includes(status)) {
+      query = query.eq('status', status);
+    }
+
+    const { data, error } = await query;
+
+    if (error) {
+      return res.status(400).json({
+        success: false,
+        message: 'Failed to fetch applications',
+      });
+    }
+
+    const applications = data.map(a => ({
+      ...a,
+      applicant_name: a.user?.full_name || null,
+      applicant_email: a.user?.email || null,
+      applicant_year_level: a.user?.year_level || null,
+      applicant_student_id: a.user?.student_id || null,
+      user: undefined,
+    }));
+
+    res.json({
+      success: true,
+      applications,
+    });
+  } catch (error) {
+    console.error('Get committee applications error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch applications',
+    });
+  }
+};
+
+// ─── PUT /api/committees/applications/:id ────────────────────────────────────
+export const updateApplicationStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status, review_notes } = req.body || {};
+
+    if (!status || !VALID_APPLICATION_STATUSES.includes(status)) {
+      return res.status(400).json({
+        success: false,
+        message: `status must be one of: ${VALID_APPLICATION_STATUSES.join(', ')}`,
+      });
+    }
+
+    const { data: application, error: fetchError } = await supabase
+      .from('committee_applications')
+      .select('*')
+      .eq('id', id)
+      .single();
+
+    if (fetchError || !application) {
+      return res.status(404).json({
+        success: false,
+        message: 'Application not found',
+      });
+    }
+
+    const { data, error } = await supabase
+      .from('committee_applications')
+      .update({
+        status,
+        review_notes: review_notes || null,
+        reviewed_by: req.user.id,
+        reviewed_at: new Date().toISOString(),
+      })
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) {
+      return res.status(400).json({
+        success: false,
+        message: 'Failed to update application',
+      });
+    }
+
+    const { data: committee } = await supabase
+      .from('committees')
+      .select('id, name')
+      .eq('id', application.committee_id)
+      .single();
+
+    // On approval, seat the applicant on the committee. Best-effort: the
+    // application is approved either way, and a duplicate membership row is
+    // not an error (unique on committee_id + user_id).
+    if (status === 'approved') {
+      const { error: memberError } = await supabase
+        .from('committee_members')
+        .upsert(
+          {
+            committee_id: application.committee_id,
+            user_id: application.user_id,
+            position: 'Member',
+            left_at: null,
+          },
+          { onConflict: 'committee_id,user_id' }
+        );
+
+      if (memberError) {
+        console.error('Failed to seat approved applicant on committee:', memberError);
+      }
+    }
+
+    // Best-effort notification — must never fail the review action
+    try {
+      const { data: applicant } = await supabase
+        .from('users')
+        .select('full_name, email')
+        .eq('id', application.user_id)
+        .single();
+
+      if (applicant?.email) {
+        await sendEmail({
+          to: applicant.email,
+          subject: status === 'approved'
+            ? `Welcome to ${committee?.name || 'the committee'}`
+            : 'Update on your committee application',
+          html: status === 'approved'
+            ? `
+                <h1>You're in</h1>
+                <p>Hi ${applicant.full_name},</p>
+                <p>Your application to join <strong>${committee?.name}</strong> has been <strong>approved</strong>.</p>
+                ${review_notes ? `<p><strong>Reviewer notes:</strong> ${review_notes}</p>` : ''}
+                <p>The committee chair will be in touch with next steps.</p>
+              `
+            : `
+                <h1>Committee application update</h1>
+                <p>Hi ${applicant.full_name},</p>
+                <p>Your application to join <strong>${committee?.name}</strong> was not approved this round.</p>
+                ${review_notes ? `<p><strong>Reviewer notes:</strong> ${review_notes}</p>` : ''}
+                <p>You are welcome to apply again next round.</p>
+              `,
+        });
+      }
+    } catch (emailError) {
+      console.error('Committee application review email failed (review still succeeded):', emailError);
+    }
+
+    res.json({
+      success: true,
+      application: data,
+    });
+  } catch (error) {
+    console.error('Update committee application status error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to update application',
+    });
+  }
+};

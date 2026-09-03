@@ -35,7 +35,7 @@ export default function BenefitsPage() {
           <div className="grid gap-4 md:grid-cols-3">
             <EditorialLinkCard to="/academics/resources" eyebrow="Learn" title="Study with more support" description="Find tools and people that make the work of medical school more navigable." icon={BookOpen} />
             <EditorialLinkCard to="/academics/mentorship" eyebrow="Connect" title="Meet people ahead of you" description="Build relationships with peers, mentors, and the alumni network." icon={Users} />
-            <EditorialLinkCard to="/get-involved/leadership" eyebrow="Lead" title="Practice responsibility" description="Use committees, elections, and service to grow beyond the classroom." icon={Star} />
+            <EditorialLinkCard to="/leadership#stand" eyebrow="Lead" title="Practice responsibility" description="Use committees, elections, and service to grow beyond the classroom." icon={Star} />
           </div>
         </div>
       </section>

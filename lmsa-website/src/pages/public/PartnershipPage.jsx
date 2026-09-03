@@ -1,107 +1,345 @@
-import { BookOpen, Building2, CheckCircle, Globe, Heart, Laptop, Mail, Phone, Target, TrendingUp, Users } from 'lucide-react';
+import { BookOpen, Building2, Check, Globe, Heart, Mail, Minus, Target, Users } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { EditorialCallout, EditorialSectionHeader, EditorialStat } from '@components/common/EditorialSections';
+import Photo from '@components/common/Photo';
+import { stockPhotos } from '@config/images';
+import { EditorialCallout, EditorialSectionHeader } from '@components/common/EditorialSections';
 
-const partners = [
-  { name: 'Liberia Medical Association', type: 'Institutional', description: 'National medical association partnership', icon: Building2 },
-  { name: 'Ministry of Health', type: 'Government', description: 'Government health sector collaboration', icon: Building2 },
-  { name: 'AMAMU Medical College', type: 'Academic', description: 'Academic institution partnership', icon: BookOpen },
-  { name: 'Red Cross Liberia', type: 'NGO', description: 'Humanitarian organization partnership', icon: Heart },
-  { name: 'WHO Liberia Office', type: 'International', description: 'World Health Organization collaboration', icon: Globe },
-  { name: 'Liberia College of Physicians', type: 'Professional', description: 'Professional body partnership', icon: Users },
+const outcomes = [
+  {
+    title: 'Reach future physicians',
+    description: 'Connect with Liberia’s next generation of medical professionals and healthcare leaders.',
+  },
+  {
+    title: 'Support healthcare education',
+    description: 'Directly impact the quality of medical education and healthcare delivery in Liberia.',
+  },
+  {
+    title: 'Build meaningful visibility',
+    description: 'Gain exposure across LMSA’s digital platforms, events, and community outreach programmes.',
+  },
 ];
 
-const partnerTypes = [
-  { title: 'Sponsor organizations', description: 'Financial and in-kind support for LMSA programs, events, and student initiatives.', examples: 'Corporate sponsors, foundations, donors', icon: Heart },
-  { title: 'Institutional partners', description: 'Long-term collaboration with healthcare institutions, universities, and government bodies.', examples: 'Hospitals, medical schools, Ministry of Health', icon: Building2 },
-  { title: 'International partners', description: 'Global partnerships with international medical organizations and student associations.', examples: 'IFMSA, AMSA, international medical schools', icon: Globe },
-  { title: 'Alumni network', description: 'Engaging LMSA graduates as mentors, speakers, and career development partners.', examples: 'LMSA alumni worldwide, mentorship network', icon: Users },
+const seeking = [
+  {
+    title: 'Medical and nursing schools',
+    description: 'Curriculum support, exchange places, and supervisors for student research.',
+    icon: BookOpen,
+  },
+  {
+    title: 'Hospitals and clinics',
+    description: 'Clinical placement slots, supervision, and service-learning sites for students.',
+    icon: Building2,
+  },
+  {
+    title: 'Government and public health bodies',
+    description: 'Joint health campaigns, outreach data, and county-level programmes.',
+    icon: Target,
+  },
+  {
+    title: 'NGOs and humanitarian organisations',
+    description: 'Community health programmes delivered together, from planning to follow-up.',
+    icon: Heart,
+  },
+  {
+    title: 'International medical associations',
+    description: 'Exchanges, global health projects, and shared student leadership training.',
+    icon: Globe,
+  },
+  {
+    title: 'Companies and employers',
+    description: 'Sponsorship, equipment, internships, and mentors from your own teams.',
+    icon: Users,
+  },
 ];
 
-const partnershipBenefits = [
-  { title: 'Reach future physicians', description: 'Connect with Liberia’s next generation of medical professionals and healthcare leaders.', icon: Users },
-  { title: 'Support healthcare education', description: 'Directly impact the quality of medical education and healthcare delivery in Liberia.', icon: Target },
-  { title: 'Build meaningful visibility', description: 'Gain exposure across LMSA’s digital platforms, events, and community outreach programs.', icon: TrendingUp },
-];
-
-const tiers = [
-  { name: 'Silver Partner', price: '$500', features: ['Logo on LMSA website', 'Mention in newsletter', 'Access to LMSA events', 'Annual impact report', 'Social media recognition'], tone: 'silver' },
-  { name: 'Gold Partner', price: '$1,500', features: ['All Silver benefits', 'Featured on partner page', 'Speaking opportunity at events', 'Direct student engagement', 'Quarterly collaboration reports', 'Priority event sponsorship'], tone: 'gold', popular: true },
-  { name: 'Platinum Partner', price: '$3,000', features: ['All Gold benefits', 'Exclusive naming rights', 'Dedicated partnership manager', 'Custom collaboration projects', 'Board meeting invitation', 'First access to opportunities', 'Annual partnership review'], tone: 'platinum' },
+const financialSupport = [
+  {
+    title: 'Underwrite a programme',
+    description: 'A symposium, a workshop, or a community health camp, from venue to follow-up.',
+  },
+  {
+    title: 'Fund a bursary',
+    description: 'Cover fees, books, or equipment for a student who would otherwise go without.',
+  },
+  {
+    title: 'Back student research',
+    description: 'Support the costs of data collection, supervision, and publication.',
+  },
 ];
 
 const inKindSupport = [
-  { title: 'Educational resources', description: 'Textbooks, medical journals, online subscriptions', icon: BookOpen },
-  { title: 'Technology', description: 'Laptops, software licenses, internet access', icon: Laptop },
-  { title: 'Venue & logistics', description: 'Event spaces, transportation, catering', icon: Building2 },
-  { title: 'Expertise', description: 'Guest lectures, mentorship, training workshops', icon: Target },
+  {
+    title: 'Educational resources',
+    description: 'Textbooks, medical journals, online subscriptions',
+  },
+  {
+    title: 'Technology',
+    description: 'Laptops, software licences, internet access',
+  },
+  {
+    title: 'Venue & logistics',
+    description: 'Event spaces, transportation, catering',
+  },
+  {
+    title: 'Expertise',
+    description: 'Guest lectures, mentorship, training workshops',
+  },
 ];
 
-const tierStyles = {
-  silver: 'border-gray-200 bg-white',
-  gold: 'border-amber-300 bg-amber-50',
-  platinum: 'border-purple-300 bg-purple-50',
-};
+const levelFeatures = [
+  'Logo and link on lmsa.org.lr',
+  'Recognition in our newsletter and on social media',
+  'Invitations to LMSA events and symposia',
+  'Annual impact report',
+  'Speaking slot at a symposium or workshop',
+  'Direct student engagement — mentoring, placements, recruitment',
+  'A named programme built around your organisation',
+];
+
+const levels = [
+  {
+    name: 'Silver',
+    summary: 'Programme supporter',
+    bestFor: 'Organisations supporting a single programme, event, or cohort.',
+    includes: [true, true, true, true, false, false, false],
+    featured: false,
+  },
+  {
+    name: 'Gold',
+    summary: 'Core partner',
+    bestFor: 'Organisations working with us across the academic year.',
+    includes: [true, true, true, true, true, true, false],
+    featured: true,
+  },
+  {
+    name: 'Platinum',
+    summary: 'Strategic partner',
+    bestFor: 'Organisations building a named, multi-year programme with us.',
+    includes: [true, true, true, true, true, true, true],
+    featured: false,
+  },
+];
+
+const steps = [
+  {
+    title: 'You tell us what you have in mind',
+    description:
+      'Write to us with what your organisation can offer and what you would like in return. There is no form to decipher and no package to pick.',
+  },
+  {
+    title: 'We shape it together',
+    description:
+      'A conversation with the External Relations Committee, then a short written scope: the programme, the students it reaches, and how we report back.',
+  },
+  {
+    title: 'We start, and we show the work',
+    description:
+      'Once the scope is agreed we begin, and you receive the annual impact report covering every programme your support touched.',
+  },
+];
 
 export default function PartnershipPage() {
   return (
-    <main className="editorial-page">
+    <div className="editorial-page partnership-page">
       <section className="editorial-section">
         <div className="site-container">
           <div className="editorial-split">
-            <EditorialSectionHeader eyebrow="Get involved / Partnerships" title="The future of healthcare is a shared project." description="Partner with LMSA to invest in medical education, student leadership, research, and community health." />
-            <div className="editorial-prose"><p>We build relationships with organizations that want to strengthen the people and systems at the heart of healthcare in Liberia.</p><div className="editorial-stat-grid mt-8"><EditorialStat value="6+" label="Active partners" /><EditorialStat value="500+" label="Students impacted" /></div></div>
+            <EditorialSectionHeader
+              eyebrow="Why partner with LMSA"
+              title="Your support reaches the people who will deliver Liberia’s care."
+              description="A partnership connects your organisation with the students, ideas, and programmes shaping healthcare in Liberia."
+            />
+            <div className="editorial-prose">
+              <p>
+                LMSA is the national voice of Liberia’s medical students — the people who will be
+                practising here long after today’s projects have ended. We bring them together to
+                learn, lead, advocate, and serve the communities that need them most.
+              </p>
+              <p>
+                Partners do not fund an abstraction. They fund the symposia where students present
+                their first research, the health camps that reach counties without a resident
+                doctor, and the training that keeps a newly qualified physician in the country.
+              </p>
+              <ul className="partnership-ledger">
+                {outcomes.map(({ title, description }) => (
+                  <li key={title}>
+                    <h3>{title}</h3>
+                    <p>{description}</p>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="editorial-section editorial-section-muted" id="who-we-are-looking-for">
+        <div className="site-container">
+          <EditorialSectionHeader
+            eyebrow="Who we are looking for"
+            title="Start with the kind of partner you are."
+            description="LMSA is building its formal partnerships now. These are the organisations we most want to work with — and the shape we imagine the work taking."
+          />
+          <div className="grid gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:gap-16">
+            <ul className="partnership-seeking">
+              {seeking.map(({ title, description, icon: Icon }) => (
+                <li key={title} className="partnership-seeking-row">
+                  <span className="partnership-seeking-icon" aria-hidden="true">
+                    <Icon size={20} strokeWidth={1.6} />
+                  </span>
+                  <div>
+                    <h3>{title}</h3>
+                    <p>{description}</p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+            <Photo
+              src={stockPhotos.sections.connect.src}
+              alt={stockPhotos.sections.connect.alt}
+              className="partnership-figure"
+              imgClassName="object-cover"
+              fallbackGradient="bg-gradient-to-br from-lmsa-900 to-lmsa-700"
+              overlay="bg-gradient-to-t from-lmsa-900/85 via-lmsa-900/25 to-transparent"
+            >
+              <p className="partnership-figure-caption">
+                Already working with LMSA? Write to us and we will add your organisation — and your
+                logo — to this page.
+              </p>
+            </Photo>
+          </div>
+        </div>
+      </section>
+
+      <section className="editorial-section">
+        <div className="site-container">
+          <EditorialSectionHeader
+            eyebrow="Ways to give"
+            title="Money is one route. Expertise is another."
+            description="Tell us what your organisation can offer and we will build the partnership around it."
+          />
+          <div className="grid gap-12 md:grid-cols-2 lg:gap-20">
+            <div>
+              <h3 className="partnership-subhead">Financial support</h3>
+              <ul className="partnership-ledger">
+                {financialSupport.map(({ title, description }) => (
+                  <li key={title}>
+                    <h4 className="partnership-ledger-title">{title}</h4>
+                    <p>{description}</p>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div>
+              <h3 className="partnership-subhead">In-kind support</h3>
+              <ul className="partnership-ledger">
+                {inKindSupport.map(({ title, description }) => (
+                  <li key={title}>
+                    <h4 className="partnership-ledger-title">{title}</h4>
+                    <p>{description}</p>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
         </div>
       </section>
 
       <section className="editorial-section editorial-section-muted">
         <div className="site-container">
-          <EditorialSectionHeader eyebrow="Ways to work together" title="A partnership can start with the kind of support you want to give." description="We offer flexible partnership models to suit your organization’s goals and capacity." />
-          <div className="grid gap-4 md:grid-cols-2">{partnerTypes.map(({ title, description, examples, icon: Icon }, index) => <article key={title} className="editorial-link-card"><span className="editorial-link-card-icon" aria-hidden="true"><Icon size={22} strokeWidth={1.5} /></span><div className="editorial-link-card-copy"><span className="editorial-card-eyebrow">0{index + 1} / Partnership</span><h3>{title}</h3><p>{description}</p></div><span className="mt-5 block text-xs leading-5 text-gray-500">Examples: {examples}</span></article>)}</div>
+          <EditorialSectionHeader
+            eyebrow="Levels of engagement"
+            title="Three ways to work together."
+            description="Each level is a scope, not a price list. We agree the commitment with you, in writing, before anything begins."
+          />
+          <div className="partnership-levels">
+            {levels.map((level) => (
+              <article
+                key={level.name}
+                className={`partnership-level ${level.featured ? 'partnership-level-featured' : ''}`}
+              >
+                <header>
+                  {level.featured && <p className="partnership-level-badge">A good place to start</p>}
+                  <h3>{level.name}</h3>
+                  <p className="partnership-level-summary">{level.summary}</p>
+                </header>
+                <p className="partnership-level-best">
+                  <span>Best for</span>
+                  {level.bestFor}
+                </p>
+                <ul className="partnership-level-list">
+                  {levelFeatures.map((feature, index) => {
+                    const included = level.includes[index];
+                    return (
+                      <li
+                        key={feature}
+                        className={included ? undefined : 'partnership-level-absent'}
+                      >
+                        {included ? (
+                          <Check size={16} strokeWidth={2.25} aria-hidden="true" />
+                        ) : (
+                          <Minus size={16} strokeWidth={2.25} aria-hidden="true" />
+                        )}
+                        <span className="sr-only">{included ? 'Included: ' : 'Not included: '}</span>
+                        <span>{feature}</span>
+                      </li>
+                    );
+                  })}
+                </ul>
+                <p className="partnership-level-commitment">Commitment agreed together, in writing.</p>
+                <Link
+                  to={`/contact?topic=partnership&level=${level.name.toLowerCase()}`}
+                  className="partnership-level-cta"
+                >
+                  Talk to us about {level.name}
+                </Link>
+              </article>
+            ))}
+          </div>
         </div>
       </section>
 
       <section className="editorial-section">
         <div className="site-container">
-          <EditorialSectionHeader eyebrow="Our current partners" title="Good work gets stronger when it is connected." description="Organizations collaborating with LMSA to advance medical education and student opportunity." />
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">{partners.map(({ name, type, description, icon: Icon }) => <article key={name} className="border border-gray-200 bg-white p-6"><span className="flex h-11 w-11 items-center justify-center bg-lmsa-50 text-lmsa-700" aria-hidden="true"><Icon size={22} strokeWidth={1.5} /></span><h3 className="mt-7 text-lg font-semibold text-lmsa-900">{name}</h3><p className="mt-2 text-sm leading-6 text-gray-600">{description}</p><span className="mt-5 inline-flex bg-lmsa-50 px-3 py-1 text-xs font-bold uppercase tracking-[0.12em] text-lmsa-700">{type}</span></article>)}</div>
-        </div>
-      </section>
-
-      <section className="editorial-section editorial-section-muted">
-        <div className="site-container">
-          <EditorialSectionHeader eyebrow="Why partner with LMSA?" title="Your support reaches the people shaping the next generation of care." description="A partnership connects your organization with students, ideas, and programs that can have a long-term effect." />
-          <div className="grid gap-4 md:grid-cols-3">{partnershipBenefits.map(({ title, description, icon: Icon }, index) => <article key={title} className="border border-gray-200 bg-white p-6"><span className="text-sm font-bold text-lmsa-700">0{index + 1}</span><span className="mt-6 flex h-11 w-11 items-center justify-center bg-lmsa-50 text-lmsa-700" aria-hidden="true"><Icon size={22} strokeWidth={1.5} /></span><h3 className="mt-6 text-xl font-semibold text-lmsa-900">{title}</h3><p className="mt-2 text-sm leading-6 text-gray-600">{description}</p></article>)}</div>
-        </div>
-      </section>
-
-      <section className="editorial-section">
-        <div className="site-container">
-          <EditorialSectionHeader eyebrow="Choose your level of engagement" title="Partnership tiers with room to grow." description="Choose the level of engagement that works for your organization. Every tier helps strengthen the student community." />
-          <div className="grid gap-4 md:grid-cols-3">{tiers.map((tier, index) => <article key={tier.name} className={`relative border-2 p-6 ${tierStyles[tier.tone]}`}>{tier.popular && <span className="absolute -top-3 left-6 bg-amber-500 px-3 py-1 text-xs font-bold uppercase tracking-[0.12em] text-white">Most popular</span>}<span className="text-xs font-bold uppercase tracking-[0.15em] text-lmsa-700">0{index + 1} / Tier</span><h3 className="mt-6 text-2xl font-semibold text-lmsa-900">{tier.name}</h3><p className="mt-3 text-3xl font-semibold tracking-[-0.04em] text-gray-900">{tier.price}<span className="ml-1 text-sm font-normal text-gray-500">per year</span></p><ul className="mt-6 space-y-3">{tier.features.map((feature) => <li key={feature} className="flex items-start gap-2 text-sm leading-6 text-gray-700"><CheckCircle size={16} className="mt-1 shrink-0 text-lmsa-600" aria-hidden="true" /><span>{feature}</span></li>)}</ul><Link to="/contact" className="mt-7 inline-flex w-full items-center justify-center gap-2 bg-lmsa-600 px-4 py-3 text-sm font-semibold text-white hover:bg-lmsa-700">Get started</Link></article>)}</div>
-        </div>
-      </section>
-
-      <section className="editorial-section editorial-section-muted">
-        <div className="site-container">
-          <EditorialSectionHeader eyebrow="Beyond financial contributions" title="In-kind support can meet an immediate need." description="Your organization can provide practical support that directly benefits our members and programs." />
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">{inKindSupport.map(({ title, description, icon: Icon }) => <article key={title} className="border border-gray-200 bg-white p-5"><span className="flex h-10 w-10 items-center justify-center bg-lmsa-50 text-lmsa-700" aria-hidden="true"><Icon size={20} strokeWidth={1.5} /></span><h3 className="mt-6 text-base font-semibold text-lmsa-900">{title}</h3><p className="mt-2 text-sm leading-6 text-gray-600">{description}</p></article>)}</div>
-        </div>
-      </section>
-
-      <section className="editorial-section">
-        <div className="site-container">
-          <div className="editorial-stat-grid"><EditorialStat value="6+" label="Active partners" /><EditorialStat value="500+" label="Students impacted" /><EditorialStat value="$15K+" label="Annual support value" /><EditorialStat value="12" label="Collaborative programs" /></div>
+          <EditorialSectionHeader
+            eyebrow="How it works"
+            title="Three steps from an email to a programme."
+            description="No procurement portal, no fixed packages — a conversation, a written scope, and then the work."
+          />
+          <ol className="partnership-steps">
+            {steps.map(({ title, description }, index) => (
+              <li key={title} className="partnership-step">
+                <p className="partnership-step-index">Step {index + 1}</p>
+                <h3>{title}</h3>
+                <p>{description}</p>
+              </li>
+            ))}
+          </ol>
         </div>
       </section>
 
       <section className="editorial-section pt-0">
         <div className="site-container">
-          <EditorialCallout eyebrow="Start a partnership" title="Bring your organization into the work." description="Reach out to discuss how we can work together to advance medical education and healthcare in Liberia." action={{ label: 'Use our contact form', to: '/contact' }} />
-          <div className="mt-6 grid gap-3 sm:grid-cols-2"><a href="mailto:partnerships@lmsa.org.lr" className="flex items-center gap-4 border border-gray-200 bg-white p-5 hover:border-lmsa-400"><Mail size={21} className="text-lmsa-700" aria-hidden="true" /><span className="text-sm font-semibold text-lmsa-900">partnerships@lmsa.org.lr</span></a><a href="tel:+231770000000" className="flex items-center gap-4 border border-gray-200 bg-white p-5 hover:border-lmsa-400"><Phone size={21} className="text-lmsa-700" aria-hidden="true" /><span className="text-sm font-semibold text-lmsa-900">+231 77 000 0000</span></a></div>
+          <EditorialCallout
+            eyebrow="Start a partnership"
+            title="Bring your organisation into the work."
+            description="Write to us about what you can offer and we will come back to you with a first conversation."
+            action={{ label: 'Use our contact form', to: '/contact?topic=partnership' }}
+          />
+          <div className="partnership-contact">
+            <a href="mailto:partnerships@lmsa.org.lr?subject=Partnership%20enquiry">
+              <Mail size={21} className="text-lmsa-700" aria-hidden="true" />
+              <span className="text-sm font-semibold text-lmsa-900">partnerships@lmsa.org.lr</span>
+            </a>
+            <Link to="/contact?topic=partnership">
+              <Users size={21} className="text-lmsa-700" aria-hidden="true" />
+              <span className="text-sm font-semibold text-lmsa-900">
+                Ask for a call with the External Relations Committee
+              </span>
+            </Link>
+          </div>
         </div>
       </section>
-    </main>
+    </div>
   );
 }

@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { executiveService } from '@services/executive.service';
+import NominationsAdminPanel from '@components/admin/NominationsAdminPanel';
 
 const STATUS_OPTIONS = [
   { value: 'active', label: 'Active', color: 'bg-lmsa-50 text-lmsa-700 border-lmsa-200' },
@@ -42,6 +43,7 @@ export default function ExecutiveAdminPage() {
   const [searchingUsers, setSearchingUsers] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [expandedId, setExpandedId] = useState(null);
+  const [view, setView] = useState('positions');
 
   const loadPositions = useCallback(async () => {
     setLoading(true);
@@ -188,6 +190,32 @@ export default function ExecutiveAdminPage() {
           <Plus size={16} /> Add Position
         </button>
       </div>
+
+      {/* ── View toggle ──────────────────────────────────────────────── */}
+      <div className="flex gap-2 flex-wrap">
+        {[
+          { id: 'positions', label: 'Positions' },
+          { id: 'nominations', label: 'Nominations & election cycle' },
+        ].map(v => (
+          <button
+            key={v.id}
+            onClick={() => setView(v.id)}
+            className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg border transition-colors ${
+              view === v.id
+                ? 'bg-lmsa-50 text-lmsa-700 border-lmsa-200'
+                : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'
+            }`}
+          >
+            {v.id === 'nominations' ? <CalendarDays size={14} /> : <Shield size={14} />}
+            {v.label}
+          </button>
+        ))}
+      </div>
+
+      {view === 'nominations' ? (
+        <NominationsAdminPanel />
+      ) : (
+        <>
 
       {/* ── Status Filter Tabs ────────────────────────────────────────── */}
       <div className="flex gap-2 flex-wrap">
@@ -480,6 +508,8 @@ export default function ExecutiveAdminPage() {
             </div>
           ))}
         </div>
+      )}
+        </>
       )}
     </div>
   );

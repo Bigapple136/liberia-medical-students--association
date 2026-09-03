@@ -175,4 +175,41 @@ export const committeeService = {
     const response = await api.post(`/committees/${committeeId}/subscribe`, { email });
     return response.data;
   },
+
+  // ─── Applications ────────────────────────────────────────────────────────
+
+  /**
+   * Apply to join a committee. Requires a logged-in member.
+   *
+   * Rejections from the API are the *expected* path as often as not — the
+   * window may have closed, the committee may be full, or the member may
+   * already have a live application — so every error is surfaced with the
+   * server's own message rather than a generic one.
+   */
+  async applyToCommittee(slug, { statement, year_level, phone, interests }) {
+    const response = await api.post(`/committees/${slug}/apply`, {
+      statement,
+      year_level,
+      phone,
+      interests,
+    });
+    return response.data;
+  },
+
+  /** List applications for one committee (admin) */
+  async getApplications(committeeId, status) {
+    const response = await api.get(`/committees/${committeeId}/applications`, {
+      params: status ? { status } : undefined,
+    });
+    return response.data.applications;
+  },
+
+  /** Approve or reject an application (admin) */
+  async updateApplicationStatus(applicationId, status, reviewNotes) {
+    const response = await api.put(`/committees/applications/${applicationId}`, {
+      status,
+      review_notes: reviewNotes || null,
+    });
+    return response.data.application;
+  },
 };

@@ -37,6 +37,7 @@ import newsRoutes from './routes/news.routes.js';
 import contactRoutes from './routes/contact.routes.js';
 import dashboardRoutes from './routes/dashboard.routes.js';
 import executiveRoutes from './routes/executive.routes.js';
+import nominationRoutes from './routes/nomination.routes.js';
 import newsletterRoutes from './routes/newsletter.routes.js';
 import documentRoutes from './routes/document.routes.js';
 
@@ -119,6 +120,7 @@ app.use('/api/membership', membershipRoutes);
 app.use('/api/news', newsRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/executive', executiveRoutes);
+app.use('/api/nominations', nominationRoutes);
 
 app.use('/api/documents', documentRoutes);
 
