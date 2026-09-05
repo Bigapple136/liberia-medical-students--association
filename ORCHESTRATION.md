@@ -511,6 +511,7 @@ so this entire authentication path was silently broken the whole time.
 | T27 | Public document library page | T26 | **done** |
 | T28 | Admin document upload/management page | T26 | **done** |
 | T29 | Committee applications + leadership nominations (submitted via `arena/01a0618c-...` branch) | none | **done** |
+| T30 | Editorial redesign + honest-states audit (submitted via `arena/01a06232-...` branch) | none | **done — 1 regression caught and reverted, see notes** |
 
 **T22 flagged priority.** Render permanently blocks outbound SMTP ports
 (25/465/587) on free-tier web services since September 2025 — confirmed
@@ -4768,3 +4769,63 @@ Verified the `#stand` anchor target exists on `LeadershipPage.jsx`
 (same check applied to `/membership#apply` earlier in this project).
 
 Approved and merged to `main`.
+
+---
+
+## T30 — Editorial redesign + honest-states audit
+
+**Branch:** `arena/01a06232-liberia-medical-students-assoc` (34 commits,
+submitted directly for review, same as T29)
+**Status:** done — one regression caught and reverted
+**Depends on:** none
+
+### What this adds
+
+A systematic content/UX-quality pass across most public, portal, and
+admin pages — genuinely high-quality throughout:
+
+- `DashboardPage.jsx`/`AdminDashboard.jsx`: switched `Promise.all` →
+  `Promise.allSettled` — this fixes the *exact class* of bug behind the
+  earlier "Failed to load portal data" production incident (one failed
+  fetch no longer takes down the whole page). Distinguishes
+  failed-to-load from genuinely-empty states. Fixed non-clickable
+  "My Upcoming Events" cards — a real bug in my own original T16 work,
+  caught and corrected here. Fixed a real data-accuracy bug in
+  `AdminDashboard.jsx`'s old "total members" stat, which summed
+  per-committee `member_count`s (double-counts anyone in multiple
+  committees, not a real total-users figure) — replaced with genuinely
+  useful admin-facing metrics (pending applications, real event/
+  committee counts).
+- New `ScrollManager.jsx`: fixes hash-anchor scrolling (`#apply`,
+  `#stand`) that silently didn't work under React Router's client-side
+  navigation — verified the anchors it targets actually exist.
+- Content-accuracy pass across ~20 pages (dead links wired up, "double
+  h1" fixes, unbacked claims removed) — spot-checked several, all
+  correct.
+
+### Orchestrator review
+
+Independently verified: `npx eslint` — 0 errors, 0 warnings. `npm run
+build` — clean. Confirmed zero backend changes (frontend-only branch).
+
+**One real regression found and NOT accepted.** This branch diverged
+*before* T29 merged, and its own final state (not just an intermediate
+commit — checked both) still had `CommitteesPage.jsx` reverted from
+`main`'s live `committeeService.getAll()` call back to static
+`ALL_COMMITTEES_DATA`. Verified this specifically: `main`'s version was
+already correctly fixed (a documented comment explains a past bug —
+two different hardcoded committee lists drifting out of sync — already
+resolved via live data) before this branch even diverged. Merging this
+branch's version as-is would have silently broken sync between T4's
+admin committee editing and the public overview page. Resolved during
+merge by keeping `main`'s version of `CommitteesPage.jsx` entirely.
+
+Also checked: this same branch carried stale, pre-T29 versions of
+`JoinCommitteePage.jsx` and `PartnershipPage.jsx` (both substantially
+rewritten by T29, which merged after this branch diverged). These
+auto-merged without conflict — verified *after* the merge, not just
+trusted, that T29's real functionality
+(`committeeService.applyToCommittee`) survived correctly in the final
+merged file.
+
+Approved and merged to `main` with the one specific reversion above.
