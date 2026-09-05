@@ -2,7 +2,7 @@ import { CheckCircle, Heart, MessageCircle, Users } from 'lucide-react';
 import { EditorialCallout, EditorialSectionHeader } from '@components/common/EditorialSections';
 
 const steps = [
-  { title: 'Apply', description: 'Fill out the mentorship application form', icon: MessageCircle },
+  { title: 'Reach out', description: 'Contact the team with your goals, interests, and what kind of support you’re looking for', icon: MessageCircle },
   { title: 'Get matched', description: 'We pair you with a compatible mentor', icon: Users },
   { title: 'Connect', description: 'Meet regularly with your mentor', icon: Heart },
   { title: 'Grow', description: 'Achieve your academic and career goals', icon: CheckCircle },
@@ -47,18 +47,18 @@ export default function MentorshipPage() {
       <section className="editorial-section editorial-section-muted">
         <div className="site-container">
           <EditorialSectionHeader eyebrow="How it works" title="A simple process, a meaningful relationship." description="The program is structured enough to help you begin and flexible enough to grow with the people involved." />
-          <div className="grid gap-4 md:grid-cols-4">
+          <ol className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {steps.map(({ title, description, icon: Icon }, index) => (
-              <article key={title} className="editorial-link-card">
-                <span className="editorial-link-card-icon" aria-hidden="true"><Icon size={21} strokeWidth={1.5} /></span>
-                <div className="editorial-link-card-copy">
-                  <span className="editorial-card-eyebrow">Step 0{index + 1}</span>
-                  <h3>{title}</h3>
-                  <p>{description}</p>
-                </div>
-              </article>
+              <li key={title} className="flex min-h-[190px] flex-col border border-gray-200 bg-white p-6">
+                <span className="mb-8 flex h-11 w-11 items-center justify-center bg-lmsa-50 text-lmsa-700" aria-hidden="true">
+                  <Icon size={21} strokeWidth={1.5} />
+                </span>
+                <span className="editorial-card-eyebrow">Step 0{index + 1}</span>
+                <h3 className="mt-2 text-xl font-semibold tracking-[-0.02em] text-lmsa-900">{title}</h3>
+                <p className="mt-2 text-sm leading-6 text-gray-600">{description}</p>
+              </li>
             ))}
-          </div>
+          </ol>
         </div>
       </section>
 
@@ -66,14 +66,14 @@ export default function MentorshipPage() {
         <div className="site-container">
           <div className="editorial-split">
             <EditorialSectionHeader eyebrow="What support can look like" title="The best mentorship is practical, personal, and mutual." description="Some conversations are about exams. Others are about finding your confidence or making a decision about what comes next." />
-            <div className="grid gap-3 sm:grid-cols-2">
+            <ul className="grid gap-3 sm:grid-cols-2">
               {benefits.map((benefit, index) => (
-                <div key={benefit} className="flex gap-3 border-b border-gray-200 pb-4">
-                  <span className="text-sm font-bold text-lmsa-700">0{index + 1}</span>
+                <li key={benefit} className="flex gap-3 border-b border-gray-200 pb-4">
+                  <span className="text-sm font-bold text-lmsa-700" aria-hidden="true">0{index + 1}</span>
                   <p className="text-sm leading-6 text-gray-700">{benefit}</p>
-                </div>
+                </li>
               ))}
-            </div>
+            </ul>
           </div>
         </div>
       </section>
@@ -83,8 +83,8 @@ export default function MentorshipPage() {
           <EditorialCallout
             eyebrow="Find your place"
             title="Need support—or ready to share what you know?"
-            description="Both mentees and mentors help make the LMSA community more generous."
-            action={{ label: 'Contact LMSA', to: '/contact' }}
+            description="Whether you want a mentor or want to become one, one message starts the match."
+            action={{ label: 'Ask about mentorship', to: '/contact' }}
           />
         </div>
       </section>

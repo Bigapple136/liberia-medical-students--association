@@ -20,6 +20,362 @@ Claude (orchestrator), and any implementing agents (Claude Code, etc.).
 
 ## Critical bugs found and fixed directly (outside the task board)
 
+**2026-09-02 addendum — news, symposia, events, committees, research, mentorship, documents, resources, dues, categories, benefits, membership + admin/member-dashboard design-review pass
+(Arena agent session, branch
+`arena/01a06232-liberia-medical-students-assoc`, NOT merged to
+`main`):** an Arena coding agent ran structured design critiques
+(heuristic scoring + deterministic detector, reports archived in
+`.impeccable/critique/`) against the news, symposia, events, committees, research, mentorship, documents, resources, dues, membership-categories, membership-benefits, and membership pages, plus the admin and member dashboards
+and shipped fixes on the session branch. **Awaiting lead-developer
+review before any merge to `main`.** Fourteen content commits (plus
+board-bookkeeping commits touching only this file; the branch tip is
+the latest bookkeeping commit):
+
+- `392e7fb` — **News index + detail redesign** (critique score 21/36).
+  Index: removed the filler stat band ("1 Student voice" / "∞ More to
+  come"), added an `h1` (new `as` prop on `EditorialSectionHeader`,
+  backwards-compatible), added category filter chips backed by the
+  `?category=` param `news.service.js` already supported, newest post
+  now renders as a lead feature card, fetch failures now show a real
+  error state with retry instead of masquerading as the "no news yet"
+  empty state, "Load more" only advances its page counter on success
+  (previously a failed load silently skipped a page), plus "Showing X
+  of Y", skeleton loading, and race-guarded requests.
+  `NewsDetailPage.jsx` was rebuilt into the editorial visual world (it
+  was still the legacy gray/rounded style), now shows
+  `featured_image_url` (previously fetched but never rendered), and
+  both pages share `src/utils/newsCategories.js` to stop badge-style
+  drift. Also added a dev-only `/api` → `localhost:5000` proxy +
+  `host: '0.0.0.0'` in `vite.config.js` (review point: confirm you're
+  happy with these staying).
+- `ba762fc` — **Symposia page truth/wiring fixes** (critique score
+  17/32). The page's statuses were hand-typed strings and had already
+  rotted — both "Upcoming" symposia dates were in the past while one
+  still showed a Register button; "Register now" was a `<button>` wired
+  to nothing. Status is now derived from start/end dates at render
+  time, the CTA is an honest "Register your interest" link to
+  `/contact` (symposia aren't in the events API, so an in-app
+  registration call would have been fiction), h1 added, wayfinding
+  eyebrow corrected from "Stories & events" to "Learn & lead" to match
+  the `/academics/symposia` route and its siblings, theme promoted from
+  an orphaned right-aligned span to a subtitle, `<time>` elements, and
+  empty states for both sections.
+
+- `bfb3b28` — **Events index + detail polish** (critique 20/36,
+  snapshot in `.impeccable/critique/`). Index: "Upcoming events" was
+  calling `getAll()` with no params, so ALL events — oldest past events
+  first — rendered under the upcoming banner; now partitioned into
+  "Coming up" and a "Recently held" archive (concluded chip, desaturated
+  imagery), with h1, honest error state + retry, skeletons, `<time>`
+  elements, and an empty state that invites event suggestions.
+  Detail: migrated off the legacy gray/rounded world onto the editorial
+  pattern (same drift class as the news detail); the register button had
+  no padding (`.btn` supplies none). Registration panel is now honest:
+  uses `registration_deadline`, `fee`, `max_attendees`,
+  `registration_count`, and `image_url` (all previously fetched or
+  available but never displayed), hides/explains registration for
+  concluded, deadline-passed, and full events, and signed-out visitors
+  get "Sign in to register" instead of a silent 401 bounce to /login.
+  Fetch is cancellation-safe with scroll reset. Verified: build, ESLint,
+  detector all clean.
+
+- `149aaf2` — **Committees page truth restoration** (critique 15/36 —
+  the worst surface this session; snapshot in `.impeccable/critique/`).
+  Two showstoppers: (1) all twelve committee links pointed at slugs
+  with zero overlap with the registry `CommitteePageTemplate` actually
+  understands, and the template's offline fallback spread `undefined`
+  into a truthy object, so every click landed on a blank, nameless
+  committee shell; (2) the twelve committees named on the page were
+  not LMSA's constitutional standing committees — names, per-card
+  member counts, and the "101 Active members" / "48+ Initiatives"
+  stats were all invented. `ALL_COMMITTEES_DATA` is now extracted to
+  `src/utils/committeesData.js` as the single source of truth, the
+  index renders the twelve real committees, header stats are derived
+  from the registry (12 / 72 / 72), unknown slugs now render Not
+  Found, the template's related-committees footer linked the
+  nonexistent `/committees/:slug` route (fixed to
+  `/leadership/committees/:slug`), cards use the shared
+  `EditorialLinkCard`, the 001–012 numbering defect is fixed, and the
+  page has an h1. Verified: build, ESLint, detector clean.
+
+- `d14b3e1` — **Research page dead-affordance fix** (critique 19/32;
+  snapshot in `.impeccable/critique/`). All four opportunity cards were
+  `EditorialLinkCard`s rendered with no `to` prop — link-styled
+  affordances navigating nowhere — while each card's data defined an
+  `action` label that was never rendered. Cards are now static article
+  cards with real labeled action links (grants → /contact,
+  collaboration/journal → the Research & Journal Committee page,
+  training → /academics/symposia), plus the h1. Flagged, not fixed:
+  the hardcoded "reviewed quarterly" / "accepted year-round" claims
+  can't be verified from the codebase — confirm or soften the copy.
+
+- `574f6a2` — **Mentorship page polish** (critique 22/32 — the
+  healthiest surface this session; snapshot in `.impeccable/critique/`).
+  Step 01 promised "the mentorship application form" — no such form
+  exists anywhere in the codebase — so the step now describes the real
+  contact path; the callout CTA was clarified to "Ask about mentorship"
+  and addresses both mentees and prospective mentors. Step cards no
+  longer borrow editorial-link-card's hover lift (false clickability on
+  static content); steps are an <ol>, benefits a <ul>, h1 added, and
+  the steps grid loosened to sm:2/lg:4. Decision point for the board:
+  if a real mentorship application form is wanted (portal form + API),
+  it needs a specced task — the copy now honestly reflects its absence.
+
+- `3378083` — **Documents page world migration** (critique 22/36;
+  snapshot in `.impeccable/critique/`). Functionally the most complete
+  surface reviewed (real API, working category filter, per-item
+  download states, server-side access filtering) but still fully in
+  the legacy gray/rounded visual world. Migrated to the editorial
+  pattern; filter is now the /news-style chip row (the old Select was
+  rendered with no label — an anonymous combobox to screen readers);
+  fetch errors get a retry state instead of the false "No documents
+  available yet"; skeletons, <time>, filter-aware empty states, and a
+  PageMeta entry for /documents added. Flagged, not fixed:
+  documentService.download opens the file via window.open AFTER an
+  awaited request — popup blockers can eat the tab (shared with
+  DocumentsAdminPage; needs a small specced fix, e.g. deriving an
+  anchor click or opening the window before the await).
+
+- `27b758f` — **Resources page: fabricated library replaced with the
+  real one** (critique 13/36, session low; snapshot in
+  `.impeccable/critique/`). Already in the editorial world and
+  detector-clean, but all twelve listed resources were invented and
+  every "Access resource" button had no handler — both promise-failure
+  variants on one page, linked from the header nav, homepage (x2),
+  benefits, mission, and the documents callout. Now: stage framing kept
+  as honest guidance (focus areas, no artifact claims), plus a live
+  "From the library" shelf fetching real `category=study_material`
+  documents via the existing public API with skeleton / error-retry /
+  honest-empty states and working per-item downloads (inherits the
+  window.open-after-await caveat in decision item 4). h1 restored,
+  link-card affordance misuse removed. No schema/API changes.
+
+- `6cf4373` — **Dues page refinements + site-wide ScrollManager**
+  (critique 25/32 — the session's healthiest surface; snapshot in
+  `.impeccable/critique/`). First page reviewed with an intact primary
+  promise and honest content; findings were an h1 miss, weak fee-table
+  semantics (scope/caption), and one site-wide discovery: the app had
+  NO scroll handling on client-side navigation — hash links like the
+  dues callout's /membership#apply landed at the top of the target
+  page, and every route change preserved the previous page's scroll
+  offset. New ScrollManager (mounted in App) scrolls to the hash
+  target when present, to top on PUSH/REPLACE, and leaves POP alone
+  for native restoration. Benefits every route, not just dues.
+  Left as-is and worth a content-review pass: "Payment portal
+  (coming soon)" — hedged, not false, but "coming soon" copy rots
+  silently.
+
+- `080cb54` — **Correction: double h1s on eight hero-configured
+  routes** (self-inflicted this session, now fixed). PublicLayout
+  mounts PageHero, which already renders the h1 for 24 configured
+  routes; the session's critiques scored "no h1 in the page file"
+  without tracing the layout, and the resulting page-level as="h1"
+  additions put two h1s on /news, /academics/symposia, /events,
+  /leadership/committees, /academics/research, /academics/mentorship,
+  /academics/resources, and /membership/dues. All eight reverted to
+  the h2 default; /documents correctly keeps its own h1 (no hero
+  config). Verified: every public route now renders exactly one h1.
+  Reviewer takeaway for the promise-audit task: heuristics that assert
+  on a page file in isolation are unreliable in this codebase —
+  PageHero (h1s, hero CTAs) and PublicLayout own real page content,
+  so audits must evaluate the composed route, not the component.
+
+- `0236caf` — **Categories page: comparison semantics fixed**
+  (critique 23/32, second-healthiest; snapshot in
+  `.impeccable/critique/`). Honorary Member simultaneously said "By
+  invitation" and offered an "Apply now" CTA — resolved (invitation
+  note + contact link instead). Green checkmarks were rendered on
+  restrictions ("No voting rights", "Cannot hold elected office");
+  features now split into included (Check) vs limits (muted Minus),
+  eligibility moved to a "For ..." line. Off-canon
+  membership@lmsa.org mailto replaced with a /contact link. "Event
+  discounts" (no paid events exist) replaced with registration-backed
+  phrasing. Link-card hover-lift affordance removed from non-clickable
+  cards.
+
+- `da5c5fa` — **Benefits page: unbacked claims removed** (critique
+  24/32; snapshot in `.impeccable/critique/`). Perfect link integrity
+  (first correct EditorialLinkCard usage of the session), but three
+  product claims had no mechanism behind them: "at member rates" (the
+  events backend has one fee field, no member pricing — same family as
+  categories' removed "Event discounts"), "past exams" (none verified
+  in the library), and "Priority registration" (no priority mechanism
+  exists). All reworded to what the product delivers. Perks are now a
+  real ol/li; benefit cards lose the hover-lift link-card affordance
+  (third instance of that class misuse). Org-level perk claims left
+  verbatim — see the new content-verification note in decision item 5.
+
+- `d587dc2` — **Membership page: policy alignment on the apply flow**
+  (critique 31/40 — strongest transactional surface of the session;
+  snapshot in `.impeccable/critique/`). The apply loop was already the
+  real thing (five honest states, real service calls); findings were
+  consistency-level. The Select offered Honorary despite two sibling
+  pages publishing "by invitation — no application"; option removed,
+  Honorary card gains a "By invitation" eyebrow. "past papers" claim
+  reworded (same family as benefits). Fourth link-card affordance
+  misuse removed. See new decision item 6: the membership taxonomy is
+  split — backend knows four types, categories/dues publish three.
+
+- `634e7da` — **Admin dashboard: fabrication removed from the
+  operational surface** (critique 20/40; snapshot in
+  `.impeccable/critique/`). Highest-stakes fake data of the session:
+  a hardcoded activity feed (invented people, an eternal "2 hours
+  ago", and a "$25.00 payment processed" when no payment system
+  exists), three dead cursor-pointer Quick Actions including a
+  "View Reports" card for a feature that exists nowhere, "Total
+  Members" derived by summing committee member_count (double-counts
+  people), and API errors rendering as zeros. Now: pending/approved
+  stats and a recent-applications feed from the real applications
+  API, Promise.allSettled with em-dash + retry banner for failed
+  sources, and three real quick-action Links. Reports card removed —
+  if the org wants reports, that is a specced feature, not a card.
+  Note: the admin Card idiom was deliberately kept; the editorial
+  world is public-site vocabulary.
+
+- `6bdebef` — **Member dashboard: resilience + affordance polish**
+  (critique 31/40 — tied for healthiest surface; snapshot in
+  `.impeccable/critique/`). The honest sibling of the admin dashboard:
+  zero fabrication, all data real. Fixed: all-or-nothing Promise.all
+  (one failed source blanked all four and rendered zeros as data —
+  sixth error-as-zeros instance) replaced with allSettled +
+  per-section unavailable states + retry banner; full-page spinner ->
+  in-layout skeletons; my-event rows now link to /events/:slug (API
+  already returned slug); membership-status card offers an apply link
+  instead of a dead em-dash; MapPin/Newspaper icon fixes; jargon
+  label renamed.
+
+Verification on all fourteen content commits: `npm run build` clean,
+ESLint clean, design-detector scan clean.
+
+**How to review:** `git fetch origin && git checkout
+arena/01a06232-liberia-medical-students-assoc`, then `npm install &&
+npm run dev` in `lmsa-website/`. The touched routes are `/news`,
+`/news/:slug`, `/academics/symposia`, `/events`, `/events/:slug`,
+`/leadership/committees`, `/leadership/committees/:slug` (every
+committee card previously dead-ended on a blank page — worth clicking
+a few), and `/academics/research` (its four opportunity cards were
+link-styled with no destination; verify each action link lands
+somewhere sensible), `/academics/mentorship`, and `/documents` (was
+still fully in the legacy visual world; check the chip filter and the
+error-state retry with the backend down), and `/academics/resources`
+(its twelve 'resources' were fabricated and every button was dead; the
+live study-materials shelf and its empty/error states are the things to
+exercise), and `/membership/dues` (mostly refinements — but its commit
+also ships the site-wide ScrollManager: verify that the dues page's
+"Start your membership" CTA now lands on the Apply section of
+/membership, that ordinary navigation starts at the top of the new
+page, and that the browser back button still restores scroll
+position), and `/membership/categories` (check the Honorary card no
+longer offers an application, and that restrictions render with muted
+minus icons rather than green checks), and `/membership/benefits`
+(claim-level edits only — confirm the copy still reads well and that
+the org-level perks flagged in decision item 5 get content-team
+review), and `/membership` (the apply form no longer offers Honorary;
+exercise the five apply states — signed-out, loading, pending,
+approved, rejected — against the real API), and `/admin/dashboard`
+(sign in with an admin account: stats and the recent-applications
+feed are now real API data — verify against /admin/membership, and
+kill the API to confirm figures show as an em-dash with a retry
+banner rather than zeros), and `/portal/dashboard` (sign in as a
+member: event rows should link to their detail pages, a member with
+no application should see an apply link in the status card, and
+partial API failure should show per-section unavailable states, not
+zeros).
+With no backend running, `/news` and `/events` should show their new
+error state with a working "Try again" (previously both rendered a
+false "nothing here yet" empty state on fetch failure — worth
+verifying). With the real API up, check the events detail registration
+panel against an event with a deadline/capacity, a concluded event, and
+a signed-out session. Full critique reports with heuristic scores and
+per-finding severity are in `.impeccable/critique/*.md`. Diff review
+shortcut: `git diff main...arena/01a06232-liberia-medical-students-assoc
+-- lmsa-website/src`.
+
+Not done (flagged, not fixed — needs a decision or a specced task):
+
+1. **JoinCommitteePage still shows the fabricated committee list**
+   (invented names, openings, and deadlines) that the committees index
+   just dropped — needs the same registry treatment plus a decision on
+   where "openings/deadline" truth should come from.
+2. **Symposia data is still a hardcoded array** — the date-derived
+   status stops it lying, but content updates still require a code
+   change. Recommend a task to move symposia into the existing events
+   API/admin (offered during the session; deliberately not done without
+   orchestrator sign-off since it touches schema/admin scope).
+3. `.impeccable/` critique snapshots and the skill's hook config now
+   live in the repo — same keep-or-remove workflow question as the
+   earlier `.replit`/`.agents` flag.
+4. **Contact email fragmentation (site-wide).** Four addresses across
+   three domain families are published: dev.lmsa@gmail.com
+   (ContactPage, Footer), support@lmsa.org.lr (ErrorBoundary,
+   LoginPage), partnerships@lmsa.org.lr (PartnershipPage), and — until
+   the categories commit — membership@lmsa.org. Which family is real
+   and monitored? Needs one canonical answer and a constants file;
+   mail sent to a dead mailbox is a silent support failure.
+5. **Org-level benefit claims need content-team verification.** The
+   benefits page promises textbook discounts, free medical-database
+   access, scholarships/grants, national-forum representation, an
+   alumni network, and exclusive social events. The codebase can
+   neither back nor refute these — they are organizational facts, not
+   product artifacts, so they were left verbatim rather than reworded
+   into mush. Someone who knows the org's actual commitments should
+   confirm each one before launch.
+6. **Membership taxonomy split: four types vs three.** The backend
+   (VALID_MEMBERSHIP_TYPES) and the membership page's apply flow know
+   full, associate, honorary, and veteran; the categories page and
+   dues table publish only three — Veteran Member appears nowhere
+   else on the site and has no listed dues. Either Veteran is real
+   (categories/dues must add it, with a fee decision) or it is not
+   (backend and apply options should drop it). Related: the UI no
+   longer lets users apply for Honorary (matching the published
+   invitation-only policy), but the backend still accepts
+   'honorary' applications submitted directly.
+7. **`documentService.download` opens the file via `window.open` after
+   an awaited request** — the click gesture context is lost by the time
+   the tab opens, so popup blockers can silently eat it. Shared by the
+   public documents page and `DocumentsAdminPage`, so it was flagged
+   rather than patched from the page-polish commit. Small specced fix:
+   open the window synchronously on click and set its `location` after
+   the await, or resolve to an anchor-click download.
+
+**Session close (2026-09-02):** all fourteen surfaces above are shipped,
+verified (build / ESLint / detector clean on every content commit), and
+pushed. The session branch is ready for end-to-end review as a single
+unit; suggested review order is the diff shortcut above, then the
+manual state checks. Nothing else on this branch is in flight.
+
+**Orchestrator pattern observation (recommend a specced task):** five
+of the eight surfaces reviewed this session had a *broken primary
+promise*, in two variants — and the resources page combined both at
+once (twelve fabricated items AND twelve handler-less buttons), scoring
+the session's lowest critique despite being fully in the correct visual
+world; world migration alone is not a proxy for health. Dead controls:
+symposia's "Register now"
+button was wired to nothing, all twelve committee cards linked slugs
+the detail route couldn't resolve, and the research page's four
+opportunity cards were link-styled components with no destination.
+Unbacked copy: the mentorship page's step one told users to "fill out
+the mentorship application form" — no such form exists anywhere in the
+codebase. All four were token-clean and invisible to the design
+detector; each was found only by tracing the promise (click path or
+copy claim) back to source. The remaining public pages (About cluster,
+Membership cluster, Resources, Leadership pages, Partnership,
+JoinCommitteePage, etc.) have not had this trace done. Recommend a
+systematic promise audit: for every `<Link>`, `<button>`, and
+link-styled card, verify the destination route exists in `routes.jsx`
+and the handler does something; and for every copy claim naming an
+artifact or action ("form", "apply", "submit", "register", "download"),
+verify the artifact exists. Cheap to script partially (extract
+`to="..."` targets and diff against the route table — the 2026-09-01
+addendum's link audit covered hrefs, but not undefined `to` props,
+no-op buttons, slug-registry mismatches, or copy-level promises, which
+is exactly what bit this session). The documents page is the useful
+counter-example: its primary promise held (list, filter, and download
+all wired to a real API) — but its download delivery is still fragile
+via the `window.open`-after-await issue in item 4 above, a third,
+subtler variant the audit should also catch: control wired, delivery
+mechanism unreliable.
+
 **2026-09-01 addendum — review of two direct-to-main pushes:** Stone
 pushed two large batches directly to `main` (a UI redesign — new
 `Header.jsx`/`HomePage.jsx`/`PageHero.jsx`/`PageMeta.jsx`/`Footer.jsx` —

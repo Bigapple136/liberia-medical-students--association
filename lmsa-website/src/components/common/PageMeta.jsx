@@ -109,6 +109,12 @@ const pageMeta = [
       'Explore research opportunities and support for medical students who want to improve healthcare in Liberia.',
   },
   {
+    match: (path) => path === '/documents',
+    title: 'Publications, reports, and resources | LMSA',
+    description:
+      'Browse and download LMSA’s governing documents, journals, newsletters, reports, and study materials.',
+  },
+  {
     match: (path) => path === '/events',
     title: 'What’s happening across LMSA | LMSA',
     description:

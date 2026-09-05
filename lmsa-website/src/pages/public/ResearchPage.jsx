@@ -1,11 +1,32 @@
-import { Award, BookOpen, FlaskConical, Users } from 'lucide-react';
-import { EditorialCallout, EditorialLinkCard, EditorialSectionHeader } from '@components/common/EditorialSections';
+import { ArrowRight, Award, BookOpen, FlaskConical, Users } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { EditorialCallout, EditorialSectionHeader } from '@components/common/EditorialSections';
 
 const opportunities = [
-  { title: 'Research grants', description: 'LMSA offers small grants to support student-led research projects. Applications are reviewed quarterly.', icon: Award, action: 'Learn more' },
-  { title: 'Collaborative projects', description: 'Join ongoing research projects led by faculty and senior students across multiple medical schools.', icon: Users, action: 'Learn more' },
-  { title: 'LMSA Medical Journal', description: 'Publish your research in our peer-reviewed student medical journal. Submissions are accepted year-round.', icon: BookOpen, action: 'Submit paper' },
-  { title: 'Research training', description: 'Attend workshops on research methodology, data analysis, and scientific writing.', icon: FlaskConical, action: 'View workshops' },
+  {
+    title: 'Research grants',
+    description: 'LMSA offers small grants to support student-led research projects. Applications are reviewed quarterly.',
+    icon: Award,
+    action: { label: 'Ask about grants', to: '/contact' },
+  },
+  {
+    title: 'Collaborative projects',
+    description: 'Join ongoing research projects led by faculty and senior students across multiple medical schools.',
+    icon: Users,
+    action: { label: 'Meet the Research & Journal Committee', to: '/leadership/committees/research-journal' },
+  },
+  {
+    title: 'LMSA Medical Journal',
+    description: 'Publish your research in our peer-reviewed student medical journal. Submissions are accepted year-round.',
+    icon: BookOpen,
+    action: { label: 'Contact the journal team', to: '/leadership/committees/research-journal' },
+  },
+  {
+    title: 'Research training',
+    description: 'Attend workshops on research methodology, data analysis, and scientific writing.',
+    icon: FlaskConical,
+    action: { label: 'View symposia & workshops', to: '/academics/symposia' },
+  },
 ];
 
 const focusAreas = [
@@ -16,6 +37,27 @@ const focusAreas = [
   'Mental Health',
   'Traditional Medicine Integration',
 ];
+
+function OpportunityCard({ opportunity, index }) {
+  const Icon = opportunity.icon;
+  return (
+    <article className="flex min-h-[220px] flex-col border border-gray-200 bg-white p-6">
+      <span className="mb-8 flex h-11 w-11 items-center justify-center bg-lmsa-50 text-lmsa-700" aria-hidden="true">
+        <Icon size={22} strokeWidth={1.6} />
+      </span>
+      <span className="editorial-card-eyebrow">{`0${index + 1} / Opportunity`}</span>
+      <h3 className="mt-2 text-xl font-semibold tracking-[-0.02em] text-lmsa-900">{opportunity.title}</h3>
+      <p className="mt-2 text-sm leading-6 text-gray-600">{opportunity.description}</p>
+      <Link
+        to={opportunity.action.to}
+        className="group mt-auto inline-flex items-center gap-2 pt-6 text-sm font-semibold text-lmsa-700 transition-colors hover:text-lmsa-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
+      >
+        {opportunity.action.label}
+        <ArrowRight size={15} className="transition-transform duration-200 group-hover:translate-x-1" aria-hidden="true" />
+      </Link>
+    </article>
+  );
+}
 
 export default function ResearchPage() {
   return (
@@ -46,15 +88,8 @@ export default function ResearchPage() {
         <div className="site-container">
           <EditorialSectionHeader eyebrow="Ways to begin" title="Find the research opportunity that fits your question." description="Start with a grant, a collaborator, a publication, or the skills to make your next project stronger." />
           <div className="grid gap-4 md:grid-cols-2">
-            {opportunities.map(({ title, description, icon: Icon }, index) => (
-              <EditorialLinkCard
-                key={title}
-                eyebrow={`0${index + 1} / Opportunity`}
-                title={title}
-                description={description}
-                icon={Icon}
-                className="min-h-[220px]"
-              />
+            {opportunities.map((opportunity, index) => (
+              <OpportunityCard key={opportunity.title} opportunity={opportunity} index={index} />
             ))}
           </div>
         </div>

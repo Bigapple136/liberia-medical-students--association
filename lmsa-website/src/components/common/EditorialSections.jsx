@@ -1,11 +1,11 @@
 import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-export function EditorialSectionHeader({ eyebrow, title, description, align = 'left' }) {
+export function EditorialSectionHeader({ eyebrow, title, description, align = 'left', as: Heading = 'h2' }) {
   return (
     <div className={`editorial-section-header ${align === 'center' ? 'editorial-section-header-center' : ''}`}>
       {eyebrow && <p className="editorial-overline">{eyebrow}</p>}
-      <h2>{title}</h2>
+      <Heading>{title}</Heading>
       {description && <p>{description}</p>}
     </div>
   );

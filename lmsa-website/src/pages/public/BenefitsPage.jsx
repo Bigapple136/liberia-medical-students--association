@@ -3,9 +3,9 @@ import { Link } from 'react-router-dom';
 import { EditorialCallout, EditorialLinkCard, EditorialSectionHeader } from '@components/common/EditorialSections';
 
 const benefits = [
-  { icon: BookOpen, title: 'Academic resources', description: 'Access exclusive study materials, past exams, and learning resources.' },
+  { icon: BookOpen, title: 'Academic resources', description: 'Access study materials and learning resources shared through the member library.' },
   { icon: Users, title: 'Networking opportunities', description: 'Connect with peers, mentors, and medical professionals across Liberia.' },
-  { icon: Calendar, title: 'Events & conferences', description: 'Attend symposia, workshops, and medical conferences at member rates.' },
+  { icon: Calendar, title: 'Events & conferences', description: 'Attend symposia, workshops, and medical conferences through your member account.' },
   { icon: Heart, title: 'Mentorship program', description: 'Get paired with senior students for academic and career guidance.' },
   { icon: Star, title: 'Leadership development', description: 'Run for office, join committees, and build leadership skills.' },
   { icon: CheckCircle, title: 'Professional recognition', description: 'Receive certificates and recognition for academic achievements.' },
@@ -14,7 +14,7 @@ const benefits = [
 const perks = [
   'Discounted medical textbooks and resources',
   'Free access to online medical databases',
-  'Priority registration for workshops and training',
+  'Member registration for workshops and training',
   'Eligibility for LMSA scholarships and grants',
   'Representation in national medical forums',
   'Access to alumni network and career opportunities',
@@ -45,12 +45,12 @@ export default function BenefitsPage() {
           <EditorialSectionHeader eyebrow="The everyday benefits" title="Six ways LMSA can move with you." description="Membership follows the real shape of student life: learning, belonging, contribution, and preparation." />
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {benefits.map(({ icon: Icon, title, description }, index) => (
-              <article key={title} className="editorial-link-card">
-                <span className="editorial-link-card-icon" aria-hidden="true"><Icon size={22} strokeWidth={1.6} /></span>
-                <div className="editorial-link-card-copy">
+              <article key={title} className="flex flex-col border border-gray-200 bg-white p-6">
+                <span className="mb-8 flex h-11 w-11 items-center justify-center bg-lmsa-50 text-lmsa-700" aria-hidden="true"><Icon size={22} strokeWidth={1.6} /></span>
+                <div>
                   <span className="editorial-card-eyebrow">0{index + 1} / Benefit</span>
-                  <h3>{title}</h3>
-                  <p>{description}</p>
+                  <h3 className="mt-2 text-lg font-semibold tracking-[-0.02em] text-lmsa-900">{title}</h3>
+                  <p className="mt-2 text-sm leading-6 text-gray-600">{description}</p>
                 </div>
               </article>
             ))}
@@ -66,14 +66,14 @@ export default function BenefitsPage() {
               title="Small advantages add up over a year of training."
               description="The additional perks make it easier to stay informed, participate fully, and keep building a professional network."
             />
-            <div className="grid gap-3 sm:grid-cols-2">
+            <ol className="grid gap-3 sm:grid-cols-2">
               {perks.map((perk, index) => (
-                <div key={perk} className="flex gap-3 border-b border-gray-200 pb-4">
-                  <span className="text-sm font-bold text-lmsa-700">0{index + 1}</span>
+                <li key={perk} className="flex gap-3 border-b border-gray-200 pb-4">
+                  <span className="text-sm font-bold text-lmsa-700" aria-hidden="true">0{index + 1}</span>
                   <p className="text-sm leading-6 text-gray-700">{perk}</p>
-                </div>
+                </li>
               ))}
-            </div>
+            </ol>
           </div>
         </div>
       </section>

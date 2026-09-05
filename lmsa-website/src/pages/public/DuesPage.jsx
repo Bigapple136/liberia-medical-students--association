@@ -37,11 +37,12 @@ export default function DuesPage() {
           <EditorialSectionHeader eyebrow="Annual fee structure" title="Know the cost before you apply." description="Membership dues are paid yearly. Honorary membership is offered by invitation." />
           <div className="overflow-x-auto border-y border-gray-200 bg-white">
             <table className="w-full min-w-[620px]">
+              <caption className="sr-only">Annual membership fee structure by membership type</caption>
               <thead>
                 <tr className="border-b-2 border-gray-200 text-left">
-                  <th className="px-5 py-4 text-xs font-bold uppercase tracking-[0.12em] text-gray-500">Membership type</th>
-                  <th className="px-5 py-4 text-center text-xs font-bold uppercase tracking-[0.12em] text-gray-500">Annual fee</th>
-                  <th className="px-5 py-4 text-center text-xs font-bold uppercase tracking-[0.12em] text-gray-500">Payment frequency</th>
+                  <th scope="col" className="px-5 py-4 text-xs font-bold uppercase tracking-[0.12em] text-gray-500">Membership type</th>
+                  <th scope="col" className="px-5 py-4 text-center text-xs font-bold uppercase tracking-[0.12em] text-gray-500">Annual fee</th>
+                  <th scope="col" className="px-5 py-4 text-center text-xs font-bold uppercase tracking-[0.12em] text-gray-500">Payment frequency</th>
                 </tr>
               </thead>
               <tbody>
