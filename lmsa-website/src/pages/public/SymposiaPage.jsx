@@ -1,47 +1,25 @@
+import { useEffect, useState } from 'react';
 import { ArrowRight, Calendar, MapPin, Users } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { EditorialCallout, EditorialSectionHeader } from '@components/common/EditorialSections';
+import { eventService } from '@services/event.service';
 
-// Symposium data. Status is derived from the dates at render time —
-// never hand-typed — so cards can't claim a finished event is upcoming.
-const symposia = [
-  {
-    title: 'Annual Medical Symposium 2026',
-    startDate: '2026-08-15',
-    endDate: '2026-08-17',
-    location: 'Monrovia, Liberia',
-    theme: 'Innovation in African Healthcare',
-    attendees: '500+',
-  },
-  {
-    title: 'Public Health Conference',
-    startDate: '2026-03-20',
-    endDate: '2026-03-21',
-    location: 'Virtual Event',
-    theme: 'Community Health Strategies',
-    attendees: '300+',
-  },
-  {
-    title: 'Research & Innovation Summit',
-    startDate: '2025-11-10',
-    endDate: '2025-11-12',
-    location: 'Monrovia, Liberia',
-    theme: 'Student-Led Research',
-    attendees: '250+',
-  },
-];
+// Symposia are events with event_type: 'symposium' — created and managed
+// through the existing admin Events flow (EventsAdminPage.jsx already has
+// a Symposium option in its event-type selector). No separate admin UI or
+// data source for symposia; this page just filters the same events API
+// the rest of the site already uses.
 
-function isUpcoming(symposium) {
-  // A symposium counts as upcoming until the end of its final day.
-  const end = new Date(`${symposium.endDate}T23:59:59`);
+function isUpcoming(event) {
+  const end = new Date(event.end_datetime || event.start_datetime);
   return end >= new Date();
 }
 
-function formatDateRange(startDate, endDate) {
+function formatDateRange(startDatetime, endDatetime) {
   const options = { month: 'long', day: 'numeric', year: 'numeric' };
-  const start = new Date(`${startDate}T00:00:00`);
-  const end = new Date(`${endDate}T00:00:00`);
-  if (startDate === endDate) return start.toLocaleDateString('default', options);
+  const start = new Date(startDatetime);
+  const end = endDatetime ? new Date(endDatetime) : start;
+  if (start.toDateString() === end.toDateString()) return start.toLocaleDateString('default', options);
   const sameMonth = start.getFullYear() === end.getFullYear() && start.getMonth() === end.getMonth();
   if (sameMonth) {
     const monthYear = start.toLocaleDateString('default', { month: 'long', year: 'numeric' });
@@ -51,39 +29,45 @@ function formatDateRange(startDate, endDate) {
   return `${start.toLocaleDateString('default', options)} – ${end.toLocaleDateString('default', options)}`;
 }
 
-function SymposiumCard({ symposium, upcoming }) {
+function SymposiumCard({ event, upcoming }) {
   return (
     <article className={`border p-6 md:p-8 ${upcoming ? 'border-lmsa-200 bg-white' : 'border-gray-200 bg-[#ebeae4]'}`}>
       <div className="flex flex-wrap items-center gap-3">
         <span className={`px-3 py-1 text-xs font-bold uppercase tracking-[0.12em] ${upcoming ? 'bg-lmsa-50 text-lmsa-700' : 'bg-gray-200 text-gray-600'}`}>
           {upcoming ? 'Upcoming' : 'Completed'}
         </span>
-        <time dateTime={symposium.startDate} className="text-sm text-gray-500">
-          {formatDateRange(symposium.startDate, symposium.endDate)}
+        <time dateTime={event.start_datetime} className="text-sm text-gray-500">
+          {formatDateRange(event.start_datetime, event.end_datetime)}
         </time>
       </div>
-      <h3 className="mt-4 text-2xl font-semibold tracking-[-0.03em] text-lmsa-900">{symposium.title}</h3>
-      <p className="mt-1 text-sm font-semibold text-lmsa-700">Theme: {symposium.theme}</p>
+      <h3 className="mt-4 text-2xl font-semibold tracking-[-0.03em] text-lmsa-900">{event.title}</h3>
+      {event.description && (
+        <p className="mt-1 text-sm font-semibold text-lmsa-700">{event.description}</p>
+      )}
       <div className="mt-5 flex flex-wrap gap-x-6 gap-y-3 text-sm text-gray-600">
         <span className="flex items-center gap-2">
           <Calendar size={16} className="text-lmsa-600" aria-hidden="true" />
-          {formatDateRange(symposium.startDate, symposium.endDate)}
+          {formatDateRange(event.start_datetime, event.end_datetime)}
         </span>
-        <span className="flex items-center gap-2">
-          <MapPin size={16} className="text-lmsa-600" aria-hidden="true" />
-          {symposium.location}
-        </span>
-        <span className="flex items-center gap-2">
-          <Users size={16} className="text-lmsa-600" aria-hidden="true" />
-          {upcoming ? 'Expected' : 'Attended'}: {symposium.attendees}
-        </span>
+        {event.location && (
+          <span className="flex items-center gap-2">
+            <MapPin size={16} className="text-lmsa-600" aria-hidden="true" />
+            {event.location}
+          </span>
+        )}
+        {typeof event.registration_count === 'number' && (
+          <span className="flex items-center gap-2">
+            <Users size={16} className="text-lmsa-600" aria-hidden="true" />
+            {event.registration_count} registered{event.max_attendees ? ` of ${event.max_attendees}` : ''}
+          </span>
+        )}
       </div>
       {upcoming && (
         <Link
-          to="/contact"
+          to={`/events/${event.slug}`}
           className="mt-6 inline-flex items-center gap-2 bg-lmsa-600 px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-lmsa-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
         >
-          Register your interest
+          View & register
           <ArrowRight size={15} aria-hidden="true" />
         </Link>
       )}
@@ -92,8 +76,28 @@ function SymposiumCard({ symposium, upcoming }) {
 }
 
 export default function SymposiaPage() {
-  const upcoming = symposia.filter(isUpcoming);
-  const past = symposia.filter((symposium) => !isUpcoming(symposium));
+  const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        setLoading(true);
+        setError(false);
+        const data = await eventService.getAll({ type: 'symposium' });
+        setEvents(data || []);
+      } catch (err) {
+        console.error('Failed to load symposia:', err);
+        setError(true);
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, []);
+
+  const upcoming = events.filter(isUpcoming);
+  const past = events.filter((event) => !isUpcoming(event));
 
   return (
     <main className="editorial-page">
@@ -114,10 +118,20 @@ export default function SymposiaPage() {
       <section className="editorial-section editorial-section-muted">
         <div className="site-container">
           <EditorialSectionHeader eyebrow="Coming up" title="Upcoming symposia." description="Plan ahead for the conversations and communities you want to be part of." />
-          {upcoming.length > 0 ? (
+          {loading ? (
             <div className="space-y-4">
-              {upcoming.map((symposium) => (
-                <SymposiumCard key={symposium.title} symposium={symposium} upcoming />
+              {[1, 2].map((i) => (
+                <div key={i} className="h-40 animate-pulse border border-gray-200 bg-gray-50" />
+              ))}
+            </div>
+          ) : error ? (
+            <div className="border border-gray-200 bg-white p-10 text-center">
+              <p className="text-gray-600">Couldn&apos;t load symposia right now. Please try again shortly.</p>
+            </div>
+          ) : upcoming.length > 0 ? (
+            <div className="space-y-4">
+              {upcoming.map((event) => (
+                <SymposiumCard key={event.id} event={event} upcoming />
               ))}
             </div>
           ) : (
@@ -142,15 +156,15 @@ export default function SymposiaPage() {
       <section className="editorial-section">
         <div className="site-container">
           <EditorialSectionHeader eyebrow="The archive" title="Past symposia." description="The conversations may be over, but the questions they raised continue to shape our work." />
-          {past.length > 0 ? (
+          {!loading && !error && past.length > 0 ? (
             <div className="space-y-4">
-              {past.map((symposium) => (
-                <SymposiumCard key={symposium.title} symposium={symposium} upcoming={false} />
+              {past.map((event) => (
+                <SymposiumCard key={event.id} event={event} upcoming={false} />
               ))}
             </div>
-          ) : (
+          ) : !loading && !error ? (
             <p className="max-w-2xl text-gray-600">Past symposia will be archived here after they conclude.</p>
-          )}
+          ) : null}
         </div>
       </section>
 
