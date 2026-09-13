@@ -11,27 +11,27 @@ new numbered files are added.
 | 001 | `001_base_schema.sql` | Creates all core tables (`users`, `events`, `committees`, `committee_members`, `documents`, `news_posts`, `event_registrations`, etc.), indexes, RLS policies, and triggers. Must run first — everything else depends on these tables existing. |
 | 002 | `002_committee_additions.sql` | Adds `committee_id` FK columns to `events` and `documents`, extra columns on `committees` (`key_activities`, `email`, `meeting_schedule`, `views`), and creates `committee_announcements`, `committee_achievements`, `committee_subscribers` tables. Depends on 001 being applied first. |
 | 003 | `003_newsletter.sql` | Creates the site-wide `newsletter_subscribers` table (separate from the per-committee `committee_subscribers`), its email index, RLS, and a public insert policy so the unauthenticated footer signup can write. Depends on 001 being applied first (RLS enabled; no FK dependencies). |
+| 004 | `004_committee_applications.sql` | Makes "Apply now" a real flow. Adds `openings`, `application_deadline` and `accepting_applications` to `committees`, creates `committee_applications` (statement, year level, phone, status, review fields) with a partial unique index allowing one live application per person per committee, plus RLS. Depends on 001 (`committees`, `users`, and the `update_updated_at_column()` trigger function). |
 | 005 | `005_leadership_nominations.sql` | Makes "how to stand for office" a real flow. Creates `election_cycles` (academic year, nomination open/close dates, election date, `accepting_nominations` switch) and `leadership_nominations` (level, position, statement, status, review fields) with a partial unique index allowing one live nomination per person per position per cycle, plus RLS. Depends on 001 (`users`, and the `update_updated_at_column()` trigger function). |
 
-| 004 | `004_committee_applications.sql` | Makes "Apply now" a real flow. Adds `openings`, `application_deadline` and `accepting_applications` to `committees`, creates `committee_applications` (statement, year level, phone, status, review fields) with a partial unique index allowing one live application per person per committee, plus RLS. Depends on 001 (`committees`, `users`, and the `update_updated_at_column()` trigger function). |
+## Status as of 2026-09-03
 
-## Status as of 2026-09-02
+- ✅ **004 and 005 both applied** — confirmed by Stone. `committees` now
+  has real `openings`/`application_deadline`/`accepting_applications`
+  columns, `committee_applications` exists, and `election_cycles`/
+  `leadership_nominations` both exist with RLS.
 
-- ⏳ **005 not yet applied.** Written and committed on branch
-  `arena/01a0618c-liberia-medical-students-assoc`, awaiting Stone to run it
-  in the Supabase SQL Editor. Until then `/leadership#stand` renders the
-  closed state: the election-cycle panel says the dates could not be loaded
-  and no nomination button appears. After running it, create one
-  `election_cycles` row (via **Admin → Executive → Nominations & election
-  cycle**) with an academic year, the three dates, and
-  `accepting_nominations = true`.
-- ⏳ **004 not yet applied.** Written and committed on branch
-  `arena/01a0618c-liberia-medical-students-assoc`, awaiting Stone to run it
-  in the Supabase SQL Editor. Until then the committee pages render the
-  static fallback described above and no deadline is published.
-  After running it, set `accepting_applications = true`, `openings`, and
-  `application_deadline` on whichever committees are recruiting — all three
-  default to closed / 0 / null, so the pages stay honest until you do.
+**Two follow-up actions still needed to make these features actually
+useful (not migration steps, just data — either via Supabase directly
+or the app's own admin UI):**
+- Every committee still defaults to `accepting_applications = false`,
+  `openings = 0`, `application_deadline = null` — set these on whichever
+  committees are actually recruiting, or the "Apply now" flow stays
+  correctly closed everywhere.
+- No `election_cycles` row exists yet — create one via **Admin →
+  Executive → Nominations & election cycle** (academic year, the three
+  dates, `accepting_nominations = true`), or `/leadership#stand` keeps
+  showing the closed/no-dates state.
 
 ## Status as of 2026-08-17
 
@@ -43,7 +43,7 @@ new numbered files are added.
   RLS, and both public insert/update policies are live in production
   (confirmed by Stone).
 
-## How to run
+## How to run (for reference — 001–005 are all applied as of 2026-09-03)
 
 1. Supabase dashboard → your project → **SQL Editor**
 2. Open `001_base_schema.sql`, copy the full contents, paste into a new
@@ -61,13 +61,17 @@ new numbered files are added.
    policies across the two.
 7. Update the status line above once confirmed.
 
-Until 004 is applied, `/get-involved/committees` and `/leadership/committees`
-fall back to a static committee list with **no** recruitment window (nothing
-claims to be recruiting and no deadline is shown). That is deliberate: the
-defect this replaced was a hardcoded "May 31, 2026" deadline that silently
-went stale, so the honest fallback is "not open yet", not an invented date.
+When 004 wasn't yet applied, `/get-involved/committees` and
+`/leadership/committees` fell back to a static committee list with **no**
+recruitment window (nothing claimed to be recruiting and no deadline was
+shown) — deliberate: the defect this replaced was a hardcoded "May 31, 2026"
+deadline that silently went stale, so the honest fallback was "not open
+yet," not an invented date. Now that 004 is applied, this only matters
+per-committee until `accepting_applications`/`openings`/
+`application_deadline` are actually set (see the status note above).
 
-Until 005 is applied, `/leadership#stand` lists the three leadership levels
-but shows no dates and no nomination button. Same reasoning: the page
-described elections as "held annually" with no year and no window, so the
-honest fallback is "we could not read the calendar", not an invented date.
+Same reasoning applied to 005 before it was run: `/leadership#stand`
+listed the three leadership levels but showed no dates and no nomination
+button, rather than describing elections as "held annually" with no real
+year or window. Now that 005 is applied, this only matters until an
+`election_cycles` row actually exists.
