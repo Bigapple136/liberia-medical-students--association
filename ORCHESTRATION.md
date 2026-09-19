@@ -1,5 +1,9 @@
 # LMSA Orchestration Board
 
+**New chat session? Read `TURNOVER.md` first** — it has setup mechanics,
+known gotchas, and current open items in one place. This file is the
+detailed task-by-task history.
+
 This file is the single source of truth for coordinating work between Stone,
 Claude (orchestrator), and any implementing agents (Claude Code, etc.).
 
