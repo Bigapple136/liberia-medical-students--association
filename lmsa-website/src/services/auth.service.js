@@ -48,12 +48,23 @@ export const authService = {
     return response.data;
   },
 
-  // Reset password
-  async resetPassword(token, newPassword) {
-    const response = await api.post('/auth/reset-password', {
-      token,
+  // Reset password — handled entirely client-side, no backend endpoint.
+  // The recovery link establishes an authenticated session on this frontend
+  // client (detectSessionInUrl parses it from the URL), and updateUser acts
+  // on that session. The old POST /auth/reset-password call could never
+  // work: its service-role backend client has no signed-in user to update
+  // (see ORCHESTRATION.md T31).
+  async resetPassword(newPassword) {
+    if (!supabase) {
+      throw new Error('Password reset is temporarily unavailable. Please try again later.');
+    }
+
+    const { data, error } = await supabase.auth.updateUser({
       password: newPassword,
     });
-    return response.data;
+
+    if (error) throw error;
+
+    return data;
   },
 };

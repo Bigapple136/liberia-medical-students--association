@@ -201,6 +201,13 @@ export const forgotPassword = async (req, res) => {
   }
 };
 
+// NOTE: The frontend no longer calls this endpoint — password updates are
+// handled client-side via the frontend's own Supabase session
+// (`supabase.auth.updateUser`), see ORCHESTRATION.md T31. Kept (not
+// deleted) for compatibility, but it is effectively dead code: it runs on
+// the service-role client, which has no signed-in user session to update,
+// and the `token` it accepts is never used below. Don't assume it's live
+// or tested.
 export const resetPassword = async (req, res) => {
   try {
     const { token, password } = req.body;
