@@ -516,6 +516,7 @@ so this entire authentication path was silently broken the whole time.
 | T28 | Admin document upload/management page | T26 | **done** |
 | T29 | Committee applications + leadership nominations (submitted via `arena/01a0618c-...` branch) | none | **done** |
 | T30 | Editorial redesign + honest-states audit (submitted via `arena/01a06232-...` branch) | none | **done — 1 regression caught and reverted, see notes** |
+| T31 | Forgot/reset password flow (frontend pages + a real backend bug in `resetPassword`) | none | **unassigned** |
 
 **T22 flagged priority.** Render permanently blocks outbound SMTP ports
 (25/465/587) on free-tier web services since September 2025 — confirmed
@@ -4833,3 +4834,139 @@ trusted, that T29's real functionality
 merged file.
 
 Approved and merged to `main` with the one specific reversion above.
+
+---
+
+## T31 — Forgot/reset password flow
+
+**Branch:** `task/t31-password-reset`
+**Status:** unassigned
+**Depends on:** none
+
+### Context
+
+`LoginPage.jsx` links to `/forgot-password` — no route or page exists,
+so it 404s today. This is a real, user-facing gap flagged in the
+previous session's turnover.
+
+**Also found while specing this (not previously flagged): the existing
+backend `resetPassword` handler is broken, not just unbuilt-on-top-of.**
+`lmsa-api/src/controllers/auth.controller.js`'s `resetPassword` takes
+`{ token, password }`, validates `token` is non-empty, but never
+actually uses `token` anywhere in the function body — it just calls
+`supabase.auth.updateUser({ password })` using the **service-role**
+backend client (`lmsa-api/src/config/supabase.js`, created with
+`persistSession: false`, `autoRefreshToken: false`). That client has no
+signed-in session to update; calling `updateUser` on it like this
+cannot correctly change a specific user's password. This code was never
+exercised because no frontend page calls it yet.
+
+The correct fix is not "wire the frontend up to this endpoint" — it's
+to bypass this backend endpoint entirely for the actual password
+change, and let the **frontend's own Supabase client** handle it, which
+is the standard supabase-js pattern and requires no backend code:
+
+1. `POST /api/auth/forgot-password` (existing, already correct — calls
+   `supabase.auth.resetPasswordForEmail(email, { redirectTo:
+   `${FRONTEND_URL}/reset-password` })`) is unaffected, keep using it
+   via `authService.forgotPassword` (already exists, already correct).
+2. Supabase emails the user a recovery link to `/reset-password` on the
+   frontend. `lmsa-website/src/services/supabase.js`'s client is
+   created with default options, so `detectSessionInUrl: true` (the
+   supabase-js v2 default) is already active — when the page loads,
+   the client automatically parses the recovery token from the URL and
+   establishes a real session for that user, firing a
+   `PASSWORD_RECOVERY` event via `supabase.auth.onAuthStateChange`.
+3. `ResetPasswordPage.jsx` should listen for that event (or just check
+   there's a session once mounted) and, on form submit, call
+   `supabase.auth.updateUser({ password })` **directly on the frontend
+   client** — same pattern `authService.login` already uses for
+   `signInWithPassword`. This works because by that point the frontend
+   client genuinely has the authenticated recovery session; the earlier
+   broken backend path never had one.
+4. **Note:** `AuthContext.jsx`'s global `onAuthStateChange` listener
+   will also see this recovery session (any session with a `user`
+   triggers its `fetchProgile`/`setUser` path) — this is expected
+   Supabase behavior (a recovery link *is* a valid, if narrowly-scoped,
+   sign-in), not a new bug to fix. To avoid confusing the person with
+   an unexplained "logged in" state via an email link, after a
+   successful password update the page should explicitly
+   `supabase.auth.signOut()` and redirect to `/login` with a success
+   toast, rather than continuing on into the portal.
+
+### Files to create/modify
+
+**`lmsa-website/src/pages/auth/ForgotPasswordPage.jsx`** (new) — email
+input, calls `authService.forgotPassword(email)` (already exists, no
+change needed), shows a success state ("check your email") on submit
+regardless of whether the address is registered (don't leak account
+existence). Match `LoginPage.jsx`'s visual pattern (split brand
+panel + form panel, `Input`/`Button` components, same copy voice) for
+consistency — it's the page one hop away.
+
+**`lmsa-website/src/pages/auth/ResetPasswordPage.jsx`** (new) — new
+password + confirm password fields (client-side match + min-length-8
+check, matching the register form's password rule), calls
+`supabase.auth.updateUser({ password })` directly (import `supabase`
+from `@services/supabase`, same import `auth.service.js` already uses).
+Handle three states: (a) no recovery session present when the page
+loads (expired/already-used/invalid link) — show an error state with a
+link back to `/forgot-password`, don't render a form that will just
+fail; (b) valid session, form usable; (c) success — sign out, toast,
+redirect to `/login`. Reuse `Input`/`Button` components.
+
+**`lmsa-website/src/services/auth.service.js`** — replace
+`resetPassword(token, newPassword)`'s body (the broken
+`api.post('/auth/reset-password', ...)` call) with a direct
+`supabase.auth.updateUser({ password: newPassword })` call, matching
+`login`'s pattern (`if (!supabase) throw new Error(...)`, then `const {
+data, error } = await supabase.auth.updateUser(...); if (error) throw
+error; return data;`). Drop the now-unused `token` parameter from the
+function signature and update the one caller (the new
+`ResetPasswordPage.jsx`) accordingly — don't leave a dead parameter.
+
+**`lmsa-website/src/routes.jsx`** — import both new pages, add
+`<Route path="/forgot-password" element={<ForgotPasswordPage />} />`
+and `<Route path="/reset-password" element={<ResetPasswordPage />} />`
+alongside the existing `/login`/`/register` routes (same nesting level,
+outside any `ProtectedRoute`).
+
+**`lmsa-api/src/controllers/auth.controller.js`** and
+**`lmsa-api/src/routes/auth.routes.js`** — **do not delete** the
+existing `POST /api/auth/reset-password` route/handler in this task
+(out of scope — some other integration may reference it, and removing
+a live route is a separate, deliberate decision). Just leave a short
+comment above `resetPassword` in the controller noting it's currently
+unused by the frontend (which now handles password updates client-side
+via Supabase directly) and documenting why (link to this task in the
+comment: "see ORCHESTRATION.md T31"), so a future reader doesn't
+rediscover the same bug from scratch or assume it's live and tested.
+
+### Acceptance criteria
+
+- [ ] `npx eslint src --ext js,jsx --max-warnings 0` — clean.
+- [ ] `npm run build` — clean.
+- [ ] `/forgot-password` renders, submits, shows a success state
+      regardless of whether the email exists (verify by reading the
+      code path, not just the happy path — no client-side branching on
+      "email not found" vs "email sent").
+- [ ] `/reset-password` visited with no valid recovery session in the
+      URL shows the invalid/expired-link state, not a broken form.
+- [ ] `ResetPasswordPage.jsx` confirms the new password client-side
+      (match + min length 8) before calling Supabase.
+- [ ] After a successful reset, the user is signed out and redirected
+      to `/login` (not left in an implicit logged-in state from the
+      recovery session).
+- [ ] `authService.resetPassword`'s new implementation matches the
+      `login` method's error-handling pattern exactly (throw on
+      `error`, return `data`).
+- [ ] Comment added above the backend `resetPassword` controller
+      function per the note above.
+- [ ] Full end-to-end email-link click-through cannot be exercised
+      from this sandbox (no live Supabase project, no real inbox) —
+      flag this plainly in the report rather than claiming it was
+      tested; Stone can do one live pass after merge.
+
+### Report
+
+*(agent fills in on completion)*
