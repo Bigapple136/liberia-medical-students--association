@@ -516,7 +516,7 @@ so this entire authentication path was silently broken the whole time.
 | T28 | Admin document upload/management page | T26 | **done** |
 | T29 | Committee applications + leadership nominations (submitted via `arena/01a0618c-...` branch) | none | **done** |
 | T30 | Editorial redesign + honest-states audit (submitted via `arena/01a06232-...` branch) | none | **done — 1 regression caught and reverted, see notes** |
-| T31 | Forgot/reset password flow (frontend pages + a real backend bug in `resetPassword`) | none | **needs-review** |
+| T31 | Forgot/reset password flow (frontend pages + a real backend bug in `resetPassword`) | none | **done** |
 
 **T22 flagged priority.** Render permanently blocks outbound SMTP ports
 (25/465/587) on free-tier web services since September 2025 — confirmed
@@ -4840,7 +4840,7 @@ Approved and merged to `main` with the one specific reversion above.
 ## T31 — Forgot/reset password flow
 
 **Branch:** `task/t31-password-reset`
-**Status:** assigned → needs-review
+**Status:** done
 **Depends on:** none
 
 ### Context
@@ -5083,3 +5083,39 @@ rediscover the same bug from scratch or assume it's live and tested.
   at the handler). Nothing in `lmsa-website` calls it anymore; deleting it
   is now a safe, separate deliberate decision if desired.
 - No new npm dependencies. No backend code changed beyond the comment.
+
+### Orchestrator review
+
+Independently verified, fresh checkout of `origin/task/t31-password-reset`
+(no rebase needed, branched directly off the `9f6ac4c` spec commit):
+`npx eslint src --ext js,jsx --max-warnings 0` — 0 errors/warnings.
+`npm run build` — clean (1596 modules, only the pre-existing >500kB
+chunk-size advisory). `node --check` on the touched backend file — clean.
+Grepped for stale `resetPassword(token, ...)` call sites — none; the one
+caller (`ResetPasswordPage.jsx`) matches the new single-argument
+signature. Confirmed `Button`'s `secondary` variant and `Input`'s
+`helperText` prop are real, already-supported options, not invented API.
+
+Read every diffed file against the spec line by line — `auth.service.js`
+mirrors `login`'s error-handling pattern exactly as required, the backend
+comment is accurate and matches the spec's wording intent, `routes.jsx`
+wiring is correct and unprotected as specced, and both new pages follow
+`LoginPage.jsx`'s established visual pattern. The double
+subscribe-then-`getSession()` approach in `ResetPasswordPage.jsx` (spec
+said either would do) is a reasonable, harmless belt-and-suspenders
+choice — subscribing first avoids missing a `PASSWORD_RECOVERY` event
+that fires before `getSession()` resolves, and `getSession()` covers a
+reload mid-flow. No scope creep, no invented backend calls, no dead
+parameters left behind.
+
+Report is honest about the one real limitation: the full email
+click-through (request → real email → click → land on `/reset-password`
+→ set password → sign in) cannot be exercised from this sandbox — no
+live Supabase project, no real inbox. **Flagging for Stone: do one live
+pass after this is deployed, and while there, confirm `FRONTEND_URL` on
+Render and Supabase's redirect-URL allowlist both include the production
+`/reset-password` URL** — the agent correctly noted Supabase's redirect
+check will silently bounce the emailed link otherwise, and this wasn't
+previously called out anywhere on the board.
+
+No corrections needed. Approved and merged to `main`.
