@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { AlertCircle, ArrowRight, Calendar, Clock, MapPin, Newspaper } from 'lucide-react';
 import { useAuth } from '@context/AuthContext';
+import { ADMIN_ROLES } from '@utils/constants';
 import Card from '@components/common/Card';
 import { dashboardService } from '@services/dashboard.service';
 import { eventService } from '@services/event.service';
@@ -32,6 +33,25 @@ function RowSkeleton() {
 
 export default function DashboardPage() {
   const { user } = useAuth();
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  // One-time redirect: if we just landed here right after login (see
+  // LoginPage.jsx's `justLoggedIn` state) and the account turns out to be
+  // admin-tier, send them on to the admin dashboard. Deliberately keyed
+  // off location.state rather than running on every visit here — an
+  // admin who is also a student may well want to view their own student
+  // portal on purpose (e.g. via the "Portal" link in the header), and
+  // that visit should never get silently hijacked. By the time this
+  // component renders at all, ProtectedRoute has already waited for
+  // AuthContext's `loading` to settle, so `user.role` here is already
+  // final — no extra fetch, no race.
+  const justLoggedIn = location.state?.justLoggedIn;
+  useEffect(() => {
+    if (justLoggedIn && ADMIN_ROLES.includes(user?.role)) {
+      navigate('/admin/dashboard', { replace: true });
+    }
+  }, [justLoggedIn, user, navigate]);
 
   const [stats, setStats] = useState(null); // null = unavailable
   const [myEvents, setMyEvents] = useState(null);

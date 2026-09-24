@@ -2,17 +2,9 @@ import { useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Mail, Lock, Eye, EyeOff, ArrowLeft } from 'lucide-react';
 import { useAuth } from '@context/AuthContext';
-import api from '@services/api';
 import toast from 'react-hot-toast';
 import Input from '@components/common/Input';
 import Button from '@components/common/Button';
-
-// Same role list ProtectedRoute/Header already use for the admin surface
-// (see routes.jsx's /admin ProtectedRoute and Header.jsx's Admin link) —
-// kept in sync deliberately rather than imported, since it's a one-line
-// literal used in three unrelated files; if this list changes, grep for
-// it in all three.
-const ADMIN_ROLES = ['admin', 'executive', 'super_admin'];
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -46,25 +38,24 @@ export default function LoginPage() {
 
       if (explicitDestination) {
         navigate(explicitDestination);
-        return;
-      }
-
-      // No explicit destination — send admins/executives to the admin
-      // dashboard, everyone else to the student portal. `login()` only
-      // resolves Supabase's own session (email, id, ...); it doesn't carry
-      // our app-level `role`, which AuthContext normally fetches
-      // asynchronously via /users/me after the fact. Fetching it directly
-      // here means the very first navigation is already correct, instead
-      // of dropping every admin into the student portal and relying on
-      // them to notice the "Admin" link in the header.
-      try {
-        const { data } = await api.get('/users/me');
-        const role = data?.user?.role;
-        navigate(ADMIN_ROLES.includes(role) ? '/admin/dashboard' : '/portal/dashboard');
-      } catch {
-        // Role lookup failing shouldn't block a successful login — fall
-        // back to the student portal, same as the previous behavior.
-        navigate('/portal/dashboard');
+      } else {
+        // `login()` only resolves Supabase's own session (email, id, ...);
+        // it doesn't carry our app-level `role`, which AuthContext fetches
+        // asynchronously via /users/me right after, via the same
+        // onAuthStateChange event this login() call triggers. An earlier
+        // version of this fix made a second, redundant /users/me call
+        // right here and awaited it before navigating at all — which
+        // duplicated a request AuthContext was already making, and put a
+        // full backend round trip (slow or even hung on Render's free-tier
+        // cold starts) directly in the login button's critical path, with
+        // no visible feedback while it waited. That's what "nothing
+        // happens, no redirect" was — see the 2026-09-23 ORCHESTRATION.md
+        // follow-up. Land on the student portal immediately instead (fast,
+        // no extra request, matches the original behavior), and let
+        // DashboardPage do a one-time role check once AuthContext's own
+        // fetch — which was always going to happen regardless — has
+        // actually resolved.
+        navigate('/portal/dashboard', { state: { justLoggedIn: true } });
       }
     } catch (error) {
       toast.error(error.message || 'Invalid email or password');
