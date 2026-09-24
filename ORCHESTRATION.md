@@ -479,6 +479,28 @@ user before now — T1–T8's backend endpoints were all verified via direct
 inspection/curl-style testing, never via the actual frontend login flow,
 so this entire authentication path was silently broken the whole time.
 
+**2026-09-23 addendum — login didn't redirect admins to the admin
+dashboard (found while answering Stone's question about whether T31's
+client-side password reset was a security risk — it isn't, see that
+thread — which led to a broader look at the login flow):**
+`LoginPage.jsx`'s post-login destination was hardcoded to
+`/portal/dashboard` (or a `?next=` param), with no awareness of role at
+all. `ProtectedRoute` correctly blocks non-admins from `/admin/*` — that
+security boundary was never in question — but nothing routed an
+admin/executive/super_admin *to* `/admin/dashboard` by default; they'd
+land in the student portal every time and had to notice the "Admin"
+link in the header themselves. Not a security bug, a first-navigation
+correctness bug. Fixed directly (small, single-file, well-understood):
+after `login()` resolves, if there's no explicit `?next=` (which still
+always wins — someone sent to `/login?next=/leadership%23stand` should
+land there regardless of role), fetch `/users/me` and route to
+`/admin/dashboard` for `['admin', 'executive', 'super_admin']`
+(same list `ProtectedRoute` and `Header.jsx` already use for the admin
+surface) or `/portal/dashboard` otherwise; a failed role lookup falls
+back to `/portal/dashboard` rather than blocking a successful login.
+Verified: eslint clean, build clean, diff read line by line. Pushed
+directly on `fix/login-role-redirect`, merged to `main`.
+
 ---
 
 ## Task Board Summary

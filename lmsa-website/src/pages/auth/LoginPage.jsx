@@ -2,9 +2,17 @@ import { useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Mail, Lock, Eye, EyeOff, ArrowLeft } from 'lucide-react';
 import { useAuth } from '@context/AuthContext';
+import api from '@services/api';
 import toast from 'react-hot-toast';
 import Input from '@components/common/Input';
 import Button from '@components/common/Button';
+
+// Same role list ProtectedRoute/Header already use for the admin surface
+// (see routes.jsx's /admin ProtectedRoute and Header.jsx's Admin link) —
+// kept in sync deliberately rather than imported, since it's a one-line
+// literal used in three unrelated files; if this list changes, grep for
+// it in all three.
+const ADMIN_ROLES = ['admin', 'executive', 'super_admin'];
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -18,12 +26,15 @@ export default function LoginPage() {
 
   // `?next=` is how the committee and leadership pages send a signed-out member
   // back to what they were doing. Only same-origin paths are honoured, so the
-  // parameter can never be used as an open redirect.
+  // parameter can never be used as an open redirect. `next`, when present,
+  // always wins over the role-based default below — it means the person was
+  // headed somewhere specific and should land there, not at a generic
+  // dashboard, admin or not.
   const nextParam = searchParams.get('next');
-  const destination =
+  const explicitDestination =
     nextParam && /^\/[^/]/.test(nextParam) && !nextParam.startsWith('//')
       ? nextParam
-      : '/portal/dashboard';
+      : null;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -32,7 +43,29 @@ export default function LoginPage() {
     try {
       await login(email, password);
       toast.success('Login successful!');
-      navigate(destination);
+
+      if (explicitDestination) {
+        navigate(explicitDestination);
+        return;
+      }
+
+      // No explicit destination — send admins/executives to the admin
+      // dashboard, everyone else to the student portal. `login()` only
+      // resolves Supabase's own session (email, id, ...); it doesn't carry
+      // our app-level `role`, which AuthContext normally fetches
+      // asynchronously via /users/me after the fact. Fetching it directly
+      // here means the very first navigation is already correct, instead
+      // of dropping every admin into the student portal and relying on
+      // them to notice the "Admin" link in the header.
+      try {
+        const { data } = await api.get('/users/me');
+        const role = data?.user?.role;
+        navigate(ADMIN_ROLES.includes(role) ? '/admin/dashboard' : '/portal/dashboard');
+      } catch {
+        // Role lookup failing shouldn't block a successful login — fall
+        // back to the student portal, same as the previous behavior.
+        navigate('/portal/dashboard');
+      }
     } catch (error) {
       toast.error(error.message || 'Invalid email or password');
     } finally {
