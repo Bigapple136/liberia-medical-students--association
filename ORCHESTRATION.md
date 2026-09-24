@@ -22,6 +22,69 @@ Claude (orchestrator), and any implementing agents (Claude Code, etc.).
 
 ---
 
+## Design/UI task standard: impeccable critiques
+
+**Decided 2026-09-23.** The `impeccable` skill (v4.1.3) is committed in
+this repo at `.agents/skills/impeccable/` — it arrived via the T30 Arena
+session and was left as an open "keep or remove?" flag afterward. That
+question is now resolved: **keep**, and it's standard process from here
+on, not a one-off.
+
+**When a task spec requires a critique run** — any task that creates a
+new page/surface, redesigns or visually polishes an existing one, or
+touches shared layout/design-system pieces (`Header.jsx`, `Card.jsx`,
+`Button.jsx`, `tailwind.config.js`, etc.). The spec should say so
+explicitly and name the command:
+- New surface or replacement visual world → route through the skill's
+  `new-work` flow first (see `SKILL.md`'s Commands table), then
+  `critique` once built.
+- Redesign/polish pass on an existing surface → `critique [target]`
+  per [`reference/critique.md`](../.agents/skills/impeccable/reference/critique.md).
+- A surface-specific concern (accessibility, responsiveness, motion,
+  copy) → the narrower matching command (`audit`, `adapt`, `clarify`,
+  etc.) instead of a full critique, per the skill's own Commands table.
+
+**When it's not required** — small, well-understood, single- or
+few-file logic fixes (routing, a broken handler, a backend bug) with no
+new or restyled UI surface. Per the skill's own scope note, it's "not
+for backend-only or non-UI tasks"; don't make an agent run a full
+design-director critique over a two-line redirect fix. If a task is
+borderline, err toward requiring it — a skipped critique is easy to
+regret later, an unnecessary one just costs a few minutes.
+
+**What the implementing agent must do, when required:**
+1. Run the command per its reference doc. `critique` in particular
+   requires **two independent assessments** (design review +
+   detector/browser evidence) and is a **degraded run** if forced
+   inline into a single context — the skill's own hard invariant is
+   that a degraded run must lead with a `⚠️ DEGRADED: single-context
+   (<reason>)` banner, never silently pass as a normal run. Whatever
+   the agent's harness allows, that disclosure rule is non-negotiable
+   for review purposes, and should be preserved in the Report block
+   verbatim if it fires.
+2. Include the resulting Design Health Score table, priority issues,
+   and (for `critique`) the degraded-or-not banner in the task's
+   **Report** block — not just a pass/fail line.
+3. Commit the persisted snapshot under `.impeccable/critique/` alongside
+   the code changes, so it's reviewable in the same diff.
+4. If a finding is triaged as a false positive or a sanctioned
+   exception, the narrowest possible `ignore-*` scope should be used
+   (per `reference/hooks.md`'s Triage section) with the reasoning
+   disclosed in the Report — never a blanket suppression to make a
+   finding disappear.
+
+**What I (orchestrator) do with it in review:** the critique score and
+findings get the same rigor as lint/build output — I read the report,
+not just the score, and a degraded run without the required banner is
+treated as a reporting gap, sent back like any other incomplete report.
+A low score isn't automatically a blocker if the report's reasoning for
+shipping anyway is sound (matches the T30 precedent: several surfaces
+were merged in the low-to-mid range with the specific gap named rather
+than chased to a number); an undisclosed degraded run or a suppressed
+real finding is.
+
+---
+
 ## Critical bugs found and fixed directly (outside the task board)
 
 **2026-09-02 addendum — news, symposia, events, committees, research, mentorship, documents, resources, dues, categories, benefits, membership + admin/member-dashboard design-review pass
@@ -306,9 +369,12 @@ Not done (flagged, not fixed — needs a decision or a specced task):
    change. Recommend a task to move symposia into the existing events
    API/admin (offered during the session; deliberately not done without
    orchestrator sign-off since it touches schema/admin scope).
-3. `.impeccable/` critique snapshots and the skill's hook config now
+3. ~~`.impeccable/` critique snapshots and the skill's hook config now
    live in the repo — same keep-or-remove workflow question as the
-   earlier `.replit`/`.agents` flag.
+   earlier `.replit`/`.agents` flag.~~ **Resolved 2026-09-23: keep.**
+   Stone confirmed impeccable-style critiques should continue as
+   standard process going forward — see the new "Design/UI task
+   standard" section near the top of this doc.
 4. **Contact email fragmentation (site-wide).** Four addresses across
    three domain families are published: dev.lmsa@gmail.com
    (ContactPage, Footer), support@lmsa.org.lr (ErrorBoundary,
