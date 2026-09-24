@@ -501,6 +501,60 @@ back to `/portal/dashboard` rather than blocking a successful login.
 Verified: eslint clean, build clean, diff read line by line. Pushed
 directly on `fix/login-role-redirect`, merged to `main`.
 
+**2026-09-23 follow-up — that fix broke non-admin login ("nothing
+happens, no redirect"), reported directly by Stone:** the fetch-then-
+navigate approach above put a second, redundant `/users/me` call
+directly in the login button's critical path — redundant because
+`AuthContext`'s own `onAuthStateChange` listener (triggered by the same
+`login()` call) was already making the same request in the background
+to populate `user.role` for the rest of the app. Awaiting a full backend
+round trip before calling `navigate()` at all meant the button just sat
+there with no visible feedback for however long that request took —
+plausibly quite a while on Render's free-tier cold starts, previously
+documented elsewhere in this doc as a real, recurring source of latency
+on this stack. Root-caused (not just reasoned about) by re-reading
+`AuthContext.jsx` end to end: it already resolves `user.role` reliably
+by the time any component behind `ProtectedRoute` renders, since
+`ProtectedRoute` itself waits for `loading:false` before rendering
+children, and `setUser`/`setLoading(false)` land in the same batched
+update — so there was never a need for `LoginPage.jsx` to fetch this
+itself at all.
+
+**Corrected fix (branch `fix/login-redirect-race`):** reverted
+`LoginPage.jsx` to a single, fast, synchronous `navigate()` call again —
+no second `/users/me` fetch, no blocking the button on anything beyond
+Supabase's own auth round trip, which is what every login already
+depended on. When landing on the default destination (no explicit
+`next`), it now passes `{ state: { justLoggedIn: true } }`.
+`DashboardPage.jsx` (what actually renders at `/portal/dashboard`, and
+which only ever renders after `ProtectedRoute` has already waited out
+`AuthContext`'s loading state) checks that flag in a `useEffect` and, if
+the now-reliably-resolved `user.role` is admin-tier, does a one-time
+`navigate('/admin/dashboard', { replace: true })`. Deliberately keyed
+off `justLoggedIn` rather than running on every visit — an admin
+visiting `/portal/dashboard` on purpose later (e.g. via the header's
+"Portal" link) is a legitimate, common case (admins are typically
+students too) and must not get silently redirected away from where they
+chose to go. `replace: true` also means the `/portal/dashboard` history
+entry carrying that state is overwritten, not left behind, so a
+same-session back-navigation into `/admin/dashboard` can't loop back
+into re-triggering the bounce.
+
+While already touching every file with a copy of the admin role list
+(`routes.jsx`'s `ProtectedRoute requireRole`, `Header.jsx`'s two nav
+checks, and now `DashboardPage.jsx`), consolidated all four onto one
+`ADMIN_ROLES` export in `utils/constants.js` rather than adding a fourth
+hand-typed literal — the earlier version of this fix had left a comment
+warning about exactly this kind of drift risk across "three unrelated
+files"; a fourth was the moment to actually fix it instead of repeating
+the warning. Verified with a full sweep: `grep`-confirmed zero remaining
+literal `['admin', 'executive', 'super_admin']` occurrences anywhere in
+`src`, eslint clean, `vite build` clean. Not independently verified
+against a live backend in this sandbox (same limitation as before) —
+**Stone, please do confirm both directions after this deploys: a plain
+student login lands on the student portal immediately, and an
+admin/executive/super_admin login lands on `/admin/dashboard`.**
+
 ---
 
 ## Task Board Summary

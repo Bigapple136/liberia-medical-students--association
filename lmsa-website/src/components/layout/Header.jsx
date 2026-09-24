@@ -2,6 +2,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { ChevronDown, Menu, User, X, LogOut, ArrowUpRight } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { useAuth } from '@context/AuthContext';
+import { ADMIN_ROLES } from '@utils/constants';
 
 const primaryNav = [
   {
@@ -142,7 +143,7 @@ export default function Header() {
         <div className="site-header-actions">
           {user ? (
             <>
-              {['admin', 'executive', 'super_admin'].includes(user.role) && (
+              {ADMIN_ROLES.includes(user.role) && (
                 <Link to="/admin/dashboard" className="site-header-text-link">
                   Admin
                 </Link>
@@ -204,7 +205,7 @@ export default function Header() {
             <div className="site-mobile-actions">
               {user ? (
                 <>
-                  {['admin', 'executive', 'super_admin'].includes(user.role) && (
+                  {ADMIN_ROLES.includes(user.role) && (
                     <Link to="/admin/dashboard" onClick={closeMenu} className="site-mobile-action-secondary">
                       Go to Admin Panel
                     </Link>

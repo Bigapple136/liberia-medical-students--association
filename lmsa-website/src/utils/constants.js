@@ -21,6 +21,12 @@ export const USER_ROLES = {
   SUPER_ADMIN: 'super_admin',
 };
 
+// Roles that can access /admin/*. Centralized here so routes.jsx's
+// ProtectedRoute requireRole, Header.jsx's Admin nav link, and
+// DashboardPage.jsx's post-login redirect can't drift out of sync with
+// each other the way three separately-typed literals eventually would.
+export const ADMIN_ROLES = [USER_ROLES.ADMIN, USER_ROLES.EXECUTIVE, USER_ROLES.SUPER_ADMIN];
+
 export const MEMBERSHIP_TYPES = {
   FULL: 'full',
   ASSOCIATE: 'associate',

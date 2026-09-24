@@ -2,6 +2,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import PublicLayout from './layouts/PublicLayout';
 import PortalLayout from './layouts/PortalLayout';
 import AdminLayout from './layouts/AdminLayout';
+import { ADMIN_ROLES } from '@utils/constants';
 
 // Public pages
 import HomePage from './pages/public/HomePage';
@@ -131,7 +132,7 @@ function AppRoutes() {
       <Route
         path="/admin"
         element={
-          <ProtectedRoute requireRole={['admin', 'executive', 'super_admin']}>
+          <ProtectedRoute requireRole={ADMIN_ROLES}>
             <AdminLayout />
           </ProtectedRoute>
         }
