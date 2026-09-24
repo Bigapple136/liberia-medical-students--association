@@ -621,6 +621,68 @@ against a live backend in this sandbox (same limitation as before) —
 student login lands on the student portal immediately, and an
 admin/executive/super_admin login lands on `/admin/dashboard`.**
 
+**2026-09-24 — external AI-generated site review, verified before
+acting on it.** Stone forwarded a site review (two versions of it,
+pasted together) from an outside AI tool. Checked every concrete,
+checkable claim against actual `main` before creating any task from it
+— per the standing practice of never trusting an agent's (or in this
+case a third party's) report without independent verification.
+
+**Fabricated or false, no task created:**
+- **"WebAuthn (FIDO2) for login"** — does not exist anywhere in this
+  codebase. `grep -rin "webauthn\|fido"` across both `lmsa-website/src`
+  and `lmsa-api/src` returns nothing. This is Supabase email/password
+  auth and nothing else. Fabricated outright.
+- **"No semantic landmarks"** — false. `Header.jsx` has `<header>` and
+  two `aria-label`ed `<nav>` elements, `Footer.jsx` has `<footer>`,
+  `PublicLayout.jsx` wraps routed content in `<main id="main-content">`.
+- **"A hamburger nav would improve mobile UX"** (implying none exists)
+  — false, `Header.jsx` already has a full mobile menu toggle.
+- **"Canonical links are missing... robots noindex on some routes"** —
+  false as a bug claim. `PageMeta.jsx` sets a canonical `<link>`, OG/
+  Twitter tags, and a per-route title/description on every single
+  route via a lookup table; `noindex` is deliberately and correctly
+  scoped to only `/login`, `/register`, `/portal/*`, `/admin/*`. The
+  one real thread buried in this claim: canonical URLs currently
+  render against a fallback placeholder domain because `VITE_SITE_URL`
+  isn't set on Cloudflare — already a tracked open item (see
+  `TURNOVER.md`), not new, no duplicate task created.
+- **Bundle size "≈855 KB"** — a fresh build measured 656.75 KB
+  (gzip 167.59 KB). Wrong number, whatever it was measured against.
+- **"Registration form lacks validation"** as a blanket claim — false;
+  there's live password-match checking, a min-length-8 rule, and a
+  required terms checkbox. (Real, narrower gap: no live email-format
+  check — not significant enough on its own to task.)
+- Suggestion to add Google/GitHub social login — a feature preference
+  layered on top of the same report, not a defect; left alone.
+
+**Confirmed real, tasked:**
+- **No code splitting** — confirmed: zero `React.lazy`/`Suspense` in
+  `routes.jsx`, every build warns about one >500 KB chunk covering all
+  41 page components. → **T32.**
+- **No skip-to-content link**, despite `id="main-content"` already
+  existing as an unused target in `PublicLayout.jsx` (and missing
+  entirely from `PortalLayout.jsx`/`AdminLayout.jsx`) — → **T33**,
+  which also runs a real `impeccable audit` to actually verify (not
+  guess at, in either direction) the review's toast/ARIA/contrast
+  claims.
+
+**Noted, not tasked:** the review's headline recommendation was a full
+SSR migration. The underlying fact (Vite SPA, no SSR/prerendering, so
+a crawler or slow connection depends on JS execution for content) is
+real, but migrating a Cloudflare-Workers-hosted SPA to SSR is a major
+architecture change disproportionate to this project's scale and team
+size — not specced without Stone's explicit sign-off, same standard
+applied to the symposia-schema item flagged back in the T30 addendum.
+
+**Also noticed in passing while checking `AdminLayout.jsx`:**
+its nav lists `/admin/announcements`, but no such route or page exists
+in `routes.jsx` — a dead sidebar link in production right now. This
+is almost certainly the already-flagged, still-undecided
+"Announcements feature" item from the turnover list, not a new issue —
+noting the concrete evidence here rather than opening a duplicate
+thread, since that decision is explicitly still pending on Stone's end.
+
 ---
 
 ## Task Board Summary
@@ -659,6 +721,8 @@ admin/executive/super_admin login lands on `/admin/dashboard`.**
 | T29 | Committee applications + leadership nominations (submitted via `arena/01a0618c-...` branch) | none | **done** |
 | T30 | Editorial redesign + honest-states audit (submitted via `arena/01a06232-...` branch) | none | **done — 1 regression caught and reverted, see notes** |
 | T31 | Forgot/reset password flow (frontend pages + a real backend bug in `resetPassword`) | none | **done** |
+| T32 | Route-based code splitting (`React.lazy`/`Suspense` on `routes.jsx`) | none | **unassigned** |
+| T33 | Accessibility pass: skip-to-content link + `impeccable audit` verification of toast/ARIA/contrast | none | **unassigned** |
 
 **T22 flagged priority.** Render permanently blocks outbound SMTP ports
 (25/465/587) on free-tier web services since September 2025 — confirmed
@@ -5261,3 +5325,176 @@ check will silently bounce the emailed link otherwise, and this wasn't
 previously called out anywhere on the board.
 
 No corrections needed. Approved and merged to `main`.
+
+---
+
+## T32 — Route-based code splitting
+
+**Branch:** `task/t32-code-splitting`
+**Status:** unassigned
+**Depends on:** none
+
+### Context
+
+Prompted by an external AI-generated site review Stone forwarded
+(2026-09-24). Most of that review didn't hold up under verification —
+see the 2026-09-24 note in the Critical-bugs-and-findings section near
+the top of this doc for the full accounting of what was fabricated
+(a claimed WebAuthn/FIDO2 login that doesn't exist anywhere in the
+codebase) versus real. This task is one of the two findings that
+verified as genuinely true: `routes.jsx` currently imports all 41 page
+components eagerly, with zero `React.lazy`/`Suspense` anywhere, and
+every production build warns about a single >500 KB JS chunk. Someone
+visiting only the homepage still downloads the admin panel's seven
+pages, all committee/event/news detail pages, both auth flows, and
+everything else, in one shot.
+
+This is a pure build/bundling change with **no visual or behavioral
+difference** — every route should render exactly as it does today,
+just fetched on demand instead of all at once. Per the Design/UI task
+standard added 2026-09-23, this does **not** require an impeccable
+critique or audit run (no new or restyled UI surface, nothing to
+critique) — see T33 for the a11y-focused task from the same review that
+does.
+
+### Files to modify
+
+**`lmsa-website/src/routes.jsx`** — the only file this should touch.
+
+- Keep as regular (eager) imports: `PublicLayout`, `PortalLayout`,
+  `AdminLayout` (layouts, always needed), `ProtectedRoute` (tiny,
+  structural), `HomePage` (the index route — nearly every visit hits
+  it; keeping it eager avoids a loading flash on the single most common
+  page), and `NotFoundPage` (tiny, and used as the catch-all `*` route
+  so it should resolve instantly rather than triggering its own
+  network round trip after already 404ing).
+- Convert every other page import (all of `./pages/public/*` except
+  `HomePage`/`NotFoundPage`, all of `./pages/auth/*`, `./pages/portal/*`,
+  `./pages/admin/*`, and `./pages/committees/CommitteePageTemplate`) to
+  `const X = lazy(() => import('./pages/.../X'));` — import `lazy` and
+  `Suspense` from `react`.
+- Wrap the single top-level `<Routes>...</Routes>` tree in one
+  `<Suspense fallback={...}>`, not per-route Suspense boundaries — one
+  boundary is enough here and keeps the diff simple. Reuse the existing
+  spinner markup and classes from
+  `ProtectedRoute.jsx`'s loading state (`animate-spin rounded-full h-12
+  w-12 border-b-2 border-lmsa-600`, same centered wrapper) for visual
+  consistency rather than inventing new loading UI.
+- `<Navigate to="..." replace />` elements (the `/portal` and `/admin`
+  index redirects) are not page components — leave them exactly as
+  they are, don't wrap or lazy-load them.
+
+### Acceptance criteria
+
+- [ ] `npx eslint src --ext js,jsx --max-warnings 0` — clean.
+- [ ] `npm run build` — clean, and the build output should show
+      multiple JS chunks instead of one monolithic bundle; report the
+      before/after chunk breakdown (sizes) in the Report block so it's
+      verifiable without re-running the build.
+- [ ] Every route in the file must still be reachable — read back
+      through the diff and confirm no route's `element` was
+      accidentally left referencing an import that no longer exists
+      (a stale reference here would only surface at runtime on that
+      specific route, not at build time, so this needs an actual
+      careful read, not just a passing build).
+- [ ] No behavior or visual change on any page — this is scoped
+      strictly to how/when code loads, not what renders.
+
+### Report
+
+*(agent fills in on completion)*
+
+---
+
+## T33 — Accessibility pass: skip-to-content link + audit verification
+
+**Branch:** `task/t33-a11y-skip-link-audit`
+**Status:** unassigned
+**Depends on:** none
+
+### Context
+
+The other real finding from the 2026-09-24 external review (see the
+2026-09-24 note near the top of this doc for what didn't hold up). Two
+parts:
+
+**1. Missing skip-to-content link (confirmed real, small fix).**
+`PublicLayout.jsx` already wraps routed content in `<main
+id="main-content">` — that target has existed since T30's editorial
+pass — but nothing links to it. A keyboard or screen-reader user
+currently has to tab through the entire header (utility nav + primary
+nav, both already correctly `aria-label`ed) before reaching page
+content on every single navigation. `PortalLayout.jsx` and
+`AdminLayout.jsx` don't even have the `id="main-content"` target yet.
+
+**2. Unverified claims needing a real check, not another guess.** The
+review also claimed toast notifications and form controls lack proper
+ARIA roles/states, and that color contrast needs verification. Rather
+than trust that claim the same way the WebAuthn one turned out to be
+fabricated, or dismiss it the same way the "no semantic landmarks"
+claim turned out to be false, this task requires an actual `impeccable
+audit` run (the skill's technical-quality command — a11y, perf,
+responsive — per `SKILL.md`'s Commands table; narrower than a full
+`critique`, which is for visual/UX review, not this) against a small
+representative set of pages, so the report closes this out with
+evidence either way instead of another unverified assertion layered on
+top of the first one.
+
+### Part 1: skip-to-content link
+
+**`lmsa-website/src/layouts/PublicLayout.jsx`** — add a skip link as
+the very first element inside the root div, before `<Header />`:
+visually hidden by default, becomes visible on keyboard focus (the
+standard `sr-only focus:not-sr-only` pattern, or equivalent — match
+whatever utility classes this Tailwind setup already uses for
+screen-reader-only content if one exists, otherwise a small inline
+`absolute -top-full focus:top-0` style pattern is fine), `href="#main-content"`,
+text "Skip to main content". It already has a real target
+(`<main id="main-content">` already exists here).
+
+**`lmsa-website/src/layouts/PortalLayout.jsx`** and
+**`lmsa-website/src/layouts/AdminLayout.jsx`** — same skip link pattern,
+and add `id="main-content"` to each one's `<main>` (neither has it
+today) so the link has a real target. These are behind login, but
+still worth it — a keyboard user in the portal/admin has the same
+problem, arguably worse given the sidebar nav in both.
+
+### Part 2: `impeccable audit`
+
+Run `audit` (per [`reference/audit.md`](../.agents/skills/impeccable/reference/audit.md))
+against three representative targets covering the review's specific
+claims: the homepage (`/`, public + has the toast-triggering contact
+form nearby), `/login` or `/register` (form controls + toast on
+submit — the exact surface the review's ARIA claim was about), and one
+authenticated page behind `PortalLayout` or `AdminLayout` if the
+sandbox can reach a running instance with a session; if not, audit the
+source directly and say so plainly in the report per the skill's own
+`MANUAL_DETECTOR_REQUIRED`/browser-unavailable fallback handling —
+don't claim a browser pass happened if it didn't.
+
+### Acceptance criteria
+
+- [ ] `npx eslint src --ext js,jsx --max-warnings 0` — clean.
+- [ ] `npm run build` — clean.
+- [ ] Skip link present in all three layouts, keyboard-focusable,
+      hidden until focused, each pointing at a real `id="main-content"`
+      target in that layout's own `<main>`.
+- [ ] `impeccable audit` run per the Design/UI task standard's
+      requirements: findings (not just a score) in the Report block,
+      and if the run was degraded (single-context rather than
+      dual-agent, or browser inspection unavailable), the report leads
+      with that disclosure exactly as the skill requires — this is a
+      real test of that new process, not just the code changes.
+- [ ] Report explicitly answers, with evidence: are the toast
+      notifications and form controls actually missing proper
+      ARIA/roles, or not? Close the claim out either way rather than
+      leaving it open a third time.
+- [ ] Any real finding the audit turns up gets fixed in this same task
+      if it's small (an ignore/exception per `reference/hooks.md`'s
+      Triage section is not an acceptable way to make an inconvenient
+      real finding disappear); anything larger gets flagged in the
+      report for a follow-up task rather than scope-creeping this one.
+
+### Report
+
+*(agent fills in on completion)*
