@@ -24,7 +24,7 @@ const FALLBACK_EXECUTIVES = [
 
 const STATE_STYLES = {
   open: 'border-lmsa-300 bg-lmsa-50 text-lmsa-800',
-  scheduled: 'border-amber-400 bg-amber-100 text-gray-900',
+  scheduled: 'border-amber-400 bg-amber-100 text-amber-900',
   closed: 'border-gray-300 bg-gray-50 text-gray-700',
   none: 'border-gray-300 bg-gray-50 text-gray-700',
 };
@@ -317,7 +317,7 @@ export default function LeadershipPage() {
                   </dl>
 
                   {level.appointed && (
-                    <p className="mt-6 border-l-2 border-amber-400 bg-amber-100 p-3 text-xs leading-5 text-gray-800">
+                    <p className="mt-6 border-l-2 border-amber-400 bg-amber-100 p-3 text-xs leading-5 text-amber-900">
                       Appointed, not elected. Chairs are chosen from committee members.
                     </p>
                   )}

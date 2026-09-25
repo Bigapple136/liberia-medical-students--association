@@ -7,6 +7,12 @@ export default function PortalLayout() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:top-4 focus:left-4 focus:px-4 focus:py-2 focus:bg-lmsa-600 focus:text-white focus:rounded-md focus:outline-none focus:ring-2 focus:ring-lmsa-500 focus:ring-offset-2"
+      >
+        Skip to main content
+      </a>
       {/* Mobile sidebar toggle */}
       <button
         type="button"
@@ -40,7 +46,7 @@ export default function PortalLayout() {
         </aside>
 
         {/* Main content */}
-        <main className="flex-1 p-4 sm:p-8 min-w-0">
+        <main id="main-content" className="flex-1 p-4 sm:p-8 min-w-0">
           <Outlet />
         </main>
       </div>
