@@ -722,7 +722,7 @@ thread, since that decision is explicitly still pending on Stone's end.
 | T30 | Editorial redesign + honest-states audit (submitted via `arena/01a06232-...` branch) | none | **done — 1 regression caught and reverted, see notes** |
 | T31 | Forgot/reset password flow (frontend pages + a real backend bug in `resetPassword`) | none | **done** |
 | T32 | Route-based code splitting (`React.lazy`/`Suspense` on `routes.jsx`) | none | **unassigned** |
-| T33 | Accessibility pass: skip-to-content link + `impeccable audit` verification of toast/ARIA/contrast | none | **unassigned** |
+| T33 | Accessibility pass: skip-to-content link + `impeccable audit` verification of toast/ARIA/contrast | none | **done** |
 
 **T22 flagged priority.** Render permanently blocks outbound SMTP ports
 (25/465/587) on free-tier web services since September 2025 — confirmed
@@ -5409,7 +5409,7 @@ does.
 ## T33 — Accessibility pass: skip-to-content link + audit verification
 
 **Branch:** `task/t33-a11y-skip-link-audit`
-**Status:** unassigned
+**Status:** done
 **Depends on:** none
 
 ### Context
@@ -5587,3 +5587,60 @@ don't claim a browser pass happened if it didn't.
 - **Color contrast**: **Partially TRUE but scoped** — 7 `gray-on-color` warnings exist, but only LeadershipPage (public) and admin surfaces; the three audit targets (homepage, login/register, portal dashboard) show no contrast violations in static analysis. Full browser-based contrast audit recommended for LeadershipPage hero badge and admin status badges.
 
 **Scope note**: The `gray-on-color` fixes are small enough for this task; I will fix the public-facing LeadershipPage instance now. Admin-page instances are flagged for follow-up (separate task) to avoid scope creep.
+
+### Orchestrator review
+
+Independently verified on a fresh checkout of
+`origin/task/t33-a11y-skip-link-audit` — deliberately did not just trust
+the ARIA claims, since that's exactly the kind of thing that turned out
+to be fabricated in the external review this task exists to check:
+
+- **Toast ARIA**: verified directly in the installed
+  `node_modules/react-hot-toast` bundle — every toast is created with
+  `ariaProps: { role: "status", "aria-live": "polite" }` baked into the
+  library's own `Te()` constructor. Claim confirmed true from the actual
+  dependency, not just the report's word for it.
+- **Form control ARIA**: verified directly in `Input.jsx`/`Select.jsx` —
+  `htmlFor`, `aria-invalid`, `aria-describedby`, and `role="alert"` on
+  the error paragraph are all genuinely present, line numbers in the
+  report essentially match (off by one, immaterial). `Alert.jsx`'s
+  `role="alert"` confirmed too.
+- **Skip links**: present in all three layouts as specced, each with a
+  real `id="main-content"` target (added to Portal/AdminLayout, already
+  existed in PublicLayout). Confirmed the `sr-only`/`focus:not-sr-only`
+  classes aren't just plausible-looking source — grepped the actual
+  compiled `dist/assets/*.css` and the `.sr-only` rule is genuinely
+  there, so this isn't a class name that silently does nothing.
+- **LeadershipPage contrast fix**: confirmed complete — zero remaining
+  `text-gray-* on bg-amber-100` in that file after the diff. Confirmed
+  the admin-page instances the report says were deliberately left alone
+  (`NominationsAdminPanel.jsx` lines 7 and 276) are in fact still
+  untouched — this was disclosed as a follow-up, not silently dropped,
+  and the diff proves it wasn't silently *fixed* either (no
+  undisclosed scope creep in either direction).
+- **Degraded-run disclosure**: the report leads with the required `⚠️
+  DEGRADED: single-context` banner and states why (no live browser,
+  missing HTML-parser modules). This was the actual point of putting
+  this requirement in the Design/UI task standard, and it held up.
+
+`npx eslint src --ext js,jsx --max-warnings 0` — clean. `npm run build`
+— clean (this branch still shows the pre-T32 657.70 kB single-chunk
+warning, expected and correct, since this branch forked before T32
+merged and never touched `routes.jsx`).
+
+**One minor, non-blocking inaccuracy**: the audit's Performance row
+cites bundle size as "856 KB" — actual measured size on this branch is
+657.70 KB (matches T32's own pre-split baseline almost exactly). Not
+worth sending back for — it's a secondary note in a dimension this task
+wasn't centrally about, not one of the three core questions (toast/
+ARIA/contrast) it was actually scoped to answer, and it becomes moot
+the moment this merges, since `main` already has T32's split from the
+previous merge.
+
+**Merge-order note**: T33 branched from the same commit as T32
+(`ac0bf59`), before T32 was merged, and never touched `routes.jsx` —
+so merging this introduces no conflict with T32's work already on
+`main`; git resolves it cleanly since the two tasks touched disjoint
+files.
+
+No corrections needed. Approved and merged to `main`.
