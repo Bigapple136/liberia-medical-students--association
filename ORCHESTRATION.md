@@ -5331,7 +5331,7 @@ No corrections needed. Approved and merged to `main`.
 ## T32 — Route-based code splitting
 
 **Branch:** `task/t32-code-splitting`
-**Status:** unassigned
+**Status:** needs-review
 **Depends on:** none
 
 ### Context
@@ -5402,7 +5402,104 @@ does.
 
 ### Report
 
-*(agent fills in on completion)*
+**Status:** assigned → needs-review
+**Branch:** `task/t32-code-splitting`
+
+#### What changed
+
+1. **`lmsa-website/src/routes.jsx`** — the only file this task changed,
+   as specced. `lazy` and `Suspense` imported from `react`. Eager
+   imports kept exactly as specified: `PublicLayout`, `PortalLayout`,
+   `AdminLayout`, `ProtectedRoute`, `HomePage`, `NotFoundPage` (plus the
+   existing `ADMIN_ROLES` constant). All other **39 page components** —
+   every `./pages/public/*` except Home/NotFound, all four
+   `./pages/auth/*`, `./pages/portal/DashboardPage`, all seven
+   `./pages/admin/*`, and `./pages/committees/CommitteePageTemplate` —
+   are now `const X = lazy(() => import('./pages/.../X'));`.
+
+2. **One `<Suspense>` boundary** wrapping the single top-level
+   `<Routes>` tree (no per-route boundaries). The fallback is a small
+   `RouteFallback` component reproducing `ProtectedRoute.jsx`'s loading
+   state markup verbatim: centered `min-h-screen flex items-center
+   justify-center` wrapper + `animate-spin rounded-full h-12 w-12
+   border-b-2 border-lmsa-600` spinner.
+
+3. `<Navigate to="..." replace />` redirects for the `/portal` and
+   `/admin` index routes left exactly as they were (not page
+   components). Route paths, nesting, guards, and every `element` tree
+   are unchanged — the only difference below the imports is the
+   two-space indent the Suspense wrapper added.
+
+#### Chunk sizes (`npm run build`, vite 5.4.21)
+
+**Before** (branch point `ac0bf59`):
+
+- `index-*.js` **656.75 kB** (gzip 167.59 kB) — a single JS chunk
+  carrying all 41 pages — plus `index-*.css` 117.17 kB, `index.html`
+  2.91 kB. 1596 modules transformed.
+- Build printed the `(!) Some chunks are larger than 500 kB` warning.
+
+**After** (this branch):
+
+- **80 JS chunks**, total 681.67 kB; **no chunk over 500 kB** — the
+  warning is gone entirely.
+- Entry/shared chunk `index-*.js` **303.14 kB** (gzip 95.85 kB) — what
+  every first load downloads — plus the same `index-*.css` 117.17 kB
+  (byte-identical to before; nothing about the CSS pipeline changed).
+- Largest on-demand route chunks:
+
+  | chunk | size (gzip) |
+  |---|---|
+  | `CommitteeAdminDashboard` | 43.74 kB (9.82) |
+  | `CommitteePageTemplate` | 34.22 kB (9.63) |
+  | `ExecutiveAdminPage` | 21.18 kB (5.33) |
+  | `LeadershipPage` | 19.83 kB (6.17) |
+  | `EventsAdminPage` | 17.08 kB (4.86) |
+  | `JoinCommitteePage` | 14.63 kB (4.77) |
+  | `NewsAdminPage` | 12.92 kB (3.96) |
+  | `MembershipPage` | 10.39 kB (3.85) |
+
+  (the rest run 0.1–10 kB each; icons/services/components split into
+  shared chunks alongside them)
+
+- Verified from the build log: all **39 lazy pages emit their own
+  chunk**, and neither `HomePage` nor `NotFoundPage` appears as a chunk
+  name — both stayed in the entry bundle as intended.
+- Net effect: ~353 kB (54%) less JS on first load, at the cost of ~25 kB
+  total per-chunk wrapper overhead across the 80 chunks, and each
+  route's page code now arrives only when someone visits it.
+
+#### Deviations from spec / notes
+
+- No material deviation; `routes.jsx` is the only file changed in git.
+  One methodology disclosure: the shared checkout this ran in also had
+  **parallel, uncommitted T33 skip-link edits** to the three layout
+  files (another branch was checked out mid-task in the same working
+  tree), which a first "after" build picked up (entry 304.02 kB, CSS
+  118.20 kB from the new Tailwind classes). The numbers reported above
+  therefore come from a clean scratch copy of the tree with all three
+  layout files restored to `ac0bf59` and only this task's `routes.jsx`
+  change present — an exact apples-to-apples comparison against the
+  "before" build. No build config was touched (no `manualChunks`, no
+  `chunkSizeWarningLimit` bump — the warning disappeared on its own),
+  and no new npm dependencies.
+
+#### Acceptance criteria
+
+- [x] `npx eslint src --ext js,jsx --max-warnings 0` — **clean** (exit 0,
+      actually run).
+- [x] `npm run build` — **clean**, 80 JS chunks instead of one monolithic
+      bundle, no >500 kB warning; before/after sizes above.
+- [x] Stale-reference read-through: scripted check extracted all 50
+      capitalized JSX identifiers used in `routes.jsx` and confirmed
+      every one resolves to an import or `lazy` const (zero missing,
+      zero declared-but-unused), and all 39 dynamic + 6 static component
+      import paths resolve to real files on disk — then the full diff
+      was read line by line. A stale `element` reference would only
+      break at runtime on that route, so this was checked directly
+      rather than inferred from the passing build.
+- [x] No visual or behavioral change — only import/bundling form
+      changed; routes, guards, and redirects are identical.
 
 ---
 
