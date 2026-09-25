@@ -721,7 +721,7 @@ thread, since that decision is explicitly still pending on Stone's end.
 | T29 | Committee applications + leadership nominations (submitted via `arena/01a0618c-...` branch) | none | **done** |
 | T30 | Editorial redesign + honest-states audit (submitted via `arena/01a06232-...` branch) | none | **done — 1 regression caught and reverted, see notes** |
 | T31 | Forgot/reset password flow (frontend pages + a real backend bug in `resetPassword`) | none | **done** |
-| T32 | Route-based code splitting (`React.lazy`/`Suspense` on `routes.jsx`) | none | **unassigned** |
+| T32 | Route-based code splitting (`React.lazy`/`Suspense` on `routes.jsx`) | none | **done** |
 | T33 | Accessibility pass: skip-to-content link + `impeccable audit` verification of toast/ARIA/contrast | none | **unassigned** |
 
 **T22 flagged priority.** Render permanently blocks outbound SMTP ports
@@ -5331,7 +5331,7 @@ No corrections needed. Approved and merged to `main`.
 ## T32 — Route-based code splitting
 
 **Branch:** `task/t32-code-splitting`
-**Status:** needs-review
+**Status:** done
 **Depends on:** none
 
 ### Context
@@ -5500,6 +5500,32 @@ does.
       rather than inferred from the passing build.
 - [x] No visual or behavioral change — only import/bundling form
       changed; routes, guards, and redirects are identical.
+
+### Orchestrator review
+
+Independently verified on a fresh checkout of
+`origin/task/t32-code-splitting`: `npx eslint src --ext js,jsx
+--max-warnings 0` clean, and a scratch `npm run build` reproduced the
+report's numbers almost exactly — entry chunk 303.14 kB (gzip 95.85 kB,
+down from 656.75 kB/167.59 kB), no `>500 kB` warning, and the same
+per-page chunk sizes down to the kilobyte (`CommitteeAdminDashboard`
+43.74 kB, `CommitteePageTemplate` 34.22 kB, etc.). Diff confirmed
+scoped to exactly `routes.jsx` as specced. Eager/lazy split matches the
+spec exactly: 39 pages lazy, `HomePage`/`NotFoundPage`/layouts/
+`ProtectedRoute` eager. Ran an independent orphan-check (grepped every
+`lazy()`-declared name against its JSX usage) — zero unused imports,
+confirming the report's own stale-reference check rather than just
+trusting it.
+
+Worth flagging on its own: the report's methodology note reveals T33
+work (layout file edits) already exists uncommitted in whatever local
+environment implemented this — not yet pushed to
+`task/t33-a11y-skip-link-audit`. Passing this along to Stone in the
+review reply rather than treating it as this task's problem; it didn't
+affect T32's correctness since the agent caught it and re-measured
+clean.
+
+No corrections needed. Approved and merged to `main`.
 
 ---
 
