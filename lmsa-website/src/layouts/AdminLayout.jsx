@@ -24,6 +24,12 @@ export default function AdminLayout() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:top-4 focus:left-4 focus:px-4 focus:py-2 focus:bg-lmsa-600 focus:text-white focus:rounded-md focus:outline-none focus:ring-2 focus:ring-lmsa-500 focus:ring-offset-2"
+      >
+        Skip to main content
+      </a>
       {/* Mobile top bar with hamburger toggle */}
       <header className="lg:hidden sticky top-0 z-40 bg-white border-b border-gray-200">
         <div className="flex items-center gap-3 px-4 h-14">
@@ -125,7 +131,7 @@ export default function AdminLayout() {
         </aside>
 
         {/* Main content */}
-        <main className="flex-1 min-w-0">
+        <main id="main-content" className="flex-1 min-w-0">
           <Outlet />
         </main>
       </div>
