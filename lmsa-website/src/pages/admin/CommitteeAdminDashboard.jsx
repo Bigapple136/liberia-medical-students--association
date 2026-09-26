@@ -71,8 +71,13 @@ export default function CommitteeAdminDashboard() {
   async function loadCommittees() {
     try {
       const data = await committeeService.getAll();
-      setCommittees(data);
-      if (data.length > 0) setActive(data[0]);
+      const parsed = data.map(c => ({
+        ...c,
+        mandate: typeof c.mandate === 'string' ? JSON.parse(c.mandate) : (c.mandate || []),
+        key_activities: typeof c.key_activities === 'string' ? JSON.parse(c.key_activities) : (c.key_activities || []),
+      }));
+      setCommittees(parsed);
+      if (parsed.length > 0) setActive(parsed[0]);
     } catch (e) {
       toast.error('Failed to load committees');
     } finally {
@@ -239,11 +244,19 @@ export default function CommitteeAdminDashboard() {
 
 // ─── Tab: Details ─────────────────────────────────────────────────────────────
 function DetailsTab({ committee, onSave }) {
+  const parseField = (val) => {
+    if (Array.isArray(val)) return val;
+    if (typeof val === 'string') {
+      try { return JSON.parse(val); } catch { return ['']; }
+    }
+    return [''];
+  };
+
   const [form, setForm] = useState({
     name:           committee.name || '',
     description:    committee.description || '',
-    mandate:        committee.mandate || [''],
-    key_activities: committee.key_activities || [''],
+    mandate:        parseField(committee.mandate).length ? parseField(committee.mandate) : [''],
+    key_activities: parseField(committee.key_activities).length ? parseField(committee.key_activities) : [''],
     email:          committee.email || '',
     status:         committee.status || 'active',
   });
@@ -255,8 +268,8 @@ function DetailsTab({ committee, onSave }) {
     setForm({
       name:           committee.name || '',
       description:    committee.description || '',
-      mandate:        committee.mandate?.length ? committee.mandate : [''],
-      key_activities: committee.key_activities?.length ? committee.key_activities : [''],
+      mandate:        parseField(committee.mandate).length ? parseField(committee.mandate) : [''],
+      key_activities: parseField(committee.key_activities).length ? parseField(committee.key_activities) : [''],
       email:          committee.email || '',
       status:         committee.status || 'active',
     });
