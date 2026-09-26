@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { NavLink, Link, Outlet } from 'react-router-dom';
 import {
-  LayoutDashboard, Users, Calendar, FileText, Megaphone,
+  LayoutDashboard, Users, Calendar, FileText,
   UserPlus, Newspaper, Settings, ExternalLink, ArrowLeft,
   Crown, Menu, X
 } from 'lucide-react';
@@ -11,7 +11,6 @@ const NAV_ITEMS = [
   { to: '/admin/committees', label: 'Committee Management', icon: Users },
   { to: '/admin/events', label: 'Events', icon: Calendar },
   { to: '/admin/documents', label: 'Documents', icon: FileText },
-  { to: '/admin/announcements', label: 'Announcements', icon: Megaphone },
   { to: '/admin/membership', label: 'Membership Review', icon: UserPlus },
   { to: '/admin/news', label: 'News Management', icon: Newspaper },
   { to: '/admin/leadership', label: 'Leadership', icon: Crown },

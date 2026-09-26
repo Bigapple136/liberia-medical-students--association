@@ -1174,8 +1174,8 @@ function AchievementsTab({ committee }) {
 function AnalyticsTab({ committee }) {
   const stats = [
     { label: 'Total Members', value: committee.member_count || 0, icon: Users, color: 'text-lmsa-600', bg: 'bg-lmsa-50' },
-    { label: 'Active Events', value: committee.active_events || 0, icon: Calendar, color: 'text-blue-600', bg: 'bg-blue-50' },
-    { label: 'Documents', value: committee.doc_count || 0, icon: FileText, color: 'text-amber-600', bg: 'bg-amber-50' },
+    { label: 'Active Events', value: committee.active_events ?? '—', icon: Calendar, color: 'text-blue-600', bg: 'bg-blue-50' },
+    { label: 'Documents', value: committee.doc_count ?? '—', icon: FileText, color: 'text-amber-600', bg: 'bg-amber-50' },
     { label: 'Page Views', value: committee.views || '—', icon: Eye, color: 'text-purple-600', bg: 'bg-purple-50' },
   ];
 
