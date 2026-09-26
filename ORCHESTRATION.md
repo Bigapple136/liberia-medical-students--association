@@ -5767,3 +5767,82 @@ so merging this introduces no conflict with T32's work already on
 files.
 
 No corrections needed. Approved and merged to `main`.
+
+---
+
+## 2026-09-24 — Admin dashboard integration review, 4 bugs fixed directly
+
+Stone asked for a full review of the admin dashboard "to make sure
+everything is integrated." Went through it systematically rather than
+spot-checking: cross-referenced `AdminLayout.jsx`'s nav against every
+route actually defined under `/admin` in `routes.jsx`; traced every
+admin page's service calls back to a real backend controller/route
+(nothing found mocked or stubbed); swept for `|| 0` fallbacks against
+fields that aren't actually always present in the API response (the
+false-zero class of bug T30's honest-states audit was built to catch);
+and swept every backend route file for the `authenticate`-but-not-
+`authorize` pattern that turned out to matter. Four real, confirmed
+issues, all small enough to fix directly rather than round-trip through
+a task branch:
+
+**1. Dead `/admin/announcements` nav link — turned out not to be a
+missing feature.** Flagged once already in the T33 review as a dead
+link tied to the still-undecided "Announcements feature" item from
+`TURNOVER.md`. That assumption was wrong: the feature already exists,
+fully built — `CommitteeAdminDashboard.jsx` has a working Announcements
+tab per committee (real create/list/delete, wired to
+`committeeService.getAnnouncements/createAnnouncement/deleteAnnouncement`,
+backed by real `committee.routes.js` endpoints). The top-level nav
+entry was just stale, pointing at a page that was never built at that
+URL because the feature ended up living one level down instead.
+Removed the nav entry (and its now-unused `Megaphone` import) rather
+than building a redundant top-level page. **This resolves the
+"Announcements feature — undecided" item from the turnover list** — it
+was never actually undecided, it was already shipped in a different
+place than the nav implied.
+
+**2. False-zero display in Committee Analytics.** `CommitteeAdminDashboard.jsx`'s
+Analytics tab showed "0 Active Events" and "0 Documents" for every
+committee unconditionally — `active_events` and `doc_count` aren't
+real fields in the `GET /committees` response (verified directly in
+`committee.controller.js`; only `member_count` is actually computed).
+The same stats array's third field, `views`, already correctly used
+`|| '—'` for this exact situation — just inconsistently applied.
+Changed `active_events`/`doc_count` to the same `?? '—'` pattern.
+Left `member_count`'s `|| 0` alone — that field is real and always
+present, so 0 there is a true value, not a placeholder.
+
+**3. `GET /users` excluded `executive` from its role check.** Every
+other admin-gated backend route uses `authorize('admin', 'executive',
+'super_admin')` (or the equivalent `isAdmin` array) — this one alone
+used `authorize('admin', 'super_admin')`. Concrete effect: this
+endpoint backs `committeeService.searchUsers`, which is what powers the
+"add committee member" and "assign executive position" search
+typeaheads — both reachable by executive-role admins through the
+normal admin UI, both of which would silently 403 for them specifically.
+Added `executive` to match every other admin route and the frontend's
+own `ADMIN_ROLES`.
+
+**4. `GET /users/:id` had no role or ownership check at all** — just
+`authenticate`. Any logged-in user, student or otherwise, could fetch
+any *other* user's complete profile row (`select('*')` — full name,
+email, phone, date of birth, gender, student ID, role, membership
+status) just by knowing or guessing their UUID. Checked twice, with two
+different grep patterns, for any legitimate frontend consumer of this
+endpoint — there is none; self-lookup already goes through `/users/me`
+instead. Restricted to the same `admin`/`executive`/`super_admin` gate
+rather than deleting the route outright, in case something outside this
+repo depends on it.
+
+Also swept the rest of the backend for the same class of bug that
+produced #4 (a route taking an `:id`/param, `authenticate`d but not
+role- or ownership-checked) — `getUserById` was the only instance found
+across every route file; not a systemic pattern.
+
+Verified: `npx eslint src --ext js,jsx --max-warnings 0` clean,
+`npm run build` clean, full backend `node --check` sweep clean. Diff
+confirmed scoped to exactly the three files these four fixes touch —
+`AdminLayout.jsx`, `CommitteeAdminDashboard.jsx`,
+`lmsa-api/user.routes.js` — nothing else.
+
+Pushed directly on `fix/admin-integration-review`, merged to `main`.
