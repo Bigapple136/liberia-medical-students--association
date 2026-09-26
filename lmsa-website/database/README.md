@@ -13,8 +13,18 @@ new numbered files are added.
 | 003 | `003_newsletter.sql` | Creates the site-wide `newsletter_subscribers` table (separate from the per-committee `committee_subscribers`), its email index, RLS, and a public insert policy so the unauthenticated footer signup can write. Depends on 001 being applied first (RLS enabled; no FK dependencies). |
 | 004 | `004_committee_applications.sql` | Makes "Apply now" a real flow. Adds `openings`, `application_deadline` and `accepting_applications` to `committees`, creates `committee_applications` (statement, year level, phone, status, review fields) with a partial unique index allowing one live application per person per committee, plus RLS. Depends on 001 (`committees`, `users`, and the `update_updated_at_column()` trigger function). |
 | 005 | `005_leadership_nominations.sql` | Makes "how to stand for office" a real flow. Creates `election_cycles` (academic year, nomination open/close dates, election date, `accepting_nominations` switch) and `leadership_nominations` (level, position, statement, status, review fields) with a partial unique index allowing one live nomination per person per position per cycle, plus RLS. Depends on 001 (`users`, and the `update_updated_at_column()` trigger function). |
+| 006 | `006_seed_committees.sql` | Inserts the 12 standing committees (name, slug, description, `committee_type`, `status`) — `committees` has had the right columns since 001/004 but was never actually populated. Same slugs as `lmsa-website/src/config/committees.js`'s icon mapping, so they must match exactly. `openings`/`accepting_applications`/`application_deadline` are left on their column defaults (closed/not recruiting) and chairs are left unassigned — both are the same already-known follow-up actions noted below, just now actually possible to do since the rows will exist. Idempotent (`ON CONFLICT (slug) DO NOTHING`), safe to re-run. Depends on 001, and on 004 for the recruitment columns' defaults to exist. |
 
-## Status as of 2026-09-03
+## Status as of 2026-09-26
+
+- ✅ **006 written** — the `committees` table itself has been correctly
+  migrated since 2026-09-03 but was never seeded with any rows, which
+  is why the public Committees page, the admin Committee Management
+  picker, and everything downstream of a committee existing had
+  nothing to show or operate on. Run `006_seed_committees.sql` once —
+  after that, the two follow-up actions below (recruitment settings,
+  election cycle) become the actual next steps rather than
+  preconditions with nothing to apply them to.
 
 - ✅ **004 and 005 both applied** — confirmed by Stone. `committees` now
   has real `openings`/`application_deadline`/`accepting_applications`
@@ -43,7 +53,7 @@ or the app's own admin UI):**
   RLS, and both public insert/update policies are live in production
   (confirmed by Stone).
 
-## How to run (for reference — 001–005 are all applied as of 2026-09-03)
+## How to run (for reference — 001–005 are all applied as of 2026-09-03; 006 is new)
 
 1. Supabase dashboard → your project → **SQL Editor**
 2. Open `001_base_schema.sql`, copy the full contents, paste into a new
@@ -59,7 +69,11 @@ or the app's own admin UI):**
 6. Open `005_leadership_nominations.sql`, same process. Confirm no errors —
    an `election_cycles` table, a `leadership_nominations` table, and six
    policies across the two.
-7. Update the status line above once confirmed.
+7. Open `006_seed_committees.sql`, same process. Confirm no errors — the
+   `committees` table in **Table Editor** should now show 12 rows. Safe
+   to re-run if needed; the `ON CONFLICT (slug) DO NOTHING` means it
+   won't create duplicates or overwrite any edits made since.
+8. Update the status line above once confirmed.
 
 When 004 wasn't yet applied, `/get-involved/committees` and
 `/leadership/committees` fell back to a static committee list with **no**
