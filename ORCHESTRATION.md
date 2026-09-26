@@ -5904,3 +5904,22 @@ becomes something with actual committees to apply it to.
 
 Pushed directly to `main` (data/schema change, no application code
 touched — sanity-checked eslint anyway, clean).
+
+---
+
+## 2026-09-26 — Fix: CommitteeAdminDashboard mandate/key_activities JSON parsing
+
+**Bug:** `TypeError: l.mandate.map is not a function` in CommitteeAdminDashboard Details tab.
+
+**Root cause:** The `committees` table stores `mandate` and `key_activities` as TEXT columns (JSON strings like `'["item1","item2"]'`). The API returns them as strings, but the frontend treated them as arrays and called `.map()` directly.
+
+**Fix:** Added `parseField` helper in `lmsa-website/src/pages/admin/CommitteeAdminDashboard.jsx` that:
+- Returns arrays as-is
+- Parses JSON strings safely with try/catch
+- Falls back to `['']` for null/undefined/invalid JSON
+
+Applied in two places: `loadCommittees()` when fetching all committees, and `DetailsTab` initial state + committee-switch `useEffect`.
+
+**Files changed:** `lmsa-website/src/pages/admin/CommitteeAdminDashboard.jsx` (+19/-6 lines)
+
+**Verification:** Build passes, dev server starts clean.
