@@ -5846,3 +5846,61 @@ confirmed scoped to exactly the three files these four fixes touch —
 `lmsa-api/user.routes.js` — nothing else.
 
 Pushed directly on `fix/admin-integration-review`, merged to `main`.
+
+---
+
+## 2026-09-24 — Committee table seed (root cause of "0 Committee")
+
+Stone reported the admin Committee Management tab looked "not developed"
+because it showed 0 committees, and asked for it to be set as a task.
+Checked before speccing anything, since the previous review just
+confirmed that page is one of the most fully built parts of the whole
+admin panel (8 real tabs, no mocks). Traced it instead — Stone confirmed
+directly: **the `committees` table itself is empty.**
+
+Root cause, confirmed against the actual migration files: `001_base_schema.sql`
+through `005_leadership_nominations.sql` build the entire `committees`
+schema correctly — including the recruitment columns from 004, confirmed
+applied by Stone back on 2026-09-03 — but none of the five migrations
+ever contained a single `INSERT`. The table has been structurally ready
+and empty this whole time. This also explains why the "committee
+recruitment settings unset" open item on the turnover list never quite
+made sense on its own — there was nothing for those settings to be set
+*on*.
+
+Also checked, since this changes what "the fix" even is: there is no
+create-committee flow anywhere, on either side. Backend has no `POST
+/committees` (only `GET /`, `GET /:slug`, `PUT /:id` — update only).
+Frontend has no `createCommittee` service call, and the only "Add"
+modal in `CommitteeAdminDashboard.jsx` is "Add Committee **Member**"
+(adding a person to an existing committee), not a new committee. This
+is architectural, not an oversight — committees are treated as the
+fixed constitutional set (12 standing committees), editable once they
+exist, not a dynamically admin-creatable list the way events or news
+posts are. So this genuinely could not have been fixed by clicking
+around the admin panel, with or without more development — it needed
+an actual data insert.
+
+**Fix:** `lmsa-website/database/006_seed_committees.sql` — inserts the
+12 standing committees. Names/slugs/descriptions are the same ones
+already hardcoded as icon/fallback data in `src/config/committees.js`
+(that file's own comment had already anticipated this exact situation:
+"Shown only when the API is unreachable... database not migrated
+yet"). Verified programmatically (not just eyeballed) that all 12 SQL
+slugs match the config file's `committeeVisuals` keys exactly — a
+mismatched slug here would have silently broken icon mapping rather
+than erroring, so this was worth checking precisely rather than by
+hand. `openings`/`accepting_applications`/`application_deadline` left
+on their column defaults (closed, not recruiting) and chairs left
+unassigned — same "honest, not invented" precedent the README already
+documents for 004/005. Idempotent (`ON CONFLICT (slug) DO NOTHING`),
+safe to re-run. `database/README.md` updated with the same
+documentation convention used for 001-005.
+
+**Action needed from Stone:** run `006_seed_committees.sql` once in the
+Supabase SQL Editor (same process as 001-005). After that, the
+already-known "set recruitment settings per committee" follow-up
+becomes something with actual committees to apply it to.
+
+Pushed directly to `main` (data/schema change, no application code
+touched — sanity-checked eslint anyway, clean).
