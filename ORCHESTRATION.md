@@ -5923,3 +5923,76 @@ Applied in two places: `loadCommittees()` when fetching all committees, and `Det
 **Files changed:** `lmsa-website/src/pages/admin/CommitteeAdminDashboard.jsx` (+19/-6 lines)
 
 **Verification:** Build passes, dev server starts clean.
+
+---
+
+## 2026-09-26 — Root-cause fix: `committees.mandate` schema type, plus reconciling with the frontend patch above
+
+Stone reported the crash directly (browser console dump: `TypeError:
+l.mandate.map is not a function`, thrown inside `CommitteeAdminDashboard`).
+Traced it to the actual root cause rather than just the symptom: this
+was a live schema/frontend type mismatch, not something 006 (the
+committee seed) introduced — 006 just created the first real rows
+anyone could open the Details tab and save against, which is what
+exposed a bug that had been latent since the array-based mandate
+editor was originally built against a column that never supported it.
+
+**Root cause, confirmed against the actual schema:** `001_base_schema.sql`
+declares `committees.mandate` as `TEXT` (a scalar string). But every UI
+that reads or writes it — the admin Details tab's mandate bullet-point
+editor, and the *public* `CommitteePageTemplate.jsx`'s detail display —
+has always treated it as an array of strings, exactly like its sibling
+column `key_activities`, which genuinely is `TEXT[]` (added correctly
+in 002). `key_activities` was never actually broken by this; only
+`mandate` has the mismatch. Mechanism: the admin edit form sends a JS
+array on save; `committee.controller.js`'s `update()` passes `mandate`
+through to Supabase unchanged; Postgres accepts the JSON-stringified
+array into the TEXT column as literal text — the save appears to
+succeed, but from then on `mandate` is a truthy *string*, and the next
+`.map()` over it throws.
+
+**Fix:** `lmsa-website/database/007_fix_mandate_column_type.sql` —
+converts the column to `TEXT[]` (matching `key_activities`) and, since
+this could already be live, repairs any row already corrupted by the
+bug rather than only fixing saves going forward: NULL/blank stays NULL,
+a value that looks like the JSON-array string the bug produces gets
+unpacked back into a real array, anything else gets wrapped as a
+single-item array so nothing already typed in gets silently dropped.
+No frontend or backend code changes needed for this part — the
+array-handling logic on both the read and write side was already
+correct throughout; only the schema was wrong.
+
+**Reconciled with a second, independent fix pushed to `main` at the
+same time** (`c226ab2`/`7fc5def`, authored directly by Stone/his side):
+a defensive frontend patch in `CommitteeAdminDashboard.jsx` (a
+`parseField` helper that `JSON.parse`s the value when it's still a
+string, returns it as-is when it's already an array). Read it closely
+before pushing anything on top, specifically to check for a collision
+— it doesn't collide: their check is `typeof === 'string'` /
+`Array.isArray()` gated, so once this migration lands and Supabase
+starts returning a genuine array, their code cleanly takes the
+already-an-array branch instead of trying to re-parse it. The two are
+complementary: schema now correct (root cause closed, no more
+corrupted saves possible going forward) plus an extra defensive read
+safety net on the admin side. Merged clean, no code conflicts (only
+files in common were `ORCHESTRATION.md`, an append-append).
+
+**Two corrections worth recording, not as a gotcha but because the
+next person reading that entry should have the accurate picture:**
+- That fix's root-cause note assumed `key_activities` was *also* a
+  JSON-string-in-a-TEXT-column situation. It isn't — confirmed directly
+  in `002_committee_additions.sql`, it's genuine `TEXT[]` and was never
+  actually broken. The defensive handling applied to it anyway is
+  harmless (`Array.isArray` short-circuits immediately), just not
+  fixing a real bug on that field.
+- That fix only touches the **admin** page. The public
+  `CommitteePageTemplate.jsx` has the identical unguarded `.map()` and
+  was never patched — it would still crash for any visitor viewing a
+  committee with already-corrupted mandate data, right up until this
+  migration is actually run against Supabase. Merged code isn't the
+  same as a migrated database — **Stone still needs to run 007 in the
+  Supabase SQL Editor** for either fix to be fully effective; see
+  `database/README.md`, marked urgent there.
+
+Verified post-merge: `npx eslint src --ext js,jsx --max-warnings 0`
+clean, `npm run build` clean. Pushed to `main`.
