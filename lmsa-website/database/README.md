@@ -14,9 +14,14 @@ new numbered files are added.
 | 004 | `004_committee_applications.sql` | Makes "Apply now" a real flow. Adds `openings`, `application_deadline` and `accepting_applications` to `committees`, creates `committee_applications` (statement, year level, phone, status, review fields) with a partial unique index allowing one live application per person per committee, plus RLS. Depends on 001 (`committees`, `users`, and the `update_updated_at_column()` trigger function). |
 | 005 | `005_leadership_nominations.sql` | Makes "how to stand for office" a real flow. Creates `election_cycles` (academic year, nomination open/close dates, election date, `accepting_nominations` switch) and `leadership_nominations` (level, position, statement, status, review fields) with a partial unique index allowing one live nomination per person per position per cycle, plus RLS. Depends on 001 (`users`, and the `update_updated_at_column()` trigger function). |
 | 006 | `006_seed_committees.sql` | Inserts the 12 standing committees (name, slug, description, `committee_type`, `status`) — `committees` has had the right columns since 001/004 but was never actually populated. Same slugs as `lmsa-website/src/config/committees.js`'s icon mapping, so they must match exactly. `openings`/`accepting_applications`/`application_deadline` are left on their column defaults (closed/not recruiting) and chairs are left unassigned — both are the same already-known follow-up actions noted below, just now actually possible to do since the rows will exist. Idempotent (`ON CONFLICT (slug) DO NOTHING`), safe to re-run. Depends on 001, and on 004 for the recruitment columns' defaults to exist. |
+| 007 | `007_fix_mandate_column_type.sql` | **Crash fix.** `committees.mandate` was declared `TEXT` in 001, but every UI that reads or writes it (admin Details tab, public committee page) always treated it as an array of strings, same as its sibling `key_activities` (correctly `TEXT[]` since 002) — 001 just never matched. Saving a mandate from the admin edit form silently "worked" but stored the JSON-stringified array as literal text, and the next read crashed with `mandate.map is not a function`, on both the admin page and the public one. Converts the column to `TEXT[]` and repairs any row already corrupted this way (unpacks the JSON-string back into a real array) rather than just fixing new saves going forward. Depends on 001; safe to run whether or not any committee has had its mandate edited yet. |
 
 ## Status as of 2026-09-26
 
+- 🔴 **007 is urgent** — fixes a live crash (`mandate.map is not a
+  function`) on both the admin Committee Management Details tab and
+  the public committee detail page. Run this before doing anything
+  else in Committee Management, including anything with 006 below.
 - ✅ **006 written** — the `committees` table itself has been correctly
   migrated since 2026-09-03 but was never seeded with any rows, which
   is why the public Committees page, the admin Committee Management
@@ -73,7 +78,12 @@ or the app's own admin UI):**
    `committees` table in **Table Editor** should now show 12 rows. Safe
    to re-run if needed; the `ON CONFLICT (slug) DO NOTHING` means it
    won't create duplicates or overwrite any edits made since.
-8. Update the status line above once confirmed.
+8. Open `007_fix_mandate_column_type.sql`, same process. Confirm no
+   errors, and confirm in **Table Editor** that `committees.mandate`'s
+   type now shows as `text[]`, not `text`. Run this even if you haven't
+   touched a committee's mandate yet — it's a schema fix either way,
+   and is what unblocks safely editing one at all.
+9. Update the status line above once confirmed.
 
 When 004 wasn't yet applied, `/get-involved/committees` and
 `/leadership/committees` fell back to a static committee list with **no**
