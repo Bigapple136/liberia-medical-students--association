@@ -5996,3 +5996,18 @@ next person reading that entry should have the accurate picture:**
 
 Verified post-merge: `npx eslint src --ext js,jsx --max-warnings 0`
 clean, `npm run build` clean. Pushed to `main`.
+
+**2026-09-26 correction — 007 failed on first run.** Stone ran it in
+the Supabase SQL Editor and hit `ERROR: 0A000: cannot use subquery in
+transform expression` on the `ARRAY(SELECT jsonb_array_elements_text(...))`
+line. This is a real Postgres restriction, not a logic error: a
+set-returning subquery isn't allowed inside an `ALTER COLUMN TYPE ...
+USING` transform expression, even though the identical unpacking logic
+works fine in a plain `UPDATE ... SET`. Rewrote 007 as the standard
+add-column / populate-via-`UPDATE` / drop-old / rename sequence instead
+of one `ALTER COLUMN TYPE` statement — same three-case repair logic,
+different mechanism. Before switching to drop+recreate (rather than an
+in-place type alter), grepped every migration file to confirm `mandate`
+has no index, constraint, or RLS policy referencing it by name
+anywhere else in the schema, so nothing else gets silently lost in the
+swap. Pushed as `44a808a` — **this is the version to actually run.**
