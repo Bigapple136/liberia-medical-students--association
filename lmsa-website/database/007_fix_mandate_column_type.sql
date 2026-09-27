@@ -40,15 +40,36 @@
 --   - anything else (a genuine plain string, however that could have
 --     happened) is wrapped as a single-item array rather than
 --     discarded, so no data is silently dropped either way
+--
+-- Done as add-column / populate / drop / rename rather than a single
+-- ALTER COLUMN ... TYPE ... USING (...): Postgres doesn't allow a
+-- set-returning subquery (jsonb_array_elements_text(...), needed to
+-- actually unpack a corrupted row) inside a column-type USING
+-- transform expression — "ERROR: 0A000: cannot use subquery in
+-- transform expression" — even though the identical logic is fine in
+-- a plain UPDATE ... SET. This is a one-time structural migration, not
+-- designed to be safely re-run after it has already fully succeeded
+-- once (by then `mandate` is real TEXT[], and step 2's string
+-- functions like btrim()/left() would error against an array type) —
+-- same as 001-005, only 006 was made idempotent since seed data is
+-- more likely to be re-run by accident.
 -- =====================================================
 
-ALTER TABLE committees
-  ALTER COLUMN mandate TYPE TEXT[]
-  USING (
-    CASE
-      WHEN mandate IS NULL OR btrim(mandate) = '' THEN NULL
-      WHEN left(btrim(mandate), 1) = '[' AND right(btrim(mandate), 1) = ']' THEN
-        ARRAY(SELECT jsonb_array_elements_text(mandate::jsonb))
-      ELSE ARRAY[mandate]
-    END
-  );
+-- 1. New column to populate before touching the original.
+ALTER TABLE committees ADD COLUMN IF NOT EXISTS mandate_new TEXT[];
+
+-- 2. Populate it from the existing (scalar TEXT) `mandate`, per the
+--    same three cases as before.
+UPDATE committees
+SET mandate_new = CASE
+  WHEN mandate IS NULL OR btrim(mandate) = '' THEN NULL
+  WHEN left(btrim(mandate), 1) = '[' AND right(btrim(mandate), 1) = ']' THEN
+    (SELECT array_agg(value) FROM jsonb_array_elements_text(mandate::jsonb) AS value)
+  ELSE ARRAY[mandate]
+END;
+
+-- 3. Drop the old scalar column.
+ALTER TABLE committees DROP COLUMN IF EXISTS mandate;
+
+-- 4. Rename the new one into its place.
+ALTER TABLE committees RENAME COLUMN mandate_new TO mandate;
