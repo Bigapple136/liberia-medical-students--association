@@ -85,7 +85,11 @@ export const getBySlug = async (req, res) => {
 export const update = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, description, mandate, key_activities, email, meeting_schedule, chair_id, vice_chair_id, icon } = req.body;
+    const {
+      name, description, mandate, key_activities, email, meeting_schedule,
+      chair_id, vice_chair_id, icon,
+      openings, accepting_applications, application_deadline,
+    } = req.body;
 
     const { data, error } = await supabase
       .from('committees')
@@ -99,6 +103,9 @@ export const update = async (req, res) => {
         chair_id,
         vice_chair_id,
         icon,
+        openings,
+        accepting_applications,
+        application_deadline,
         updated_at: new Date().toISOString(),
       })
       .eq('id', id)

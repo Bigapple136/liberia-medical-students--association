@@ -259,6 +259,9 @@ function DetailsTab({ committee, onSave }) {
     key_activities: parseField(committee.key_activities).length ? parseField(committee.key_activities) : [''],
     email:          committee.email || '',
     status:         committee.status || 'active',
+    openings:              committee.openings ?? 0,
+    accepting_applications: committee.accepting_applications ?? false,
+    application_deadline:   committee.application_deadline || '',
   });
   const [saving, setSaving] = useState(false);
 
@@ -272,6 +275,9 @@ function DetailsTab({ committee, onSave }) {
       key_activities: parseField(committee.key_activities).length ? parseField(committee.key_activities) : [''],
       email:          committee.email || '',
       status:         committee.status || 'active',
+      openings:              committee.openings ?? 0,
+      accepting_applications: committee.accepting_applications ?? false,
+      application_deadline:   committee.application_deadline || '',
     });
   }, [committee.id]);
   /* eslint-enable react-hooks/exhaustive-deps */
@@ -299,6 +305,8 @@ function DetailsTab({ committee, onSave }) {
         ...form,
         mandate:        form.mandate.filter(Boolean),
         key_activities: form.key_activities.filter(Boolean),
+        openings:              Number(form.openings) || 0,
+        application_deadline:  form.application_deadline || null,
       });
       onSave(updated);
       toast.success('Committee updated successfully');
@@ -351,6 +359,45 @@ function DetailsTab({ committee, onSave }) {
               onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
             />
           </div>
+        </div>
+      </SectionCard>
+
+      <SectionCard title="Recruitment" subtitle="Controls the public &ldquo;Apply now&rdquo; flow for this committee">
+        <div className="space-y-4">
+          <label className="flex items-center gap-2 text-sm font-medium text-gray-700 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={form.accepting_applications}
+              onChange={e => setForm(f => ({ ...f, accepting_applications: e.target.checked }))}
+              className="h-4 w-4 rounded border-gray-300 text-lmsa-600 focus:ring-lmsa-500"
+            />
+            Currently accepting applications
+          </label>
+
+          {form.accepting_applications && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pl-6">
+              <div>
+                <Label>Number of Openings</Label>
+                <input
+                  className="input"
+                  type="number"
+                  min="0"
+                  value={form.openings}
+                  onChange={e => setForm(f => ({ ...f, openings: e.target.value }))}
+                />
+              </div>
+              <div>
+                <Label>Application Deadline (optional)</Label>
+                <input
+                  className="input"
+                  type="date"
+                  value={form.application_deadline}
+                  onChange={e => setForm(f => ({ ...f, application_deadline: e.target.value }))}
+                />
+                <p className="text-xs text-gray-500 mt-1">Leave blank to keep applications open with no set closing date.</p>
+              </div>
+            </div>
+          )}
         </div>
       </SectionCard>
 

@@ -1,16 +1,16 @@
 import {
-  FlaskConical,
+  BookOpen,
+  DollarSign,
+  FileText,
   Globe,
-  GraduationCap,
   Heart,
+  HeartHandshake,
   Megaphone,
-  Network,
-  Palette,
   Scale,
-  Shield,
-  TrendingUp,
   Trophy,
-  Wallet,
+  UserPlus,
+  Users,
+  Utensils,
 } from 'lucide-react';
 
 /**
@@ -22,23 +22,33 @@ import {
  * so admins control the recruitment round. What can't come from the database
  * is presentation: an icon and a fallback one-liner for a committee whose
  * description is still empty.
+ *
+ * Slugs and icons here must match `src/utils/committeesData.js`
+ * (`ALL_COMMITTEES_DATA`) exactly — that file is the single source of
+ * truth for the 12 constitutional committees (name, description,
+ * mandate, key activities), used by the committee detail page
+ * (`CommitteePageTemplate.jsx`) and by the seed migration
+ * (`database/008_reset_committees_constitutional.sql`). This file only
+ * adds the icon *component* (that one needs a component reference, not
+ * a string, since it renders directly) and a short fallback line for
+ * this listing page specifically.
  */
 export const committeeVisuals = {
-  'medical-education': { icon: GraduationCap, focus: 'Academic standards and curriculum support' },
-  'community-health': { icon: Heart, focus: 'Public health outreach and education' },
-  'research-innovation': { icon: FlaskConical, focus: 'Scientific research promotion' },
-  'student-welfare': { icon: Shield, focus: 'Student support services' },
-  'professional-development': { icon: TrendingUp, focus: 'Career and skills training' },
-  'public-relations': { icon: Megaphone, focus: 'Communications and media' },
-  'international-relations': { icon: Globe, focus: 'Global partnerships' },
-  'finance-budget': { icon: Wallet, focus: 'Financial management' },
-  'ethics-discipline': { icon: Scale, focus: 'Code of conduct enforcement' },
-  'legislative-affairs': { icon: Globe, focus: 'Policy and advocacy' },
-  'sports-recreation': { icon: Trophy, focus: 'Athletic activities' },
-  'cultural-affairs': { icon: Palette, focus: 'Arts and cultural programmes' },
+  academic:          { icon: BookOpen,       focus: 'Academic affairs, symposia and student support' },
+  health:            { icon: Heart,          focus: 'Sanitation and student health initiatives' },
+  'research-journal':{ icon: FileText,       focus: "LMSA's journal, newsletters and research culture" },
+  'social-program':  { icon: Users,          focus: 'Social events, initiation and the end-of-year program' },
+  dietary:           { icon: Utensils,       focus: 'Meal quality and cafeteria standards' },
+  judicial:          { icon: Scale,          focus: 'Constitutional matters and student rights' },
+  sports:            { icon: Trophy,         focus: 'Inter-class sports and athletics' },
+  auditing:          { icon: DollarSign,     focus: 'Financial transparency and accountability' },
+  'foreign-affairs': { icon: Globe,          focus: 'International exchange and global health partnerships' },
+  membership:        { icon: UserPlus,       focus: 'Member recruitment, registration and ID cards' },
+  'media-publicity': { icon: Megaphone,      focus: "LMSA's media presence and communications" },
+  welfare:           { icon: HeartHandshake, focus: 'Student wellbeing and support services' },
 };
 
-const fallbackVisual = { icon: Network, focus: 'Committee work across LMSA programmes' };
+const fallbackVisual = { icon: Users, focus: 'Committee work across LMSA programmes' };
 
 export function getCommitteeVisual(slug) {
   return committeeVisuals[slug] || fallbackVisual;
