@@ -71,14 +71,38 @@ export const committeeFallbackList = Object.entries(committeeVisuals).map(([slug
   description: visual.focus,
   member_count: 0,
   openings: 0,
+  approved_count: 0,
   application_deadline: null,
   accepting_applications: false,
   unavailable: true,
 }));
 
-/** True when a committee's application window is open right now. */
+/**
+ * True when a capped committee has approved as many people as it has openings.
+ * `openings` of 0 means "no stated cap" (the column default), never "full" —
+ * the same rule applyToCommittee enforces server-side.
+ */
+export function isCommitteeFull(committee) {
+  const cap = Number(committee?.openings) || 0;
+  return cap > 0 && (Number(committee?.approved_count) || 0) >= cap;
+}
+
+/** Seats still open, or null when the committee has no stated cap. */
+export function openPositions(committee) {
+  const cap = Number(committee?.openings) || 0;
+  if (cap <= 0) return null;
+  return Math.max(0, cap - (Number(committee?.approved_count) || 0));
+}
+
+/**
+ * True when people can apply right now: the admin has switched recruitment on,
+ * the deadline hasn't passed, and there is still a seat. Mirrors the checks in
+ * the server's applyToCommittee, so a page never offers "Apply now" for a
+ * committee that would reject the application at submit.
+ */
 export function isAcceptingApplications(committee) {
   if (!committee?.accepting_applications) return false;
+  if (isCommitteeFull(committee)) return false;
   if (!committee.application_deadline) return true;
   return committee.application_deadline >= new Date().toISOString().split('T')[0];
 }
@@ -98,4 +122,28 @@ export function formatDeadline(date) {
     month: 'long',
     year: 'numeric',
   });
+}
+
+/**
+ * One answer to "what should this committee's recruitment notice say?", so
+ * pages that show a single committee don't each re-derive it.
+ *
+ *   unknown        the committee came from offline fallback data (`unavailable`);
+ *                  saying "not recruiting" would be a guess, so say nothing
+ *   open           applications are open; `remaining` is null when uncapped
+ *   full           recruitment is on but every position is taken
+ *   closed         the deadline has passed
+ *   not-recruiting recruitment is off
+ */
+export function getRecruitmentStatus(committee) {
+  if (!committee || committee.unavailable) return { state: 'unknown' };
+
+  const deadline = formatDeadline(committee.application_deadline);
+
+  if (isAcceptingApplications(committee)) {
+    return { state: 'open', remaining: openPositions(committee), deadline };
+  }
+  if (hasDeadlinePassed(committee)) return { state: 'closed', deadline };
+  if (committee.accepting_applications && isCommitteeFull(committee)) return { state: 'full' };
+  return { state: 'not-recruiting' };
 }

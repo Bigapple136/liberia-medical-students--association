@@ -9,6 +9,8 @@ import {
   getCommitteeVisual,
   hasDeadlinePassed,
   isAcceptingApplications,
+  isCommitteeFull,
+  openPositions,
 } from '@config/committees';
 import { EditorialCallout, EditorialSectionHeader, EditorialStat } from '@components/common/EditorialSections';
 
@@ -67,8 +69,10 @@ export default function JoinCommitteePage() {
 
   const openCommittees = useMemo(() => committees.filter(isAcceptingApplications), [committees]);
 
+  // Seats still open, not seats ever offered: a committee with 5 openings and
+  // 3 already approved has 2 left, and that's the number worth advertising.
   const totalOpenings = useMemo(
-    () => openCommittees.reduce((sum, c) => sum + (Number(c.openings) || 0), 0),
+    () => openCommittees.reduce((sum, c) => sum + (openPositions(c) ?? 0), 0),
     [openCommittees]
   );
 
@@ -239,7 +243,12 @@ function CommitteeCard({ committee, user, applied, onApply }) {
   const open = isAcceptingApplications(committee);
   const expired = hasDeadlinePassed(committee);
   const deadline = formatDeadline(committee.application_deadline);
-  const full = open && Number(committee.openings) > 0 && Number(committee.openings) <= 0;
+  // `open` already excludes a full committee (see isAcceptingApplications), so
+  // "full" is: recruitment is switched on, the deadline hasn't passed, but every
+  // position is taken. The server would reject an application here, so don't
+  // offer one.
+  const full = Boolean(committee.accepting_applications) && !expired && isCommitteeFull(committee);
+  const remaining = openPositions(committee);
 
   return (
     <article className={`committee-card ${open ? 'committee-card-open' : ''}`}>
@@ -256,7 +265,7 @@ function CommitteeCard({ committee, user, applied, onApply }) {
         {open && !applied && (
           <>
             <span className="font-bold uppercase tracking-[0.12em] text-lmsa-700">
-              {Number(committee.openings) > 0 ? `${committee.openings} openings` : 'Open recruitment'}
+              {remaining !== null ? `${remaining} ${remaining === 1 ? 'opening' : 'openings'}` : 'Open recruitment'}
             </span>
             <span className="text-gray-500">{deadline ? `Closes ${deadline}` : 'No closing date'}</span>
           </>
