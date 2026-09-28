@@ -764,6 +764,7 @@ thread, since that decision is explicitly still pending on Stone's end.
 | T31 | Forgot/reset password flow (frontend pages + a real backend bug in `resetPassword`) | none | **done** |
 | T32 | Route-based code splitting (`React.lazy`/`Suspense` on `routes.jsx`) | none | **done** |
 | T33 | Accessibility pass: skip-to-content link + `impeccable audit` verification of toast/ARIA/contrast | none | **done** |
+| T34 | Homepage: replace hardcoded fake "Latest from LMSA" stories with real news data | none | **unassigned** |
 
 **T22 flagged priority.** Render permanently blocks outbound SMTP ports
 (25/465/587) on free-tier web services since September 2025 — confirmed
@@ -6235,3 +6236,115 @@ dropdown, (b) whitelist it and let admins see inactive committees
 (needs an authenticated include-inactive path on the list endpoint).
 Also unaddressed and adjacent: `getBySlug` does not filter inactive, so
 a deactivated committee's page would still resolve by URL.
+
+---
+
+## T34 — Homepage: replace hardcoded fake "Latest from LMSA" stories with real news data
+
+**Branch:** `task/t34-homepage-real-news`
+**Status:** unassigned
+**Depends on:** none
+
+### Context
+
+Requested by Stone: a review of the Homepage for hardcoded content
+that should be pulling from real backend data instead. Verified before
+writing this spec, per the current process — found one clear, real
+gap and confirmed everything else on the page is legitimately static.
+
+`lmsa-website/src/pages/public/HomePage.jsx`'s "Latest from LMSA"
+section (the `stories` array, lines ~335-354) is three entirely
+made-up news items — "LMSA Annual Symposium 2026," "Students win
+regional research competition," "Free medical camp serves 500+
+patients" — linking to `/news/symposium-2026`, `/news/research-competition`,
+`/news/medical-camp`. None of those slugs exist anywhere else in the
+codebase (`grep`-confirmed) — a visitor clicking any of them hits the
+404 page. This sits directly beside a fully real, already-working news
+system: `newsService.getAll(params)` (in
+`lmsa-website/src/services/news.service.js`) already supports a
+`limit` param, hits a real `GET /news` backend endpoint, and
+`NewsPage.jsx` already demonstrates the correct fetch/loading/error/
+empty-state pattern to follow here — don't invent a new pattern,
+reuse that one.
+
+**Not in scope for this task, checked and ruled out:**
+- The `audiences`, `focusAreas`, and `resourcePaths` arrays are
+  legitimately static navigational/informational content (like a
+  sitemap) — no backend equivalent exists or should exist for these.
+  Leave them alone.
+- The `impactStats` strip (1972 founding year, 04 areas of focus, 01
+  student voice) are brand/tagline numbers, not data misrepresented as
+  real — leave alone unless Stone asks for this specifically in a
+  follow-up.
+- Stock photography (the featured story's Unsplash image via
+  `stockPhotos.stories.symposium`) is a separately-tracked, known open
+  item ("real LMSA photography needed") — not this task's problem to
+  solve. See the note on `featured_image_url` below for how to handle
+  it without conflating the two issues.
+
+### What to build
+
+**`lmsa-website/src/pages/public/HomePage.jsx`** — replace the
+hardcoded `stories` const and its usage with real data:
+
+1. Convert the component to fetch the 3 most recent published posts on
+   mount: `newsService.getAll({ limit: 3 })` (already supports this
+   param — confirm the backend actually orders by `published_at DESC`
+   or equivalent recency; if it doesn't, that's a backend one-liner to
+   add, not a reason to sort client-side).
+2. Loading state: keep the existing section chrome (heading, "View all
+   stories" link) but show a lightweight placeholder for the story
+   grid while the fetch is in flight — don't leave a blank gap or a
+   layout shift. A simple skeleton matching the existing card shapes
+   is enough; don't over-build this.
+3. **Honest empty state** (this is a new site — it is entirely
+   possible zero news posts have been published yet, same situation
+   the committees table was in before T-whatever seeded it): if the
+   fetch succeeds but returns zero posts, don't show three empty
+   cards or crash — show a brief, honest message in the section
+   instead ("News and updates will appear here soon" or similar), and
+   don't show the "View all stories" link pointing at an empty
+   `/news` page in that case. Reference how `NewsPage.jsx` itself
+   handles its own zero-posts case (`posts.length === 0` branch) for
+   the tone/pattern to match.
+4. **Error state**: if the fetch fails, don't crash the whole
+   Homepage — fail gracefully within just this section (same
+   principle as `NewsPage.jsx`'s `error` state), leaving the rest of
+   the page fully usable.
+5. Map each real post to the existing card markup: `post.title`,
+   `post.excerpt`, `post.category` (for the list items' category
+   label), link to `/news/${post.slug}` (confirm this route exists in
+   `routes.jsx` — it should, since `NewsPage.jsx` already links posts
+   this way).
+6. **Featured story image**: use `post.featured_image_url` when the
+   first (featured) post has one, same fallback pattern
+   `NewsPage.jsx` already uses (`post.featured_image_url ? <img ...>
+   : <fallback>`). When it's absent, keep the current stock-photo/icon
+   treatment as the fallback rather than leaving a blank space — this
+   task is about replacing fake *content*, not solving the separately-
+   tracked photography gap.
+7. The two non-featured story-list items don't currently show an
+   image in the existing markup — no image-related change needed
+   there beyond the text fields.
+
+### Acceptance criteria
+
+- [ ] `npx eslint src --ext js,jsx --max-warnings 0` — clean.
+- [ ] `npm run build` — clean.
+- [ ] No hardcoded `stories` array or fake `/news/*` links remain in
+      `HomePage.jsx`.
+- [ ] Loading, populated, empty (zero posts), and error states are all
+      handled without crashing or leaving a broken/blank section —
+      describe how each was verified (component-level reasoning is
+      fine if there's no way to exercise a live zero-post state from
+      this sandbox; say so plainly rather than claiming it was
+      clicked through).
+- [ ] Confirm `/news/:slug` route exists and matches what's being
+      linked to.
+- [ ] No change to any other Homepage section (`audiences`,
+      `focusAreas`, `impactStats`, `resourcePaths`, the join CTA) —
+      this task is scoped to the stories section only.
+
+### Report
+
+*(agent fills in on completion)*
