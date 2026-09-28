@@ -9,12 +9,38 @@ import {
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { committeeService } from '@services/committee.service';
+import { getRecruitmentStatus } from '@config/committees';
 
 // ─── Static data for all 12 committees (fallback / seed) ─────────────────────
 // Extracted to a shared module so the public committees index uses the
 // same constitutional registry (single source of truth).
 import { ALL_COMMITTEES_DATA } from '@utils/committeesData';
 export { ALL_COMMITTEES_DATA };
+
+// Recruitment copy for a single committee, from config's getRecruitmentStatus.
+// Wording matches the Join and listing pages ("N openings", "Closes <date>",
+// "All positions filled") so the same committee never reads two ways.
+function recruitmentDetail(r) {
+  if (r.state !== 'open') return null;
+  const seats =
+    r.remaining === null ? 'Open recruitment' : `${r.remaining} ${r.remaining === 1 ? 'opening' : 'openings'}`;
+  return `${seats} · ${r.deadline ? `Closes ${r.deadline}` : 'No closing date'}`;
+}
+
+function recruitmentNotice(r) {
+  switch (r.state) {
+    case 'open':
+      return `Now recruiting · ${recruitmentDetail(r)}`;
+    case 'full':
+      return 'All positions filled';
+    case 'closed':
+      return `Applications closed ${r.deadline}`;
+    case 'not-recruiting':
+      return 'Not recruiting right now';
+    default:
+      return null; // 'unknown': offline fallback data, so say nothing rather than guess
+  }
+}
 
 const ICON_MAP = {
   BookOpen, Heart, FileText, Users, Utensils, Scale,
@@ -54,7 +80,7 @@ export default function CommitteePageTemplate() {
         // slug must yield null so the Not Found state renders — spreading
         // undefined would fabricate a blank but "truthy" committee.
         const fallback = ALL_COMMITTEES_DATA[slug];
-        data = fallback ? { ...fallback, slug, id: slug, status: 'active' } : null;
+        data = fallback ? { ...fallback, slug, id: slug, status: 'active', unavailable: true } : null;
       }
       setCommittee(data);
       if (!data) return;
@@ -140,6 +166,7 @@ export default function CommitteePageTemplate() {
   }
 
   const Icon = ICON_MAP[committee.icon] || BookOpen;
+  const recruitment = getRecruitmentStatus(committee);
   const chair = members.find(m => m.position === 'Chair');
   const viceChair = members.find(m => m.position === 'Vice Chair');
   const regularMembers = members.filter(m => m.position !== 'Chair' && m.position !== 'Vice Chair');
@@ -170,12 +197,21 @@ export default function CommitteePageTemplate() {
               <h1 className="text-3xl md:text-4xl font-bold text-gray-900">{committee.name}</h1>
               <p className="text-gray-600 mt-2 max-w-2xl">{committee.description}</p>
               <div className="flex flex-wrap gap-3 mt-4">
-                <Link
-                  to="/get-involved/committees"
-                  className="inline-flex items-center gap-2 px-5 py-2 bg-lmsa-600 text-white rounded-lg text-sm font-medium hover:bg-lmsa-700 transition-colors"
-                >
-                  <UserPlus size={15} /> Join This Committee
-                </Link>
+                {recruitment.state === 'open' || recruitment.state === 'unknown' ? (
+                  <Link
+                    to="/get-involved/committees"
+                    className="inline-flex items-center gap-2 px-5 py-2 bg-lmsa-600 text-white rounded-lg text-sm font-medium hover:bg-lmsa-700 transition-colors"
+                  >
+                    <UserPlus size={15} /> {recruitment.state === 'open' ? 'Apply to Join' : 'Join This Committee'}
+                  </Link>
+                ) : (
+                  <Link
+                    to="/get-involved/committees"
+                    className="inline-flex items-center gap-2 px-5 py-2 bg-white text-lmsa-600 border border-lmsa-200 rounded-lg text-sm font-medium hover:bg-lmsa-50 transition-colors"
+                  >
+                    <UserPlus size={15} /> See Committees Recruiting
+                  </Link>
+                )}
                 {committee.email && (
                   <a
                     href={`mailto:${committee.email}`}
@@ -185,6 +221,9 @@ export default function CommitteePageTemplate() {
                   </a>
                 )}
               </div>
+              {recruitmentNotice(recruitment) && (
+                <p className="mt-3 text-sm font-medium text-gray-700">{recruitmentNotice(recruitment)}</p>
+              )}
             </div>
             {/* Quick Stats */}
             <div className="hidden lg:flex gap-4">
@@ -533,17 +572,36 @@ export default function CommitteePageTemplate() {
               </div>
             )}
 
-            {/* Join CTA */}
-            <div className="bg-lmsa-600 rounded-2xl p-5 text-white">
-              <h3 className="font-bold mb-1">Join This Committee</h3>
-              <p className="text-sm text-lmsa-100 mb-4">Get involved and make an impact in this area of student life.</p>
-              <Link
-                to="/get-involved/committees"
-                className="block w-full px-4 py-2 bg-white text-lmsa-600 text-center rounded-xl text-sm font-semibold hover:bg-lmsa-50 transition-colors"
-              >
-                Express Interest
-              </Link>
-            </div>
+            {/* Join CTA: reflects the committee's actual recruitment state */}
+            {recruitment.state === 'open' || recruitment.state === 'unknown' ? (
+              <div className="bg-lmsa-600 rounded-2xl p-5 text-white">
+                <h3 className="font-bold mb-1">{recruitment.state === 'open' ? 'Now Recruiting' : 'Join This Committee'}</h3>
+                <p className="text-sm text-lmsa-100 mb-4">
+                  {recruitment.state === 'open'
+                    ? recruitmentDetail(recruitment)
+                    : 'Get involved and make an impact in this area of student life.'}
+                </p>
+                <Link
+                  to="/get-involved/committees"
+                  className="block w-full px-4 py-2 bg-white text-lmsa-600 text-center rounded-xl text-sm font-semibold hover:bg-lmsa-50 transition-colors"
+                >
+                  {recruitment.state === 'open' ? 'Apply Now' : 'Express Interest'}
+                </Link>
+              </div>
+            ) : (
+              <div className="bg-white rounded-2xl border border-gray-200 p-5">
+                <h3 className="font-bold text-gray-900 mb-1">{recruitmentNotice(recruitment)}</h3>
+                <p className="text-sm text-gray-600 mb-4">
+                  This committee isn&apos;t taking applications at the moment. See which committees are.
+                </p>
+                <Link
+                  to="/get-involved/committees"
+                  className="block w-full px-4 py-2 bg-white text-lmsa-600 text-center border border-lmsa-200 rounded-xl text-sm font-semibold hover:bg-lmsa-50 transition-colors"
+                >
+                  See Open Committees
+                </Link>
+              </div>
+            )}
 
             {/* Meeting Schedule (if available) */}
             {committee.meeting_schedule && (

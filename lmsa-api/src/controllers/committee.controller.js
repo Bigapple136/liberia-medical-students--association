@@ -1,6 +1,33 @@
 import { supabase } from '../config/supabase.js';
 import { sendEmail } from '../config/email.js';
 
+// Approved-application counts keyed by committee id.
+//
+// applyToCommittee treats `openings > 0` as a hard cap on approved
+// applications, so a full committee rejects new applicants. The public pages
+// need the same number to say "positions filled" *before* someone writes a
+// statement and is turned away at submit. Never fatal: if this lookup fails
+// the committee list still loads and every committee simply reads as not-full,
+// which is how it behaved before this existed (the cap is still enforced
+// server-side either way). One query for all ids rather than one per committee.
+const getApprovedCounts = async (committeeIds) => {
+  if (!committeeIds.length) return {};
+  try {
+    const { data, error } = await supabase
+      .from('committee_applications')
+      .select('committee_id')
+      .eq('status', 'approved')
+      .in('committee_id', committeeIds);
+    if (error || !data) return {};
+    return data.reduce((counts, row) => {
+      counts[row.committee_id] = (counts[row.committee_id] || 0) + 1;
+      return counts;
+    }, {});
+  } catch {
+    return {};
+  }
+};
+
 // ─── GET /api/committees ──────────────────────────────────────────────────────
 export const getAll = async (req, res) => {
   try {
@@ -22,9 +49,11 @@ export const getAll = async (req, res) => {
     }
 
     // Flatten counts
+    const approvedCounts = await getApprovedCounts(data.map(c => c.id));
     const committees = data.map(c => ({
       ...c,
       member_count: c.member_count?.[0]?.count ?? 0,
+      approved_count: approvedCounts[c.id] ?? 0,
     }));
 
     res.json({
@@ -68,9 +97,11 @@ export const getBySlug = async (req, res) => {
       .update({ views: (data.views || 0) + 1 })
       .eq('id', data.id);
 
+    const approvedCounts = await getApprovedCounts([data.id]);
+
     res.json({
       success: true,
-      committee: data,
+      committee: { ...data, approved_count: approvedCounts[data.id] ?? 0 },
     });
   } catch (error) {
     console.error('Get committee by slug error:', error);

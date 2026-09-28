@@ -86,8 +86,12 @@ export default function CommitteeAdminDashboard() {
   }
 
   function handleCommitteeUpdate(updated) {
-    setCommittees(prev => prev.map(c => c.id === updated.id ? updated : c));
-    setActive(updated);
+    // The PUT response is the bare committees row: no member_count, no chair
+    // join (only the list endpoint builds those). Replacing the object outright
+    // made the member count and chair vanish from this page until the next
+    // reload, so merge the changes over what we already have instead.
+    setCommittees(prev => prev.map(c => (c.id === updated.id ? { ...c, ...updated } : c)));
+    setActive(prev => (prev && prev.id === updated.id ? { ...prev, ...updated } : updated));
   }
 
   if (loading) return <LoadingScreen />;
@@ -184,7 +188,7 @@ export default function CommitteeAdminDashboard() {
                 </div>
               </div>
               <Link
-                to={`/committees/${activeCommittee.slug}`}
+                to={`/leadership/committees/${activeCommittee.slug}`}
                 target="_blank"
                 className="flex items-center justify-center gap-2 px-4 py-2 text-sm text-lmsa-600 border border-lmsa-200 rounded-lg hover:bg-lmsa-50 transition-colors self-start sm:self-auto"
               >
@@ -385,6 +389,10 @@ function DetailsTab({ committee, onSave }) {
                   value={form.openings}
                   onChange={e => setForm(f => ({ ...f, openings: e.target.value }))}
                 />
+                <p className="text-xs text-gray-500 mt-1">
+                  A hard limit: applications close automatically once this many have been approved.
+                  Use 0 for no limit.
+                </p>
               </div>
               <div>
                 <Label>Application Deadline (optional)</Label>

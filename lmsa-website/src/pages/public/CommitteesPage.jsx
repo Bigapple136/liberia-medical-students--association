@@ -1,7 +1,14 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { committeeService } from '@services/committee.service';
-import { committeeFallbackList, getCommitteeVisual, isAcceptingApplications } from '@config/committees';
+import {
+  committeeFallbackList,
+  getCommitteeVisual,
+  hasDeadlinePassed,
+  isAcceptingApplications,
+  isCommitteeFull,
+  openPositions,
+} from '@config/committees';
 import { EditorialCallout, EditorialSectionHeader, EditorialStat } from '@components/common/EditorialSections';
 
 export default function CommitteesPage() {
@@ -74,7 +81,9 @@ export default function CommitteesPage() {
               : committees.map(committee => {
                   const { icon: Icon, focus } = getCommitteeVisual(committee.slug);
                   const open = isAcceptingApplications(committee);
-                  const openings = Number(committee.openings) || 0;
+                  const remaining = openPositions(committee);
+                  const filled =
+                    Boolean(committee.accepting_applications) && !hasDeadlinePassed(committee) && isCommitteeFull(committee);
 
                   return (
                     <Link key={committee.slug} to={`/leadership/committees/${committee.slug}`} className="editorial-link-card">
@@ -88,9 +97,10 @@ export default function CommitteesPage() {
                           <span className="text-gray-500">{committee.member_count ?? 0} members</span>
                           {open && (
                             <span className="text-lmsa-700">
-                              {openings > 0 ? `${openings} openings` : 'Recruiting'}
+                              {remaining !== null ? `${remaining} ${remaining === 1 ? 'opening' : 'openings'}` : 'Recruiting'}
                             </span>
                           )}
+                          {filled && <span className="text-gray-500">Positions filled</span>}
                         </span>
                       </div>
                     </Link>
