@@ -6117,3 +6117,80 @@ verifiable from this sandbox (no live Supabase, no browser session).
 3. Log into the admin panel and open Committee Management — the 12
    real committees should appear, and each one's Details tab should
    now have a "Recruitment" section to turn applications on.
+
+---
+
+## 2026-09-27 — Recruitment notice integration audit (admin, committee page, Join page)
+
+Stone asked whether the recruitment notice is integrated correctly
+between the admin dashboard, the committee page, and
+`/get-involved/committees`. Traced it end to end instead of assuming:
+admin form -> `PUT /committees/:id` -> database -> `GET /committees` and
+`GET /committees/:slug` -> the three public surfaces, and compared the
+frontend's rules with what `applyToCommittee` enforces server-side.
+
+**What was already correct:** the save path (fields whitelisted in the
+previous change), the shared helpers used by the listing and Join pages,
+and rule parity on the server (accepting flag, deadline as a UTC date
+string, opening cap). Deadline handling matches on both sides; Liberia
+is GMT so the UTC date has no offset problem. Column types (`DATE`,
+`INTEGER`, `BOOLEAN`) round-trip through the admin date and number
+inputs.
+
+**Four real gaps, all fixed:**
+
+1. **The individual committee page had no recruitment notice.** Hero and
+   sidebar CTAs ("Join This Committee", "Express Interest") were static.
+   Now driven by a shared `getRecruitmentStatus()` in
+   `config/committees.js` (states: open / full / closed /
+   not-recruiting / unknown). `unknown` covers offline fallback data:
+   the page says nothing rather than claim "not recruiting" when it
+   simply couldn't load the real state.
+2. **"All positions filled" was unreachable.** `openings` is a hard cap
+   on approved applications server-side, but the Join page's `full`
+   expression was `openings > 0 && openings <= 0` (always false) and the
+   API returned no approved count. Visitors saw "Apply now, 5
+   openings", filled in the form, and were rejected at submit. Fixed by
+   adding `approved_count` to `GET /committees` and `GET
+   /committees/:slug` (one aggregate query, `getApprovedCounts`) and
+   making `isAcceptingApplications` mirror the server exactly. Pages now
+   show seats *remaining*. The count lookup is deliberately non-fatal:
+   on failure every committee reads as not-full, which is the old
+   behaviour, and the server still enforces the cap either way.
+3. **Admin lost `member_count` and chair after every save.** The page
+   replaced the committee with the bare PUT response row, which lacks
+   the joins the list endpoint builds. Now merged over existing state.
+4. **Admin "View Public Page" link 404ed.** It pointed at
+   `/committees/:slug`; the real route is `/leadership/committees/:slug`.
+
+Also added helper text under Number of Openings stating it is a hard
+limit, since it is enforced, not decorative.
+
+**Testing, and its limits.** Recruitment logic run through 18 cases
+(uncapped, exactly full, over-full after an admin override, deadline
+today/yesterday/tomorrow, full plus expired, off plus stale deadline,
+offline fallback, string `openings` from the form). Backend change run
+against a fake PostgREST server using the real supabase-js client and
+the real controller: verified one filtered aggregate query and
+`approved_count` on both endpoints, and that a failing count lookup
+still returns 200 with every committee. `eslint`, `vite build`,
+`node --check` clean. **Not exercised:** a live browser, and the real
+database. The first will show whether the committee-page layout looks
+right with the new notice line.
+
+Process note: the committee-page notice is small conditional copy inside
+existing cards using existing classes, so I did not run an impeccable
+audit under the Design/UI standard. If Stone wants one on that page it
+is cheap to add.
+
+**Open decision, not changed: the admin Status dropdown does nothing.**
+`status` (Active/Inactive) is sent by the form but is not in the update
+whitelist, so the "Committee updated" toast is followed by no change.
+Just whitelisting it would be a trap: the admin picker loads committees
+via the public `GET /committees`, which filters to `status = 'active'`,
+so an admin who deactivated a committee would lose it from their own
+list and could only reactivate it in SQL. Options: (a) remove the
+dropdown, (b) whitelist it and let admins see inactive committees
+(needs an authenticated include-inactive path on the list endpoint).
+Also unaddressed and adjacent: `getBySlug` does not filter inactive, so
+a deactivated committee's page would still resolve by URL.
