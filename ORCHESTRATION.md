@@ -22,6 +22,47 @@ Claude (orchestrator), and any implementing agents (Claude Code, etc.).
 
 ---
 
+## Orchestration boundary: spec-and-delegate is the default
+
+**Decided 2026-09-27**, after the orchestrator personally implemented a
+multi-file feature (recruitment-notice integration across the admin
+panel, the committee detail page, the Join page, and the backend — six
+files, new helpers, a new test suite) instead of writing a task spec
+and delegating it. Stone corrected this directly: the orchestrator's
+job is orchestration and verification of executed tasks, not being the
+implementer by default.
+
+**Going forward:** real feature work, multi-file changes, and anything
+with meaningful design or logic surface gets a task spec in this file
+and a branch for an implementing agent — same as T1 through T33, the
+password-reset work, the admin integration review's task-shaped items,
+and everything else that went through the normal loop. The orchestrator
+writes the spec, reviews the diff independently (re-running lint/build
+itself, never just trusting a report), and makes the merge call.
+
+**This isn't an absolute rule, though — Stone confirmed the
+orchestrator is also the lead coder and can make fixes directly where
+necessary.** The bar for "necessary" is roughly the one already
+established earlier in this doc under "Critical bugs found and fixed
+directly": small, well-understood, single- or few-file fixes,
+especially urgent ones (a live crash, a broken redirect, a stale nav
+link, a role-check typo) where writing a task spec and waiting for an
+implementing agent to pick it up would be slower than just fixing it,
+and where the fix is contained enough that the orchestrator's own
+review of its own work is still meaningful (not a substitute for
+independent review on anything bigger).
+
+The distinguishing question going forward, before touching code
+directly: is this "fix the thing that's broken" (small, bounded, often
+urgent — direct fix is fine) or "build/integrate a feature" (multi-file,
+has real design decisions, benefits from a fresh implementer and an
+independent reviewer being different people — spec it as a task
+instead)? The recruitment-notice work that prompted this note was
+pretty clearly the second kind, even though individual pieces of it
+looked small in isolation.
+
+---
+
 ## Design/UI task standard: impeccable critiques
 
 **Decided 2026-09-23.** The `impeccable` skill (v4.1.3) is committed in
