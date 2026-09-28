@@ -6011,3 +6011,109 @@ in-place type alter), grepped every migration file to confirm `mandate`
 has no index, constraint, or RLS policy referencing it by name
 anywhere else in the schema, so nothing else gets silently lost in the
 swap. Pushed as `44a808a` — **this is the version to actually run.**
+
+---
+
+## 2026-09-27 — Constitutional committee data + admin recruitment controls
+
+Stone reviewed the two competing committee lists I'd flagged
+(`config/committees.js`, the icon config I'd seeded from, versus
+`utils/committeesData.js`, the richer original constitutional set) and
+decided `committeesData.js` is the right source: it has the real
+committee names, and far more detail. Also asked for the ability to
+"set call for application" from the admin Committee settings page.
+
+**Part 1 — reseed with the real 12.** `committeesData.js` has all 12
+constitutional committees (Academic, Health, Research & Journal,
+Social & Program, Dietary, Judicial, Sports, Auditing, Foreign
+Affairs, Membership, Media & Publicity, Welfare) with full
+descriptions, 6-item mandates, 6-item key activities, and icon names —
+written as the committee detail page's offline fallback, but never
+actually loaded into the database. That file's own header comment
+already noted it "mirrors the committee mandates documented in
+docs/LMSA STANDING COMMITTEES - COMPLETE PAGES.md" — the content
+existed, it just had no path into Supabase.
+
+`database/008_reset_committees_constitutional.sql` deletes 006's
+placeholder rows and inserts the real 12. Generated the INSERT
+programmatically by importing `committeesData.js` and emitting SQL
+(escaping apostrophes in "LMSA's", "organization's", etc.) rather than
+hand-transcribing 12 committees with nested arrays, then verified the
+result independently by re-parsing the SQL and comparing slug/icon/name
+for all 12 — same rigor as 006's check. Also populates `icon`, which
+006 left NULL: `CommitteePageTemplate.jsx` resolves it through an
+`ICON_MAP` keyed by exactly these Lucide icon-name strings, so every
+committee was falling through to a generic `BookOpen` on its detail
+page.
+
+Chose DELETE + INSERT over UPDATE-in-place after checking FK behavior:
+the two old lists don't map 1:1 (several old committees have no
+constitutional counterpart, so any re-mapping would have been
+arbitrary, silently attaching a member of "professional-development"
+to "Dietary Committee" if any were added). Child tables
+(`committee_members`, junction tables, applications) are ON DELETE
+CASCADE. The only non-cascading references — `events.committee_id` and
+`documents.committee_id`, both plain foreign keys — would make the
+DELETE fail loudly with an FK violation rather than corrupt anything,
+which is the safe failure mode. Documented all of this in the
+migration's header, including that it's destructive and not safe to
+re-run after real customization.
+
+**Depends on 007 having already run** (`mandate` must be `TEXT[]` —
+008 inserts array literals into it).
+
+`src/config/committees.js` re-keyed to the same 12 slugs, icons matched
+1:1 with `committeesData.js` for visual consistency between listing and
+detail pages. Kept as a separate file rather than merging the two,
+because this one holds actual icon *component references* (needed for
+direct rendering) while `committeesData.js` holds icon-name strings for
+`ICON_MAP` lookup — different shapes for different consumers. Added a
+comment stating `committeesData.js` is the single source of truth for
+slugs/names/content and this file must stay in sync with it, since
+*two divergent slug-keyed committee lists* is exactly what caused the
+confusion in the first place.
+
+**Part 2 — admin recruitment controls, which turned out to be a real
+missing feature rather than unset data.** The long-standing
+"committee recruitment settings unset" item on the turnover list was
+worse than described. Checked `CommitteeAdminDashboard.jsx`:
+`openings`, `accepting_applications`, and `application_deadline`
+appeared nowhere in it — no form field existed to set them. And the
+backend `update` controller explicitly destructures a fixed whitelist
+(`name, description, mandate, key_activities, email, meeting_schedule,
+chair_id, vice_chair_id, icon`) that didn't include them either, so
+even a correctly-built form would have been silently dropped on save.
+The public side, by contrast, was already fully built and waiting:
+`config/committees.js` has working `isAcceptingApplications` and
+`hasDeadlinePassed` logic.
+
+Fixed both sides: added the three fields to the backend whitelist and
+to the `.update()` object, and added a "Recruitment" section to the
+admin Details tab — an accepting-applications checkbox, with openings
+count and optional deadline shown only when it's on. `handleSave`
+converts `openings` to a number and an empty deadline to `null` (an
+empty string isn't a valid Postgres `DATE`). Reused the plain-checkbox
+pattern already in `EventsAdminPage.jsx` for style consistency rather
+than introducing a new toggle component.
+
+**Also caught along the way:** my first commit message for this had
+backtick-quoted identifiers that bash treated as command substitution,
+silently swallowing one and printing `icon: not found`. Noticed from
+the stderr, confirmed the committed text was corrupted, and amended
+before pushing (message written to a file to avoid the quoting issue
+entirely). Nothing bad reached the remote, but worth noting the
+general lesson: any commit message with backticks goes through
+`git commit -F <file>`, not `-m "..."`.
+
+**Verified:** `npx eslint src --ext js,jsx --max-warnings 0` clean,
+`npm run build` clean, full backend `node --check` sweep clean. The
+admin form itself, and 008 running against the real database, are not
+verifiable from this sandbox (no live Supabase, no browser session).
+
+**Action needed from Stone, in order:**
+1. Run `007_fix_mandate_column_type.sql` (the corrected version,
+   `44a808a` or later) if not already done.
+2. Run `008_reset_committees_constitutional.sql`.
+3. Log into the admin panel and open Committee Management — the 12
+   real committees should appear, and each one's Details tab should
+   now have a "Recruitment" section to turn applications on.
