@@ -46,6 +46,15 @@ export const AuthProvider = ({ children }) => {
       (_event, session) => {
         if (!mounted) return;
         if (session?.user) {
+          // A new session was detected (initial load, or a fresh sign-in /
+          // token refresh after the first check already settled). Mark a
+          // fetch as in-progress again so ProtectedRoute waits instead of
+          // seeing the stale `loading: false` + `user: null` from the very
+          // first page-load check — without this, navigating into a
+          // protected route the instant login() resolves races the profile
+          // fetch below and bounces the (actually logged-in) user back to
+          // /login. fetchProfile's `finally` resets it once settled.
+          setLoading(true);
           fetchProfile(session.user);
         } else {
           setUser(null);
