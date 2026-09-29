@@ -764,7 +764,8 @@ thread, since that decision is explicitly still pending on Stone's end.
 | T31 | Forgot/reset password flow (frontend pages + a real backend bug in `resetPassword`) | none | **done** |
 | T32 | Route-based code splitting (`React.lazy`/`Suspense` on `routes.jsx`) | none | **done** |
 | T33 | Accessibility pass: skip-to-content link + `impeccable audit` verification of toast/ARIA/contrast | none | **done** |
-| T34 | Homepage: replace hardcoded fake "Latest from LMSA" stories with real news data | none | **unassigned** |
+| T34 | Homepage: replace hardcoded fake "Latest from LMSA" stories with real news data | none | **done** |
+| T35 | Fix login redirect: root-cause AuthContext race + role-based destination (student → Homepage, admin → Admin Dashboard) + personalized welcome | none | **unassigned** |
 
 **T22 flagged priority.** Render permanently blocks outbound SMTP ports
 (25/465/587) on free-tier web services since September 2025 — confirmed
@@ -6402,3 +6403,178 @@ actually exercising them against a live backend from this sandbox
 after deploy, same as usual.
 
 No corrections needed. Approved and merged to `main`.
+
+---
+
+## T35 — Fix login redirect: root-cause race + role-based destination + welcome state
+
+**Branch:** `task/t35-login-redirect-fix`
+**Status:** unassigned
+**Depends on:** none
+
+### Context
+
+Stone reported the actual current behavior: after a successful login,
+the user is left sitting on the login form — no redirect, no error,
+nothing. He also wants the destination changed: students should land
+on the Homepage (`/`), not the student portal dashboard, and admins
+should land on `/admin/dashboard`, with a personalized "Welcome back
+{name}" moment and a visible loading state during the transition
+before either takes effect.
+
+Diagnosed the "left on the login form" symptom before writing this
+spec — it is a real, previously-undiscovered, consistently
+reproducible race condition, not intermittent, and it lives in
+`AuthContext.jsx`, not in `LoginPage.jsx` itself:
+
+`AuthContext`'s `loading` state starts `true` and is set to `false`
+exactly once, the first time `onAuthStateChange` resolves after the
+app mounts (whether or not anyone is logged in). It is never reset to
+`true` again after that. When someone logs in from `/login`,
+`LoginPage.jsx`'s `handleSubmit` calls `navigate('/portal/dashboard',
+...)` synchronously the instant `login()` resolves. Separately,
+`AuthContext`'s own `onAuthStateChange` callback fires for the same
+sign-in and starts `fetchProfile()` — a real network request
+(`GET /users/me`) needed to populate `user`. Because the navigate is
+synchronous and the fetch requires a network round trip, the navigate
+wins essentially every time. `ProtectedRoute` renders at that exact
+moment with `loading: false` (stale, from the very first page-load
+check, not this new sign-in) and `user: null` (the fetch hasn't landed
+yet), and immediately bounces back to `/login`
+(`<Navigate to="/login" replace />`). The profile fetch *does* finish
+moments later and `user` becomes correctly populated in the
+background, but the person is already back on the login form by then
+with nothing prompting them to go anywhere else. Confirmed this
+exposure is isolated to the login flow: grepped for every other
+`navigate()` into `/portal` or `/admin` in the frontend, and the only
+other one (`DashboardPage.jsx`'s admin bounce) fires from *within* an
+already-successfully-rendered protected page, which means
+`ProtectedRoute`'s gate already passed for that render — it is not
+exposed to this same race.
+
+Root-causing this in `AuthContext` is necessary regardless of where
+students end up landing: it is what makes the *admin* destination
+(`/admin/dashboard`, which is behind `ProtectedRoute`) work reliably
+too, not just a login cosmetic fix.
+
+### Part 1 — fix the race in `AuthContext.jsx`
+
+The fix is small and precise: `loading` needs to reflect "a profile
+fetch is currently in progress" for *every* auth transition, not just
+the very first one. Set `loading` back to `true` at the moment a new
+session is detected and a fetch is about to start (inside the
+`onAuthStateChange` callback, right before calling `fetchProfile`),
+not only rely on the initial `useState(true)`. `fetchProfile`'s
+existing `finally { setLoading(false) }` already correctly resets it
+once the fetch settles (success or the existing fallback-to-bare-
+session-user path on failure) — that part does not need to change.
+
+Do not touch the subscription/cleanup logic, the `mounted` guard, or
+the fallback-to-`sessionUser` behavior on fetch failure — those are
+correct and unrelated to this bug. This should be a minimal, surgical
+change, not a rewrite of the file.
+
+**Regression risk is real here — this file gates every protected route
+in the app.** After the change, verify (reasoning through the code is
+fine where a live click-through isn't possible in the sandbox, but say
+so explicitly in the report):
+- A user who is already logged in and does a hard page refresh on
+  `/portal/dashboard` or `/admin/dashboard` still sees the loading
+  spinner briefly, then the correct page — not a spurious bounce to
+  `/login`.
+- A signed-out visitor hitting a protected URL directly still gets
+  sent to `/login` (the legitimate case of that redirect, not the bug).
+- Logging out still works and does not get stuck in a permanent
+  loading state.
+
+### Part 2 — `LoginPage.jsx`: wait for the real profile, then decide
+
+Do not reintroduce the mistake from an earlier attempt at this exact
+problem: don't add a second, duplicate fetch to `/users/me` in
+`LoginPage.jsx` to learn the role early — that was tried before
+(see the 2026-09-23 addendum on that incident, in the Critical-bugs
+section near the top of this doc), and it made every login wait on a
+redundant backend round trip, on top of not being the actual bug. With
+Part 1's fix landed, `AuthContext`'s own `loading`/`user` already
+reliably reflect the in-progress fetch — consume that from `useAuth()`
+instead of fetching anything new.
+
+Shape:
+1. On submit: call `login(email, password)` as today. On failure, same
+   error toast as today, no change there.
+2. On success: **do not navigate immediately.** Enter a "welcoming"
+   state and wait (a `useEffect` watching `loading`/`user` from
+   `useAuth()`) until `loading` becomes `false` again — which, after
+   Part 1's fix, now reliably means *this* sign-in's profile fetch has
+   actually settled, not stale state from page load.
+3. Once settled: show a personalized welcome — "Welcome back,
+   {first name}!" (parse the first word of `user.full_name`; fall back
+   to something reasonable like "Welcome back!" if `full_name` is
+   somehow empty) — and a visible loading/transition state, replacing
+   the form rather than just a toast, matching the flow Stone
+   described (form → welcome moment → loading state → redirect). Exact
+   visual treatment is your call within the existing brand/style
+   conventions already used on this page (`Input`/`Button` components,
+   `lmsa-` color tokens) — don't over-build this into a multi-second
+   animated sequence, it should feel fast.
+4. Then navigate:
+   - If an explicit `?next=` destination is present (the existing
+     same-origin-only validated logic — keep that exactly as is, it's
+     correct and unrelated to this bug), it still wins, same as today.
+   - Otherwise: `/admin/dashboard` if `ADMIN_ROLES.includes(user.role)`
+     (import `ADMIN_ROLES` from `@utils/constants`, the existing
+     single source of truth already used by `routes.jsx` and
+     `Header.jsx`), else `/` (the Homepage — this is the actual
+     behavior change from what exists today, which sends students to
+     `/portal/dashboard`).
+5. If the profile fetch fails even with Part 1's fix (network hiccup,
+   `fetchProfile`'s existing catch path, `user` ends up as the bare
+   session user with no `role`) — don't get stuck. Treat a missing/
+   unknown role as the student case (`/`) rather than hanging
+   indefinitely; this matches the existing fail-open-to-student pattern
+   already used elsewhere in this codebase rather than inventing a new
+   one.
+
+### Part 3 — cleanup
+
+`DashboardPage.jsx`'s `justLoggedIn`-keyed redirect-to-admin effect
+becomes dead code once students no longer land on `/portal/dashboard`
+after login at all — remove it (and the now-unused
+`ADMIN_ROLES`/`useLocation`/`useNavigate` imports in that file, if
+nothing else in the file still needs them — check before removing).
+Don't remove `justLoggedIn` from anywhere it might still be referenced
+without checking first.
+
+### Acceptance criteria
+
+- [ ] `npx eslint src --ext js,jsx --max-warnings 0` — clean.
+- [ ] `npm run build` — clean.
+- [ ] `AuthContext.jsx` change is minimal and scoped to the `loading`
+      race described above — no unrelated refactoring of this file.
+- [ ] A student login lands on `/` (Homepage), not `/portal/dashboard`.
+- [ ] An admin/executive/super_admin login lands on `/admin/dashboard`.
+- [ ] An explicit `?next=` destination still wins over the role-based
+      default, for both roles.
+- [ ] A personalized "Welcome back, {first name}" moment and a visible
+      loading/transition state both appear between successful
+      submission and the redirect — describe what you built and why,
+      since this is a UX judgment call, not a fixed spec.
+- [ ] A failed/incomplete profile fetch does not leave the user stuck
+      on a permanent loading state — falls back to the student
+      destination.
+- [ ] `DashboardPage.jsx`'s dead `justLoggedIn` logic removed, unused
+      imports cleaned up only if confirmed unused elsewhere in that
+      file.
+- [ ] Regression check on the three scenarios listed in Part 1 (fresh
+      refresh on a protected route while logged in, direct hit while
+      signed out, logout) — reasoning-based verification is
+      acceptable where a live browser isn't available in this sandbox,
+      but say so explicitly rather than claiming it was clicked
+      through.
+- [ ] Report states plainly what could and could not be verified from
+      this sandbox (no live Supabase session, no browser) — same
+      standard as every other task on this board.
+
+### Report
+
+*(agent fills in on completion)*
