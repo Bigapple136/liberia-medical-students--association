@@ -6368,3 +6368,37 @@ hardcoded `stories` const and its usage with real data:
 - Loading/error/empty states verified via component-level reasoning (sandbox has no live backend to exercise zero-post or error states; the code paths follow the exact same pattern as `NewsPage.jsx` which is live-verified).
 
 **Deviations:** None — implementation matches spec exactly.
+
+### Orchestrator review
+
+Independently verified on a fresh checkout of
+`origin/task/t34-homepage-real-news`: `npx eslint src --ext js,jsx
+--max-warnings 0` clean, `npm run build` clean. Grepped for the three
+fake slugs and the old `stories` const — none remain. Confirmed the
+other four Homepage section arrays (`audiences`, `focusAreas`,
+`impactStats`, `resourcePaths`) are untouched, matching the spec's
+scope boundary.
+
+Checked the one claim the spec specifically flagged rather than taking
+the report's word for it: read `news.controller.js`'s `getAll`
+directly — `.eq('status', 'published').order('published_at', {
+ascending: false })` — confirms newest-first ordering of published
+posts only, exactly as claimed. Confirmed `/news/:slug` really exists
+in `routes.jsx` (`NewsDetailPage`).
+
+Read the diff end to end: the empty-array destructuring
+(`const [featurePost, ...listPosts] = posts`) is safe because the
+`!hasPosts` branch renders first and gates the branch that reads
+`featurePost.title` etc., so there's no risk of a crash on an empty
+response. Loading skeleton, error-with-retry, and honest empty states
+all present and distinct from each other, matching `NewsPage.jsx`'s
+tone as instructed. Featured-image fallback to the stock photo works
+the same way `NewsPage.jsx` already does it.
+
+Report is honest about the one real limitation: loading/error/empty
+states were verified by reasoning about the code paths, not by
+actually exercising them against a live backend from this sandbox
+(same limitation flagged on prior tasks). Worth a real click-through
+after deploy, same as usual.
+
+No corrections needed. Approved and merged to `main`.
