@@ -765,7 +765,7 @@ thread, since that decision is explicitly still pending on Stone's end.
 | T32 | Route-based code splitting (`React.lazy`/`Suspense` on `routes.jsx`) | none | **done** |
 | T33 | Accessibility pass: skip-to-content link + `impeccable audit` verification of toast/ARIA/contrast | none | **done** |
 | T34 | Homepage: replace hardcoded fake "Latest from LMSA" stories with real news data | none | **done** |
-| T35 | Fix login redirect: root-cause AuthContext race + role-based destination (student → Homepage, admin → Admin Dashboard) + personalized welcome | none | **unassigned** |
+| T35 | Fix login redirect: root-cause AuthContext race + role-based destination (student → Homepage, admin → Admin Dashboard) + personalized welcome | none | **done** |
 
 **T22 flagged priority.** Render permanently blocks outbound SMTP ports
 (25/465/587) on free-tier web services since September 2025 — confirmed
@@ -6577,4 +6577,145 @@ without checking first.
 
 ### Report
 
-*(agent fills in on completion)*
+**Agent:** automated (Codebuff)
+**Date:** 2026-09-29
+**Branch pushed:** `task/t35-login-redirect-fix` (commit `5680c09`)
+
+#### Summary
+All three parts landed, three files changed.
+
+1. **`AuthContext.jsx` — the race fix (minimal, surgical).** Added a single
+   `setLoading(true)` inside the `onAuthStateChange` callback, immediately
+   before `fetchProfile(session.user)` is called for a detected session.
+   Nothing else in the file changed: `fetchProfile`'s existing
+   `finally { setLoading(false) }` still owns the reset, and the `mounted`
+   guard, subscription/cleanup, and the fallback-to-bare-`sessionUser` catch
+   path are untouched. The diff is one statement plus an explanatory comment.
+   Effect: `loading` now means "a profile fetch is in flight" for *every*
+   auth transition, not just the app's very first check, so `ProtectedRoute`
+   can no longer render with the stale `loading: false` + `user: null`
+   combination mid-login.
+
+2. **`LoginPage.jsx` — wait for the real profile, then decide.** No second
+   `/users/me` call (the 2026-09-23 mistake was not repeated). `handleSubmit`
+   calls `login()` as before; on success it no longer navigates — it sets a
+   `welcoming` flag (and keeps the existing success toast). A `useEffect`
+   keyed on `welcoming` watches `loading`/`user` from `useAuth()`:
+   - While `loading` is true (this sign-in's in-progress profile fetch, per
+     Part 1) it keeps waiting.
+   - Once settled with a `user`, it navigates after a short beat:
+     `?next=` first (same-origin validation logic kept byte-for-byte), else
+     `/admin/dashboard` iff `ADMIN_ROLES.includes(user.role)` (imported from
+     `@utils/constants`), else `/` — the actual behavior change; students no
+     longer land on `/portal/dashboard`.
+   - Fail-open: if the fetch failed, `fetchProfile`'s existing catch leaves
+     the bare session user with `role === undefined`,
+     `ADMIN_ROLES.includes(undefined)` is false, and the user lands on `/` —
+     no hang. If `user` becomes null mid-welcome (session vanished, e.g.
+     signed out in another tab), the effect bails out of the welcome state
+     back to the form instead of spinning forever.
+
+   **Welcome state (the UX judgment call):** from the moment credentials
+   check out, the form is replaced by a centered transition block matching
+   the page's existing conventions — the same spinner markup/size/`lmsa-600`
+   color `ProtectedRoute` uses (one visual language for "auth is settling"),
+   an `aria-live="polite"` region so screen readers announce it, a
+   personalized `Welcome back, {first name}!` heading (first word of
+   `user.full_name`, degrading to plain `Welcome back!` when `full_name` is
+   empty/absent), and a one-line `Signing you in, one moment…` subline. The
+   redirect fires after a 1200 ms hold — long enough for the moment to
+   register, far short of a multi-second sequence. The hold is a
+   `setTimeout` cleaned up on unmount, so a fast navigation can't fire after
+   the component is gone.
+
+3. **`DashboardPage.jsx` — dead code removed.** The `justLoggedIn`-keyed
+   redirect-to-admin effect is gone (its whole premise — students landing on
+   `/portal/dashboard` right after login — no longer exists), along with the
+   `useLocation`/`useNavigate` imports and `location`/`navigate` bindings and
+   the `ADMIN_ROLES` import. Confirmed by grep that none of those symbols are
+   used elsewhere in the file (`useEffect` itself is still needed by the
+   dashboard-data effects and was kept) and that `justLoggedIn` no longer
+   appears anywhere in `src/`. The deliberately-not-hijacking-admin-visits
+   property is preserved for free: nothing navigates away from
+   `/portal/dashboard` on visit anymore, so an admin browsing their own
+   portal via the header link stays put.
+
+#### Destination matrix
+- `?next=` present + valid → that destination, any role (unchanged logic).
+- Admin/exec/super_admin, no `?next=` → `/admin/dashboard`.
+- Student (or unknown/missing role, or failed profile fetch) → `/`.
+
+#### Part 1 regression scenarios — reasoning-based, NOT click-through
+Verified by tracing the code (see "Sandbox limits" below for why no live
+browser):
+- **Hard refresh while logged in on `/portal/dashboard` or
+  `/admin/dashboard`:** mount → `INITIAL_SESSION` fires with a session →
+  `setLoading(true)` (no-op vs the initial `useState(true)`) → fetch →
+  `finally` sets `loading false` with `user` populated → `ProtectedRoute`
+  shows its spinner only briefly, then the page. A spurious bounce would
+  require `loading === false` while `user === null`, which can no longer
+  occur while a session exists: `loading` only goes false via (a)
+  `fetchProfile`'s `finally` — after which `user` is either the merged
+  profile or the bare session user, never null when a session exists — or
+  (b) the `else` branch that runs only when there is **no** session (and
+  which also nulls `user`, the legitimate signed-out bounce).
+- **Signed-out visitor hitting a protected URL directly:**
+  `INITIAL_SESSION` fires with `session === null` → `setUser(null)` +
+  `setLoading(false)` → `ProtectedRoute` renders `<Navigate to="/login"
+  replace />` exactly as before. That path's code is untouched; the
+  `setLoading(true)` only sits in the has-session branch.
+- **Logout:** `signOut()` fires `onAuthStateChange` with no session →
+  `setUser(null)` + `setLoading(false)` — no fetch is started, so the new
+  `setLoading(true)` cannot run and cannot strand the app in a loading
+  state. Header/`ProtectedRoute` then treat the user as signed out
+  immediately, same as before the change. (A post-logout `SIGNED_OUT` or
+  token-refresh event with a session would at worst re-run the fetch and
+  settle via the same `finally`; a logged-out user's next sign-in is the
+  login flow itself, now covered.)
+
+Cross-checked every other `useAuth()` consumer for sensitivity to `loading`
+flipping true again mid-session: `ProtectedRoute` (the intended beneficiary),
+`MembershipPage` (`!authLoading && !user` — only *more* conservative for a
+moment while a fetch is in flight, then identical), and `RegisterPage` —
+which never reads context `loading` (local flag only) and navigates to
+`/login` without auto-logging-in, so it neither triggers nor observes the
+race. `Header` doesn't read `loading`. No other component navigates into
+`/portal` or `/admin` after auth changes (the only such navigate was the
+DashboardPage effect deleted in Part 3).
+
+#### Verification (actually run)
+- `cd lmsa-website && npx eslint src --ext js,jsx --max-warnings 0` → clean
+  (exit 0, 0 errors / 0 warnings). One transient unused-var error in my own
+  first cut was caught by this run and fixed before commit.
+- `cd lmsa-website && npm run build` → success (✓ built in ~14 s). The
+  >500 kB chunk-size notice is pre-existing and unrelated.
+- `git diff` reviewed: the `AuthContext.jsx` change is the one
+  `setLoading(true)` + comment; no unrelated refactoring.
+
+#### Sandbox limits — what could NOT be verified
+No live browser and no live Supabase session in this sandbox, so the
+following were **not** exercised end-to-end and are reasoning-verified only:
+- An actual login click-through (form → welcome moment → redirect), including
+  the perceived timing of the 1200 ms hold.
+- The three Part 1 regression scenarios against real Supabase
+  `onAuthStateChange` event sequencing (real-world event ordering — e.g.
+  extra `TOKEN_REFRESHED` events mid-session — is reasoned about, not
+  observed).
+- That a real `GET /users/me` failure during login lands on `/` (traced
+  through `fetchProfile`'s catch path; not reproduced against a real
+  backend).
+- Role values end-to-end (assumed `USER_ROLES` constants match what the
+  backend returns in `user.role`, as they already do for `routes.jsx`/
+  `Header.jsx`, which use the same source of truth).
+
+#### Notes / out of scope
+- The acceptance-criteria lint command (`npx eslint src --ext js,jsx`) and
+  the package script `npm run lint` differ slightly in flags; both pass —
+  the stricter script was also run as part of verifying the build pipeline.
+- `rememberMe` remains a visual-only checkbox, exactly as before — pre-existing
+  behavior, untouched.
+- Welcome-state copy is English-only, consistent with the rest of the page
+  (no i18n infrastructure exists in the codebase to hook into).
+- Suggest a human smoke-test the login flow on the deployed preview when
+  convenient, since that is the one thing this sandbox could not do.
+
