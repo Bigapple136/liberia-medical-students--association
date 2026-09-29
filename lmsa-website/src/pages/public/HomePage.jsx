@@ -3,6 +3,7 @@
  * Current stock photos come from Unsplash (see src/config/images.js).
  * Replace with: real event photos, student portraits, campus shots, volunteer work.
  */
+import { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   ArrowRight,
@@ -18,14 +19,65 @@ import {
   Megaphone,
   MessageCircle,
   Network,
+  Newspaper,
+  RefreshCw,
   Stethoscope,
   Users,
 } from 'lucide-react';
 import { stockPhotos } from '@config/images';
 import Photo from '@components/common/Photo';
 import { PatternBackground } from '@components/common/SvgPatterns';
+import { newsService } from '@services/news.service';
+
+function StorySkeleton() {
+  return (
+    <div className="flex flex-col border border-gray-200 bg-white">
+      <div className="h-48 animate-pulse bg-gray-100" />
+      <div className="flex flex-1 flex-col gap-3 p-6">
+        <div className="h-4 w-24 animate-pulse bg-gray-100" />
+        <div className="h-6 w-4/5 animate-pulse bg-gray-100" />
+        <div className="h-4 w-full animate-pulse bg-gray-100" />
+        <div className="h-4 w-2/3 animate-pulse bg-gray-100" />
+      </div>
+    </div>
+  );
+}
+
+function StoryListSkeleton() {
+  return (
+    <div className="animate-pulse space-y-4">
+      <div className="h-6 w-1/3 bg-gray-100 rounded" />
+      <div className="h-16 w-full bg-gray-100 rounded" />
+    </div>
+  );
+}
 
 export default function HomePage() {
+  const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+
+  const loadPosts = useCallback(async () => {
+    setLoading(true);
+    setError(false);
+    try {
+      const { posts: data } = await newsService.getAll({ limit: 3 });
+      setPosts(data || []);
+    } catch {
+      setError(true);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadPosts();
+  }, [loadPosts]);
+
+  const handleRetry = () => loadPosts();
+
+  const hasPosts = posts.length > 0;
+  const [featurePost, ...listPosts] = posts;
   return (
     <div className="home-page">
       <section className="home-audience section-shell" aria-labelledby="audience-title">
@@ -181,51 +233,85 @@ export default function HomePage() {
             <p className="section-kicker">From our community</p>
             <h2 id="stories-title">The latest from LMSA.</h2>
           </div>
-          <Link to="/news" className="text-link">
-            View all stories <ArrowRight size={16} aria-hidden="true" />
-          </Link>
+          {hasPosts && (
+            <Link to="/news" className="text-link">
+              View all stories <ArrowRight size={16} aria-hidden="true" />
+            </Link>
+          )}
         </div>
 
         <div className="story-grid">
-          <article className="story-feature">
-            {/* Featured story with photo */}
-            <Photo
-              src={stockPhotos.stories.symposium.src}
-              alt={stockPhotos.stories.symposium.alt}
-              className="story-art story-art-feature"
-              fallbackGradient="bg-gradient-to-br from-lmsa-900 to-lmsa-700"
-              overlay="bg-gradient-to-t from-lmsa-900/80 via-lmsa-900/20 to-transparent"
-            >
-              <div className="relative z-10 flex min-h-[230px] items-center justify-between p-8 text-lmsa-100">
-                <span className="self-start text-5xl font-semibold tracking-[-0.06em] text-lmsa-200">2026</span>
-                <Megaphone size={50} strokeWidth={1.1} className="text-lmsa-200" aria-hidden="true" />
+          {loading ? (
+            <>
+              <StorySkeleton />
+              <div className="story-list">
+                <StoryListSkeleton />
+                <StoryListSkeleton />
               </div>
-            </Photo>
-            <div className="story-content">
-              <p className="story-category">Featured story</p>
-              <h3>{stories[0].title}</h3>
-              <p>{stories[0].excerpt}</p>
-              <Link to={stories[0].link} className="text-link">
-                Read the story <ArrowRight size={16} aria-hidden="true" />
-              </Link>
+            </>
+          ) : error ? (
+            <div className="col-span-full border border-gray-200 bg-white p-8 text-center">
+              <Newspaper size={32} className="mx-auto mb-3 text-gray-300" aria-hidden="true" />
+              <h3 className="text-lg font-semibold text-lmsa-900">Couldn&apos;t load latest stories</h3>
+              <p className="mt-1 text-gray-600">Something went wrong. Please try again in a moment.</p>
+              <button
+                type="button"
+                onClick={handleRetry}
+                className="mt-4 inline-flex items-center gap-2 border border-lmsa-200 bg-lmsa-50 px-4 py-2 text-sm font-semibold text-lmsa-700 transition-colors hover:bg-lmsa-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
+              >
+                <RefreshCw size={14} aria-hidden="true" />
+                Try again
+              </button>
             </div>
-          </article>
-
-          <div className="story-list">
-            {stories.slice(1).map((story, index) => (
-              <article className="story-list-item" key={story.title}>
-                <span className="story-list-index">0{index + 2}</span>
-                <div>
-                  <p className="story-category">{story.category}</p>
-                  <h3>{story.title}</h3>
-                  <p>{story.excerpt}</p>
-                  <Link to={story.link} className="text-link">
-                    Read more <ArrowRight size={15} aria-hidden="true" />
+          ) : !hasPosts ? (
+            <div className="col-span-full border border-gray-200 bg-white p-8 text-center">
+              <Newspaper size={32} className="mx-auto mb-3 text-gray-300" aria-hidden="true" />
+              <h3 className="text-lg font-semibold text-lmsa-900">News and updates will appear here soon</h3>
+              <p className="mt-1 text-gray-600">The first stories from the community are on their way. Check back soon.</p>
+            </div>
+          ) : (
+            <>
+              <article className="story-feature">
+                {/* Featured story with photo */}
+                <Photo
+                  src={featurePost.featured_image_url || stockPhotos.stories.symposium.src}
+                  alt={featurePost.featured_image_url ? featurePost.title : stockPhotos.stories.symposium.alt}
+                  className="story-art story-art-feature"
+                  fallbackGradient="bg-gradient-to-br from-lmsa-900 to-lmsa-700"
+                  overlay="bg-gradient-to-t from-lmsa-900/80 via-lmsa-900/20 to-transparent"
+                >
+                  <div className="relative z-10 flex min-h-[230px] items-center justify-between p-8 text-lmsa-100">
+                    <span className="self-start text-5xl font-semibold tracking-[-0.06em] text-lmsa-200">{featurePost.published_at ? new Date(featurePost.published_at).getFullYear() : '2026'}</span>
+                    <Megaphone size={50} strokeWidth={1.1} className="text-lmsa-200" aria-hidden="true" />
+                  </div>
+                </Photo>
+                <div className="story-content">
+                  <p className="story-category">{featurePost.category || 'Featured story'}</p>
+                  <h3>{featurePost.title}</h3>
+                  <p>{featurePost.excerpt || ''}</p>
+                  <Link to={`/news/${featurePost.slug}`} className="text-link">
+                    Read the story <ArrowRight size={16} aria-hidden="true" />
                   </Link>
                 </div>
               </article>
-            ))}
-          </div>
+
+              <div className="story-list">
+                {listPosts.map((post, index) => (
+                  <article className="story-list-item" key={post.slug}>
+                    <span className="story-list-index">0{index + 2}</span>
+                    <div>
+                      <p className="story-category">{post.category || 'Story'}</p>
+                      <h3>{post.title}</h3>
+                      <p>{post.excerpt || ''}</p>
+                      <Link to={`/news/${post.slug}`} className="text-link">
+                        Read more <ArrowRight size={15} aria-hidden="true" />
+                      </Link>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </>
+          )}
         </div>
       </section>
 
@@ -329,26 +415,5 @@ const resourcePaths = [
     title: 'Join a committee',
     description: 'Find the work that matters to you',
     link: '/get-involved/committees',
-  },
-];
-
-const stories = [
-  {
-    category: 'Announcement',
-    title: 'LMSA Annual Symposium 2026',
-    excerpt: 'Three days of medical excellence, workshops, and conversations about the future of healthcare in Liberia.',
-    link: '/news/symposium-2026',
-  },
-  {
-    category: 'Achievement',
-    title: 'Students win regional research competition',
-    excerpt: 'Our student researchers are showing what is possible when curiosity meets community.',
-    link: '/news/research-competition',
-  },
-  {
-    category: 'Community',
-    title: 'Free medical camp serves 500+ patients',
-    excerpt: 'LMSA volunteers bring care, health education, and practical support to Montserrado County.',
-    link: '/news/medical-camp',
   },
 ];
