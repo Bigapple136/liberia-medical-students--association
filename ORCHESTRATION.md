@@ -769,6 +769,7 @@ thread, since that decision is explicitly still pending on Stone's end.
 | T33 | Accessibility pass: skip-to-content link + `impeccable audit` verification of toast/ARIA/contrast | none | **done** |
 | T34 | Homepage: replace hardcoded fake "Latest from LMSA" stories with real news data | none | **done** |
 | T35 | Fix login redirect: root-cause AuthContext race + role-based destination (student → Homepage, admin → Admin Dashboard) + personalized welcome | none | **unassigned** |
+| T36 | Wire `PastPresidentsPage.jsx` to real `executive_positions` data (`status: completed`), remove fabricated names | none | **unassigned** |
 
 **T22 flagged priority.** Render permanently blocks outbound SMTP ports
 (25/465/587) on free-tier web services since September 2025 — confirmed
@@ -6577,6 +6578,113 @@ without checking first.
 - [ ] Report states plainly what could and could not be verified from
       this sandbox (no live Supabase session, no browser) — same
       standard as every other task on this board.
+
+### Report
+
+*(agent fills in on completion)*
+
+---
+
+## T36 — Wire `PastPresidentsPage.jsx` to real data, remove fabricated names
+
+**Branch:** `task/t36-past-presidents-real-data`
+**Status:** unassigned
+**Depends on:** none
+
+### Context
+
+Found during a review of pages the earlier T30 design-critique sweep
+didn't cover (that pass listed news, symposia, events, committees,
+research, mentorship, documents, resources, dues, categories,
+benefits, membership, plus the dashboards — not About/Contact/
+Partnership/the standalone leadership sub-pages). Checked those for
+the same "fake content next to a real system" pattern the Homepage had
+(T34) and found one, more serious than that one:
+`lmsa-website/src/pages/public/PastPresidentsPage.jsx` presents six
+entirely fabricated people as real LMSA history — invented names
+("Dr. James K. Doe," "Mary T. Johnson," ...), invented terms, invented
+achievements ("Expanded membership by 30%," "Launched digital health
+initiative," ...). This isn't a missing feature or a dead link, it's
+fiction presented as an organization's real leadership record.
+
+The database already has exactly the structure needed for this:
+`executive_positions.status` explicitly supports `'completed'` (a past
+officeholder, alongside `'active'` and `'impeached'`) —
+confirmed directly in `001_base_schema.sql`. `ExecutiveAdminPage.jsx`
+already lets an admin set that status when creating/editing a
+position — no admin-side work needed for this task. What's missing is
+purely the read side: `GET /executive` is hardcoded to
+`.eq('status', 'active')` with no way to query for completed/past
+ones, and `PastPresidentsPage.jsx` never calls any service at all.
+
+**Cannot be fully resolved by this task alone — say so plainly in the
+report:** the fix here is the wiring, not the content. Nobody has
+entered any real historical presidents yet (the table has zero rows
+for this), so after this ships the page will most likely show its
+honest empty state until an admin enters real past leadership through
+the existing admin form. Don't invent replacement names to make the
+empty state "look better" — an honest "no past presidents on record
+yet" is correct; fabricated ones are the exact problem being fixed.
+
+### Backend
+
+**`lmsa-api/src/controllers/executive.controller.js`** — add a new,
+narrowly-scoped public endpoint rather than an open `?status=` filter
+on the existing `getAll` (that would let anyone publicly query e.g.
+`status=impeached`, which shouldn't be a public listing). Something
+like `getPastPresidents`: `.eq('position_name', 'President').eq('status',
+'completed').order('academic_year', { ascending: false })` — same
+`holder:user_id (...)` join `getAll` already uses, so a past
+president's name/photo can come from their real user profile when
+they're still a `users` row, same pattern already established. Use
+the exact string `'President'` for `position_name` — confirmed as the
+existing convention from `LeadershipPage.jsx`'s current
+active-officer data (`position_rank: 1` is labelled exactly
+`'President'` there).
+
+**`lmsa-api/src/routes/executive.routes.js`** — add the route, public
+(no auth), same tier as the existing `GET /executive`.
+
+### Frontend
+
+**`lmsa-website/src/services/executive.service.js`** — add a
+`getPastPresidents()` method calling the new endpoint, matching the
+existing `getAll`'s shape.
+
+**`lmsa-website/src/pages/public/PastPresidentsPage.jsx`** — remove
+the hardcoded `pastPresidents` array entirely. Fetch via
+`executiveService.getPastPresidents()` on mount, with loading, error,
+and honest-empty states — reuse `LeadershipPage.jsx`'s established
+pattern (it already fetches real `executiveService` data with proper
+states) for tone and structure rather than inventing a new one. Map
+each real position to the existing card markup: holder's real name
+(from the `holder` join, falling back sensibly if a past president's
+`user_id` is null — someone who's since left the system entirely, a
+real possibility for older records), `academic_year` for the term
+display (replacing the old hardcoded `'2022-2023'`-style string), and
+— there is no real equivalent of the old fake `achievement` field
+anywhere in the schema, so either drop that line from the card
+entirely or, if you want to keep the visual shape, check whether
+`executive_positions` or the `users` table has anything usable for it
+first rather than fabricating a substitute; if nothing fits, removing
+the line is the correct, honest choice.
+
+### Acceptance criteria
+
+- [ ] `npx eslint src --ext js,jsx --max-warnings 0` — clean.
+- [ ] `npm run build` — clean.
+- [ ] Backend: `node --check` clean on both touched files.
+- [ ] No hardcoded `pastPresidents` array or fabricated names remain
+      anywhere in `PastPresidentsPage.jsx`.
+- [ ] New endpoint is public, scoped specifically to
+      `position_name: 'President'` + `status: 'completed'`, not a
+      general-purpose public status filter.
+- [ ] Loading, populated, empty, and error states all present and
+      distinct, matching `LeadershipPage.jsx`'s tone.
+- [ ] Report states plainly that the page will most likely show its
+      empty state in production until real historical data is entered
+      by an admin, and does not claim this task "populates" real past
+      presidents — it can't, the data doesn't exist yet.
 
 ### Report
 
