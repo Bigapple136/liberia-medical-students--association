@@ -405,11 +405,14 @@ Not done (flagged, not fixed — needs a decision or a specced task):
    (invented names, openings, and deadlines) that the committees index
    just dropped — needs the same registry treatment plus a decision on
    where "openings/deadline" truth should come from.
-2. **Symposia data is still a hardcoded array** — the date-derived
-   status stops it lying, but content updates still require a code
-   change. Recommend a task to move symposia into the existing events
-   API/admin (offered during the session; deliberately not done without
-   orchestrator sign-off since it touches schema/admin scope).
+2. ~~**Symposia data is still a hardcoded array**~~ **Resolved,
+   confirmed 2026-09-28.** Both sides already exist: the public
+   `/academics/symposia` page calls `eventService.getAll({ type:
+   'symposium' })` (from the `ba762fc` truth/wiring fix), and
+   `EventsAdminPage.jsx`'s event form already has a `symposium` option
+   in its `event_type` dropdown — an admin creating a regular event
+   and selecting "Symposium" already appears there correctly. No new
+   work needed; this had just never been verified and closed out.
 3. ~~`.impeccable/` critique snapshots and the skill's hook config now
    live in the repo — same keep-or-remove workflow question as the
    earlier `.replit`/`.agents` flag.~~ **Resolved 2026-09-23: keep.**
