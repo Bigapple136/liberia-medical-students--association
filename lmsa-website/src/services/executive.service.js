@@ -11,6 +11,16 @@ export const executiveService = {
     return response.data.positions;
   },
 
+  /**
+   * Get completed Presidencies, most recent term first (public).
+   * Backs the Past Presidents page — scoped server-side to
+   * position_name 'President' + status 'completed'.
+   */
+  async getPastPresidents() {
+    const response = await api.get('/executive/past-presidents');
+    return response.data.positions;
+  },
+
   // ─── Admin ──────────────────────────────────────────────────────────────
 
   /** Get all positions regardless of status (admin). */

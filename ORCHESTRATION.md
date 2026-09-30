@@ -6688,4 +6688,60 @@ the line is the correct, honest choice.
 
 ### Report
 
-*(agent fills in on completion)*
+**Done.** Fabricated leadership record removed; page now renders exclusively
+from real `executive_positions` data. **Stated plainly, per the brief:** this
+task wired the read path — it did **not** add or populate any past presidents,
+because none exist in the database. After this ships, the page will most
+likely show its honest empty state ("No past presidents on record yet") until
+an admin records real completed Presidencies through the existing
+`ExecutiveAdminPage` form. No replacement names were invented — that was the
+bug being fixed.
+
+**Backend**
+- `executive.controller.js` — new `getPastPresidents`: public, scoped to
+  `.eq('position_name', 'President').eq('status', 'completed')`, ordered
+  `academic_year` DESC, same `holder:user_id (...)` join + flatten as
+  `getAll`. Deliberately **not** an open `?status=` filter on `getAll` —
+  scoped like this the endpoint can only ever return completed Presidencies;
+  `impeached` and other statuses stay non-listable publicly.
+- `executive.routes.js` — `GET /executive/past-presidents`, public, static
+  path registered before any future `/:id` pattern so it can never be
+  captured as an id.
+
+**Frontend**
+- `executive.service.js` — `getPastPresidents()` matching `getAll`'s shape.
+- `PastPresidentsPage.jsx` — the hardcoded six-person array is gone (page
+  grep-verified: no fabricated names, no `achievement` strings). Rewritten in
+  `LeadershipPage`'s editorial pattern (`editorial-page` / section header /
+  card markup) with four distinct states: loading (spinner), error (inline
+  retry, keeps the page truthful), honest empty, populated. Card maps real
+  fields only: `holder_name` from the join (falls back to "Name not on
+  record" when `user_id` is null — a real possibility for older records),
+  `academic_year` as "{year} term", photo from `holder_photo_url` when
+  present. The fabricated **"achievement" line was dropped entirely**: the
+  only schema candidate is `users.bio`, a self-written *current* profile
+  description — using it as a term-achievement record would just be a
+  subtler fabrication.
+- One deliberate divergence from `LeadershipPage`: it falls back to
+  placeholder officer data on error/empty; this page does not — placeholder
+  people on a history page is the exact failure mode being fixed. Error gets
+  an honest retry instead.
+
+**Verification (actually run)**
+- `node --check` on both backend files → clean; route module imports cleanly.
+- `npx eslint src --ext js,jsx --report-unused-disable-directives
+  --max-warnings 0` (full sweep, as the criterion specifies) → clean, after
+  also removing the stale `eslint-disable` in `DocumentsAdminPage.jsx`
+  (pre-existing on this branch — same fix already shipped on the portal
+  branch).
+- `npm run build` → success.
+- Design detector on the page → 0 findings.
+
+**Not verifiable in this sandbox:** no live Supabase session, so the endpoint
+was not exercised against real rows — and there are no rows to exercise:
+`executive_positions` has zero `President`/`completed` entries today. The
+expected production behavior is the empty state shown above.
+
+**Suggested follow-up (not this task):** a data-entry pass to record real
+historical presidencies (with sources), and consider whether
+`ExecutiveAdminPage` needs a friendlier path for bulk historical entry.
