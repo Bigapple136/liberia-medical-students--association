@@ -4,7 +4,7 @@ import toast from 'react-hot-toast';
 import { nominationService } from '@services/nomination.service';
 
 const STATUS_FILTERS = [
-  { value: 'pending', label: 'Pending', chip: 'bg-amber-100 text-gray-900 border-amber-400' },
+  { value: 'pending', label: 'Pending', chip: 'bg-amber-100 text-amber-900 border-amber-400' },
   { value: 'approved', label: 'Approved', chip: 'bg-lmsa-50 text-lmsa-700 border-lmsa-200' },
   { value: 'rejected', label: 'Rejected', chip: 'bg-red-50 text-red-700 border-red-200' },
   { value: 'all', label: 'All', chip: 'bg-gray-100 text-gray-700 border-gray-200' },
@@ -273,7 +273,7 @@ export default function NominationsAdminPanel() {
                       ? 'bg-lmsa-50 text-lmsa-700 border-lmsa-200'
                       : n.status === 'rejected'
                         ? 'bg-red-50 text-red-700 border-red-200'
-                        : 'bg-amber-100 text-gray-900 border-amber-400'
+                        : 'bg-amber-100 text-amber-900 border-amber-400'
                   }`}
                 >
                   {n.status}

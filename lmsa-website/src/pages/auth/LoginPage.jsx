@@ -6,6 +6,7 @@ import { ADMIN_ROLES } from '@utils/constants';
 import toast from 'react-hot-toast';
 import Input from '@components/common/Input';
 import Button from '@components/common/Button';
+import Spinner from '@components/common/Spinner';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -125,10 +126,7 @@ export default function LoginPage() {
             /* Welcome / transition state — replaces the form from the moment
                credentials check out until the redirect fires. */
             <div className="text-center py-12" aria-live="polite">
-              <div
-                className="animate-spin rounded-full h-12 w-12 border-b-2 border-lmsa-600 mx-auto mb-6"
-                aria-hidden="true"
-              />
+              <Spinner size="lg" label="Signing you in" className="text-lmsa-600 mb-6" />
               <h2 className="text-3xl font-bold mb-2 uppercase tracking-tight">
                 {firstName ? `Welcome back, ${firstName}!` : 'Welcome back!'}
               </h2>

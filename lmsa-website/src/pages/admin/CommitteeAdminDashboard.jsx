@@ -846,7 +846,7 @@ function EventsTab({ committee }) {
                 <Link to={`/events/${ev.slug}`} target="_blank" className="p-2 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-700">
                   <ExternalLink size={15} />
                 </Link>
-                <button onClick={() => deleteEvent(ev.id)} className="p-2 rounded-lg hover:bg-red-50 text-gray-400 hover:text-red-500">
+                <button onClick={() => deleteEvent(ev.id)} className="p-2 rounded-lg text-gray-400 transition-colors hover:bg-gray-100 hover:text-red-600">
                   <Trash2 size={15} />
                 </button>
               </div>
@@ -986,7 +986,13 @@ function DocumentsTab({ committee }) {
                   </td>
                   <td className="px-4 py-3 text-sm text-gray-600 capitalize">{doc.category?.replace('_',' ')}</td>
                   <td className="px-4 py-3">
-                    <span className={`text-xs px-2 py-0.5 rounded-full ${doc.access_level === 'public' ? 'bg-green-50 text-green-700' : 'bg-gray-100 text-gray-600'}`}>
+                    <span
+                      className={`text-xs px-2 py-0.5 rounded-full font-medium ${
+                        doc.access_level === 'public'
+                          ? 'bg-green-50 text-green-800'
+                          : 'bg-gray-100 text-gray-700'
+                      }`}
+                    >
                       {doc.access_level}
                     </span>
                   </td>
@@ -996,7 +1002,7 @@ function DocumentsTab({ committee }) {
                       <a href={doc.file_url} target="_blank" rel="noopener noreferrer" className="p-1.5 rounded hover:bg-gray-100 text-gray-400 hover:text-gray-700">
                         <Download size={14} />
                       </a>
-                      <button onClick={() => deleteDoc(doc.id)} className="p-1.5 rounded hover:bg-red-50 text-gray-400 hover:text-red-500">
+                      <button onClick={() => deleteDoc(doc.id)} className="p-1.5 rounded text-gray-400 transition-colors hover:bg-gray-100 hover:text-red-600">
                         <Trash2 size={14} />
                       </button>
                     </div>

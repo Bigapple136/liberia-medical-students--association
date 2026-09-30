@@ -1,5 +1,6 @@
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '@context/AuthContext';
+import Spinner from '@components/common/Spinner';
 
 /**
  * Route guard that verifies authentication and, optionally, role membership.
@@ -16,7 +17,7 @@ export default function ProtectedRoute({ children, requireRole }) {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-lmsa-600" />
+        <Spinner size="lg" label="Checking your session" className="text-lmsa-600" />
       </div>
     );
   }

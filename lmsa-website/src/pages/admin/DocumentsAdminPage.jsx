@@ -57,7 +57,6 @@ export default function DocumentsAdminPage() {
 
   useEffect(() => {
     loadDocs();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   async function handleUpload(e) {
@@ -243,7 +242,7 @@ export default function DocumentsAdminPage() {
                       </button>
                       <button
                         onClick={() => deleteDoc(doc.id, doc.title)}
-                        className="p-1.5 rounded hover:bg-red-50 text-gray-400 hover:text-red-500"
+                        className="p-1.5 rounded text-gray-400 transition-colors hover:bg-gray-100 hover:text-red-600"
                         title="Delete"
                       >
                         <Trash2 size={14} />

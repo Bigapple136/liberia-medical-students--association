@@ -110,7 +110,7 @@ export default function NominationDialog({
 
         {submitted ? (
           <div className="mt-8">
-            <div className="border-l-4 border-lmsa-600 bg-lmsa-50 p-5">
+            <div className="rounded-lg border border-lmsa-200 bg-lmsa-50 p-5">
               <p className="text-sm font-semibold text-lmsa-900">Nomination received.</p>
               <p className="mt-2 text-sm leading-6 text-gray-700">
                 Your nomination for {positionName} is now pending review. We&apos;ll
@@ -173,7 +173,7 @@ export default function NominationDialog({
             </div>
 
             {serverError && (
-              <p role="alert" className="border-l-4 border-red-500 bg-red-50 p-4 text-sm text-red-700">
+              <p role="alert" className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">
                 {serverError}
               </p>
             )}

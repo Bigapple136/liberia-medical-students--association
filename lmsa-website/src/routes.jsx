@@ -50,6 +50,8 @@ const ResetPasswordPage = lazy(() => import('./pages/auth/ResetPasswordPage'));
 
 // Portal pages
 const DashboardPage = lazy(() => import('./pages/portal/DashboardPage'));
+const MyEventsPage = lazy(() => import('./pages/portal/MyEventsPage'));
+const ProfilePage = lazy(() => import('./pages/portal/ProfilePage'));
 
 
 // Admin pages
@@ -64,13 +66,14 @@ const ExecutiveAdminPage = lazy(() => import('./pages/admin/ExecutiveAdminPage')
 
 // Protected route wrapper
 import ProtectedRoute from './components/common/ProtectedRoute';
+import Spinner from './components/common/Spinner';
 
 // Single Suspense boundary for the whole route tree — fallback reuses the
 // spinner markup from ProtectedRoute.jsx's loading state.
 function RouteFallback() {
   return (
     <div className="min-h-screen flex items-center justify-center">
-      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-lmsa-600" />
+      <Spinner size="lg" label="Loading page" className="text-lmsa-600" />
     </div>
   );
 }
@@ -146,6 +149,8 @@ function AppRoutes() {
         >
           <Route index element={<Navigate to="/portal/dashboard" replace />} />
           <Route path="dashboard" element={<DashboardPage />} />
+          <Route path="events" element={<MyEventsPage />} />
+          <Route path="profile" element={<ProfilePage />} />
         </Route>
 
         {/* Admin routes - Protected & Role-based */}

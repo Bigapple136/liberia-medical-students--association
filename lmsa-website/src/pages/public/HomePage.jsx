@@ -28,6 +28,8 @@ import { stockPhotos } from '@config/images';
 import Photo from '@components/common/Photo';
 import { PatternBackground } from '@components/common/SvgPatterns';
 import { newsService } from '@services/news.service';
+import { useAuth } from '@context/AuthContext';
+import { ROUTES } from '@utils/constants';
 
 function StorySkeleton() {
   return (
@@ -53,6 +55,7 @@ function StoryListSkeleton() {
 }
 
 export default function HomePage() {
+  const { user } = useAuth();
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -78,8 +81,32 @@ export default function HomePage() {
 
   const hasPosts = posts.length > 0;
   const [featurePost, ...listPosts] = posts;
+  // Spec §4.1: signed-in members get a one-click path back to the portal from
+  // wherever they land post-login (D1 keeps the homepage as that landing).
+  const firstName = user?.full_name?.trim().split(/\s+/)[0];
   return (
     <div className="home-page">
+      {user && (
+        <section className="border-b border-lmsa-100 bg-lmsa-50" aria-label="Member portal shortcut">
+          <div className="section-shell flex flex-wrap items-center gap-x-6 gap-y-3 py-4">
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-semibold text-lmsa-900">
+                Welcome back{firstName ? `, ${firstName}` : ''}
+              </p>
+              <p className="text-sm text-gray-600">
+                Your membership, events, and profile live in the member portal.
+              </p>
+            </div>
+            <Link
+              to={ROUTES.PORTAL_DASHBOARD}
+              className="inline-flex min-h-[44px] items-center gap-2 rounded-lg bg-lmsa-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-lmsa-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
+            >
+              Open your portal
+              <ArrowUpRight size={16} aria-hidden="true" />
+            </Link>
+          </div>
+        </section>
+      )}
       <section className="home-audience section-shell" aria-labelledby="audience-title">
         <div className="home-section-heading home-audience-heading">
           <div>

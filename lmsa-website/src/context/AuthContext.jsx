@@ -1,4 +1,4 @@
-import { createContext, useState, useEffect, useContext } from 'react';
+import { createContext, useCallback, useState, useEffect, useContext } from 'react';
 import api from '@services/api';
 import { authService } from '@services/auth.service';
 import { supabase } from '@services/supabase';
@@ -69,12 +69,20 @@ export const AuthProvider = ({ children }) => {
     };
   }, []);
 
+  // Profile updates from the portal's profile page merge into the session
+  // user so every consumer (shell identity chip, dashboards, welcome
+  // headings) reflects a saved name/phone change without a re-fetch (spec §4.4.1).
+  const updateUserProfile = useCallback((updatedUser) => {
+    setUser((prev) => ({ ...prev, ...updatedUser }));
+  }, []);
+
   const value = {
     user,
     loading,
     login: authService.login,
     logout: authService.logout,
     register: authService.register,
+    updateUserProfile,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -6719,3 +6719,166 @@ following were **not** exercised end-to-end and are reasoning-verified only:
 - Suggest a human smoke-test the login flow on the deployed preview when
   convenient, since that is the one thing this sandbox could not do.
 
+
+## 2026-09-29/30 — T36: Member portal — critique, spec, full build, re-score 22→38
+
+**Branch:** `task/t35-login-redirect-fix` (portal work landed on the same branch)
+**Status:** complete — lint clean, build passing, detector 0 findings across `lmsa-website/src`
+**Depends on:** T35 (login flow), lmsa-api `users`/`dashboard`/`events` routes
+
+### Context
+
+`$impeccable critique` on the portal (`PortalLayout` + `DashboardPage`)
+scored **22/40 (Acceptable)**: locked-room shell (sidebar with no nav, no
+exits), portal unreachable post-login, no account surface, dead stat cards,
+shell drift vs. admin. Findings cross-checked against the roadmap (Phase 3,
+Sprints 6–8) and the real `lmsa-api` endpoints — every planned feature ran on
+existing endpoints; no backend work was a blocker.
+
+Spec written to **`docs/13-member-portal-spec.md`** with decisions locked with
+the client:
+- **D1** students keep landing on `/` post-login — reachability solved with
+  entry points, NOT a redirect change (`?next=` precedence untouched).
+- **D2** full portal scope (shell, reachability, profile, dashboard rework,
+  a11y, shared components). Non-goals: roadmap Sprints 7–8 (ID card,
+  meetings/attendance, realtime notifications).
+- **D3** build order: reachability first.
+- **D4** portal is a deliberately compact member app — never mirrors public chrome.
+- **D5** LMSA green is semantic: service to the greater community (active
+  standing, service CTAs, the month's priority) — the only accent in the portal.
+- **D6** the dashboard "shouts" the month's priority at moderate emphasis —
+  calm green card, red reserved for suspended status / true errors.
+
+### What was built (in spec order)
+
+**§4.1 Reachability** — `HomePage`: signed-in member strip ("Welcome back,
+{name}" + one-click "Open your portal"), rendered only when `user` exists.
+`Footer`: the two dead hash links under Member Portal (`/portal#events`,
+`/portal#resources`) now point at `/events` and `/academics/resources`.
+`RegisterPage`: success state replaces the form (`aria-live`), primary CTA
+"Sign in & open your portal" → `/login?next=/portal/dashboard`, riding the
+existing `?next=` precedence.
+
+**§4.2 + §4.6 Shell + shared components** — `PortalLayout` rebuilt: sidebar
+nav (Dashboard / My Events / My Profile, `<nav aria-label="Portal">`, admin-
+style active states), LMSA identity header, identity chip (avatar initial,
+full name, StatusBadge), "Back to LMSA site", "Sign out". Mobile: the floating
+`top-20 left-4` hamburger is gone; admin's sticky top bar + off-canvas drawer
+adopted, with Esc-close, focus return to the trigger, `aria-expanded`/
+`aria-controls`. The meaningless `top-16` offset deleted. Shared components:
+`Spinner.jsx` (SVG ring matching Button's; `role="status"` + sr-only label;
+currentColor so it works inside danger buttons; decorative mode when no
+label) and `StatusBadge.jsx` (text + color, never color alone; green active /
+amber pending / gray inactive / red suspended off `MEMBERSHIP_STATUS`).
+Routes added: `/portal/events`, `/portal/profile`.
+
+**§4.3 My Events + cancellation** — cancel per event behind a confirm dialog
+that names the consequence and the recovery ("your spot will be released;
+re-register while registration is open"), per §8. Verified against the
+backend first: `DELETE /events/:id/register` is a **hard delete**, so the copy
+is accurate. Failure keeps the dialog open with inline `role="alert"` and
+retry; success toasts and re-syncs from `GET /dashboard/my-events` (server
+truth, not local splice). Dialog follows the `NominationDialog` house pattern
+(Esc, scroll lock, initial focus) with two deliberate deviations: a real
+scrim (`bg-black/40`) and initial focus via a **native button** because
+`Button.jsx` does not forward refs — a `ref` there would silently no-op.
+
+**§4.4 Profile** — API contract read first: `PUT /users/me` persists exactly
+`full_name`, `phone`, `bio` — so the form ships those three, nothing invented;
+email shown read-only as the auth identity. `user.service.js` added;
+`AuthContext.updateUserProfile` merges the saved row so a name change
+propagates to the shell chip / welcome heading without a re-fetch. Zod
+validation, inline field errors, Save disabled until dirty, `aria-live`
+"Unsaved / All changes saved", failed saves never clear the form. Status card
+with per-status explainers + "what happens next" for pending. Dues: honest
+no-API state linking `/membership/dues`. Password: placeholder card with
+support email — no dead form.
+
+**§4.5 Dashboard rework** — "This month" priority card (D6) directly under
+the welcome header, ranked only from data the API returns: pending
+application → registered event ≤30 days → nearest open event → quiet
+all-clear; `bg-lmsa-50`, one action link, dismissible for the session
+(`sessionStorage`, private-mode-safe). Quick Actions row (events / committees
+/ profile / dues). Stat cards are doors with rounded-matching focus rings and
+explicit `aria-label`s; "Upcoming LMSA Events" (duplicated the public site)
+replaced by a next-event widget with honest empty state. Nested-anchor bug
+caught in self-review: the no-status apply-link card must not itself be a door.
+
+### Polish pass (post-build defects found and fixed)
+
+1. Spinner rendered brand green inside the red danger button + forced
+   `role="status"` when decorative → component now inherits `currentColor`
+   and is decorative without a label; announcing call sites pass color
+   explicitly.
+2. Cancel dialog never returned focus to its trigger → captures
+   `document.activeElement` on open, restores on close (no-op if row gone).
+3. Priority card could offer "Register" for an event already registered →
+   now detects it and says "You're registered — see you there".
+4. Priority dismissal reset on navigation → moved to `sessionStorage` (D6
+   says "for the session").
+
+### Re-score
+
+**22/40 → 38/40 (Excellent)** — snapshot
+`.impeccable/critique/2026-09-30T00-56-45Z__lmsa-website-src-pages-portal-
+dashboardpage-jsx.md`; all five baseline P1/P2 issues resolved. Remaining
+deductions: no keyboard shortcuts (deferred, appropriate at this scale), no
+searchable docs. P3 note: drawer has no focus trap (same accepted trade-off
+as AdminLayout) — worth a shared utility if the pattern spreads further.
+
+### Admin UI cleanup (out-of-portal detector findings, 9 → 0)
+
+- `NominationsAdminPanel` (×2): gray-on-amber chips → `text-amber-900`.
+- `NominationDialog` (×2): `border-l-4` banners → house rounded-banner style.
+- `CommitteeAdminDashboard` (×3): green-800 on green-50 chip; delete buttons
+  restyled to the sibling download-button pattern (neutral hover, red text
+  on hover) — gray-on-`hover:bg-red-50` still trips the rule, so the hover
+  background is neutral.
+- `DocumentsAdminPage` (×1): same delete-button pattern; also removed a
+  pre-existing unused `eslint-disable` the strict lint surfaced.
+- Last chip finding was a false-positive shape (bg and text classes from
+  opposite ternary branches on one line) — restructured the ternary.
+- **Inter left as-is**: the `overused-font` finding is a false positive —
+  `lmsa_brand_guide.md` pins Inter as primary (with Merriweather secondary).
+  Recorded as a narrow waiver: `hook-admin.mjs ignore-value overused-font
+  Inter --shared --reason "User confirmed: brand font per lmsa_brand_guide.md"`
+  → shared `.impeccable/config.json`; full `src/` scan now exits clean.
+
+### Verification (actually run)
+
+- `npx eslint <touched files> --report-unused-disable-directives
+  --max-warnings 0` → clean at every step; one transient unused-import in
+  AuthContext caught and fixed mid-build.
+- `npm run build` → success every pass (the >500 kB chunk notice is
+  pre-existing).
+- `detect.mjs` → 0 findings portal-scope throughout; 0 across all of
+  `lmsa-website/src` after the admin cleanup + Inter waiver.
+- Critique trend: 22 → 38 out of 40.
+
+### Sandbox limits — what could NOT be verified
+
+No live browser session with credentials and no live Supabase round-trips in
+this sandbox, so the following are reasoning-verified, not observed:
+- The member strip / register-success panel click-through with a real
+  account, and `?next=` landing on the portal.
+- A real `PUT /users/me` round-trip and post-save chip/heading propagation.
+- A real cancel (hard delete) + list re-sync, including the failure path
+  against a real 4xx/5xx.
+- Drawer behavior on real mobile viewports (Esc/focus-return reasoned and
+  implemented, not exercised on device).
+`browser-test/flow.mjs` exists for the login path; extending it to cover
+portal flows (needs credentials) would close this gap.
+
+### Notes / out of scope
+
+- `NominationDialog`'s overlay scrim class `bg-lmsa-950/60` resolves to
+  nothing in the Tailwind scale (no 950) and renders **transparent** —
+  pre-existing bug, deliberately left (public surface, outside this spec);
+  the new cancel dialog uses `bg-black/40` instead.
+- `Button.jsx` still does not forward refs (worked around in the dialog);
+  forwarding refs there would prevent future silent no-ops.
+- Footer's `Member Portal` link already existed; only its dead siblings were
+  corrected.
+- Dues data and password change remain backend gaps; both seams are marked
+  in the UI and ready to absorb the endpoints when they land.
+
