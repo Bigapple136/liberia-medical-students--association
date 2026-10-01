@@ -6882,3 +6882,106 @@ portal flows (needs credentials) would close this gap.
 - Dues data and password change remain backend gaps; both seams are marked
   in the UI and ready to absorb the endpoints when they land.
 
+
+### Orchestrator review
+
+**Two distinct pieces of work landed on this branch** — the actual T35
+fix (commit `5680c09`) and a large additional "member portal" build
+(commit `e78088a`, authored directly by Stone's side, commit message
+labeled "(T36)" — **note: this is not the T36 this board tracks**,
+which is the separate `PastPresidentsPage.jsx` task on its own branch;
+flagging this naming collision so it's not confused later). Stone
+confirmed this second piece was real, intentionally-scoped extra work
+("a bit extra on the User Portal"), not the agent inventing scope — so
+it was reviewed with the same rigor as any task branch rather than
+rejected for being outside the original spec.
+
+**T35 itself (`5680c09`), reviewed in isolation first:**
+- `AuthContext.jsx`: exactly the minimal, surgical fix specced — one
+  `setLoading(true)` call added right before `fetchProfile`, nothing
+  else touched. Matches Part 1 precisely.
+- `LoginPage.jsx`: waits on the context's own `loading`/`user` rather
+  than re-fetching (avoiding the exact mistake from the earlier
+  incident this spec warned against), shows "Welcome back, {name}"
+  with `aria-live="polite"`, a deliberate ~1.2s visible transition
+  before navigating (a reasonable reading of "visible loading state,
+  keep it fast"), role-based destination via the existing `ADMIN_ROLES`
+  constant, `?next=` still takes priority, and a sensible fail-open to
+  `/` if the session vanishes mid-transition. The rest of the diff is
+  pure structural wrapping of the existing form — verified no content
+  changed, just moved inside a conditional.
+- `DashboardPage.jsx`: clean removal of exactly the dead
+  `justLoggedIn` logic and its now-unused imports, nothing else
+  touched.
+- Independently confirmed (not just read the report): `eslint`
+  clean, `vite build` clean, backend `node --check` clean.
+
+**The portal bundle (`e78088a`), reviewed file by file given its size
+and that it touches the same auth-critical files T35 does:**
+- `ProtectedRoute.jsx`: cosmetic only (shared `Spinner` component swap
+  with a proper a11y label) — zero change to the loading/user gating
+  logic, zero interaction risk with T35's fix.
+- `AuthContext.jsx`'s second change: additive-only `updateUserProfile`
+  callback, doesn't touch `loading`/`fetchProfile`/`onAuthStateChange`
+  at all.
+- `routes.jsx`: two new portal pages correctly registered as children
+  of the *existing* `/portal` `ProtectedRoute` wrapper — no new
+  security surface.
+- Backend: one new endpoint, `GET /membership/dues/me`, correctly
+  self-scoped to `req.user.id` (no `:id` param, no cross-user leak),
+  authenticated, with a sensible comment about route-ordering that I
+  checked and confirmed isn't yet a real hazard in the current file.
+- `ProfilePage.jsx` and `MyEventsPage.jsx` (new, ~680 lines combined):
+  read closely. Both act only on the current authenticated user's own
+  data. `ProfilePage` only submits the three fields the backend
+  actually persists (verified directly against `updateProfile`'s
+  destructuring, not assumed) and genuinely never clears the form on a
+  failed save (verified in the code, not just the comment claiming
+  it). `MyEventsPage`'s cancel-registration dialog has correct focus
+  management, a body-scroll lock with cleanup, and names the real
+  consequence of cancelling — verified directly against the backend
+  that `DELETE /events/:id/register` really is a hard delete, so the
+  dialog's wording is accurate rather than an assumption.
+- `PortalLayout.jsx`: full rebuild, replacing what was previously a
+  near-empty shell with no navigation or sign-out at all — a real,
+  substantive gap this closes, not decoration. Correct focus-return
+  behavior on drawer close, Esc-to-close, proper ARIA throughout.
+- `DashboardPage.jsx` rework: the "this month" priority ranking logic
+  was read through case by case, including the specific nested-`<a>`
+  bug the report says it self-caught (a stat card that would have
+  contained its own inner `Link` was correctly prevented from also
+  being a clickable door) — confirmed genuinely fixed, not just
+  claimed.
+- `HomePage.jsx`'s new signed-in banner and `Footer.jsx`'s two
+  corrected links: the banner specifically addresses a real gap T35's
+  own change would otherwise have created — a student landing on the
+  public Homepage after login with no visible way back to the portal.
+  Appears only when `user` is truthy.
+- Admin cosmetic touches (`NominationsAdminPanel.jsx`,
+  `CommitteeAdminDashboard.jsx`, `DocumentsAdminPage.jsx`): small,
+  contrast/style only. The `NominationsAdminPanel.jsx` fix is in fact
+  the exact gray-on-amber pattern flagged as a disclosed, deferred
+  follow-up during an earlier session's admin review — this closes
+  that out.
+- Verified several factual claims directly rather than trusting the
+  commit message: `950` genuinely isn't in the Tailwind color scale
+  (confirmed `tailwind.config.js` has no such shade — the earlier
+  `NominationDialog` scrim really was rendering transparent), Inter
+  genuinely is the brand guide's documented primary font (so the
+  detector-exception waiver is legitimate, not a shortcut), and the
+  claimed 22/40 → 38/40 impeccable critique scores are real, read
+  directly from the actual timestamped snapshot files in
+  `.impeccable/critique/`, not just asserted in prose.
+- Full branch (both commits together): `eslint` clean, `vite build`
+  clean, backend `node --check` clean.
+
+**Process note, not a blocker:** bundling a large, separately-decided
+feature into a different task's branch made this review substantially
+harder than it needed to be — the sensitive, security-relevant T35 fix
+was buried inside a 26-file, 2200-line diff alongside unrelated work.
+The work itself held up to full scrutiny, but worth asking that future
+"extra" work like this land on its own branch next time, even when
+it's explicitly authorized, so a security-relevant fix can be reviewed
+and merged on its own.
+
+No corrections needed in either piece. Approved and merged to `main`.
