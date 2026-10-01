@@ -6409,7 +6409,7 @@ No corrections needed. Approved and merged to `main`.
 ## T35 — Fix login redirect: root-cause race + role-based destination + welcome state
 
 **Branch:** `task/t35-login-redirect-fix`
-**Status:** unassigned
+**Status:** done
 **Depends on:** none
 
 ### Context
