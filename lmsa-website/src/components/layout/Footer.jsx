@@ -163,12 +163,12 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link to="/portal#events" className="hover:text-lmsa-400 transition-colors duration-200">
+                <Link to="/events" className="hover:text-lmsa-400 transition-colors duration-200">
                   Events
                 </Link>
               </li>
               <li>
-                <Link to="/portal#resources" className="hover:text-lmsa-400 transition-colors duration-200">
+                <Link to="/academics/resources" className="hover:text-lmsa-400 transition-colors duration-200">
                   Resources
                 </Link>
               </li>

@@ -1,9 +1,21 @@
-import { useCallback, useEffect, useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { AlertCircle, ArrowRight, Calendar, Clock, MapPin, Newspaper } from 'lucide-react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
+import {
+  AlertCircle,
+  ArrowRight,
+  Calendar,
+  CalendarDays,
+  Clock,
+  MapPin,
+  Newspaper,
+  User,
+  Users,
+  Wallet,
+  X,
+} from 'lucide-react';
 import { useAuth } from '@context/AuthContext';
-import { ADMIN_ROLES } from '@utils/constants';
 import Card from '@components/common/Card';
+import StatusBadge from '@components/common/StatusBadge';
 import { dashboardService } from '@services/dashboard.service';
 import { eventService } from '@services/event.service';
 import { newsService } from '@services/news.service';
@@ -31,27 +43,15 @@ function RowSkeleton() {
   );
 }
 
+const QUICK_ACTIONS = [
+  { to: '/events', icon: CalendarDays, label: 'Register for events', description: 'Save your spot' },
+  { to: '/get-involved/committees', icon: Users, label: 'Join a committee', description: 'Serve the community' },
+  { to: '/portal/profile', icon: User, label: 'Update profile', description: 'Keep details current' },
+  { to: '/membership/dues', icon: Wallet, label: 'View dues', description: 'Stay in good standing' },
+];
+
 export default function DashboardPage() {
   const { user } = useAuth();
-  const location = useLocation();
-  const navigate = useNavigate();
-
-  // One-time redirect: if we just landed here right after login (see
-  // LoginPage.jsx's `justLoggedIn` state) and the account turns out to be
-  // admin-tier, send them on to the admin dashboard. Deliberately keyed
-  // off location.state rather than running on every visit here — an
-  // admin who is also a student may well want to view their own student
-  // portal on purpose (e.g. via the "Portal" link in the header), and
-  // that visit should never get silently hijacked. By the time this
-  // component renders at all, ProtectedRoute has already waited for
-  // AuthContext's `loading` to settle, so `user.role` here is already
-  // final — no extra fetch, no race.
-  const justLoggedIn = location.state?.justLoggedIn;
-  useEffect(() => {
-    if (justLoggedIn && ADMIN_ROLES.includes(user?.role)) {
-      navigate('/admin/dashboard', { replace: true });
-    }
-  }, [justLoggedIn, user, navigate]);
 
   const [stats, setStats] = useState(null); // null = unavailable
   const [myEvents, setMyEvents] = useState(null);
@@ -59,6 +59,15 @@ export default function DashboardPage() {
   const [upcomingSiteEvents, setUpcomingSiteEvents] = useState(null);
   const [loading, setLoading] = useState(true);
   const [partialError, setPartialError] = useState(false);
+  // "Dismissible for the session" (D6) — survives client-side navigation,
+  // resets when the tab closes. try/catch for private-mode storage limits.
+  const [priorityDismissed, setPriorityDismissed] = useState(() => {
+    try {
+      return sessionStorage.getItem('lmsa.portal.priority.dismissed') === '1';
+    } catch {
+      return false;
+    }
+  });
 
   const loadDashboard = useCallback(async () => {
     setLoading(true);
@@ -73,7 +82,7 @@ export default function DashboardPage() {
     setStats(statsResult.status === 'fulfilled' ? statsResult.value : null);
     setMyEvents(myEventsResult.status === 'fulfilled' ? myEventsResult.value || [] : null);
     setNewsPosts(newsResult.status === 'fulfilled' ? newsResult.value.posts || [] : null);
-    setUpcomingSiteEvents(siteEventsResult.status === 'fulfilled' ? (siteEventsResult.value || []).length : null);
+    setUpcomingSiteEvents(siteEventsResult.status === 'fulfilled' ? siteEventsResult.value || [] : null);
     setPartialError(
       [statsResult, myEventsResult, newsResult, siteEventsResult].some((result) => result.status === 'rejected')
     );
@@ -85,25 +94,113 @@ export default function DashboardPage() {
   }, [loadDashboard]);
 
   const membershipStatus = stats ? formatStatus(stats.membership_status) : null;
+  const firstName = user?.full_name?.trim().split(/\s+/)[0];
 
+  // Soonest future site-wide event (for the next-event widget).
+  const nextSiteEvent = useMemo(() => {
+    if (!upcomingSiteEvents) return null;
+    const now = Date.now() - 24 * 60 * 60 * 1000; // tolerate same-day events
+    return (
+      [...upcomingSiteEvents]
+        .filter((event) => event.start_datetime && new Date(event.start_datetime).getTime() >= now)
+        .sort((a, b) => new Date(a.start_datetime) - new Date(b.start_datetime))[0] || null
+    );
+  }, [upcomingSiteEvents]);
+
+  // Member's soonest registered event (for the priority ranking).
+  const soonestRegistered = useMemo(() => {
+    if (!myEvents) return null;
+    return (
+      [...myEvents]
+        .filter((event) => event.start_datetime)
+        .sort((a, b) => new Date(a.start_datetime) - new Date(b.start_datetime))[0] || null
+    );
+  }, [myEvents]);
+
+  // "This month" priority card (spec §4.5, decision D6): the single most
+  // time-relevant item for this member, ranked from data the API actually
+  // returns today. Moderate emphasis — one calm green-accented card, never
+  // red (red stays reserved for suspended status and true errors).
+  const priority = useMemo(() => {
+    if (loading) return null;
+    if (stats && stats.membership_status === 'pending') {
+      return {
+        key: 'pending',
+        title: 'Your membership application is under review',
+        body: 'See what happens next and what to expect while the committee reviews it.',
+        cta: { label: 'View your application status', to: '/portal/profile' },
+      };
+    }
+    if (soonestRegistered) {
+      const daysAway = (new Date(soonestRegistered.start_datetime) - Date.now()) / (24 * 60 * 60 * 1000);
+      if (daysAway <= 30) {
+        return {
+          key: 'registered',
+          title: soonestRegistered.title,
+          body: `You're registered — ${formatDate(soonestRegistered.start_datetime)}${
+            soonestRegistered.location ? ` at ${soonestRegistered.location}` : ''
+          }.`,
+          cta: {
+            label: soonestRegistered.slug ? 'View event details' : 'Browse all events',
+            to: soonestRegistered.slug ? `/events/${soonestRegistered.slug}` : '/events',
+          },
+        };
+      }
+    }
+    if (nextSiteEvent) {
+      // Already registered for the site's next event? Never offer a
+      // register CTA for it — say so truthfully instead.
+      const alreadyRegistered = soonestRegistered && soonestRegistered.id === nextSiteEvent.id;
+      const where = `${formatDate(nextSiteEvent.start_datetime)}${
+        nextSiteEvent.location ? ` at ${nextSiteEvent.location}` : ''
+      }`;
+      return alreadyRegistered
+        ? {
+            key: 'registered-next',
+            title: nextSiteEvent.title,
+            body: `You're registered — ${where}. See you there.`,
+            cta: nextSiteEvent.slug ? { label: 'View event details', to: `/events/${nextSiteEvent.slug}` } : null,
+          }
+        : {
+            key: 'register',
+            title: nextSiteEvent.title,
+            body: `${where}. Open to members — save your spot.`,
+            cta: { label: nextSiteEvent.slug ? 'Register for this event' : 'Browse events', to: nextSiteEvent.slug ? `/events/${nextSiteEvent.slug}` : '/events' },
+          };
+    }
+    if (myEvents && upcomingSiteEvents) {
+      return {
+        key: 'clear',
+        title: 'Nothing due this month',
+        body: "You're all caught up — no registrations lapsing and nothing opening right now.",
+        cta: null,
+      };
+    }
+    return null;
+  }, [loading, stats, soonestRegistered, nextSiteEvent, myEvents, upcomingSiteEvents]);
+
+  // Stat cards are doors (spec §4.5): every number links to where the
+  // member acts on it. `door: null` renders a plain card (next-event
+  // widget handles its own empty state).
   const statCards = [
     {
       label: 'Membership Status',
-      value: membershipStatus || (stats ? null : undefined),
-      accent: 'text-lmsa-600',
-      // stats loaded but no status -> show apply link instead of a dead dash
-      emptyAction: stats && !membershipStatus ? { label: 'Apply for membership', to: '/membership#apply' } : null,
+      kind: 'badge',
+      // When there's no status yet, the apply link inside is the action —
+      // the card itself must not become a door (no <a> inside <a>).
+      door: stats && !membershipStatus ? null : '/portal/profile',
+      applyLink: stats && !membershipStatus ? { label: 'Apply for membership', to: '/membership#apply' } : null,
     },
-    { label: 'Events Registered', value: stats ? stats.events_registered_count : undefined, accent: '' },
-    { label: 'My Committees', value: stats ? stats.committees_count : undefined, accent: '' },
-    { label: 'Upcoming LMSA Events', value: upcomingSiteEvents ?? undefined, accent: 'text-blue-600' },
+    { label: 'Events Registered', kind: 'value', value: stats ? stats.events_registered_count : undefined, door: '/portal/events' },
+    { label: 'My Committees', kind: 'value', value: stats ? stats.committees_count : undefined, door: '/leadership/committees' },
+    { label: 'Next Event', kind: 'nextEvent', door: null },
   ];
 
   return (
     <div>
       <div className="mb-6 sm:mb-8">
         <h1 className="text-2xl sm:text-3xl font-bold mb-2">
-          Welcome Back{user?.full_name ? `, ${user.full_name.split(' ')[0]}` : ''}!
+          Welcome Back{firstName ? `, ${firstName}` : ''}!
         </h1>
         <p className="text-gray-600 text-sm sm:text-base">
           Here&apos;s what&apos;s happening with your LMSA membership
@@ -124,22 +221,139 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {/* ── Quick Stats ──────────────────────────────────────────────────── */}
+      {/* ── This month (D6 — moderate emphasis, dismissible) ─────────────── */}
+      {loading ? (
+        <div className="mb-6 h-[86px] animate-pulse rounded-lg bg-gray-100 sm:h-[74px]" aria-hidden="true" />
+      ) : priority && !priorityDismissed ? (
+        <div className="mb-6 rounded-lg border border-lmsa-200 bg-lmsa-50 p-4 sm:p-5">
+          <div className="flex items-start gap-3">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-lmsa-100 text-lmsa-700" aria-hidden="true">
+              <CalendarDays size={18} />
+            </span>
+            <div className="min-w-0 flex-1">
+              <p className="text-xs font-semibold uppercase tracking-wide text-lmsa-700">This month</p>
+              <h2 className="mt-0.5 font-semibold text-lmsa-900">{priority.title}</h2>
+              <p className="mt-0.5 text-sm text-gray-600">{priority.body}</p>
+              {priority.cta && (
+                <Link
+                  to={priority.cta.to}
+                  className="mt-2 inline-flex min-h-[44px] items-center gap-1 text-sm font-semibold text-lmsa-700 underline underline-offset-2 hover:no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
+                >
+                  {priority.cta.label} <ArrowRight size={14} aria-hidden="true" />
+                </Link>
+              )}
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                setPriorityDismissed(true);
+                try {
+                  sessionStorage.setItem('lmsa.portal.priority.dismissed', '1');
+                } catch {
+                  /* storage unavailable — dismissal just lasts this visit */
+                }
+              }}
+              className="-m-2 flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-lmsa-700/70 hover:text-lmsa-900 hover:bg-lmsa-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600"
+              aria-label="Dismiss this month's priority"
+            >
+              <X size={16} aria-hidden="true" />
+            </button>
+          </div>
+        </div>
+      ) : null}
+
+      {/* ── Quick Actions ────────────────────────────────────────────────── */}
+      <section className="mb-6 sm:mb-8" aria-label="Quick actions">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          {QUICK_ACTIONS.map(({ to, icon: Icon, label, description }) => (
+            <Link
+              key={to}
+              to={to}
+              className="group flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-3.5 transition-shadow hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600"
+            >
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-lmsa-50 text-lmsa-700" aria-hidden="true">
+                <Icon size={18} />
+              </span>
+              <span className="min-w-0">
+                <span className="block text-sm font-semibold text-gray-900 leading-tight">{label}</span>
+                <span className="block text-xs text-gray-500 leading-tight mt-0.5">{description}</span>
+              </span>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* ── Quick Stats — every number is a door ─────────────────────────── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-6 sm:mb-8">
-        {statCards.map(({ label, value, accent, emptyAction }) => (
-          <Card key={label} className="p-4 sm:p-6">
-            <h3 className="text-sm font-medium text-gray-600 mb-1">{label}</h3>
-            {loading ? (
-              <div className="h-7 w-16 animate-pulse rounded bg-gray-100" aria-hidden="true" />
-            ) : emptyAction ? (
-              <Link to={emptyAction.to} className="inline-block text-sm font-semibold text-lmsa-700 underline underline-offset-2 hover:no-underline">
-                {emptyAction.label}
-              </Link>
-            ) : (
-              <p className={`text-xl sm:text-2xl font-bold ${accent}`}>{value ?? '—'}</p>
-            )}
-          </Card>
-        ))}
+        {statCards.map((card) => {
+          const cardBody = (
+            <Card className="h-full p-4 sm:p-6">
+              <h3 className="text-sm font-medium text-gray-600 mb-1">{card.label}</h3>
+              {loading ? (
+                <div className="h-7 w-16 animate-pulse rounded bg-gray-100" aria-hidden="true" />
+              ) : card.kind === 'badge' ? (
+                card.applyLink ? (
+                  <Link
+                    to={card.applyLink.to}
+                    className="inline-block text-sm font-semibold text-lmsa-700 underline underline-offset-2 hover:no-underline"
+                  >
+                    {card.applyLink.label}
+                  </Link>
+                ) : (
+                  /* Status as the shared badge — text + color, never color alone */
+                  <StatusBadge status={membershipStatus?.toLowerCase()} />
+                )
+              ) : card.kind === 'nextEvent' ? (
+                nextSiteEvent ? (
+                  <>
+                    <p className="text-base font-semibold text-lmsa-700 line-clamp-2">{nextSiteEvent.title}</p>
+                    <p className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-xs text-gray-500">
+                      <span className="inline-flex items-center gap-1">
+                        <Clock size={12} aria-hidden="true" />
+                        {formatDate(nextSiteEvent.start_datetime)}
+                      </span>
+                      {nextSiteEvent.location && (
+                        <span className="inline-flex items-center gap-1">
+                          <MapPin size={12} aria-hidden="true" />
+                          {nextSiteEvent.location}
+                        </span>
+                      )}
+                    </p>
+                  </>
+                ) : (
+                  <p className="text-sm text-gray-500">No events scheduled right now — check back soon.</p>
+                )
+              ) : (
+                <p className="text-xl sm:text-2xl font-bold text-gray-900">{card.value ?? '—'}</p>
+              )}
+            </Card>
+          );
+
+          // The next-event card is its own door when there is an event to see.
+          const door =
+            card.kind === 'nextEvent'
+              ? nextSiteEvent?.slug
+                ? `/events/${nextSiteEvent.slug}`
+                : null
+              : card.door;
+
+          return door && !loading ? (
+            <Link
+              key={card.label}
+              to={door}
+              className="block rounded-xl transition-shadow hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600"
+              aria-label={
+                card.kind === 'nextEvent'
+                  ? `Open event: ${nextSiteEvent.title}`
+                  : `${card.label} — open details`
+              }
+            >
+              {cardBody}
+            </Link>
+          ) : (
+            <div key={card.label}>{cardBody}</div>
+          );
+        })}
       </div>
 
       {/* ── My Upcoming Events ───────────────────────────────────────────── */}
@@ -147,10 +361,10 @@ export default function DashboardPage() {
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl sm:text-2xl font-bold">My Upcoming Events</h2>
           <Link
-            to="/events"
+            to="/portal/events"
             className="text-sm text-lmsa-600 hover:text-lmsa-700 flex items-center gap-1 p-2 -m-2 min-h-[44px] min-w-[44px] justify-center"
           >
-            View all events <ArrowRight size={14} />
+            Manage my events <ArrowRight size={14} />
           </Link>
         </div>
 
@@ -171,7 +385,7 @@ export default function DashboardPage() {
         ) : myEvents.length === 0 ? (
           <Card>
             <div className="text-center py-6">
-              <Calendar size={32} className="mx-auto text-gray-400 mb-3" />
+              <Calendar size={32} className="mx-auto text-gray-400 mb-3" aria-hidden="true" />
               <p className="text-gray-600 mb-1">No upcoming events registered</p>
               <p className="text-sm text-gray-500">
                 Browse{' '}
@@ -251,7 +465,7 @@ export default function DashboardPage() {
         ) : newsPosts.length === 0 ? (
           <Card>
             <div className="text-center py-6">
-              <Newspaper size={32} className="mx-auto text-gray-400 mb-3" />
+              <Newspaper size={32} className="mx-auto text-gray-400 mb-3" aria-hidden="true" />
               <p className="text-gray-600">No news posts yet</p>
             </div>
           </Card>

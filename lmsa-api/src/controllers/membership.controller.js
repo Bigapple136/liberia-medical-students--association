@@ -299,3 +299,55 @@ export const updateStatus = async (req, res) => {
     });
   }
 };
+
+// ─── GET /api/membership/dues/me ────────────────────────────────────────────
+// The signed-in member's dues history plus a derived summary for the
+// portal's profile page. Read-only: dues rows are recorded by the
+// treasurer/admin outside this API for now.
+export const getMyDues = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    const { data, error } = await supabase
+      .from('membership_dues')
+      .select(
+        'id, amount, semester, academic_year, payment_method, payment_status, transaction_reference, paid_at, created_at'
+      )
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('Get my dues error:', error);
+      return res.status(400).json({
+        success: false,
+        message: 'Failed to load dues',
+      });
+    }
+
+    const records = data || [];
+    const isOutstanding = (record) =>
+      record.payment_status === 'pending' || record.payment_status === 'overdue';
+    const outstandingTotal = records
+      .filter(isOutstanding)
+      .reduce((sum, record) => sum + Number(record.amount || 0), 0);
+
+    res.json({
+      success: true,
+      dues: {
+        records,
+        // Soonest-created outstanding record, if any (what the member must act on).
+        current: records.find(isOutstanding) || null,
+        outstanding_total: Number(outstandingTotal.toFixed(2)),
+        has_settled_record: records.some(
+          (record) => record.payment_status === 'paid' || record.payment_status === 'waived'
+        ),
+      },
+    });
+  } catch (error) {
+    console.error('Get my dues error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to load dues',
+    });
+  }
+};

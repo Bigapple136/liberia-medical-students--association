@@ -1,4 +1,4 @@
-import { createContext, useState, useEffect, useContext } from 'react';
+import { createContext, useCallback, useState, useEffect, useContext } from 'react';
 import api from '@services/api';
 import { authService } from '@services/auth.service';
 import { supabase } from '@services/supabase';
@@ -46,6 +46,15 @@ export const AuthProvider = ({ children }) => {
       (_event, session) => {
         if (!mounted) return;
         if (session?.user) {
+          // A new session was detected (initial load, or a fresh sign-in /
+          // token refresh after the first check already settled). Mark a
+          // fetch as in-progress again so ProtectedRoute waits instead of
+          // seeing the stale `loading: false` + `user: null` from the very
+          // first page-load check — without this, navigating into a
+          // protected route the instant login() resolves races the profile
+          // fetch below and bounces the (actually logged-in) user back to
+          // /login. fetchProfile's `finally` resets it once settled.
+          setLoading(true);
           fetchProfile(session.user);
         } else {
           setUser(null);
@@ -60,12 +69,20 @@ export const AuthProvider = ({ children }) => {
     };
   }, []);
 
+  // Profile updates from the portal's profile page merge into the session
+  // user so every consumer (shell identity chip, dashboards, welcome
+  // headings) reflects a saved name/phone change without a re-fetch (spec §4.4.1).
+  const updateUserProfile = useCallback((updatedUser) => {
+    setUser((prev) => ({ ...prev, ...updatedUser }));
+  }, []);
+
   const value = {
     user,
     loading,
     login: authService.login,
     logout: authService.logout,
     register: authService.register,
+    updateUserProfile,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -23,6 +23,10 @@ export default function RegisterPage() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
+  // Spec §4.1: after a successful registration we stay on this page and show
+  // a success panel whose primary action carries the new member into sign-in
+  // with ?next= pointed at the portal (D1: login lands wherever ?next= says).
+  const [registered, setRegistered] = useState(false);
   const { register } = useAuth();
   const navigate = useNavigate();
 
@@ -88,7 +92,7 @@ export default function RegisterPage() {
         membership_type: formData.membershipType,
       });
       toast.success('Registration successful! You can now log in.');
-      navigate('/login');
+      setRegistered(true);
     } catch (error) {
       const message = error?.response?.data?.message || 'Registration failed. Please try again.';
       toast.error(message);
@@ -130,6 +134,36 @@ export default function RegisterPage() {
       {/* Right Side - Form */}
       <div className="flex-1 flex items-center justify-center p-8">
         <div className="max-w-lg w-full">
+          {registered ? (
+            /* Success state — replaces the form so the new member's next step
+               is unambiguous: sign in, landing in the portal (spec §4.1). */
+            <div className="text-center py-12" aria-live="polite">
+              <div className="mx-auto mb-6 flex h-14 w-14 items-center justify-center rounded-full bg-lmsa-100">
+                <Check size={28} className="text-lmsa-700" aria-hidden="true" />
+              </div>
+              <h2 className="text-3xl font-bold mb-2 uppercase tracking-tight">Account Created</h2>
+              <p className="text-gray-600 mb-8 text-balance">
+                Welcome to LMSA{formData.firstName ? `, ${formData.firstName}` : ''}. Sign
+                in to open your member portal — your events, profile, and membership
+                all live there.
+              </p>
+              <Button
+                type="button"
+                onClick={() => navigate('/login?next=/portal/dashboard')}
+                fullWidth
+              >
+                Sign in &amp; open your portal
+              </Button>
+              <Link
+                to="/"
+                className="mt-6 inline-flex items-center gap-2 text-sm text-gray-600 hover:text-lmsa-600 transition-colors duration-200"
+              >
+                <ArrowLeft size={14} aria-hidden="true" />
+                Back to home
+              </Link>
+            </div>
+          ) : (
+            <>
           {/* Back Link */}
           <Link
             to="/"
@@ -319,6 +353,8 @@ export default function RegisterPage() {
               </Link>
             </p>
           </div>
+            </>
+          )}
         </div>
       </div>
     </div>

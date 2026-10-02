@@ -1,0 +1,14 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "overused-font",
+        "value": "inter",
+        "createdAt": "2026-09-30T02:03:12.040Z",
+        "reason": "User confirmed: Inter is pinned as the primary brand font in lmsa_brand_guide.md (Typography section), implemented per spec with Merriweather secondary"
+      }
+    ]
+  }
+}

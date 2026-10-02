@@ -768,7 +768,7 @@ thread, since that decision is explicitly still pending on Stone's end.
 | T32 | Route-based code splitting (`React.lazy`/`Suspense` on `routes.jsx`) | none | **done** |
 | T33 | Accessibility pass: skip-to-content link + `impeccable audit` verification of toast/ARIA/contrast | none | **done** |
 | T34 | Homepage: replace hardcoded fake "Latest from LMSA" stories with real news data | none | **done** |
-| T35 | Fix login redirect: root-cause AuthContext race + role-based destination (student → Homepage, admin → Admin Dashboard) + personalized welcome | none | **unassigned** |
+| T35 | Fix login redirect: root-cause AuthContext race + role-based destination (student → Homepage, admin → Admin Dashboard) + personalized welcome | none | **done** |
 | T36 | Wire `PastPresidentsPage.jsx` to real `executive_positions` data (`status: completed`), remove fabricated names | none | **unassigned** |
 
 **T22 flagged priority.** Render permanently blocks outbound SMTP ports
@@ -6413,7 +6413,7 @@ No corrections needed. Approved and merged to `main`.
 ## T35 — Fix login redirect: root-cause race + role-based destination + welcome state
 
 **Branch:** `task/t35-login-redirect-fix`
-**Status:** unassigned
+**Status:** done
 **Depends on:** none
 
 ### Context
@@ -6581,11 +6581,419 @@ without checking first.
 
 ### Report
 
-*(agent fills in on completion)*
+**Agent:** automated (Codebuff)
+**Date:** 2026-09-29
+**Branch pushed:** `task/t35-login-redirect-fix` (commit `5680c09`)
+
+#### Summary
+All three parts landed, three files changed.
+
+1. **`AuthContext.jsx` — the race fix (minimal, surgical).** Added a single
+   `setLoading(true)` inside the `onAuthStateChange` callback, immediately
+   before `fetchProfile(session.user)` is called for a detected session.
+   Nothing else in the file changed: `fetchProfile`'s existing
+   `finally { setLoading(false) }` still owns the reset, and the `mounted`
+   guard, subscription/cleanup, and the fallback-to-bare-`sessionUser` catch
+   path are untouched. The diff is one statement plus an explanatory comment.
+   Effect: `loading` now means "a profile fetch is in flight" for *every*
+   auth transition, not just the app's very first check, so `ProtectedRoute`
+   can no longer render with the stale `loading: false` + `user: null`
+   combination mid-login.
+
+2. **`LoginPage.jsx` — wait for the real profile, then decide.** No second
+   `/users/me` call (the 2026-09-23 mistake was not repeated). `handleSubmit`
+   calls `login()` as before; on success it no longer navigates — it sets a
+   `welcoming` flag (and keeps the existing success toast). A `useEffect`
+   keyed on `welcoming` watches `loading`/`user` from `useAuth()`:
+   - While `loading` is true (this sign-in's in-progress profile fetch, per
+     Part 1) it keeps waiting.
+   - Once settled with a `user`, it navigates after a short beat:
+     `?next=` first (same-origin validation logic kept byte-for-byte), else
+     `/admin/dashboard` iff `ADMIN_ROLES.includes(user.role)` (imported from
+     `@utils/constants`), else `/` — the actual behavior change; students no
+     longer land on `/portal/dashboard`.
+   - Fail-open: if the fetch failed, `fetchProfile`'s existing catch leaves
+     the bare session user with `role === undefined`,
+     `ADMIN_ROLES.includes(undefined)` is false, and the user lands on `/` —
+     no hang. If `user` becomes null mid-welcome (session vanished, e.g.
+     signed out in another tab), the effect bails out of the welcome state
+     back to the form instead of spinning forever.
+
+   **Welcome state (the UX judgment call):** from the moment credentials
+   check out, the form is replaced by a centered transition block matching
+   the page's existing conventions — the same spinner markup/size/`lmsa-600`
+   color `ProtectedRoute` uses (one visual language for "auth is settling"),
+   an `aria-live="polite"` region so screen readers announce it, a
+   personalized `Welcome back, {first name}!` heading (first word of
+   `user.full_name`, degrading to plain `Welcome back!` when `full_name` is
+   empty/absent), and a one-line `Signing you in, one moment…` subline. The
+   redirect fires after a 1200 ms hold — long enough for the moment to
+   register, far short of a multi-second sequence. The hold is a
+   `setTimeout` cleaned up on unmount, so a fast navigation can't fire after
+   the component is gone.
+
+3. **`DashboardPage.jsx` — dead code removed.** The `justLoggedIn`-keyed
+   redirect-to-admin effect is gone (its whole premise — students landing on
+   `/portal/dashboard` right after login — no longer exists), along with the
+   `useLocation`/`useNavigate` imports and `location`/`navigate` bindings and
+   the `ADMIN_ROLES` import. Confirmed by grep that none of those symbols are
+   used elsewhere in the file (`useEffect` itself is still needed by the
+   dashboard-data effects and was kept) and that `justLoggedIn` no longer
+   appears anywhere in `src/`. The deliberately-not-hijacking-admin-visits
+   property is preserved for free: nothing navigates away from
+   `/portal/dashboard` on visit anymore, so an admin browsing their own
+   portal via the header link stays put.
+
+#### Destination matrix
+- `?next=` present + valid → that destination, any role (unchanged logic).
+- Admin/exec/super_admin, no `?next=` → `/admin/dashboard`.
+- Student (or unknown/missing role, or failed profile fetch) → `/`.
+
+#### Part 1 regression scenarios — reasoning-based, NOT click-through
+Verified by tracing the code (see "Sandbox limits" below for why no live
+browser):
+- **Hard refresh while logged in on `/portal/dashboard` or
+  `/admin/dashboard`:** mount → `INITIAL_SESSION` fires with a session →
+  `setLoading(true)` (no-op vs the initial `useState(true)`) → fetch →
+  `finally` sets `loading false` with `user` populated → `ProtectedRoute`
+  shows its spinner only briefly, then the page. A spurious bounce would
+  require `loading === false` while `user === null`, which can no longer
+  occur while a session exists: `loading` only goes false via (a)
+  `fetchProfile`'s `finally` — after which `user` is either the merged
+  profile or the bare session user, never null when a session exists — or
+  (b) the `else` branch that runs only when there is **no** session (and
+  which also nulls `user`, the legitimate signed-out bounce).
+- **Signed-out visitor hitting a protected URL directly:**
+  `INITIAL_SESSION` fires with `session === null` → `setUser(null)` +
+  `setLoading(false)` → `ProtectedRoute` renders `<Navigate to="/login"
+  replace />` exactly as before. That path's code is untouched; the
+  `setLoading(true)` only sits in the has-session branch.
+- **Logout:** `signOut()` fires `onAuthStateChange` with no session →
+  `setUser(null)` + `setLoading(false)` — no fetch is started, so the new
+  `setLoading(true)` cannot run and cannot strand the app in a loading
+  state. Header/`ProtectedRoute` then treat the user as signed out
+  immediately, same as before the change. (A post-logout `SIGNED_OUT` or
+  token-refresh event with a session would at worst re-run the fetch and
+  settle via the same `finally`; a logged-out user's next sign-in is the
+  login flow itself, now covered.)
+
+Cross-checked every other `useAuth()` consumer for sensitivity to `loading`
+flipping true again mid-session: `ProtectedRoute` (the intended beneficiary),
+`MembershipPage` (`!authLoading && !user` — only *more* conservative for a
+moment while a fetch is in flight, then identical), and `RegisterPage` —
+which never reads context `loading` (local flag only) and navigates to
+`/login` without auto-logging-in, so it neither triggers nor observes the
+race. `Header` doesn't read `loading`. No other component navigates into
+`/portal` or `/admin` after auth changes (the only such navigate was the
+DashboardPage effect deleted in Part 3).
+
+#### Verification (actually run)
+- `cd lmsa-website && npx eslint src --ext js,jsx --max-warnings 0` → clean
+  (exit 0, 0 errors / 0 warnings). One transient unused-var error in my own
+  first cut was caught by this run and fixed before commit.
+- `cd lmsa-website && npm run build` → success (✓ built in ~14 s). The
+  >500 kB chunk-size notice is pre-existing and unrelated.
+- `git diff` reviewed: the `AuthContext.jsx` change is the one
+  `setLoading(true)` + comment; no unrelated refactoring.
+
+#### Sandbox limits — what could NOT be verified
+No live browser and no live Supabase session in this sandbox, so the
+following were **not** exercised end-to-end and are reasoning-verified only:
+- An actual login click-through (form → welcome moment → redirect), including
+  the perceived timing of the 1200 ms hold.
+- The three Part 1 regression scenarios against real Supabase
+  `onAuthStateChange` event sequencing (real-world event ordering — e.g.
+  extra `TOKEN_REFRESHED` events mid-session — is reasoned about, not
+  observed).
+- That a real `GET /users/me` failure during login lands on `/` (traced
+  through `fetchProfile`'s catch path; not reproduced against a real
+  backend).
+- Role values end-to-end (assumed `USER_ROLES` constants match what the
+  backend returns in `user.role`, as they already do for `routes.jsx`/
+  `Header.jsx`, which use the same source of truth).
+
+#### Notes / out of scope
+- The acceptance-criteria lint command (`npx eslint src --ext js,jsx`) and
+  the package script `npm run lint` differ slightly in flags; both pass —
+  the stricter script was also run as part of verifying the build pipeline.
+- `rememberMe` remains a visual-only checkbox, exactly as before — pre-existing
+  behavior, untouched.
+- Welcome-state copy is English-only, consistent with the rest of the page
+  (no i18n infrastructure exists in the codebase to hook into).
+- Suggest a human smoke-test the login flow on the deployed preview when
+  convenient, since that is the one thing this sandbox could not do.
+
+
+## 2026-09-29/30 — T36: Member portal — critique, spec, full build, re-score 22→38
+
+**Branch:** `task/t35-login-redirect-fix` (portal work landed on the same branch)
+**Status:** complete — lint clean, build passing, detector 0 findings across `lmsa-website/src`
+**Depends on:** T35 (login flow), lmsa-api `users`/`dashboard`/`events` routes
+
+### Context
+
+`$impeccable critique` on the portal (`PortalLayout` + `DashboardPage`)
+scored **22/40 (Acceptable)**: locked-room shell (sidebar with no nav, no
+exits), portal unreachable post-login, no account surface, dead stat cards,
+shell drift vs. admin. Findings cross-checked against the roadmap (Phase 3,
+Sprints 6–8) and the real `lmsa-api` endpoints — every planned feature ran on
+existing endpoints; no backend work was a blocker.
+
+Spec written to **`docs/13-member-portal-spec.md`** with decisions locked with
+the client:
+- **D1** students keep landing on `/` post-login — reachability solved with
+  entry points, NOT a redirect change (`?next=` precedence untouched).
+- **D2** full portal scope (shell, reachability, profile, dashboard rework,
+  a11y, shared components). Non-goals: roadmap Sprints 7–8 (ID card,
+  meetings/attendance, realtime notifications).
+- **D3** build order: reachability first.
+- **D4** portal is a deliberately compact member app — never mirrors public chrome.
+- **D5** LMSA green is semantic: service to the greater community (active
+  standing, service CTAs, the month's priority) — the only accent in the portal.
+- **D6** the dashboard "shouts" the month's priority at moderate emphasis —
+  calm green card, red reserved for suspended status / true errors.
+
+### What was built (in spec order)
+
+**§4.1 Reachability** — `HomePage`: signed-in member strip ("Welcome back,
+{name}" + one-click "Open your portal"), rendered only when `user` exists.
+`Footer`: the two dead hash links under Member Portal (`/portal#events`,
+`/portal#resources`) now point at `/events` and `/academics/resources`.
+`RegisterPage`: success state replaces the form (`aria-live`), primary CTA
+"Sign in & open your portal" → `/login?next=/portal/dashboard`, riding the
+existing `?next=` precedence.
+
+**§4.2 + §4.6 Shell + shared components** — `PortalLayout` rebuilt: sidebar
+nav (Dashboard / My Events / My Profile, `<nav aria-label="Portal">`, admin-
+style active states), LMSA identity header, identity chip (avatar initial,
+full name, StatusBadge), "Back to LMSA site", "Sign out". Mobile: the floating
+`top-20 left-4` hamburger is gone; admin's sticky top bar + off-canvas drawer
+adopted, with Esc-close, focus return to the trigger, `aria-expanded`/
+`aria-controls`. The meaningless `top-16` offset deleted. Shared components:
+`Spinner.jsx` (SVG ring matching Button's; `role="status"` + sr-only label;
+currentColor so it works inside danger buttons; decorative mode when no
+label) and `StatusBadge.jsx` (text + color, never color alone; green active /
+amber pending / gray inactive / red suspended off `MEMBERSHIP_STATUS`).
+Routes added: `/portal/events`, `/portal/profile`.
+
+**§4.3 My Events + cancellation** — cancel per event behind a confirm dialog
+that names the consequence and the recovery ("your spot will be released;
+re-register while registration is open"), per §8. Verified against the
+backend first: `DELETE /events/:id/register` is a **hard delete**, so the copy
+is accurate. Failure keeps the dialog open with inline `role="alert"` and
+retry; success toasts and re-syncs from `GET /dashboard/my-events` (server
+truth, not local splice). Dialog follows the `NominationDialog` house pattern
+(Esc, scroll lock, initial focus) with two deliberate deviations: a real
+scrim (`bg-black/40`) and initial focus via a **native button** because
+`Button.jsx` does not forward refs — a `ref` there would silently no-op.
+
+**§4.4 Profile** — API contract read first: `PUT /users/me` persists exactly
+`full_name`, `phone`, `bio` — so the form ships those three, nothing invented;
+email shown read-only as the auth identity. `user.service.js` added;
+`AuthContext.updateUserProfile` merges the saved row so a name change
+propagates to the shell chip / welcome heading without a re-fetch. Zod
+validation, inline field errors, Save disabled until dirty, `aria-live`
+"Unsaved / All changes saved", failed saves never clear the form. Status card
+with per-status explainers + "what happens next" for pending. Dues: honest
+no-API state linking `/membership/dues`. Password: placeholder card with
+support email — no dead form.
+
+**§4.5 Dashboard rework** — "This month" priority card (D6) directly under
+the welcome header, ranked only from data the API returns: pending
+application → registered event ≤30 days → nearest open event → quiet
+all-clear; `bg-lmsa-50`, one action link, dismissible for the session
+(`sessionStorage`, private-mode-safe). Quick Actions row (events / committees
+/ profile / dues). Stat cards are doors with rounded-matching focus rings and
+explicit `aria-label`s; "Upcoming LMSA Events" (duplicated the public site)
+replaced by a next-event widget with honest empty state. Nested-anchor bug
+caught in self-review: the no-status apply-link card must not itself be a door.
+
+### Polish pass (post-build defects found and fixed)
+
+1. Spinner rendered brand green inside the red danger button + forced
+   `role="status"` when decorative → component now inherits `currentColor`
+   and is decorative without a label; announcing call sites pass color
+   explicitly.
+2. Cancel dialog never returned focus to its trigger → captures
+   `document.activeElement` on open, restores on close (no-op if row gone).
+3. Priority card could offer "Register" for an event already registered →
+   now detects it and says "You're registered — see you there".
+4. Priority dismissal reset on navigation → moved to `sessionStorage` (D6
+   says "for the session").
+
+### Re-score
+
+**22/40 → 38/40 (Excellent)** — snapshot
+`.impeccable/critique/2026-09-30T00-56-45Z__lmsa-website-src-pages-portal-
+dashboardpage-jsx.md`; all five baseline P1/P2 issues resolved. Remaining
+deductions: no keyboard shortcuts (deferred, appropriate at this scale), no
+searchable docs. P3 note: drawer has no focus trap (same accepted trade-off
+as AdminLayout) — worth a shared utility if the pattern spreads further.
+
+### Admin UI cleanup (out-of-portal detector findings, 9 → 0)
+
+- `NominationsAdminPanel` (×2): gray-on-amber chips → `text-amber-900`.
+- `NominationDialog` (×2): `border-l-4` banners → house rounded-banner style.
+- `CommitteeAdminDashboard` (×3): green-800 on green-50 chip; delete buttons
+  restyled to the sibling download-button pattern (neutral hover, red text
+  on hover) — gray-on-`hover:bg-red-50` still trips the rule, so the hover
+  background is neutral.
+- `DocumentsAdminPage` (×1): same delete-button pattern; also removed a
+  pre-existing unused `eslint-disable` the strict lint surfaced.
+- Last chip finding was a false-positive shape (bg and text classes from
+  opposite ternary branches on one line) — restructured the ternary.
+- **Inter left as-is**: the `overused-font` finding is a false positive —
+  `lmsa_brand_guide.md` pins Inter as primary (with Merriweather secondary).
+  Recorded as a narrow waiver: `hook-admin.mjs ignore-value overused-font
+  Inter --shared --reason "User confirmed: brand font per lmsa_brand_guide.md"`
+  → shared `.impeccable/config.json`; full `src/` scan now exits clean.
+
+### Verification (actually run)
+
+- `npx eslint <touched files> --report-unused-disable-directives
+  --max-warnings 0` → clean at every step; one transient unused-import in
+  AuthContext caught and fixed mid-build.
+- `npm run build` → success every pass (the >500 kB chunk notice is
+  pre-existing).
+- `detect.mjs` → 0 findings portal-scope throughout; 0 across all of
+  `lmsa-website/src` after the admin cleanup + Inter waiver.
+- Critique trend: 22 → 38 out of 40.
+
+### Sandbox limits — what could NOT be verified
+
+No live browser session with credentials and no live Supabase round-trips in
+this sandbox, so the following are reasoning-verified, not observed:
+- The member strip / register-success panel click-through with a real
+  account, and `?next=` landing on the portal.
+- A real `PUT /users/me` round-trip and post-save chip/heading propagation.
+- A real cancel (hard delete) + list re-sync, including the failure path
+  against a real 4xx/5xx.
+- Drawer behavior on real mobile viewports (Esc/focus-return reasoned and
+  implemented, not exercised on device).
+`browser-test/flow.mjs` exists for the login path; extending it to cover
+portal flows (needs credentials) would close this gap.
+
+### Notes / out of scope
+
+- `NominationDialog`'s overlay scrim class `bg-lmsa-950/60` resolves to
+  nothing in the Tailwind scale (no 950) and renders **transparent** —
+  pre-existing bug, deliberately left (public surface, outside this spec);
+  the new cancel dialog uses `bg-black/40` instead.
+- `Button.jsx` still does not forward refs (worked around in the dialog);
+  forwarding refs there would prevent future silent no-ops.
+- Footer's `Member Portal` link already existed; only its dead siblings were
+  corrected.
+- Dues data and password change remain backend gaps; both seams are marked
+  in the UI and ready to absorb the endpoints when they land.
+
+
+### Orchestrator review
+
+**Two distinct pieces of work landed on this branch** — the actual T35
+fix (commit `5680c09`) and a large additional "member portal" build
+(commit `e78088a`, authored directly by Stone's side, commit message
+labeled "(T36)" — **note: this is not the T36 this board tracks**,
+which is the separate `PastPresidentsPage.jsx` task on its own branch;
+flagging this naming collision so it's not confused later). Stone
+confirmed this second piece was real, intentionally-scoped extra work
+("a bit extra on the User Portal"), not the agent inventing scope — so
+it was reviewed with the same rigor as any task branch rather than
+rejected for being outside the original spec.
+
+**T35 itself (`5680c09`), reviewed in isolation first:**
+- `AuthContext.jsx`: exactly the minimal, surgical fix specced — one
+  `setLoading(true)` call added right before `fetchProfile`, nothing
+  else touched. Matches Part 1 precisely.
+- `LoginPage.jsx`: waits on the context's own `loading`/`user` rather
+  than re-fetching (avoiding the exact mistake from the earlier
+  incident this spec warned against), shows "Welcome back, {name}"
+  with `aria-live="polite"`, a deliberate ~1.2s visible transition
+  before navigating (a reasonable reading of "visible loading state,
+  keep it fast"), role-based destination via the existing `ADMIN_ROLES`
+  constant, `?next=` still takes priority, and a sensible fail-open to
+  `/` if the session vanishes mid-transition. The rest of the diff is
+  pure structural wrapping of the existing form — verified no content
+  changed, just moved inside a conditional.
+- `DashboardPage.jsx`: clean removal of exactly the dead
+  `justLoggedIn` logic and its now-unused imports, nothing else
+  touched.
+- Independently confirmed (not just read the report): `eslint`
+  clean, `vite build` clean, backend `node --check` clean.
+
+**The portal bundle (`e78088a`), reviewed file by file given its size
+and that it touches the same auth-critical files T35 does:**
+- `ProtectedRoute.jsx`: cosmetic only (shared `Spinner` component swap
+  with a proper a11y label) — zero change to the loading/user gating
+  logic, zero interaction risk with T35's fix.
+- `AuthContext.jsx`'s second change: additive-only `updateUserProfile`
+  callback, doesn't touch `loading`/`fetchProfile`/`onAuthStateChange`
+  at all.
+- `routes.jsx`: two new portal pages correctly registered as children
+  of the *existing* `/portal` `ProtectedRoute` wrapper — no new
+  security surface.
+- Backend: one new endpoint, `GET /membership/dues/me`, correctly
+  self-scoped to `req.user.id` (no `:id` param, no cross-user leak),
+  authenticated, with a sensible comment about route-ordering that I
+  checked and confirmed isn't yet a real hazard in the current file.
+- `ProfilePage.jsx` and `MyEventsPage.jsx` (new, ~680 lines combined):
+  read closely. Both act only on the current authenticated user's own
+  data. `ProfilePage` only submits the three fields the backend
+  actually persists (verified directly against `updateProfile`'s
+  destructuring, not assumed) and genuinely never clears the form on a
+  failed save (verified in the code, not just the comment claiming
+  it). `MyEventsPage`'s cancel-registration dialog has correct focus
+  management, a body-scroll lock with cleanup, and names the real
+  consequence of cancelling — verified directly against the backend
+  that `DELETE /events/:id/register` really is a hard delete, so the
+  dialog's wording is accurate rather than an assumption.
+- `PortalLayout.jsx`: full rebuild, replacing what was previously a
+  near-empty shell with no navigation or sign-out at all — a real,
+  substantive gap this closes, not decoration. Correct focus-return
+  behavior on drawer close, Esc-to-close, proper ARIA throughout.
+- `DashboardPage.jsx` rework: the "this month" priority ranking logic
+  was read through case by case, including the specific nested-`<a>`
+  bug the report says it self-caught (a stat card that would have
+  contained its own inner `Link` was correctly prevented from also
+  being a clickable door) — confirmed genuinely fixed, not just
+  claimed.
+- `HomePage.jsx`'s new signed-in banner and `Footer.jsx`'s two
+  corrected links: the banner specifically addresses a real gap T35's
+  own change would otherwise have created — a student landing on the
+  public Homepage after login with no visible way back to the portal.
+  Appears only when `user` is truthy.
+- Admin cosmetic touches (`NominationsAdminPanel.jsx`,
+  `CommitteeAdminDashboard.jsx`, `DocumentsAdminPage.jsx`): small,
+  contrast/style only. The `NominationsAdminPanel.jsx` fix is in fact
+  the exact gray-on-amber pattern flagged as a disclosed, deferred
+  follow-up during an earlier session's admin review — this closes
+  that out.
+- Verified several factual claims directly rather than trusting the
+  commit message: `950` genuinely isn't in the Tailwind color scale
+  (confirmed `tailwind.config.js` has no such shade — the earlier
+  `NominationDialog` scrim really was rendering transparent), Inter
+  genuinely is the brand guide's documented primary font (so the
+  detector-exception waiver is legitimate, not a shortcut), and the
+  claimed 22/40 → 38/40 impeccable critique scores are real, read
+  directly from the actual timestamped snapshot files in
+  `.impeccable/critique/`, not just asserted in prose.
+- Full branch (both commits together): `eslint` clean, `vite build`
+  clean, backend `node --check` clean.
+
+**Process note, not a blocker:** bundling a large, separately-decided
+feature into a different task's branch made this review substantially
+harder than it needed to be — the sensitive, security-relevant T35 fix
+was buried inside a 26-file, 2200-line diff alongside unrelated work.
+The work itself held up to full scrutiny, but worth asking that future
+"extra" work like this land on its own branch next time, even when
+it's explicitly authorized, so a security-relevant fix can be reviewed
+and merged on its own.
+
+No corrections needed in either piece. Approved and merged to `main`.
 
 ---
 
 ## T36 — Wire `PastPresidentsPage.jsx` to real data, remove fabricated names
+
 
 **Branch:** `task/t36-past-presidents-real-data`
 **Status:** unassigned

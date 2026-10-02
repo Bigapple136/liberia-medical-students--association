@@ -16,6 +16,16 @@ export const membershipService = {
     return response.data.application;
   },
 
+  /**
+   * Get the current user's dues history + derived summary
+   * (records, current outstanding record, outstanding_total, has_settled_record).
+   * Backs the portal profile's dues card (spec §4.4.3).
+   */
+  async getMyDues() {
+    const response = await api.get('/membership/dues/me');
+    return response.data.dues;
+  },
+
   // ─── Admin actions ──────────────────────────────────────────────────────
 
   /** List all applications (optional status filter: pending|approved|rejected) */
