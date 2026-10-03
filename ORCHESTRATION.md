@@ -769,7 +769,7 @@ thread, since that decision is explicitly still pending on Stone's end.
 | T33 | Accessibility pass: skip-to-content link + `impeccable audit` verification of toast/ARIA/contrast | none | **done** |
 | T34 | Homepage: replace hardcoded fake "Latest from LMSA" stories with real news data | none | **done** |
 | T35 | Fix login redirect: root-cause AuthContext race + role-based destination (student → Homepage, admin → Admin Dashboard) + personalized welcome | none | **done** |
-| T36 | Wire `PastPresidentsPage.jsx` to real `executive_positions` data (`status: completed`), remove fabricated names | none | **unassigned** |
+| T36 | Wire `PastPresidentsPage.jsx` to real `executive_positions` data (`status: completed`), remove fabricated names | none | **done** |
 
 **T22 flagged priority.** Render permanently blocks outbound SMTP ports
 (25/465/587) on free-tier web services since September 2025 — confirmed
@@ -6996,7 +6996,7 @@ No corrections needed in either piece. Approved and merged to `main`.
 
 
 **Branch:** `task/t36-past-presidents-real-data`
-**Status:** unassigned
+**Status:** done
 **Depends on:** none
 
 ### Context
@@ -7096,4 +7096,96 @@ the line is the correct, honest choice.
 
 ### Report
 
-*(agent fills in on completion)*
+**Done.** Fabricated leadership record removed; page now renders exclusively
+from real `executive_positions` data. **Stated plainly, per the brief:** this
+task wired the read path — it did **not** add or populate any past presidents,
+because none exist in the database. After this ships, the page will most
+likely show its honest empty state ("No past presidents on record yet") until
+an admin records real completed Presidencies through the existing
+`ExecutiveAdminPage` form. No replacement names were invented — that was the
+bug being fixed.
+
+**Backend**
+- `executive.controller.js` — new `getPastPresidents`: public, scoped to
+  `.eq('position_name', 'President').eq('status', 'completed')`, ordered
+  `academic_year` DESC, same `holder:user_id (...)` join + flatten as
+  `getAll`. Deliberately **not** an open `?status=` filter on `getAll` —
+  scoped like this the endpoint can only ever return completed Presidencies;
+  `impeached` and other statuses stay non-listable publicly.
+- `executive.routes.js` — `GET /executive/past-presidents`, public, static
+  path registered before any future `/:id` pattern so it can never be
+  captured as an id.
+
+**Frontend**
+- `executive.service.js` — `getPastPresidents()` matching `getAll`'s shape.
+- `PastPresidentsPage.jsx` — the hardcoded six-person array is gone (page
+  grep-verified: no fabricated names, no `achievement` strings). Rewritten in
+  `LeadershipPage`'s editorial pattern (`editorial-page` / section header /
+  card markup) with four distinct states: loading (spinner), error (inline
+  retry, keeps the page truthful), honest empty, populated. Card maps real
+  fields only: `holder_name` from the join (falls back to "Name not on
+  record" when `user_id` is null — a real possibility for older records),
+  `academic_year` as "{year} term", photo from `holder_photo_url` when
+  present. The fabricated **"achievement" line was dropped entirely**: the
+  only schema candidate is `users.bio`, a self-written *current* profile
+  description — using it as a term-achievement record would just be a
+  subtler fabrication.
+- One deliberate divergence from `LeadershipPage`: it falls back to
+  placeholder officer data on error/empty; this page does not — placeholder
+  people on a history page is the exact failure mode being fixed. Error gets
+  an honest retry instead.
+
+**Verification (actually run)**
+- `node --check` on both backend files → clean; route module imports cleanly.
+- `npx eslint src --ext js,jsx --report-unused-disable-directives
+  --max-warnings 0` (full sweep, as the criterion specifies) → clean, after
+  also removing the stale `eslint-disable` in `DocumentsAdminPage.jsx`
+  (pre-existing on this branch — same fix already shipped on the portal
+  branch).
+- `npm run build` → success.
+- Design detector on the page → 0 findings.
+
+**Not verifiable in this sandbox:** no live Supabase session, so the endpoint
+was not exercised against real rows — and there are no rows to exercise:
+`executive_positions` has zero `President`/`completed` entries today. The
+expected production behavior is the empty state shown above.
+
+**Suggested follow-up (not this task):** a data-entry pass to record real
+historical presidencies (with sources), and consider whether
+`ExecutiveAdminPage` needs a friendlier path for bulk historical entry.
+
+### Orchestrator review
+
+Independently verified on a fresh checkout of
+`origin/task/t36-past-presidents-real-data`: `npx eslint src --ext
+js,jsx --max-warnings 0` clean, `npm run build` clean, backend `node
+--check` clean on both touched files. Diff scoped almost exactly to
+the spec — the one extra line (removing the same stale
+`eslint-disable-next-line react-hooks/exhaustive-deps` comment from
+`DocumentsAdminPage.jsx` that the T35 portal bundle also independently
+removed) is identical in both places and merges without conflict.
+
+Read the new backend endpoint and route registration directly rather
+than trusting the report: `getPastPresidents` filters specifically to
+`position_name: 'President'` and `status: 'completed'`, not a general
+public status filter — matches the spec's explicit requirement not to
+expose e.g. `status=impeached` publicly. Confirmed the route itself is
+registered at a static path (`/past-presidents`) ahead of the file's
+`/:id` routes, so there's no Express path-matching hazard. Confirmed
+`'President'` really is the existing convention via
+`LeadershipPage.jsx`'s rank-1 officer label, not an assumption.
+
+`PastPresidentsPage.jsx`: confirmed the hardcoded array and every
+fabricated name are gone — grepped for the old names, zero hits. Loading,
+populated, error, and honest-empty states are all present and distinct.
+The old fake "achievement" field was dropped entirely rather than
+replaced with a substitute, exactly as instructed.
+
+Report is appropriately honest about what this task couldn't do: no
+live database to test against, and — more importantly — zero real
+historical president rows exist yet, so the page will show its empty
+state in production until someone actually enters real history through
+the admin panel. The report doesn't overclaim this as "populating" past
+presidents, which is exactly right.
+
+No corrections needed. Approved and merged to `main`.

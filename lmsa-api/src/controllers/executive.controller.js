@@ -50,6 +50,55 @@ export const getAll = async (req, res) => {
   }
 };
 
+// ─── GET /api/executive/past-presidents ───────────────────────────────────
+// Public — narrowly scoped: only completed Presidencies, most recent term
+// first. Deliberately NOT an open ?status= filter on getAll: 'impeached'
+// and other statuses should not be publicly listable. Scoped like this, the
+// endpoint can only ever return completed Presidents.
+export const getPastPresidents = async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from('executive_positions')
+      .select(`
+        *,
+        holder:user_id ( id, full_name, profile_photo_url, year_level )
+      `)
+      .eq('position_name', 'President')
+      .eq('status', 'completed')
+      .order('academic_year', { ascending: false });
+
+    if (error) {
+      return res.status(400).json({
+        success: false,
+        message: 'Failed to fetch past presidents',
+      });
+    }
+
+    // Flatten user data — same shape as getAll, so a past president's real
+    // name/photo comes from their user profile when one exists. A null
+    // user_id (someone who has since left the system entirely) flattens to
+    // nulls; the frontend falls back to an honest "not on record" label.
+    const positions = data.map(p => ({
+      ...p,
+      holder_name: p.holder?.full_name || null,
+      holder_photo_url: p.holder?.profile_photo_url || null,
+      holder_year_level: p.holder?.year_level || null,
+      holder: undefined,
+    }));
+
+    res.json({
+      success: true,
+      positions,
+    });
+  } catch (error) {
+    console.error('Get past presidents error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch past presidents',
+    });
+  }
+};
+
 // ─── GET /api/executive/admin/all ──────────────────────────────────────────
 // Admin-only — all positions regardless of status.
 export const getAllAdmin = async (req, res) => {
