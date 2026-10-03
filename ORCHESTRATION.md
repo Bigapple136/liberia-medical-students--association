@@ -769,7 +769,7 @@ thread, since that decision is explicitly still pending on Stone's end.
 | T33 | Accessibility pass: skip-to-content link + `impeccable audit` verification of toast/ARIA/contrast | none | **done** |
 | T34 | Homepage: replace hardcoded fake "Latest from LMSA" stories with real news data | none | **done** |
 | T35 | Fix login redirect: root-cause AuthContext race + role-based destination (student → Homepage, admin → Admin Dashboard) + personalized welcome | none | **unassigned** |
-| T36 | Wire `PastPresidentsPage.jsx` to real `executive_positions` data (`status: completed`), remove fabricated names | none | **unassigned** |
+| T36 | Wire `PastPresidentsPage.jsx` to real `executive_positions` data (`status: completed`), remove fabricated names | none | **done** |
 
 **T22 flagged priority.** Render permanently blocks outbound SMTP ports
 (25/465/587) on free-tier web services since September 2025 — confirmed
@@ -6588,7 +6588,7 @@ without checking first.
 ## T36 — Wire `PastPresidentsPage.jsx` to real data, remove fabricated names
 
 **Branch:** `task/t36-past-presidents-real-data`
-**Status:** unassigned
+**Status:** done
 **Depends on:** none
 
 ### Context
@@ -6745,3 +6745,39 @@ expected production behavior is the empty state shown above.
 **Suggested follow-up (not this task):** a data-entry pass to record real
 historical presidencies (with sources), and consider whether
 `ExecutiveAdminPage` needs a friendlier path for bulk historical entry.
+
+### Orchestrator review
+
+Independently verified on a fresh checkout of
+`origin/task/t36-past-presidents-real-data`: `npx eslint src --ext
+js,jsx --max-warnings 0` clean, `npm run build` clean, backend `node
+--check` clean on both touched files. Diff scoped almost exactly to
+the spec — the one extra line (removing the same stale
+`eslint-disable-next-line react-hooks/exhaustive-deps` comment from
+`DocumentsAdminPage.jsx` that the T35 portal bundle also independently
+removed) is identical in both places and merges without conflict.
+
+Read the new backend endpoint and route registration directly rather
+than trusting the report: `getPastPresidents` filters specifically to
+`position_name: 'President'` and `status: 'completed'`, not a general
+public status filter — matches the spec's explicit requirement not to
+expose e.g. `status=impeached` publicly. Confirmed the route itself is
+registered at a static path (`/past-presidents`) ahead of the file's
+`/:id` routes, so there's no Express path-matching hazard. Confirmed
+`'President'` really is the existing convention via
+`LeadershipPage.jsx`'s rank-1 officer label, not an assumption.
+
+`PastPresidentsPage.jsx`: confirmed the hardcoded array and every
+fabricated name are gone — grepped for the old names, zero hits. Loading,
+populated, error, and honest-empty states are all present and distinct.
+The old fake "achievement" field was dropped entirely rather than
+replaced with a substitute, exactly as instructed.
+
+Report is appropriately honest about what this task couldn't do: no
+live database to test against, and — more importantly — zero real
+historical president rows exist yet, so the page will show its empty
+state in production until someone actually enters real history through
+the admin panel. The report doesn't overclaim this as "populating" past
+presidents, which is exactly right.
+
+No corrections needed. Approved and merged to `main`.
