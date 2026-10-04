@@ -401,10 +401,17 @@ shortcut: `git diff main...arena/01a06232-liberia-medical-students-assoc
 
 Not done (flagged, not fixed — needs a decision or a specced task):
 
-1. **JoinCommitteePage still shows the fabricated committee list**
-   (invented names, openings, and deadlines) that the committees index
-   just dropped — needs the same registry treatment plus a decision on
-   where "openings/deadline" truth should come from.
+1. ~~**JoinCommitteePage still shows the fabricated committee list**~~
+   **Resolved, confirmed 2026-10-01.** `JoinCommitteePage.jsx` now
+   fetches real committees via `committeeService.getAll()` as primary
+   data; `committeeFallbackList` only fires in the `catch` branch (API
+   genuinely unreachable), explicitly without a fabricated deadline
+   (see its own comment). The fallback data itself uses the real
+   constitutional 12 names (re-keyed during the committee-data-reset
+   work), not the old generic placeholders. Openings/deadlines are
+   real too, sourced from `approved_count`/`openings`/
+   `application_deadline` on each committee (the recruitment-notice
+   integration work).
 2. ~~**Symposia data is still a hardcoded array**~~ **Resolved,
    confirmed 2026-09-28.** Both sides already exist: the public
    `/academics/symposia` page calls `eventService.getAll({ type:
@@ -6883,8 +6890,14 @@ portal flows (needs credentials) would close this gap.
   forwarding refs there would prevent future silent no-ops.
 - Footer's `Member Portal` link already existed; only its dead siblings were
   corrected.
-- Dues data and password change remain backend gaps; both seams are marked
-  in the UI and ready to absorb the endpoints when they land.
+- ~~Dues data and password change remain backend gaps~~ **Correction
+  (orchestrator, 2026-10-01): dues is not a gap** — `GET
+  /membership/dues/me` is real and already wired into
+  `ProfilePage.jsx`'s dues card (confirmed directly in
+  `membership.controller.js`/`membership.routes.js` during review);
+  this note appears to predate that endpoint landing. Password change
+  is still the genuine gap — `ProfilePage.jsx` honestly marks it
+  "coming soon" rather than faking a form.
 
 
 ### Orchestrator review
