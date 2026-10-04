@@ -777,6 +777,9 @@ thread, since that decision is explicitly still pending on Stone's end.
 | T34 | Homepage: replace hardcoded fake "Latest from LMSA" stories with real news data | none | **done** |
 | T35 | Fix login redirect: root-cause AuthContext race + role-based destination (student → Homepage, admin → Admin Dashboard) + personalized welcome | none | **done** |
 | T36 | Wire `PastPresidentsPage.jsx` to real `executive_positions` data (`status: completed`), remove fabricated names | none | **done** |
+| T37 | Consolidate every contact email onto `dev.lmsa@gmail.com` (one source of truth) | none | **unassigned** |
+| T38 | Add Veteran membership to the categories/dues pages (confirmed real) | none | **blocked — waiting on the annual fee (or confirmation it's free/by-invitation) from Stone** |
+| T39 | Committee Status (active/inactive) — build it properly: admin-only full list endpoint, `getBySlug` stops resolving inactive committees publicly, Status field actually persists | none | **unassigned** |
 
 **T22 flagged priority.** Render permanently blocks outbound SMTP ports
 (25/465/587) on free-tier web services since September 2025 — confirmed
@@ -7202,3 +7205,186 @@ the admin panel. The report doesn't overclaim this as "populating" past
 presidents, which is exactly right.
 
 No corrections needed. Approved and merged to `main`.
+
+---
+
+## T37 — Consolidate every contact email onto `dev.lmsa@gmail.com`
+
+**Branch:** `task/t37-contact-email-consolidation`
+**Status:** unassigned
+**Depends on:** none
+
+### Context
+
+Flagged as an open item back in the T30 addendum (four different
+addresses across three domain families), never specced until now.
+Stone confirmed the canonical, real, monitored address is
+`dev.lmsa@gmail.com`.
+
+Verified the current spread directly (`grep`, not memory) —
+8 occurrences across 7 files:
+
+- `dev.lmsa@gmail.com` (correct already): `Footer.jsx`,
+  `ContactPage.jsx`, `ProfilePage.jsx` (×2)
+- `support@lmsa.org.lr` (wrong, needs changing): `ErrorBoundary.jsx`,
+  `ForgotPasswordPage.jsx`, `LoginPage.jsx`, `ResetPasswordPage.jsx`
+- `partnerships@lmsa.org.lr` (wrong, needs changing):
+  `PartnershipPage.jsx`
+
+### What to build
+
+Don't just find-and-replace the literal strings — that fixes today's
+instances but does nothing to stop the same fragmentation from
+happening again the next time someone adds a new page with a contact
+link. Add a single source of truth and have every file import it,
+same pattern already established for `ADMIN_ROLES` in
+`utils/constants.js`.
+
+**`lmsa-website/src/utils/constants.js`** — add:
+```js
+export const CONTACT_EMAIL = 'dev.lmsa@gmail.com';
+```
+
+**Update all 7 files** to import `CONTACT_EMAIL` from
+`@utils/constants` and use it for both the `mailto:` href and the
+displayed address text, replacing every hardcoded literal (including
+the 3 files that already happen to have the right address — they
+should still go through the constant, not stay as hardcoded strings
+that happen to currently match).
+
+**`PartnershipPage.jsx`** specifically has a `mailto:` link with a
+`?subject=` query string
+(`mailto:partnerships@lmsa.org.lr?subject=Partnership%20enquiry`) —
+keep the subject line, just swap the address:
+`` `mailto:${CONTACT_EMAIL}?subject=Partnership%20enquiry` ``.
+
+### Acceptance criteria
+
+- [ ] `npx eslint src --ext js,jsx --max-warnings 0` — clean.
+- [ ] `npm run build` — clean.
+- [ ] Zero remaining hardcoded email-address literals across these 7
+      files — grep for `support@lmsa.org.lr` and
+      `partnerships@lmsa.org.lr` to confirm both are completely gone
+      from the codebase, and grep for `dev.lmsa@gmail.com` to confirm
+      it only appears once, in `constants.js`, with every other
+      occurrence now a `CONTACT_EMAIL` reference.
+- [ ] `PartnershipPage.jsx`'s subject-line query param still works
+      correctly with the new address.
+
+### Report
+
+*(agent fills in on completion)*
+
+---
+
+## T39 — Committee Status (active/inactive), built properly
+
+**Branch:** `task/t39-committee-status`
+**Status:** unassigned
+**Depends on:** none
+
+### Context
+
+Found during the recruitment-notice integration work (2026-09-27):
+the admin Committee Management Details tab has a Status
+(Active/Inactive) dropdown that does nothing — `status` is sent by
+the form but was never in the backend `update` whitelist, so the
+"Committee updated" toast is followed by no actual change. Flagged
+then as needing a decision rather than a quick fix, because a naive
+fix would be a trap: the admin's own committee picker loads through
+the *public* `GET /committees` endpoint, which filters to
+`status = 'active'` — so an admin who deactivates a committee would
+immediately lose it from their own admin list, with no way back in
+except direct Supabase access.
+
+Stone's decision: build it properly rather than just removing the
+dropdown. That means three things, not one.
+
+### 1. Backend — an admin-only endpoint that includes inactive committees
+
+Verified there's no existing admin-list variant for committees
+(unlike `news.controller.js`/`document.controller.js`/
+`executive.controller.js`, which all have a `getAllAdmin`
+alongside their public `getAll`). Add one, matching that established
+pattern exactly — see `news.controller.js`'s `getAllAdmin` for the
+shape to follow (admin-gated, no `status` filter by default so it
+returns everything, same ordering/join style the existing `getAll`
+already uses for `member_count`/`chair`).
+
+**`lmsa-api/src/controllers/committee.controller.js`** — add
+`getAllAdmin`, selecting all committees regardless of `status`
+(reuse the exact same `select` — including the `member_count`/`chair`
+join — `getAll` already has, so the admin list doesn't lose any data
+the current one has).
+
+**`lmsa-api/src/routes/committee.routes.js`** — register it as
+`GET /committees/admin/all`, behind the existing `isAdmin` array used
+everywhere else in this file. Keep the existing public
+`GET /committees` exactly as is (still active-only) — this task adds
+a second endpoint, it doesn't change the public one's behavior.
+
+### 2. Backend — make the Status field actually persist, and fix `getBySlug`
+
+**`lmsa-api/src/controllers/committee.controller.js`**'s `update`
+function — add `status` to the destructured fields pulled from
+`req.body` and to the `.update({...})` object, same place
+`openings`/`accepting_applications`/`application_deadline` were added
+previously. This is the actual original bug — the dropdown sends a
+value that's never been saved.
+
+Related gap, same root cause, found during the same review:
+`getBySlug` (the public committee detail page's data source) doesn't
+filter by `status` at all today — a deactivated committee's page
+would still resolve by URL even though it no longer appears in any
+public listing. Fix `getBySlug` to return 404 for a committee whose
+`status` isn't `'active'`, same as how a removed/draft piece of
+content should behave — don't rely on the frontend to hide this,
+enforce it server-side.
+
+### 3. Frontend — admin list uses the new endpoint, shows status clearly
+
+**`lmsa-website/src/services/committee.service.js`** — add a
+`getAllAdmin()` method calling the new endpoint, matching the existing
+`getAll()`'s shape.
+
+**`lmsa-website/src/pages/admin/CommitteeAdminDashboard.jsx`** —
+switch the committee-list load from `committeeService.getAll()` to
+`committeeService.getAllAdmin()`, so a deactivated committee stays
+visible and manageable (the whole point of this task — an admin must
+be able to find and reactivate something they turned off). Give each
+committee in the admin picker list a visible, honest indicator of its
+current status (an inactive one shouldn't look identical to an active
+one in the list — a small badge or dimmed treatment is enough, this
+doesn't need to be elaborate).
+
+### Acceptance criteria
+
+- [ ] `npx eslint src --ext js,jsx --max-warnings 0` — clean.
+- [ ] `npm run build` — clean.
+- [ ] Backend: `node --check` clean on every touched file.
+- [ ] New admin-list endpoint is genuinely admin-gated (same `isAdmin`
+      array used elsewhere in this route file) — not publicly
+      reachable.
+- [ ] The existing public `GET /committees` endpoint's behavior is
+      unchanged (still active-only) — this task adds a new endpoint,
+      it does not alter that one.
+- [ ] Changing a committee's Status in the admin Details tab and
+      saving actually persists — describe how this was verified
+      (reasoning through the save path is fine if a live click-through
+      isn't possible in this sandbox, but say so explicitly).
+- [ ] A deactivated committee no longer vanishes from the admin's own
+      picker list, and is visually distinguishable from an active one
+      there.
+- [ ] `getBySlug` returns 404 for a non-active committee; confirm the
+      frontend's existing "not found" handling on
+      `CommitteePageTemplate.jsx` renders sensibly for this case
+      rather than crashing (it already has a not-found path for an
+      unrecognized slug — confirm an inactive one hits the same path,
+      don't build a new one if the existing one already covers it).
+- [ ] Report states plainly what could and couldn't be verified from
+      this sandbox (no live Supabase session, no browser) — same
+      standard as every task on this board.
+
+### Report
+
+*(agent fills in on completion)*
