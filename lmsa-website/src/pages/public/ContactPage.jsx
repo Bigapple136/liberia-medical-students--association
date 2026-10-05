@@ -5,6 +5,7 @@ import Button from '@components/common/Button';
 import Input from '@components/common/Input';
 import Card from '@components/common/Card';
 import { contactService } from '@services/contact.service';
+import { CONTACT_EMAIL } from '@utils/constants';
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -84,8 +85,8 @@ export default function ContactPage() {
                     <Mail size={20} className="text-lmsa-600 flex-shrink-0 mt-1" />
                     <div>
                       <h3 className="font-semibold text-lg mb-2">Email</h3>
-                      <a href="mailto:dev.lmsa@gmail.com" className="text-lmsa-600 hover:text-lmsa-700 transition-colors duration-200">
-                        dev.lmsa@gmail.com
+                      <a href={`mailto:${CONTACT_EMAIL}`} className="text-lmsa-600 hover:text-lmsa-700 transition-colors duration-200">
+                        {CONTACT_EMAIL}
                       </a>
                     </div>
                   </div>

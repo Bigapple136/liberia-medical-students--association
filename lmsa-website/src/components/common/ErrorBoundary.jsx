@@ -2,6 +2,7 @@ import { Component } from 'react';
 import { AlertTriangle, RefreshCw, Home } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Button from '@components/common/Button';
+import { CONTACT_EMAIL } from '@utils/constants';
 
 export class ErrorBoundary extends Component {
   constructor(props) {
@@ -68,8 +69,8 @@ export class ErrorBoundary extends Component {
             <div className="mt-8 p-4 bg-gray-100 rounded-lg">
               <p className="text-sm text-gray-600">
                 <strong>Need help?</strong> Contact us at{' '}
-                <a href="mailto:support@lmsa.org.lr" className="text-lmsa-600 hover:underline">
-                  support@lmsa.org.lr
+                <a href={`mailto:${CONTACT_EMAIL}`} className="text-lmsa-600 hover:underline">
+                  {CONTACT_EMAIL}
                 </a>
               </p>
             </div>
