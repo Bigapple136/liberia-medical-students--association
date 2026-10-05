@@ -75,12 +75,22 @@ export default function CommitteePageTemplate() {
       let data;
       try {
         data = await committeeService.getBySlug(slug);
-      } catch {
-        // Use static fallback data while DB is being set up. An unknown
-        // slug must yield null so the Not Found state renders — spreading
-        // undefined would fabricate a blank but "truthy" committee.
-        const fallback = ALL_COMMITTEES_DATA[slug];
-        data = fallback ? { ...fallback, slug, id: slug, status: 'active', unavailable: true } : null;
+      } catch (err) {
+        // A 404 is the API's authoritative answer that no *active* committee
+        // has this slug — an unknown slug, or one an admin deactivated (T39).
+        // Yield null so the Not Found state renders: falling back to the
+        // bundled static data here would resurrect a deactivated committee's
+        // page from stale content. The static fallback stays only for other
+        // failures (API unreachable / offline setup mode).
+        if (err?.response?.status === 404) {
+          data = null;
+        } else {
+          // Use static fallback data while DB is being set up. An unknown
+          // slug must yield null so the Not Found state renders — spreading
+          // undefined would fabricate a blank but "truthy" committee.
+          const fallback = ALL_COMMITTEES_DATA[slug];
+          data = fallback ? { ...fallback, slug, id: slug, status: 'active', unavailable: true } : null;
+        }
       }
       setCommittee(data);
       if (!data) return;

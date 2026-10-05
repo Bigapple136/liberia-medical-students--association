@@ -70,7 +70,10 @@ export default function CommitteeAdminDashboard() {
 
   async function loadCommittees() {
     try {
-      const data = await committeeService.getAll();
+      // getAllAdmin, not getAll: the public endpoint filters to active-only,
+      // which would make a committee an admin just deactivated vanish from
+      // this picker with no way to find or reactivate it (T39).
+      const data = await committeeService.getAllAdmin();
       const parsed = data.map(c => ({
         ...c,
         mandate: typeof c.mandate === 'string' ? JSON.parse(c.mandate) : (c.mandate || []),
@@ -130,14 +133,21 @@ export default function CommitteeAdminDashboard() {
                   isActive
                     ? 'bg-lmsa-50 text-lmsa-700 border-r-2 border-lmsa-600'
                     : 'text-gray-600 hover:bg-gray-50'
-                }`}
+                } ${c.status !== 'active' ? 'opacity-70' : ''}`}
               >
                 <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${isActive ? 'bg-lmsa-600' : 'bg-gray-100'}`}>
                   <Icon size={16} className={isActive ? 'text-white' : 'text-gray-500'} />
                 </div>
                 {sidebarOpen && (
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium truncate">{c.name}</p>
+                    <p className="text-sm font-medium truncate">
+                      {c.name}
+                      {c.status !== 'active' && (
+                        <span className="ml-1.5 inline-block px-1.5 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wide bg-gray-100 text-gray-500 align-middle">
+                          Inactive
+                        </span>
+                      )}
+                    </p>
                     <p className="text-xs text-gray-400">{c.member_count || 0} members</p>
                   </div>
                 )}
