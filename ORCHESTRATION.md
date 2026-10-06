@@ -5499,11 +5499,11 @@ don't claim a browser pass happened if it didn't.
 
 *(agent fills in on completion)*
 
-## T34 — Portal app shell: make /portal a real application
+## T40 — Portal app shell: make /portal a real application
 
-**Branch:** `task/portal-app-shell`
+**Branch:** `task/t40-portal-app-shell`
 **Status:** done
-**Depends on:** T30 (portal dashboard real data)
+**Depends on:** T16 (real student dashboard stats)
 
 ### What changed
 
