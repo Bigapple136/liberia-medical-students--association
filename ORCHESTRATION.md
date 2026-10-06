@@ -7432,3 +7432,22 @@ doesn't need to be elaborate).
 ### Report
 
 *(agent fills in on completion)*
+
+### Orchestrator review
+
+Independently verified on a fresh checkout of
+`origin/task/t37-contact-email-consolidation`: `npx eslint src --ext
+js,jsx --max-warnings 0` clean, `npm run build` clean. Re-ran both
+acceptance greps myself rather than trusting the report — zero
+remaining instances of either wrong address, `dev.lmsa@gmail.com`
+appears exactly once, in `constants.js`. Read every one of the eight
+file diffs individually: all nine consistently use the same
+`CONTACT_EMAIL` import and template-literal pattern, `PartnershipPage.jsx`'s
+subject-line query param preserved correctly. The report's correction
+to my own spec's rough count (8 occurrences → really 17 individual
+lines once href + visible text are both counted) is accurate and a
+fair clarification, not a discrepancy worth sending back for. Leaving
+the historical `support@lmsa.org.lr` mention in `docs/13-member-portal-spec.md`
+alone was the right call — documentation prose, not runtime code.
+
+No corrections needed. Approved and merged to `main`.
