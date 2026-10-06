@@ -5529,7 +5529,7 @@ Code (lmsa-website):
      only existing destination (Dashboard); roadmap items (My Events, Resources,
      Dues, Applications) render as disabled rows with "Soon" chips (confirmed
      shape decision) — no dead 404 links; "More, coming soon" caption group.
-   - Support links: Help & contact → `/contact` (uses the T37 CONTACT_EMAIL page),
+   - Support links: Help & contact → `/contact` (which sends to the consolidated CONTACT_EMAIL address — see the contact-email consolidation branch),
      Back to LMSA site → `/`.
    - Identity block pinned bottom: initials avatar (name → email → "?" fallbacks),
      full name with truncation, membership `StatusChip`, Sign out (existing
