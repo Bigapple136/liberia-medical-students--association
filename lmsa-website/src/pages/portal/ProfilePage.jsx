@@ -10,6 +10,7 @@ import StatusBadge from '@components/common/StatusBadge';
 import { useAuth } from '@context/AuthContext';
 import { userService } from '@services/user.service';
 import { membershipService } from '@services/membership.service';
+import { CONTACT_EMAIL } from '@utils/constants';
 
 const profileSchema = z.object({
   full_name: z
@@ -291,7 +292,7 @@ export default function ProfilePage() {
             <p className="text-sm text-gray-600">
               Your membership status is unavailable right now.{' '}
               <a
-                href="mailto:dev.lmsa@gmail.com"
+                href={`mailto:${CONTACT_EMAIL}`}
                 className="font-semibold text-lmsa-700 underline underline-offset-2 hover:no-underline"
               >
                 Contact us
@@ -393,10 +394,10 @@ export default function ProfilePage() {
               <p className="mt-1 text-sm text-gray-600 max-w-prose">
                 Password changes are coming soon. Need to change it now? Email{' '}
                 <a
-                  href="mailto:dev.lmsa@gmail.com"
+                  href={`mailto:${CONTACT_EMAIL}`}
                   className="font-semibold text-lmsa-700 underline underline-offset-2 hover:no-underline"
                 >
-                  dev.lmsa@gmail.com
+                  {CONTACT_EMAIL}
                 </a>{' '}
                 and we&apos;ll help you reset it.
               </p>

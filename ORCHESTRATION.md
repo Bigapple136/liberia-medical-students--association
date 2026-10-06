@@ -777,7 +777,7 @@ thread, since that decision is explicitly still pending on Stone's end.
 | T34 | Homepage: replace hardcoded fake "Latest from LMSA" stories with real news data | none | **done** |
 | T35 | Fix login redirect: root-cause AuthContext race + role-based destination (student → Homepage, admin → Admin Dashboard) + personalized welcome | none | **done** |
 | T36 | Wire `PastPresidentsPage.jsx` to real `executive_positions` data (`status: completed`), remove fabricated names | none | **done** |
-| T37 | Consolidate every contact email onto `dev.lmsa@gmail.com` (one source of truth) | none | **unassigned** |
+| T37 | Consolidate every contact email onto `dev.lmsa@gmail.com` (one source of truth) | none | **done** |
 | T38 | Add Veteran membership to the categories/dues pages (confirmed real) | none | **blocked — waiting on the annual fee (or confirmation it's free/by-invitation) from Stone** |
 | T39 | Committee Status (active/inactive) — build it properly: admin-only full list endpoint, `getBySlug` stops resolving inactive committees publicly, Status field actually persists | none | **unassigned** |
 
@@ -7211,7 +7211,7 @@ No corrections needed. Approved and merged to `main`.
 ## T37 — Consolidate every contact email onto `dev.lmsa@gmail.com`
 
 **Branch:** `task/t37-contact-email-consolidation`
-**Status:** unassigned
+**Status:** done
 **Depends on:** none
 
 ### Context
@@ -7273,7 +7273,51 @@ keep the subject line, just swap the address:
 
 ### Report
 
-*(agent fills in on completion)*
+**Status:** unassigned → done
+**Branch:** `task/t37-contact-email-consolidation`
+
+#### What changed
+
+1. **`lmsa-website/src/utils/constants.js`** — added the single source of
+   truth: `export const CONTACT_EMAIL = 'dev.lmsa@gmail.com';`
+2. **All 8 files** now import `CONTACT_EMAIL` from `@utils/constants`
+   and use it for both the `mailto:` href and the displayed address text:
+   `Footer.jsx`, `ContactPage.jsx`, `ProfilePage.jsx` (both links),
+   `ErrorBoundary.jsx`, `ForgotPasswordPage.jsx`, `LoginPage.jsx`,
+   `ResetPasswordPage.jsx`, `PartnershipPage.jsx`. `LoginPage.jsx` already
+   imported `ADMIN_ROLES` from that module, so its existing import was
+   extended rather than duplicated.
+3. **`PartnershipPage.jsx`** keeps its subject line — now
+   `` `mailto:${CONTACT_EMAIL}?subject=Partnership%20enquiry` ``, which
+   evaluates to `mailto:dev.lmsa@gmail.com?subject=Partnership%20enquiry`
+   (verified by evaluating the template).
+
+#### Verification (run in `lmsa-website`)
+
+- `npx eslint src --ext js,jsx --max-warnings 0` — clean (exit 0).
+- `npm run build` — clean (exit 0).
+- `grep -rn "support@lmsa.org.lr\|partnerships@lmsa.org.lr" src/` — no
+  matches; both wrong addresses are gone from application code.
+- `grep -rn "dev.lmsa@gmail.com" src/` — exactly one match, the constant
+  in `src/utils/constants.js`; every other occurrence is a
+  `CONTACT_EMAIL` reference (hrefs and displayed text).
+- Repo-wide grep over `*.js`/`*.jsx`/`*.html`/`*.json` (excluding
+  `node_modules`/`dist`/`.git`): the only hit anywhere is the constant
+  itself.
+
+#### Deviations from spec
+
+- None functionally. One count correction for the record: the spec's
+  "8 occurrences across 7 files" was an undercount — a line-level grep
+  showed 17 literal lines across 8 files (every mailto link carries the
+  address in both the href and the visible text; ProfilePage has two
+  links). All 17 were replaced; the acceptance greps above are the
+  operative check.
+- Left untouched on purpose: `docs/13-member-portal-spec.md` (line 95)
+  still quotes `support@lmsa.org.lr` as historical spec prose, and this
+  file's own T30/T37 sections name the old addresses when describing the
+  problem. Documentation records, not runtime code — the codebase-wide
+  code-file grep confirms zero remaining hits in any source file.
 
 ---
 
@@ -7388,3 +7432,22 @@ doesn't need to be elaborate).
 ### Report
 
 *(agent fills in on completion)*
+
+### Orchestrator review
+
+Independently verified on a fresh checkout of
+`origin/task/t37-contact-email-consolidation`: `npx eslint src --ext
+js,jsx --max-warnings 0` clean, `npm run build` clean. Re-ran both
+acceptance greps myself rather than trusting the report — zero
+remaining instances of either wrong address, `dev.lmsa@gmail.com`
+appears exactly once, in `constants.js`. Read every one of the eight
+file diffs individually: all nine consistently use the same
+`CONTACT_EMAIL` import and template-literal pattern, `PartnershipPage.jsx`'s
+subject-line query param preserved correctly. The report's correction
+to my own spec's rough count (8 occurrences → really 17 individual
+lines once href + visible text are both counted) is accurate and a
+fair clarification, not a discrepancy worth sending back for. Leaving
+the historical `support@lmsa.org.lr` mention in `docs/13-member-portal-spec.md`
+alone was the right call — documentation prose, not runtime code.
+
+No corrections needed. Approved and merged to `main`.

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Facebook, Twitter, Instagram, Mail, Phone, MapPin, ExternalLink } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { newsletterService } from '@services/newsletter.service';
+import { CONTACT_EMAIL } from '@utils/constants';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -59,8 +60,8 @@ export default function Footer() {
               </div>
               <div>
                 <Mail size={16} aria-hidden="true" />
-                <a href="mailto:dev.lmsa@gmail.com" className="hover:text-lmsa-400 transition-colors duration-200">
-                  dev.lmsa@gmail.com
+                <a href={`mailto:${CONTACT_EMAIL}`} className="hover:text-lmsa-400 transition-colors duration-200">
+                  {CONTACT_EMAIL}
                 </a>
               </div>
               <div>
