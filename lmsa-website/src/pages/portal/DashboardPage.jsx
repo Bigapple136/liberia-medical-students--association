@@ -1,17 +1,22 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { AlertCircle, ArrowRight, Calendar, Clock, MapPin, Newspaper } from 'lucide-react';
+import {
+  AlertCircle,
+  ArrowRight,
+  Calendar,
+  Clock,
+  MapPin,
+  Newspaper,
+  Ticket,
+  Users,
+} from 'lucide-react';
 import { useAuth } from '@context/AuthContext';
 import { ADMIN_ROLES } from '@utils/constants';
 import Card from '@components/common/Card';
+import StatusChip from '@components/common/StatusChip';
 import { dashboardService } from '@services/dashboard.service';
 import { eventService } from '@services/event.service';
 import { newsService } from '@services/news.service';
-
-function formatStatus(status) {
-  if (!status) return null;
-  return status.charAt(0).toUpperCase() + status.slice(1);
-}
 
 function formatDate(dateStr) {
   if (!dateStr) return '';
@@ -20,6 +25,15 @@ function formatDate(dateStr) {
     day: 'numeric',
     year: 'numeric',
   });
+}
+
+function formatMonthDay(dateStr) {
+  if (!dateStr) return { day: '', month: '' };
+  const d = new Date(dateStr);
+  return {
+    day: d.toLocaleDateString('en-US', { day: 'numeric' }),
+    month: d.toLocaleDateString('en-US', { month: 'short' }),
+  };
 }
 
 function RowSkeleton() {
@@ -84,19 +98,21 @@ export default function DashboardPage() {
     loadDashboard();
   }, [loadDashboard]);
 
-  const membershipStatus = stats ? formatStatus(stats.membership_status) : null;
+  // The page's lead element: membership status + one truthful action.
+  // No status on a loaded account means the member hasn't applied yet —
+  // offer the application form instead of a dead dash.
+  const hasStatus = Boolean(stats?.membership_status);
+  const leadAction =
+    !loading && stats && !hasStatus
+      ? { label: 'Apply for membership', to: '/membership#apply' }
+      : null;
 
+  // Secondary stats: only the card with a real, existing destination is
+  // clickable (same honesty rule as the shell's Soon chips).
   const statCards = [
-    {
-      label: 'Membership Status',
-      value: membershipStatus || (stats ? null : undefined),
-      accent: 'text-lmsa-600',
-      // stats loaded but no status -> show apply link instead of a dead dash
-      emptyAction: stats && !membershipStatus ? { label: 'Apply for membership', to: '/membership#apply' } : null,
-    },
-    { label: 'Events Registered', value: stats ? stats.events_registered_count : undefined, accent: '' },
-    { label: 'My Committees', value: stats ? stats.committees_count : undefined, accent: '' },
-    { label: 'Upcoming LMSA Events', value: upcomingSiteEvents ?? undefined, accent: 'text-blue-600' },
+    { label: 'Events Registered', value: stats ? stats.events_registered_count : undefined, icon: Ticket, to: null },
+    { label: 'My Committees', value: stats ? stats.committees_count : undefined, icon: Users, to: null },
+    { label: 'Upcoming LMSA Events', value: upcomingSiteEvents ?? undefined, icon: Calendar, to: '/events' },
   ];
 
   return (
@@ -124,22 +140,74 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {/* ── Quick Stats ──────────────────────────────────────────────────── */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-6 sm:mb-8">
-        {statCards.map(({ label, value, accent, emptyAction }) => (
-          <Card key={label} className="p-4 sm:p-6">
-            <h3 className="text-sm font-medium text-gray-600 mb-1">{label}</h3>
-            {loading ? (
-              <div className="h-7 w-16 animate-pulse rounded bg-gray-100" aria-hidden="true" />
-            ) : emptyAction ? (
-              <Link to={emptyAction.to} className="inline-block text-sm font-semibold text-lmsa-700 underline underline-offset-2 hover:no-underline">
-                {emptyAction.label}
-              </Link>
-            ) : (
-              <p className={`text-xl sm:text-2xl font-bold ${accent}`}>{value ?? '—'}</p>
-            )}
-          </Card>
-        ))}
+      {/* ── Membership status (lead) ─────────────────────────────────────── */}
+      <section aria-labelledby="membership-status-heading" className="mb-6 sm:mb-8">
+        <h2 id="membership-status-heading" className="sr-only">Membership status</h2>
+        <div className="rounded-xl border-2 border-lmsa-600 bg-white p-4 sm:p-6 shadow-sm">
+          {loading ? (
+            <>
+              <div className="flex items-center justify-between gap-4">
+                <div className="h-7 w-36 animate-pulse rounded-full bg-gray-100" aria-hidden="true" />
+                <div className="h-6 w-24 animate-pulse rounded bg-gray-100" aria-hidden="true" />
+              </div>
+              <span className="sr-only" role="status">Loading your membership status…</span>
+            </>
+          ) : (
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <h3 className="text-sm font-medium text-gray-600">Membership Status</h3>
+                <StatusChip status={stats ? stats.membership_status : undefined} size="lg" />
+              </div>
+              {leadAction && (
+                <Link
+                  to={leadAction.to}
+                  className="inline-flex min-h-[44px] items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold text-lmsa-700 underline underline-offset-2 hover:no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600"
+                >
+                  {leadAction.label}
+                  <ArrowRight size={14} aria-hidden="true" />
+                </Link>
+              )}
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* ── Secondary stats ──────────────────────────────────────────────── */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-6 mb-6 sm:mb-8">
+        {statCards.map(({ label, value, icon: Icon, to }) => {
+          const body = (
+            <>
+              <div className="flex items-center justify-between gap-2">
+                <h3 className="text-sm font-medium text-gray-600">{label}</h3>
+                <Icon size={18} className="text-gray-400" aria-hidden="true" />
+              </div>
+              {loading ? (
+                <div className="mt-1 h-7 w-16 animate-pulse rounded bg-gray-100" aria-hidden="true" />
+              ) : (
+                <p className="mt-1 text-xl sm:text-2xl font-bold text-gray-900">{value ?? '—'}</p>
+              )}
+            </>
+          );
+
+          return (
+            <Card key={label} className="p-4 sm:p-6">
+              {to ? (
+                <Link
+                  to={to}
+                  className="group block rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
+                >
+                  {body}
+                  <span className="mt-2 inline-flex min-h-[44px] items-center gap-1 text-sm font-semibold text-lmsa-600 group-hover:text-lmsa-700">
+                    View events
+                    <ArrowRight size={14} aria-hidden="true" />
+                  </span>
+                </Link>
+              ) : (
+                body
+              )}
+            </Card>
+          );
+        })}
       </div>
 
       {/* ── My Upcoming Events ───────────────────────────────────────────── */}
@@ -171,7 +239,7 @@ export default function DashboardPage() {
         ) : myEvents.length === 0 ? (
           <Card>
             <div className="text-center py-6">
-              <Calendar size={32} className="mx-auto text-gray-400 mb-3" />
+              <Calendar size={32} className="mx-auto text-gray-500 mb-3" />
               <p className="text-gray-600 mb-1">No upcoming events registered</p>
               <p className="text-sm text-gray-500">
                 Browse{' '}
@@ -185,9 +253,18 @@ export default function DashboardPage() {
         ) : (
           <div className="space-y-4">
             {myEvents.map(event => {
+              const { day, month } = formatMonthDay(event.start_datetime);
               const body = (
-                <div className="flex items-start gap-3">
-                  <Calendar size={20} className="text-lmsa-600 flex-shrink-0 mt-1" aria-hidden="true" />
+                <div className="flex items-start gap-3 sm:gap-4">
+                  <div
+                    className="flex h-14 w-14 shrink-0 flex-col items-center justify-center rounded-xl bg-lmsa-50 text-center"
+                    aria-hidden="true"
+                  >
+                    <span className="text-lg font-bold leading-none text-lmsa-800">{day || '·'}</span>
+                    <span className="mt-0.5 text-[11px] font-semibold uppercase tracking-wide text-lmsa-700">
+                      {month || '—'}
+                    </span>
+                  </div>
                   <div className="flex-1 min-w-0">
                     <h3 className="font-semibold text-lg">{event.title}</h3>
                     <div className="flex flex-wrap gap-2 sm:gap-3 text-sm text-gray-600 mt-1">
@@ -203,13 +280,13 @@ export default function DashboardPage() {
                       )}
                     </div>
                   </div>
-                  {event.slug && <ArrowRight size={16} className="mt-1 flex-shrink-0 text-gray-400" aria-hidden="true" />}
+                  {event.slug && <ArrowRight size={16} className="mt-1 flex-shrink-0 text-gray-500" aria-hidden="true" />}
                 </div>
               );
               return (
                 <Card key={event.id} className="p-4 sm:p-6">
                   {event.slug ? (
-                    <Link to={`/events/${event.slug}`} className="block focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2">
+                    <Link to={`/events/${event.slug}`} className="block rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2">
                       {body}
                     </Link>
                   ) : (
@@ -251,7 +328,7 @@ export default function DashboardPage() {
         ) : newsPosts.length === 0 ? (
           <Card>
             <div className="text-center py-6">
-              <Newspaper size={32} className="mx-auto text-gray-400 mb-3" />
+              <Newspaper size={32} className="mx-auto text-gray-500 mb-3" />
               <p className="text-gray-600">No news posts yet</p>
             </div>
           </Card>
@@ -259,12 +336,12 @@ export default function DashboardPage() {
           <div className="space-y-4">
             {newsPosts.map(post => (
               <Card key={post.id} className="p-4 sm:p-6">
-                <Link to={`/news/${post.slug}`} className="block focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2">
-                  <h3 className="font-semibold text-lg mb-1">{post.title}</h3>
-                  <p className="text-gray-600 text-sm line-clamp-2">{post.excerpt || post.content?.slice(0, 150)}</p>
-                  <p className="text-xs text-gray-500 mt-2">
+                <Link to={`/news/${post.slug}`} className="block rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2">
+                  <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
                     {formatDate(post.published_at || post.created_at)}
                   </p>
+                  <h3 className="mt-1 font-semibold text-lg">{post.title}</h3>
+                  <p className="text-gray-600 text-sm line-clamp-2">{post.excerpt || post.content?.slice(0, 150)}</p>
                 </Link>
               </Card>
             ))}

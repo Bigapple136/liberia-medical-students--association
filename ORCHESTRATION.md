@@ -5573,3 +5573,64 @@ routes, services, public site.
   `.impeccable/surfaces/portal-shell.md`; dashboard hierarchy pass deliberately
   deferred (user chose shell-first, shape-then-build).
 
+
+## T41 — Portal dashboard hierarchy: status-led recomposition
+
+**Branch:** `task/t41-portal-dashboard-hierarchy`
+**Status:** done
+**Depends on:** T40 (portal app shell — branches from it; `StatusChip` lives there)
+
+### What changed
+
+Second half of the portal UX work, via `impeccable shape` → build (brief approved by
+the user; persisted at `.impeccable/surfaces/portal-dashboard-hierarchy.md`). Closes
+the critique's P1 "zero hierarchy on the dashboard" finding.
+
+1. `lmsa-website/src/pages/portal/DashboardPage.jsx` — hierarchy recomposition:
+   - **Lead: membership status panel** — full-width card with the system's 2px green
+     border on white (green-tint chip needs a neutral ground), large `StatusChip
+     size="lg"`, `aria-labelledby` section. Contextual action only when truthful:
+     status missing on a loaded account → "Apply for membership" →
+     `/membership#apply` (promotes the old `emptyAction` logic; the dead-dash case
+     is gone).
+   - **Secondary stat strip** — 3-up (`sm:grid-cols-3`): Events Registered (ticket
+     icon), My Committees (users icon), Upcoming LMSA Events (calendar icon, the
+     only clickable card → `/events` with a "View events" affordance). The other
+     two stay non-clickable until their portal sections exist — same honesty rule
+     as the shell's Soon chips. All values still render `—` when unavailable, never
+     fake zeros.
+   - **My Upcoming Events** — app-style date tiles (day number + month block,
+     green tint) replace the bare calendar icon; link semantics, time/location
+     meta, and all error/empty states unchanged.
+   - **Recent News** — consistency restyle only: date as small-caps caption above
+     the title.
+   - Preserved verbatim: the `justLoggedIn` admin-redirect comment/logic, the
+     `Promise.allSettled` loader, partial-error banner, per-section retry, all
+     skeletons, all empty states. Removed: now-dead `formatStatus` helper
+     (superseded by `StatusChip`).
+2. `lmsa-website/src/components/common/StatusChip.jsx` — additive `size` prop
+   (`sm` default = existing chip exactly; `lg` for the lead panel: larger padding,
+   text, dot). No breaking change to the shell's usage.
+
+### Verification
+
+- `npx eslint src/pages/portal/DashboardPage.jsx src/components/common/StatusChip.jsx` → exit 0
+- `npm run build` → exit 0 (captured with explicit exit status; pre-existing
+  >500kB chunk warning only). First run caught a real parsing error (missing
+  JSX fragment in the lead panel's loading branch) — fixed, re-verified clean.
+- One batched self-inspection + one confirm round, then stopped per the skill's
+  bounded-verification ceiling.
+
+### What could NOT be verified from this sandbox
+
+- No live Supabase session → visual hierarchy, chip colors per status, date tiles
+  with real event data verified by code reasoning only (same limitation as T40,
+  disclosed in its Report block).
+
+### Deviations from spec
+
+- Brief's lead-panel wording said "green tint + 2px green border"; implemented as
+  2px green border on **white** (no tint): the chip itself is a green tint, and a
+  tint-on-tint panel would erase its contrast. Recorded here per the craft floor's
+  contrast rule; all other brief points implemented as written.
+
