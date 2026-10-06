@@ -101,7 +101,7 @@ export default function NominationDialog({
           <button
             type="button"
             onClick={onClose}
-            className="text-gray-400 transition hover:text-lmsa-900"
+            className="text-gray-500 transition hover:text-lmsa-900"
             aria-label="Close nomination form"
           >
             <X size={22} />

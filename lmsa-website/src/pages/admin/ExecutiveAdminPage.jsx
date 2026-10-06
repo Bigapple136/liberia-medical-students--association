@@ -242,7 +242,7 @@ export default function ExecutiveAdminPage() {
             <h2 className="font-bold text-gray-900">
               {editingId ? 'Edit Position' : 'Create Position'}
             </h2>
-            <button onClick={() => { setShowForm(false); setEditingId(null); }} className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400">
+            <button aria-label="Close" onClick={() => { setShowForm(false); setEditingId(null); }} className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500">
               <X size={18} />
             </button>
           </div>
@@ -274,7 +274,7 @@ export default function ExecutiveAdminPage() {
             <div className="relative">
               <Label>Assign User (optional)</Label>
               <div className="relative">
-                <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
                 <input
                   className="input pl-9"
                   placeholder="Search by name or email..."
@@ -282,7 +282,7 @@ export default function ExecutiveAdminPage() {
                   onChange={e => handleUserSearch(e.target.value)}
                 />
                 {searchingUsers && (
-                  <Loader size={14} className="absolute right-3 top-1/2 -translate-y-1/2 animate-spin text-gray-400" />
+                  <Loader size={14} className="absolute right-3 top-1/2 -translate-y-1/2 animate-spin text-gray-500" />
                 )}
               </div>
               {userResults.length > 0 && !selectedUser && (
@@ -299,7 +299,7 @@ export default function ExecutiveAdminPage() {
                       </div>
                       <div>
                         <p className="font-medium text-gray-900">{user.full_name}</p>
-                        <p className="text-xs text-gray-400">{user.email}</p>
+                        <p className="text-xs text-gray-500">{user.email}</p>
                       </div>
                     </button>
                   ))}
@@ -309,7 +309,7 @@ export default function ExecutiveAdminPage() {
                 <div className="mt-2 flex items-center gap-2 px-3 py-2 bg-lmsa-50 rounded-lg text-sm">
                   <User size={14} className="text-lmsa-600" />
                   <span className="font-medium text-lmsa-800">{selectedUser.full_name}</span>
-                  <button
+                  <button aria-label="Clear selected user"
                     type="button"
                     onClick={() => { setSelectedUser(null); setUserSearch(''); setForm(f => ({ ...f, user_id: '' })); }}
                     className="ml-auto p-0.5 rounded hover:bg-lmsa-100"
@@ -405,7 +405,7 @@ export default function ExecutiveAdminPage() {
           <p className="font-medium text-gray-500">
             {statusFilter === 'all' ? 'No positions yet' : `No ${statusFilter} positions`}
           </p>
-          <p className="text-sm text-gray-400 mt-1">
+          <p className="text-sm text-gray-500 mt-1">
             {statusFilter === 'all' ? 'Create your first executive position above.' : 'Try a different filter.'}
           </p>
         </div>
@@ -436,16 +436,16 @@ export default function ExecutiveAdminPage() {
                       }`}>
                         {pos.status}
                       </span>
-                      <span className="text-xs text-gray-400">#{pos.position_rank}</span>
+                      <span className="text-xs text-gray-500">#{pos.position_rank}</span>
                     </div>
                     <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1 text-xs text-gray-500">
                       {pos.holder_name ? (
                         <span className="flex items-center gap-1">
                           <User size={12} /> {pos.holder_name}
-                          {pos.holder_year_level && <span className="text-gray-400">· Year {pos.holder_year_level}</span>}
+                          {pos.holder_year_level && <span className="text-gray-500">· Year {pos.holder_year_level}</span>}
                         </span>
                       ) : (
-                        <span className="text-gray-400 italic">No user assigned</span>
+                        <span className="text-gray-500 italic">No user assigned</span>
                       )}
                       {pos.academic_year && (
                         <span className="flex items-center gap-1">
@@ -456,7 +456,7 @@ export default function ExecutiveAdminPage() {
                   </div>
                 </div>
                 <div className="flex items-center gap-2 shrink-0 mt-2 sm:mt-0 sm:ml-3">
-                  {expandedId === pos.id ? <ChevronUp size={16} className="text-gray-400" /> : <ChevronDown size={16} className="text-gray-400" />}
+                  {expandedId === pos.id ? <ChevronUp size={16} className="text-gray-500" /> : <ChevronDown size={16} className="text-gray-500" />}
                 </div>
               </div>
 
@@ -466,25 +466,25 @@ export default function ExecutiveAdminPage() {
                   <div className="grid sm:grid-cols-2 gap-4 mb-4">
                     {pos.elected_at && (
                       <div>
-                        <p className="text-xs text-gray-400 mb-0.5">Elected</p>
+                        <p className="text-xs text-gray-500 mb-0.5">Elected</p>
                         <p className="text-sm text-gray-700">{new Date(pos.elected_at).toLocaleDateString()}</p>
                       </div>
                     )}
                     {pos.term_start && (
                       <div>
-                        <p className="text-xs text-gray-400 mb-0.5">Term Start</p>
+                        <p className="text-xs text-gray-500 mb-0.5">Term Start</p>
                         <p className="text-sm text-gray-700">{new Date(pos.term_start).toLocaleDateString()}</p>
                       </div>
                     )}
                     {pos.term_end && (
                       <div>
-                        <p className="text-xs text-gray-400 mb-0.5">Term End</p>
+                        <p className="text-xs text-gray-500 mb-0.5">Term End</p>
                         <p className="text-sm text-gray-700">{new Date(pos.term_end).toLocaleDateString()}</p>
                       </div>
                     )}
                     {pos.created_at && (
                       <div>
-                        <p className="text-xs text-gray-400 mb-0.5">Created</p>
+                        <p className="text-xs text-gray-500 mb-0.5">Created</p>
                         <p className="text-sm text-gray-700">{new Date(pos.created_at).toLocaleDateString()}</p>
                       </div>
                     )}

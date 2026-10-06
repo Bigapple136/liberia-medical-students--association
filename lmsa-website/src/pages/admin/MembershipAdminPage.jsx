@@ -207,10 +207,10 @@ function ApplicationCard({ application, expanded, onToggle, onStatusUpdate }) {
 
         {/* Date + Expand */}
         <div className="flex items-center gap-3 shrink-0 mt-2 sm:mt-0 sm:ml-3">
-          <span className="text-xs text-gray-400 hidden sm:block">
+          <span className="text-xs text-gray-500 hidden sm:block">
             {app.submitted_at ? new Date(app.submitted_at).toLocaleDateString() : '—'}
           </span>
-          {expanded ? <ChevronUp size={16} className="text-gray-400" /> : <ChevronDown size={16} className="text-gray-400" />}
+          {expanded ? <ChevronUp size={16} className="text-gray-500" /> : <ChevronDown size={16} className="text-gray-500" />}
         </div>
       </div>
 
@@ -254,7 +254,7 @@ function ApplicationCard({ application, expanded, onToggle, onStatusUpdate }) {
               <FileText size={14} />
               {app.review_notes ? `Review note: "${app.review_notes}"` : 'No review notes'}
               {app.reviewed_at && (
-                <span className="text-xs text-gray-400 ml-auto">
+                <span className="text-xs text-gray-500 ml-auto">
                   Reviewed {new Date(app.reviewed_at).toLocaleDateString()}
                 </span>
               )}
@@ -276,7 +276,7 @@ function EmptyState({ icon: Icon, message, sub }) {
     <div className="bg-white rounded-xl border border-gray-200 p-12 text-center">
       <Icon size={40} className="mx-auto mb-3 text-gray-300" />
       <p className="font-medium text-gray-500">{message}</p>
-      {sub && <p className="text-sm text-gray-400 mt-1">{sub}</p>}
+      {sub && <p className="text-sm text-gray-500 mt-1">{sub}</p>}
     </div>
   );
 }

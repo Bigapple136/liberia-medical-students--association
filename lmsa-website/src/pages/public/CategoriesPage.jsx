@@ -69,7 +69,7 @@ export default function CategoriesPage() {
                     ))}
                     {category.limits.map((limit) => (
                       <li key={limit} className="flex items-start gap-2 text-sm leading-6 text-gray-500">
-                        <Minus size={16} className="mt-1 shrink-0 text-gray-400" aria-hidden="true" />
+                        <Minus size={16} className="mt-1 shrink-0 text-gray-500" aria-hidden="true" />
                         <span>
                           {limit}
                           <span className="sr-only"> (limitation)</span>

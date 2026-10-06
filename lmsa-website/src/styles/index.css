@@ -47,6 +47,12 @@
       transition-duration: 0.01ms !important;
       scroll-behavior: auto !important;
     }
+    /* T33 audit fix: keep essential loading spinners moving. Zeroing them
+       leaves a static icon with no status feedback for reduced-motion users. */
+    .animate-spin {
+      animation-duration: 2s !important;
+      animation-iteration-count: infinite !important;
+    }
   }
 }
 
@@ -456,7 +462,7 @@
   .committee-field textarea,
   .committee-field select,
   .committee-field input {
-    @apply w-full border border-gray-300 bg-white px-4 py-3 text-sm leading-6 text-gray-900 placeholder:text-gray-400;
+    @apply w-full border border-gray-300 bg-white px-4 py-3 text-sm leading-6 text-gray-900 placeholder:text-gray-500;
   }
 
   .committee-field textarea {
@@ -892,7 +898,7 @@
   }
 
   .audience-card-number {
-    @apply absolute right-5 top-5 text-xs font-bold tracking-[0.14em] text-gray-400;
+    @apply absolute right-5 top-5 text-xs font-bold tracking-[0.14em] text-gray-500;
   }
 
   .audience-card-icon {
@@ -1000,7 +1006,7 @@
   }
 
   .focus-card-topline span {
-    @apply text-xs font-bold tracking-[0.14em] text-gray-400;
+    @apply text-xs font-bold tracking-[0.14em] text-gray-500;
   }
 
   .focus-card h3 {
@@ -1060,7 +1066,7 @@
   }
 
   .resource-path > svg:last-child {
-    @apply ml-auto shrink-0 text-gray-400 transition-transform;
+    @apply ml-auto shrink-0 text-gray-500 transition-transform;
   }
 
   .resource-path:hover > svg:last-child {
@@ -1144,7 +1150,7 @@
   }
 
   .story-list-index {
-    @apply pt-1 text-xs font-bold tracking-[0.14em] text-gray-400;
+    @apply pt-1 text-xs font-bold tracking-[0.14em] text-gray-500;
   }
 
   .story-list-item h3 {
@@ -1245,7 +1251,7 @@
   }
 
   .footer-newsletter-input {
-    @apply min-w-0 flex-1 border border-gray-700 bg-gray-800 px-3 py-2.5 text-sm text-white placeholder-gray-500 focus:border-lmsa-400 focus:outline-none focus:ring-1 focus:ring-lmsa-400;
+    @apply min-w-0 flex-1 border border-gray-700 bg-gray-800 px-3 py-2.5 text-sm text-white placeholder-gray-400 focus:border-lmsa-400 focus:outline-none focus:ring-1 focus:ring-lmsa-400;
   }
 
   .footer-newsletter-button {
@@ -1265,7 +1271,7 @@
   }
 
   .footer-bottom {
-    @apply mt-12 flex flex-col justify-between gap-4 border-t border-gray-700 pt-6 text-xs text-gray-500 md:flex-row md:items-center;
+    @apply mt-12 flex flex-col justify-between gap-4 border-t border-gray-700 pt-6 text-xs text-gray-400 md:flex-row md:items-center;
   }
 
   .footer-bottom > div {

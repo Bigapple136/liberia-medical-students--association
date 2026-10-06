@@ -26,7 +26,7 @@ const Input = forwardRef(({
       )}
       <div className="relative">
         {leftIcon && (
-          <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
+          <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none">
             {leftIcon}
           </div>
         )}
@@ -56,7 +56,7 @@ const Input = forwardRef(({
           </div>
         )}
         {rightIcon && !error && !success && (
-          <div className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
+          <div className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none">
             {rightIcon}
           </div>
         )}

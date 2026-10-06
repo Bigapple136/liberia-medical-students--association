@@ -529,7 +529,7 @@ export default function CommitteePageTemplate() {
             ) : (
               <div className="bg-white rounded-2xl border border-gray-200 p-5">
                 <h3 className="font-bold text-gray-900 mb-3">Committee Chair</h3>
-                <p className="text-sm text-gray-400">Chair information will be listed here once assigned.</p>
+                <p className="text-sm text-gray-500">Chair information will be listed here once assigned.</p>
               </div>
             )}
 
@@ -573,7 +573,7 @@ export default function CommitteePageTemplate() {
                     </a>
                   ))}
                   {docs.length > 4 && (
-                    <button onClick={() => setActiveTab('resources')} className="text-xs text-gray-400 hover:text-gray-600">
+                    <button onClick={() => setActiveTab('resources')} className="text-xs text-gray-500 hover:text-gray-600">
                       +{docs.length - 4} more documents
                     </button>
                   )}
@@ -601,7 +601,7 @@ export default function CommitteePageTemplate() {
                     onChange={e => setNlEmail(e.target.value)}
                     required
                   />
-                  <button type="submit" className="px-3 py-2 bg-lmsa-600 text-white rounded-lg text-sm font-medium hover:bg-lmsa-700">
+                  <button aria-label="Subscribe" type="submit" className="px-3 py-2 bg-lmsa-600 text-white rounded-lg text-sm font-medium hover:bg-lmsa-700">
                     <Bell size={14} />
                   </button>
                 </form>
@@ -641,7 +641,7 @@ function MemberProfileCard({ member, featured }) {
         </div>
       </div>
       {member.bio && <p className="text-xs text-gray-500 mt-1 line-clamp-2">{member.bio}</p>}
-      <p className="text-xs text-gray-400 mt-1">Year {member.year_level}</p>
+      <p className="text-xs text-gray-500 mt-1">Year {member.year_level}</p>
     </div>
   );
 }
@@ -664,7 +664,7 @@ function EventCard({ event, detailed, past, onShare }) {
           )}
           <div className="flex flex-wrap gap-2 mt-2">
             {event.location && (
-              <span className="flex items-center gap-1 text-xs text-gray-400">
+              <span className="flex items-center gap-1 text-xs text-gray-500">
                 <MapPin size={11} /> {event.location}
               </span>
             )}
@@ -682,7 +682,7 @@ function EventCard({ event, detailed, past, onShare }) {
               Register
             </Link>
           )}
-          <button onClick={onShare} className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-700">
+          <button aria-label="Copy event link" onClick={onShare} className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-gray-700">
             <Share2 size={14} />
           </button>
         </div>
@@ -698,7 +698,7 @@ function DocumentRow({ doc }) {
       <span className="text-xl shrink-0">{catEmoji[doc.category] || '📄'}</span>
       <div className="flex-1 min-w-0">
         <p className="text-sm font-medium text-gray-900">{doc.title}</p>
-        <p className="text-xs text-gray-400 mt-0.5">
+        <p className="text-xs text-gray-500 mt-0.5">
           {doc.category?.replace('_',' ')} •{' '}
           {doc.created_at ? new Date(doc.created_at).toLocaleDateString() : ''}
           {doc.file_size ? ` • ${Math.round(doc.file_size/1024)}KB` : ''}
@@ -739,7 +739,7 @@ function EmptySection({ icon: Icon, message }) {
   return (
     <div className="bg-white rounded-2xl border border-gray-200 p-12 text-center">
       <Icon size={40} className="mx-auto mb-3 text-gray-200" />
-      <p className="text-gray-400">{message}</p>
+      <p className="text-gray-500">{message}</p>
     </div>
   );
 }

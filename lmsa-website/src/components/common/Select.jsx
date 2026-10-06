@@ -49,7 +49,7 @@ const Select = forwardRef(({
         </select>
         <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none flex items-center gap-1">
           {error && <AlertCircle size={18} className="text-red-600" />}
-          {!error && <ChevronDown size={18} className="text-gray-400" />}
+          {!error && <ChevronDown size={18} className="text-gray-500" />}
         </div>
       </div>
       {error && (

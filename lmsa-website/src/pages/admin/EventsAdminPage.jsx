@@ -297,7 +297,7 @@ function EventCard({ event, expanded, onToggle, onEdit, onDelete, onQuickStatus 
             />
           ) : (
             <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center shrink-0">
-              <CalendarDays size={18} className="text-gray-400" />
+              <CalendarDays size={18} className="text-gray-500" />
             </div>
           )}
 
@@ -334,7 +334,7 @@ function EventCard({ event, expanded, onToggle, onEdit, onDelete, onQuickStatus 
 
         {/* Expand */}
         <div className="flex items-center gap-2 shrink-0 mt-2 sm:mt-0 sm:ml-3">
-          {expanded ? <ChevronUp size={16} className="text-gray-400" /> : <ChevronDown size={16} className="text-gray-400" />}
+          {expanded ? <ChevronUp size={16} className="text-gray-500" /> : <ChevronDown size={16} className="text-gray-500" />}
         </div>
       </div>
 
@@ -359,7 +359,7 @@ function EventCard({ event, expanded, onToggle, onEdit, onDelete, onQuickStatus 
             {regs && (
               <div className="mt-2 space-y-1">
                 {regs.length === 0 ? (
-                  <p className="text-sm text-gray-400">No registrations yet.</p>
+                  <p className="text-sm text-gray-500">No registrations yet.</p>
                 ) : (
                   regs.map(r => (
                     <div
@@ -530,9 +530,9 @@ function EventForm({ event, committees, onSave, onClose }) {
         <h2 className="font-bold text-gray-900">
           {isEditing ? 'Edit Event' : 'New Event'}
         </h2>
-        <button
+        <button aria-label="Close"
           onClick={onClose}
-          className="p-1.5 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 transition-colors"
+          className="p-1.5 text-gray-500 hover:text-gray-600 rounded-lg hover:bg-gray-100 transition-colors"
         >
           <X size={18} />
         </button>
@@ -689,7 +689,7 @@ function EventForm({ event, committees, onSave, onClose }) {
         <div>
           <Label>Featured Image URL</Label>
           <div className="relative">
-            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
+            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none">
               <Image size={16} />
             </div>
             <input
@@ -740,7 +740,7 @@ function EmptyState({ icon: Icon, message, sub }) {
     <div className="bg-white rounded-xl border border-gray-200 p-12 text-center">
       <Icon size={40} className="mx-auto mb-3 text-gray-300" />
       <p className="font-medium text-gray-500">{message}</p>
-      {sub && <p className="text-sm text-gray-400 mt-1">{sub}</p>}
+      {sub && <p className="text-sm text-gray-500 mt-1">{sub}</p>}
     </div>
   );
 }

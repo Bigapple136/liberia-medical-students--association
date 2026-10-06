@@ -43,7 +43,7 @@ export default function PastPresidentsPage() {
             <div key={index} className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
               <div className="flex flex-col sm:flex-row items-start gap-4 sm:gap-6">
                 <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gray-200 rounded-lg flex-shrink-0 flex items-center justify-center">
-                  <Star size={32} className="text-gray-400" />
+                  <Star size={32} className="text-gray-500" />
                 </div>
                 <div className="flex-1">
                   <div className="flex items-start justify-between mb-2">

@@ -99,7 +99,7 @@ export default function CommitteeAdminDashboard() {
               <h2 className="font-bold text-gray-900 text-lg">Committees</h2>
             </div>
           )}
-          <button
+          <button aria-label="Toggle sidebar"
             onClick={() => setSidebarOpen(v => !v)}
             className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500"
           >
@@ -129,7 +129,7 @@ export default function CommitteeAdminDashboard() {
                 {sidebarOpen && (
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium truncate">{c.name}</p>
-                    <p className="text-xs text-gray-400">{c.member_count || 0} members</p>
+                    <p className="text-xs text-gray-500">{c.member_count || 0} members</p>
                   </div>
                 )}
               </button>
@@ -225,7 +225,7 @@ export default function CommitteeAdminDashboard() {
             </div>
           </>
         ) : (
-          <div className="flex-1 flex items-center justify-center text-gray-400">
+          <div className="flex-1 flex items-center justify-center text-gray-500">
             <div className="text-center">
               <Settings size={48} className="mx-auto mb-3 opacity-30" />
               <p>Select a committee to manage</p>
@@ -354,7 +354,7 @@ function DetailsTab({ committee, onSave }) {
                 placeholder="Add mandate item..."
                 onChange={e => updateItem('mandate', idx, e.target.value)}
               />
-              <button onClick={() => removeItem('mandate', idx)} className="mt-2 text-gray-400 hover:text-red-500">
+              <button aria-label="Remove mandate item" onClick={() => removeItem('mandate', idx)} className="mt-2 text-gray-500 hover:text-red-500">
                 <X size={16} />
               </button>
             </div>
@@ -378,7 +378,7 @@ function DetailsTab({ committee, onSave }) {
                 placeholder="Activity name..."
                 onChange={e => updateItem('key_activities', idx, e.target.value)}
               />
-              <button onClick={() => removeItem('key_activities', idx)} className="text-gray-400 hover:text-red-500">
+              <button aria-label="Remove activity item" onClick={() => removeItem('key_activities', idx)} className="text-gray-500 hover:text-red-500">
                 <X size={15} />
               </button>
             </div>
@@ -503,7 +503,7 @@ function MembersTab({ committee, onUpdate }) {
 
       {/* Search */}
       <div className="relative mb-4">
-        <Search size={16} className="absolute left-3 top-3 text-gray-400" />
+        <Search size={16} className="absolute left-3 top-3 text-gray-500" />
         <input
           className="input pl-9"
           placeholder="Search members..."
@@ -529,7 +529,7 @@ function MembersTab({ committee, onUpdate }) {
             </thead>
             <tbody className="divide-y divide-gray-100">
               {filtered.length === 0 ? (
-                <tr><td colSpan={5} className="text-center py-8 text-gray-400">No members found</td></tr>
+                <tr><td colSpan={5} className="text-center py-8 text-gray-500">No members found</td></tr>
               ) : filtered.map(member => (
                 <tr key={member.id} className="hover:bg-gray-50">
                   <td className="px-4 py-3">
@@ -543,7 +543,7 @@ function MembersTab({ committee, onUpdate }) {
                       )}
                       <div>
                         <p className="text-sm font-medium text-gray-900">{member.full_name}</p>
-                        <p className="text-xs text-gray-400">{member.email}</p>
+                        <p className="text-xs text-gray-500">{member.email}</p>
                       </div>
                     </div>
                   </td>
@@ -557,11 +557,11 @@ function MembersTab({ committee, onUpdate }) {
                       {ROLES.map(r => <option key={r}>{r}</option>)}
                     </select>
                   </td>
-                  <td className="px-4 py-3 text-sm text-gray-400">
+                  <td className="px-4 py-3 text-sm text-gray-500">
                     {member.joined_at ? new Date(member.joined_at).toLocaleDateString() : '—'}
                   </td>
                   <td className="px-4 py-3 text-right">
-                    <button onClick={() => removeMember(member.id)} className="text-gray-300 hover:text-red-500 transition-colors">
+                    <button aria-label="Remove member" onClick={() => removeMember(member.id)} className="text-gray-300 hover:text-red-500 transition-colors">
                       <Trash2 size={15} />
                     </button>
                   </td>
@@ -583,7 +583,7 @@ function MembersTab({ committee, onUpdate }) {
                 placeholder="Type name or email..."
                 onChange={e => searchUsers(e.target.value)}
               />
-              {searching && <p className="text-xs text-gray-400 mt-1">Searching...</p>}
+              {searching && <p className="text-xs text-gray-500 mt-1">Searching...</p>}
               {userResults.length > 0 && (
                 <div className="mt-2 border border-gray-200 rounded-lg overflow-hidden max-h-40 overflow-y-auto">
                   {userResults.map(u => (
@@ -597,7 +597,7 @@ function MembersTab({ committee, onUpdate }) {
                       </div>
                       <div>
                         <p className="text-sm font-medium">{u.full_name}</p>
-                        <p className="text-xs text-gray-400">Year {u.year_level} • {u.email}</p>
+                        <p className="text-xs text-gray-500">Year {u.year_level} • {u.email}</p>
                       </div>
                       {newMember.user_id === u.id && <Check size={14} className="ml-auto text-lmsa-600" />}
                     </button>
@@ -775,10 +775,10 @@ function EventsTab({ committee }) {
                 </div>
               </div>
               <div className="flex gap-2 shrink-0 self-start sm:self-auto">
-                <Link to={`/events/${ev.slug}`} target="_blank" className="p-2 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-700">
+                <Link aria-label="Open event in new tab" to={`/events/${ev.slug}`} target="_blank" className="p-2 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-gray-700">
                   <ExternalLink size={15} />
                 </Link>
-                <button onClick={() => deleteEvent(ev.id)} className="p-2 rounded-lg hover:bg-red-50 text-gray-400 hover:text-red-500">
+                <button aria-label="Delete event" onClick={() => deleteEvent(ev.id)} className="p-2 rounded-lg hover:bg-red-50 text-gray-500 hover:text-red-500">
                   <Trash2 size={15} />
                 </button>
               </div>
@@ -881,7 +881,7 @@ function DocumentsTab({ committee }) {
           {uploading ? (
             <><Loader size={24} className="animate-spin mx-auto mb-2 text-lmsa-600" /><p className="text-sm text-gray-500">Uploading...</p></>
           ) : (
-            <><Upload size={24} className="mx-auto mb-2 text-gray-400" /><p className="text-sm text-gray-600 font-medium">Click to upload file</p><p className="text-xs text-gray-400 mt-1">PDF, DOC, images up to 10MB</p></>
+            <><Upload size={24} className="mx-auto mb-2 text-gray-500" /><p className="text-sm text-gray-600 font-medium">Click to upload file</p><p className="text-xs text-gray-500 mt-1">PDF, DOC, images up to 10MB</p></>
           )}
         </div>
         <input ref={fileRef} type="file" className="hidden" onChange={handleUpload} accept=".pdf,.doc,.docx,.jpg,.png,.xlsx" />
@@ -912,7 +912,7 @@ function DocumentsTab({ committee }) {
                       <span className="text-xl">{catIcon(doc.category)}</span>
                       <div>
                         <p className="text-sm font-medium text-gray-900">{doc.title}</p>
-                        <p className="text-xs text-gray-400">{doc.file_type?.toUpperCase()} • {doc.file_size ? `${Math.round(doc.file_size/1024)}KB` : '—'}</p>
+                        <p className="text-xs text-gray-500">{doc.file_type?.toUpperCase()} • {doc.file_size ? `${Math.round(doc.file_size/1024)}KB` : '—'}</p>
                       </div>
                     </div>
                   </td>
@@ -922,13 +922,13 @@ function DocumentsTab({ committee }) {
                       {doc.access_level}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-sm text-gray-400">{doc.created_at ? new Date(doc.created_at).toLocaleDateString() : '—'}</td>
+                  <td className="px-4 py-3 text-sm text-gray-500">{doc.created_at ? new Date(doc.created_at).toLocaleDateString() : '—'}</td>
                   <td className="px-4 py-3 text-right">
                     <div className="flex gap-1 justify-end">
-                      <a href={doc.file_url} target="_blank" rel="noopener noreferrer" className="p-1.5 rounded hover:bg-gray-100 text-gray-400 hover:text-gray-700">
+                      <a aria-label="Download document" href={doc.file_url} target="_blank" rel="noopener noreferrer" className="p-1.5 rounded hover:bg-gray-100 text-gray-500 hover:text-gray-700">
                         <Download size={14} />
                       </a>
-                      <button onClick={() => deleteDoc(doc.id)} className="p-1.5 rounded hover:bg-red-50 text-gray-400 hover:text-red-500">
+                      <button aria-label="Delete document" onClick={() => deleteDoc(doc.id)} className="p-1.5 rounded hover:bg-red-50 text-gray-500 hover:text-red-500">
                         <Trash2 size={14} />
                       </button>
                     </div>
@@ -1046,7 +1046,7 @@ function AnnouncementsTab({ committee }) {
               {item.pinned && <span className="absolute top-3 right-10 text-xs font-semibold opacity-60">📌 Pinned</span>}
               <div className="flex justify-between">
                 <h3 className="font-semibold">{item.title}</h3>
-                <button onClick={() => remove(item.id)} className="opacity-50 hover:opacity-100"><Trash2 size={14} /></button>
+                <button aria-label="Remove announcement" onClick={() => remove(item.id)} className="opacity-50 hover:opacity-100"><Trash2 size={14} /></button>
               </div>
               <p className="text-sm mt-1 opacity-80">{item.message}</p>
               <p className="text-xs mt-2 opacity-50">{item.created_at ? new Date(item.created_at).toLocaleDateString() : ''}</p>
@@ -1155,13 +1155,13 @@ function AchievementsTab({ committee }) {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {items.map(item => (
             <div key={item.id} className="bg-white rounded-xl border border-gray-200 p-4 relative group">
-              <button onClick={() => remove(item.id)} className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 text-gray-300 hover:text-red-500 transition-all">
+              <button aria-label="Remove achievement" onClick={() => remove(item.id)} className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 text-gray-300 hover:text-red-500 transition-all">
                 <Trash2 size={14} />
               </button>
               <div className="text-3xl mb-2">{item.badge_emoji}</div>
               <h3 className="font-semibold text-gray-900 text-sm">{item.title}</h3>
               {item.description && <p className="text-xs text-gray-500 mt-1">{item.description}</p>}
-              {item.date && <p className="text-xs text-gray-400 mt-2">{new Date(item.date).toLocaleDateString('default',{year:'numeric',month:'long'})}</p>}
+              {item.date && <p className="text-xs text-gray-500 mt-2">{new Date(item.date).toLocaleDateString('default',{year:'numeric',month:'long'})}</p>}
             </div>
           ))}
         </div>
@@ -1196,7 +1196,7 @@ function AnalyticsTab({ committee }) {
           );
         })}
       </div>
-      <div className="bg-white rounded-xl border border-gray-200 p-6 text-center text-gray-400">
+      <div className="bg-white rounded-xl border border-gray-200 p-6 text-center text-gray-500">
         <BarChart2 size={48} className="mx-auto mb-3 opacity-30" />
         <p className="font-medium">Detailed analytics coming soon</p>
         <p className="text-sm mt-1">Connect Google Analytics or Supabase telemetry for charts</p>
@@ -1228,7 +1228,7 @@ function Modal({ title, onClose, children }) {
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-md">
         <div className="flex items-center justify-between p-5 border-b border-gray-100">
           <h3 className="font-bold text-gray-900">{title}</h3>
-          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400">
+          <button aria-label="Close" onClick={onClose} className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500">
             <X size={18} />
           </button>
         </div>
@@ -1243,7 +1243,7 @@ function EmptyState({ icon: Icon, message, sub }) {
     <div className="bg-white rounded-xl border border-gray-200 p-12 text-center">
       <Icon size={40} className="mx-auto mb-3 text-gray-300" />
       <p className="font-medium text-gray-500">{message}</p>
-      {sub && <p className="text-sm text-gray-400 mt-1">{sub}</p>}
+      {sub && <p className="text-sm text-gray-500 mt-1">{sub}</p>}
     </div>
   );
 }
@@ -1336,7 +1336,7 @@ function ApplicationsTab({ committee }) {
           <Loader className="animate-spin text-lmsa-600" />
         </div>
       ) : applications.length === 0 ? (
-        <div className="bg-white rounded-xl border border-gray-200 py-12 text-center text-gray-400">
+        <div className="bg-white rounded-xl border border-gray-200 py-12 text-center text-gray-500">
           <Inbox size={32} className="mx-auto mb-2 opacity-40" />
           <p className="text-sm">No {filter} applications</p>
         </div>
@@ -1356,11 +1356,11 @@ function ApplicationsTab({ committee }) {
                   </div>
                   <div>
                     <p className="text-sm font-medium text-gray-900">{app.applicant_name || 'Unnamed applicant'}</p>
-                    <p className="text-xs text-gray-400">{app.applicant_email}</p>
+                    <p className="text-xs text-gray-500">{app.applicant_email}</p>
                   </div>
                 </div>
                 <div className="text-right shrink-0">
-                  <p className="text-xs text-gray-400">
+                  <p className="text-xs text-gray-500">
                     {new Date(app.submitted_at).toLocaleDateString()}
                   </p>
                   {app.applicant_year_level && (

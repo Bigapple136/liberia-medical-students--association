@@ -151,7 +151,7 @@ export default function ResourcesPage() {
             </div>
           ) : error ? (
             <div className="border border-gray-200 bg-white px-6 py-16 text-center">
-              <AlertCircle size={32} className="mx-auto text-gray-400" aria-hidden="true" />
+              <AlertCircle size={32} className="mx-auto text-gray-500" aria-hidden="true" />
               <h3 className="mt-4 text-xl font-semibold tracking-[-0.02em] text-lmsa-900">We could not load the study materials</h3>
               <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-gray-600">Something went wrong on our end. Check your connection and try again.</p>
               <button
@@ -164,7 +164,7 @@ export default function ResourcesPage() {
             </div>
           ) : materials.length === 0 ? (
             <div className="border border-gray-200 bg-white px-6 py-16 text-center">
-              <FileText size={32} className="mx-auto text-gray-400" aria-hidden="true" />
+              <FileText size={32} className="mx-auto text-gray-500" aria-hidden="true" />
               <h3 className="mt-4 text-xl font-semibold tracking-[-0.02em] text-lmsa-900">No study materials published yet</h3>
               <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-gray-600">
                 Materials appear here as members and faculty contribute them. The wider document library may already have what you need.

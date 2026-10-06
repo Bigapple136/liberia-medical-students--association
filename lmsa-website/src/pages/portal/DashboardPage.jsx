@@ -171,7 +171,7 @@ export default function DashboardPage() {
         ) : myEvents.length === 0 ? (
           <Card>
             <div className="text-center py-6">
-              <Calendar size={32} className="mx-auto text-gray-400 mb-3" />
+              <Calendar size={32} className="mx-auto text-gray-500 mb-3" />
               <p className="text-gray-600 mb-1">No upcoming events registered</p>
               <p className="text-sm text-gray-500">
                 Browse{' '}
@@ -203,7 +203,7 @@ export default function DashboardPage() {
                       )}
                     </div>
                   </div>
-                  {event.slug && <ArrowRight size={16} className="mt-1 flex-shrink-0 text-gray-400" aria-hidden="true" />}
+                  {event.slug && <ArrowRight size={16} className="mt-1 flex-shrink-0 text-gray-500" aria-hidden="true" />}
                 </div>
               );
               return (
@@ -251,7 +251,7 @@ export default function DashboardPage() {
         ) : newsPosts.length === 0 ? (
           <Card>
             <div className="text-center py-6">
-              <Newspaper size={32} className="mx-auto text-gray-400 mb-3" />
+              <Newspaper size={32} className="mx-auto text-gray-500 mb-3" />
               <p className="text-gray-600">No news posts yet</p>
             </div>
           </Card>

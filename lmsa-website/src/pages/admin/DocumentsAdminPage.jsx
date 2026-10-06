@@ -170,7 +170,7 @@ export default function DocumentsAdminPage() {
           {uploading ? (
             <><Loader size={24} className="animate-spin mx-auto mb-2 text-lmsa-600" /><p className="text-sm text-gray-500">Uploading...</p></>
           ) : (
-            <><Upload size={24} className="mx-auto mb-2 text-gray-400" /><p className="text-sm text-gray-600 font-medium">Click to upload file</p><p className="text-xs text-gray-400 mt-1">PDF, DOC, images up to 10MB</p></>
+            <><Upload size={24} className="mx-auto mb-2 text-gray-500" /><p className="text-sm text-gray-600 font-medium">Click to upload file</p><p className="text-xs text-gray-500 mt-1">PDF, DOC, images up to 10MB</p></>
           )}
         </div>
         <input ref={fileRef} type="file" className="hidden" onChange={handleUpload} accept=".pdf,.doc,.docx,.jpg,.png,.xlsx" />
@@ -209,7 +209,7 @@ export default function DocumentsAdminPage() {
                       <span className="text-xl">{catIcon(doc.category)}</span>
                       <div className="min-w-0">
                         <p className="text-sm font-medium text-gray-900">{doc.title}</p>
-                        <p className="text-xs text-gray-400">
+                        <p className="text-xs text-gray-500">
                           {doc.file_type?.toUpperCase()} • {doc.file_size ? `${Math.round(doc.file_size / 1024)}KB` : '—'}
                         </p>
                         {doc.description && (
@@ -230,20 +230,20 @@ export default function DocumentsAdminPage() {
                       {doc.access_level}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-sm text-gray-400">{doc.downloads ?? 0}</td>
-                  <td className="px-4 py-3 text-sm text-gray-400">{doc.created_at ? new Date(doc.created_at).toLocaleDateString() : '—'}</td>
+                  <td className="px-4 py-3 text-sm text-gray-500">{doc.downloads ?? 0}</td>
+                  <td className="px-4 py-3 text-sm text-gray-500">{doc.created_at ? new Date(doc.created_at).toLocaleDateString() : '—'}</td>
                   <td className="px-4 py-3 text-right">
                     <div className="flex gap-1 justify-end">
                       <button
                         onClick={() => handleDownload(doc.id)}
-                        className="p-1.5 rounded hover:bg-gray-100 text-gray-400 hover:text-gray-700"
+                        className="p-1.5 rounded hover:bg-gray-100 text-gray-500 hover:text-gray-700"
                         title="Download"
                       >
                         <Download size={14} />
                       </button>
                       <button
                         onClick={() => deleteDoc(doc.id, doc.title)}
-                        className="p-1.5 rounded hover:bg-red-50 text-gray-400 hover:text-red-500"
+                        className="p-1.5 rounded hover:bg-red-50 text-gray-500 hover:text-red-500"
                         title="Delete"
                       >
                         <Trash2 size={14} />
@@ -271,7 +271,7 @@ function EmptyState({ icon: Icon, message, sub }) {
     <div className="bg-white rounded-xl border border-gray-200 p-12 text-center">
       <Icon size={40} className="mx-auto mb-3 text-gray-300" />
       <p className="font-medium text-gray-500">{message}</p>
-      {sub && <p className="text-sm text-gray-400 mt-1">{sub}</p>}
+      {sub && <p className="text-sm text-gray-500 mt-1">{sub}</p>}
     </div>
   );
 }
