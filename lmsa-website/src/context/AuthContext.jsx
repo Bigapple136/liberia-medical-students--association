@@ -9,6 +9,22 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // Dev-only admin UI preview (T42): VITE_PREVIEW_MODE supplies a fake
+  // session so the panel can be screenshotted without live Supabase.
+  // Never set in production; no behavior change otherwise.
+  useEffect(() => {
+    if (import.meta.env.VITE_PREVIEW_MODE === 'admin') {
+      setUser({
+        id: 'preview-user',
+        email: 'stone@lmsa.org.lr',
+        full_name: 'Stone Kollie',
+        role: 'super_admin',
+        membership_status: 'active',
+      });
+      setLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
     let mounted = true;
 

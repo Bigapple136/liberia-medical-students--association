@@ -5498,3 +5498,96 @@ don't claim a browser pass happened if it didn't.
 ### Report
 
 *(agent fills in on completion)*
+
+## T42 — Admin area UI/UX + responsive, with real device-matrix verification
+
+**Branch:** `task/t42-admin-ui-ux`
+**Status:** done
+**Depends on:** stacked on the T33 WIP checkpoint commit (`9986b4f`) — see
+Deviation note; no T40/T41 dependency (admin chips are local, `StatusChip`
+not reused).
+
+### What changed
+
+Second impeccable run of the session (shape → craft floor → build), user
+confirmed: whole admin area, full shell parity, mock-auth preview verification.
+Brief persisted at `.impeccable/surfaces/admin-area.md`.
+
+1. `lmsa-website/src/layouts/AdminLayout.jsx` — rebuilt:
+   - Identity block + Sign out in the sidebar (T40 parity): initials avatar,
+     name, role chip (admin=green, executive=blue, super_admin=purple).
+     An admin previously had no sign-out inside the panel.
+   - Drawer a11y to the portal's proven pattern: focus trap, Escape with
+     refocus, body scroll lock, `aria-expanded`/`aria-controls`, closes on
+     route change, translate+visibility transition.
+   - **Dead nav item removed:** "Announcements" pointed at
+     `/admin/announcements`, which no route defines — it 404'd on click.
+   - "Back to Dashboard" removed (duplicate of the Dashboard nav item).
+   - Sidebar breakpoint moved to `lg` (matches T25's shell switch) and the
+     drawer-specific `fixed` no longer collides with `lg:sticky`.
+2. `AdminDashboard.jsx` — gained the missing page container
+   (`max-w-6xl mx-auto p-4 sm:p-6 space-y-6`); stat cards get loading
+   skeletons; `md` step added to the stat grid; header rhythm fixed.
+3. Contrast fixes (design-system doctrine, detector-confirmed):
+   destructive icon hover pairs `hover:text-red-500` → `hover:text-red-700`
+   on `hover:bg-red-50` (CommitteeAdminDashboard ×2, DocumentsAdminPage ×1);
+   public-access chips `green-50/green-700` → `lmsa-50/lmsa-800` (×2).
+4. Container rhythm across Documents/Events/Executive/Membership/News admin
+   pages: `p-6` → `p-4 sm:p-6`.
+5. `CommitteeAdminDashboard.jsx` — active committee nav item switched from a
+   2px colored right-border (craft-floor violation) to tint + weight.
+6. Dev-only preview harness (keep-or-remove at review):
+   `admin-preview.html`, `src/dev/AdminPreview.jsx` (HashRouter + mock
+   session + responsive probe), `src/dev/mockAuth.js`, `.env.preview`
+   (gitignored), `dev:admin-preview` script. Screenshots committed at
+   `lmsa-website/browser-test/shots/0{1..5}-*.png` (drawer-open phone,
+   dashboard at 375/768/1024/1440).
+
+### Verification
+
+- **Device matrix, empirically (the point of this task):** dev-only probe in
+  the preview entry reports computed styles; headless Chrome `--dump-dom`
+  captured per viewport. Confirmed facts: 375/768 → top bar visible, sidebar
+  hidden, drawer off-canvas (`translateX(-256px)`, hidden), container padding
+  16px; 1024 → persistent sidebar (block), top bar hidden, container 1152px
+  capped, 24px padding, main column exactly 768px (1024 − 256 sidebar);
+  1440 → same as 1024. **This caught a real bug code review missed:** the
+  drawer's `fixed` beat `lg:sticky` in the cascade, so the sidebar rendered
+  `display:none` at 1008px with no drawer reachable — broken at every real
+  ≥1024px width. Fixed (`hidden` base instead of `fixed`), re-verified.
+  Also caught and fixed: preview entry needed `HashRouter` (BrowserRouter
+  ignored the `#` route and rendered NotFound).
+- `npx eslint` over all 8 admin files + AuthContext + dev harness — exit 0
+  (`--max-warnings 0` equivalent: no warnings emitted).
+- `npm run build` — exit 0 (explicit capture; pre-existing >500kB warning).
+- Production bundle contains **zero** mock-data strings (`preview-user`:
+  0 hits in dist).
+- Detector re-run over admin+layouts: the 3 remaining `gray-on-color` hits
+  are **false positives on hover pairs** — `text-gray-500` and
+  `hover:bg-red-50` never coexist in any real state (rest: gray on white;
+  hover: red-700 on red-50 ≈ 8:1). Left as-is rather than distorting working
+  code; noted here for the reviewer.
+- Server used for verification (`vite --mode preview`, PID 5720) stopped
+  after capture.
+
+### What could NOT be verified from this sandbox
+
+- Real Supabase auth against the live API: the preview mocks the session and
+  API layer; layout/typography/contrast are verified visually, but data
+  flows (mutations, toasts) are not exercised.
+- Focus trap and Escape behavior verified by code (same pattern as the
+  portal, reviewed in T40/T41) — headless screenshot cannot walk focus.
+
+### Deviations from spec
+
+- **T33 WIP checkpoint:** per the user's explicit direction, T33's uncommitted
+  18-file WIP was committed as `9986b4f` on `task/t33-a11y-skip-link-audit`
+  (clearly labeled WIP, not pushed; local branch is 11 commits behind its
+  origin — the owner reconciles). T42 branches from that commit.
+- **AuthContext dev hook:** the brief promised zero production coupling;
+  implementing the mock session cleanly required a small `VITE_PREVIEW_MODE`-
+  gated effect in `AuthContext.jsx` (no-op unless the env var is set —
+  verified: production bundle contains no mock data). Disclosed here as the
+  one scope addition beyond the 8 named files.
+- Committee page kept full-bleed by design (legitimate two-pane app), which
+  the container rule deliberately exempts.

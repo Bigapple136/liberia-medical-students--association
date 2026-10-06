@@ -104,7 +104,7 @@ export default function DocumentsAdminPage() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto p-6 space-y-6">
+    <div className="max-w-6xl mx-auto p-4 sm:p-6 space-y-6">
       {/* ── Header ──────────────────────────────────────────────────── */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
@@ -221,7 +221,7 @@ export default function DocumentsAdminPage() {
                   <td className="px-4 py-3 text-sm text-gray-600 capitalize">{doc.category?.replace('_', ' ')}</td>
                   <td className="px-4 py-3">
                     <span className={`text-xs px-2 py-0.5 rounded-full inline-flex items-center gap-1 ${
-                      doc.access_level === 'public' ? 'bg-green-50 text-green-700'
+                      doc.access_level === 'public' ? 'bg-lmsa-50 text-lmsa-800'
                         : doc.access_level === 'members' ? 'bg-blue-50 text-blue-700'
                         : doc.access_level === 'executive' ? 'bg-amber-50 text-amber-700'
                         : 'bg-purple-50 text-purple-700'
@@ -243,7 +243,7 @@ export default function DocumentsAdminPage() {
                       </button>
                       <button
                         onClick={() => deleteDoc(doc.id, doc.title)}
-                        className="p-1.5 rounded hover:bg-red-50 text-gray-500 hover:text-red-500"
+                        className="p-1.5 rounded hover:bg-red-50 text-gray-500 hover:text-red-700"
                         title="Delete"
                       >
                         <Trash2 size={14} />
