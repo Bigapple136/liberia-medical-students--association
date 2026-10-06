@@ -1,0 +1,129 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-06T00:00:00.000Z",
+  "title": "Design System: LMSA",
+  "extensions": {
+    "colorMeta": {
+      "brand-green": { "role": "primary", "displayName": "LMSA Green", "canonical": "#0C8950", "tonalRamp": ["#064629", "#085C36", "#0A7343", "#0C8950", "#29A37D", "#4DB68E", "#9ADABC", "#E8F7F0"] },
+      "brand-green-tint": { "role": "primary-tint", "displayName": "LMSA Tint", "canonical": "#E8F7F0", "tonalRamp": ["#064629", "#085C36", "#0A7343", "#0C8950", "#29A37D", "#4DB68E", "#9ADABC", "#E8F7F0"] },
+      "flag-red": { "role": "tertiary", "displayName": "Flag Red", "canonical": "#DC143C", "tonalRamp": ["#A00F2D", "#DC143C", "#F88B8B", "#FDD8D8", "#FEF0F0", "#FFF", "#FFF", "#FFF"] },
+      "academic-blue": { "role": "secondary", "displayName": "Academic Blue", "canonical": "#1976D2", "tonalRamp": ["#0D5AA7", "#1976D2", "#4D9FFF", "#B8DAFF", "#E6F2FF", "#FFF", "#FFF", "#FFF"] },
+      "achievement-amber": { "role": "secondary", "displayName": "Achievement Gold", "canonical": "#FFB300", "tonalRamp": ["#C68400", "#FFB300", "#FFCA28", "#FFECB3", "#FFF8E1", "#FFF", "#FFF", "#FFF"] },
+      "event-orange": { "role": "secondary", "displayName": "Event Orange", "canonical": "#EA580C", "tonalRamp": ["#9A3412", "#C2410C", "#EA580C", "#F97316", "#FB923C", "#FFEDD5", "#FFF7ED", "#FFF"] },
+      "leadership-purple": { "role": "secondary", "displayName": "Leadership Purple", "canonical": "#7E22CE", "tonalRamp": ["#581C87", "#6B21A8", "#7E22CE", "#9333EA", "#A855F7", "#E9D5FF", "#FAF5FF", "#FFF"] },
+      "welfare-rose": { "role": "secondary", "displayName": "Welfare Rose", "canonical": "#E11D48", "tonalRamp": ["#9F1239", "#BE123C", "#E11D48", "#F43F5E", "#FB7185", "#FFE4E6", "#FFF1F2", "#FFF"] },
+      "info-teal": { "role": "secondary", "displayName": "Health Teal", "canonical": "#2C7A7B", "tonalRamp": ["#234E52", "#285E61", "#2C7A7B", "#319795", "#38B2AC", "#B2F5EA", "#E6FFFA", "#FFF"] },
+      "page-bg": { "role": "neutral", "displayName": "Page", "canonical": "#F9FAFB", "tonalRamp": ["#111827", "#374151", "#4B5563", "#6B7280", "#9CA3AF", "#D1D5DB", "#E5E7EB", "#F9FAFB"] },
+      "surface": { "role": "neutral", "displayName": "Surface", "canonical": "#FFFFFF", "tonalRamp": ["#111827", "#374151", "#4B5563", "#6B7280", "#9CA3AF", "#D1D5DB", "#F3F4F6", "#FFFFFF"] },
+      "border": { "role": "neutral", "displayName": "Border", "canonical": "#E5E7EB", "tonalRamp": ["#111827", "#374151", "#4B5563", "#6B7280", "#9CA3AF", "#D1D5DB", "#E5E7EB", "#F9FAFB"] },
+      "ink": { "role": "neutral", "displayName": "Ink", "canonical": "#111827", "tonalRamp": ["#111827", "#1F2937", "#374151", "#4B5563", "#6B7280", "#9CA3AF", "#D1D5DB", "#F9FAFB"] },
+      "ink-secondary": { "role": "neutral", "displayName": "Ink Secondary", "canonical": "#4B5563", "tonalRamp": ["#111827", "#1F2937", "#374151", "#4B5563", "#6B7280", "#9CA3AF", "#D1D5DB", "#F9FAFB"] },
+      "ink-muted": { "role": "neutral", "displayName": "Ink Muted", "canonical": "#6B7280", "tonalRamp": ["#111827", "#1F2937", "#374151", "#4B5563", "#6B7280", "#9CA3AF", "#D1D5DB", "#F9FAFB"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Public page heroes and landmark statements only; never portal chrome." },
+      "headline": { "displayName": "Headline", "purpose": "Page titles." },
+      "title": { "displayName": "Title", "purpose": "Section headers and card titles." },
+      "body": { "displayName": "Body", "purpose": "Long-form reading; portal UI defaults one step smaller." },
+      "label": { "displayName": "Label", "purpose": "Interface workhorse: buttons, labels, meta, dense data." }
+    },
+    "shadows": [
+      { "name": "shadow-sm", "value": "0 1px 2px rgba(0,0,0,0.05)", "purpose": "Resting cards; barely-there separation from the page tint." },
+      { "name": "shadow-md", "value": "0 4px 6px -1px rgba(0,0,0,0.1)", "purpose": "Hover lift on interactive cards; popovers." },
+      { "name": "shadow-lg", "value": "0 10px 15px -3px rgba(0,0,0,0.1)", "purpose": "Overlays, mobile drawers, modals, dropdowns." },
+      { "name": "hero-glow", "value": "0 24px 60px -12px rgba(6,70,41,0.35)", "purpose": "Deep green-tinted glow under dark-green public hero panels only." }
+    ],
+    "motion": [
+      { "name": "duration-fast", "value": "150ms", "purpose": "Color/opacity transitions on small controls." },
+      { "name": "duration-standard", "value": "200ms", "purpose": "Default state transitions (buttons, cards, nav)." },
+      { "name": "press", "value": "scale(0.98)", "purpose": "Active-state compression on buttons." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The single action voice: LMSA green fill, white text, 8px radius.",
+      "html": "<button class=\"ds-btn-primary\">Register for event</button>",
+      "css": ".ds-btn-primary { background: #0C8950; color: #fff; border: none; border-radius: 8px; padding: 12px 24px; font-family: Inter, system-ui, sans-serif; font-size: 14px; font-weight: 500; cursor: pointer; transition: background 200ms, transform 150ms; } .ds-btn-primary:hover { background: #0A7343; } .ds-btn-primary:active { background: #085C36; transform: scale(0.98); } .ds-btn-primary:focus-visible { outline: none; box-shadow: 0 0 0 2px #fff, 0 0 0 4px #0C8950; }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Outlined alternative: transparent, 2px green border, floods green tint on hover.",
+      "html": "<button class=\"ds-btn-secondary\">View all events</button>",
+      "css": ".ds-btn-secondary { background: transparent; color: #0C8950; border: 2px solid #0C8950; border-radius: 8px; padding: 10px 22px; font-family: Inter, system-ui, sans-serif; font-size: 14px; font-weight: 500; cursor: pointer; transition: background 200ms, transform 150ms; } .ds-btn-secondary:hover { background: #E8F7F0; } .ds-btn-secondary:active { background: #C1E8D6; transform: scale(0.98); } .ds-btn-secondary:focus-visible { outline: none; box-shadow: 0 0 0 2px #fff, 0 0 0 4px #0C8950; }"
+    },
+    {
+      "name": "Text Input",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "White field, 1px border, 8px radius; green focus ring with border drop-away.",
+      "html": "<input class=\"ds-input\" placeholder=\"Search events\" />",
+      "css": ".ds-input { width: 100%; box-sizing: border-box; background: #fff; color: #111827; border: 1px solid #D1D5DB; border-radius: 8px; padding: 10px 16px; font-family: Inter, system-ui, sans-serif; font-size: 14px; } .ds-input::placeholder { color: #6B7280; } .ds-input:focus { outline: none; border-color: transparent; box-shadow: 0 0 0 2px #29A37D; } .ds-input:disabled { background: #F3F4F6; cursor: not-allowed; }"
+    },
+    {
+      "name": "Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "The portal's base surface: white, 1px border, 12px radius, flat at rest.",
+      "html": "<div class=\"ds-card\"><h3>Anatomy of the Heart — Guest Lecture</h3><p>Apr 12, 2026 · John F. Kennedy Medical Center</p></div>",
+      "css": ".ds-card { background: #fff; border: 1px solid #E5E7EB; border-radius: 12px; padding: 24px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); font-family: Inter, system-ui, sans-serif; transition: box-shadow 200ms; } .ds-card h3 { margin: 0 0 4px; font-size: 16px; font-weight: 600; color: #111827; } .ds-card p { margin: 0; font-size: 14px; color: #4B5563; } .ds-card:hover { box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }"
+    },
+    {
+      "name": "Portal Nav Item",
+      "kind": "nav",
+      "refersTo": "card",
+      "description": "Sidebar row: 44px touch target, 20px icon, green tint + bold on active.",
+      "html": "<nav class=\"ds-nav\"><a class=\"ds-nav-item ds-nav-active\" href=\"#\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3\" y=\"3\" width=\"7\" height=\"9\" rx=\"1\"/><rect x=\"14\" y=\"3\" width=\"7\" height=\"5\" rx=\"1\"/><rect x=\"14\" y=\"12\" width=\"7\" height=\"9\" rx=\"1\"/><rect x=\"3\" y=\"16\" width=\"7\" height=\"5\" rx=\"1\"/></svg>Dashboard</a><a class=\"ds-nav-item\" href=\"#\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3\" y=\"4\" width=\"18\" height=\"18\" rx=\"2\"/><line x1=\"16\" y1=\"2\" x2=\"16\" y2=\"6\"/><line x1=\"8\" y1=\"2\" x2=\"8\" y2=\"6\"/><line x1=\"3\" y1=\"10\" x2=\"21\" y2=\"10\"/></svg>Events</a></nav>",
+      "css": ".ds-nav { display: flex; flex-direction: column; gap: 2px; font-family: Inter, system-ui, sans-serif; } .ds-nav-item { display: flex; align-items: center; gap: 12px; min-height: 44px; padding: 0 12px; border-radius: 8px; font-size: 14px; font-weight: 500; color: #4B5563; text-decoration: none; transition: background 150ms, color 150ms; } .ds-nav-item:hover { background: #F3F4F6; color: #111827; } .ds-nav-active { background: #E8F7F0; color: #064629; font-weight: 600; }"
+    },
+    {
+      "name": "Status Chip",
+      "kind": "chip",
+      "refersTo": "card",
+      "description": "Pill with dot: tint background, strong same-hue text; color is data.",
+      "html": "<span class=\"ds-chip ds-chip-active\"><span class=\"ds-chip-dot\"></span>Active</span> <span class=\"ds-chip ds-chip-pending\"><span class=\"ds-chip-dot\"></span>Pending</span> <span class=\"ds-chip ds-chip-inactive\"><span class=\"ds-chip-dot\"></span>Inactive</span>",
+      "css": ".ds-chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 9999px; font-family: Inter, system-ui, sans-serif; font-size: 12px; font-weight: 600; } .ds-chip-dot { width: 6px; height: 6px; border-radius: 9999px; background: currentColor; } .ds-chip-active { background: #E8F7F0; color: #064629; } .ds-chip-pending { background: #FFF8E1; color: #C68400; } .ds-chip-inactive { background: #F3F4F6; color: #4B5563; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Clinic Chart",
+    "overview": "Everything in this system behaves like a well-kept patient chart: ordered, legible, calm, and impossible to misread. LMSA is a medical association; its interfaces borrow clinical discipline — dense but breathable information, hairline rules instead of heavy chrome, one confident brand green where a decision needs emphasis. Nothing shouts; everything answers. Depth is carried by 1px borders and tonal steps, never by stacked shadows. The brand green is the single voice of action and identity; semantic color families are informative labels, not decoration.",
+    "keyCharacteristics": [
+      "Border-led, flat surfaces; shadow is a state response, not a resting condition",
+      "One action color (LMSA green #0C8950); semantic families carry meaning, never mood",
+      "Compact, scan-friendly density with 44px minimum touch targets",
+      "Inter for interface, Merriweather for editorial/display moments",
+      "Rounded-lg (8px) controls, rounded-xl (12px) cards"
+    ],
+    "rules": [
+      { "name": "The One Voice Rule", "body": "LMSA green is the only color that may signal \"act here.\" The semantic families inform; they never invite.", "section": "colors" },
+      { "name": "The Flag Rule", "body": "Flag red (#DC143C) appears in flag identity and destructive confirmations. Nowhere else.", "section": "colors" },
+      { "name": "The Chart Rule", "body": "Color is data. If a color doesn't tell the member something true (status, category, severity), it doesn't appear.", "section": "colors" },
+      { "name": "The Workhorse Rule", "body": "text-sm (14px) is the default interface size; text-xs (12px) only for timestamps and captions.", "section": "typography" },
+      { "name": "The Flat-By-Default Rule", "body": "Surfaces are flat at rest. A shadow appears only as a response (hover, focus, open) or as an overlay boundary.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do use LMSA green (#0C8950) for every primary action, link, and active navigation state.",
+      "Do carry structure with 1px #E5E7EB borders and tonal steps; keep resting surfaces flat.",
+      "Do keep 44px minimum touch targets on interactive rows, links, and icon buttons.",
+      "Do use text-sm (14px) as the interface default and scale type up only for headings.",
+      "Do map status to the semantic families: green active, amber pending, gray inactive, red suspended."
+    ],
+    "donts": [
+      "Don't introduce a new accent color or use semantic families decoratively.",
+      "Don't stack shadows or elevate resting surfaces.",
+      "Don't use Flag Red outside flag identity and destructive actions.",
+      "Don't mix radius scales within a composite.",
+      "Don't use Merriweather inside portal chrome or data UI."
+    ]
+  }
+}

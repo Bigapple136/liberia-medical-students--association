@@ -5498,3 +5498,78 @@ don't claim a browser pass happened if it didn't.
 ### Report
 
 *(agent fills in on completion)*
+
+## T34 — Portal app shell: make /portal a real application
+
+**Branch:** `task/portal-app-shell`
+**Status:** done
+**Depends on:** T30 (portal dashboard real data)
+
+### What changed
+
+Run via the `impeccable` skill (v4.1.3): init → document → critique → shape → build, per
+the skill's own flow. Request: "make the portal more like an application, improve UI/UX."
+
+New durable design artifacts (repo root):
+1. `PRODUCT.md` — confirmed product record (init interview): primary user = current
+   medical students; portal roadmap confirmed (events hub, resources, dues,
+   applications); binding constraint = mobile-first, low bandwidth; roles/statuses.
+2. `DESIGN.md` + `.impeccable/design.json` — incumbent design system captured
+   ("The Clinic Chart": border-led flat surfaces, one action color, semantic
+   families, Inter/Merriweather split, rounded-lg controls / xl cards), extracted
+   from code evidence (tailwind.config.js, .btn/.card/.input recipes, usage stats).
+3. `.impeccable/critique/2026-10-06T11-43-21Z__lmsa-website-src-pages-portal-dashboardpage-jsx.md`
+   — scored critique snapshot: 25/40, 1 P0 + 2 P1 + 2 P2. P0 = portal is a dead end
+   (no nav, no sign-out, no way back). Degraded-run banner per skill rules
+   (no sub-agent tool in session; browser blocked by auth + no Supabase env).
+
+Code (lmsa-website):
+4. `src/layouts/PortalLayout.jsx` — full rebuild of the shell:
+   - Sidebar nav (real NavLinks, active state tint+weight+`aria-current`) with the
+     only existing destination (Dashboard); roadmap items (My Events, Resources,
+     Dues, Applications) render as disabled rows with "Soon" chips (confirmed
+     shape decision) — no dead 404 links; "More, coming soon" caption group.
+   - Support links: Help & contact → `/contact` (uses the T37 CONTACT_EMAIL page),
+     Back to LMSA site → `/`.
+   - Identity block pinned bottom: initials avatar (name → email → "?" fallbacks),
+     full name with truncation, membership `StatusChip`, Sign out (existing
+     `logout()` from AuthContext) — fixes the P0 dead end and the no-identity P2.
+   - Mobile: proper sticky top bar (8px wordmark + menu button, 44px target)
+     replacing the floating hamburger that overlapped content; drawer (scrim,
+     focus trap on Tab, Escape closes + refocuses toggle, body scroll lock,
+     `aria-expanded`/`aria-controls`, closes on route change; closed drawer
+     removed from the a11y tree via visibility toggle while keeping the
+     transition; `role="dialog"` + `aria-modal`).
+   - Skip link retained; drawer reuses sidebar content (one source of truth).
+5. `src/components/common/StatusChip.jsx` — NEW shared primitive: membership
+   status chip per DESIGN.md doctrine (green active / amber pending / gray
+   inactive / red suspended / neutral "—" unknown), dot + label. Ready for the
+   dashboard pass to reuse.
+
+Not changed: DashboardPage.jsx (dashboard hierarchy is a separate agreed pass),
+routes, services, public site.
+
+### Verification
+
+- `npx eslint src/layouts/PortalLayout.jsx src/components/common/StatusChip.jsx` → exit 0
+- `npm run build` → exit 0 (pre-existing >500kB chunk warning only)
+- Batched self-inspection round (skill's bounded loop): found + fixed 2 defects —
+  desktop sidebar height (was `top-16` with a dead 64px strip, now full-height
+  pinned) and closed-drawer a11y tree leak. One confirm round: eslint build re-run
+  exit 0. Stopped per bounded-verification ceiling.
+- Browser capture NOT possible from this sandbox: `/portal` is behind Supabase
+  auth and no env credentials exist here (same limitation as T39's runtime probes).
+
+### What could NOT be verified from this sandbox
+
+- No live session → visual/interaction behavior (drawer open/close, focus trap,
+  Escape, scroll lock, sticky top bar) verified by code reasoning only.
+- Real API shapes (`user.full_name`, `membership_status`) come from AuthContext
+  merge code; handled defensively (fallbacks) but not exercised live.
+
+### Deviations from spec
+
+- None against the confirmed shape brief. Brief is persisted at
+  `.impeccable/surfaces/portal-shell.md`; dashboard hierarchy pass deliberately
+  deferred (user chose shell-first, shape-then-build).
+
