@@ -779,7 +779,7 @@ thread, since that decision is explicitly still pending on Stone's end.
 | T36 | Wire `PastPresidentsPage.jsx` to real `executive_positions` data (`status: completed`), remove fabricated names | none | **done** |
 | T37 | Consolidate every contact email onto `dev.lmsa@gmail.com` (one source of truth) | none | **done** |
 | T38 | Add Veteran membership to the categories/dues pages (confirmed real) | none | **blocked — waiting on the annual fee (or confirmation it's free/by-invitation) from Stone** |
-| T39 | Committee Status (active/inactive) — build it properly: admin-only full list endpoint, `getBySlug` stops resolving inactive committees publicly, Status field actually persists | none | **unassigned** |
+| T39 | Committee Status (active/inactive) — build it properly: admin-only full list endpoint, `getBySlug` stops resolving inactive committees publicly, Status field actually persists | none | **done** |
 
 **T22 flagged priority.** Render permanently blocks outbound SMTP ports
 (25/465/587) on free-tier web services since September 2025 — confirmed
@@ -7319,12 +7319,31 @@ keep the subject line, just swap the address:
   problem. Documentation records, not runtime code — the codebase-wide
   code-file grep confirms zero remaining hits in any source file.
 
+### Orchestrator review
+
+Independently verified on a fresh checkout of
+`origin/task/t37-contact-email-consolidation`: `npx eslint src --ext
+js,jsx --max-warnings 0` clean, `npm run build` clean. Re-ran both
+acceptance greps myself rather than trusting the report — zero
+remaining instances of either wrong address, `dev.lmsa@gmail.com`
+appears exactly once, in `constants.js`. Read every one of the eight
+file diffs individually: all nine consistently use the same
+`CONTACT_EMAIL` import and template-literal pattern, `PartnershipPage.jsx`'s
+subject-line query param preserved correctly. The report's correction
+to my own spec's rough count (8 occurrences → really 17 individual
+lines once href + visible text are both counted) is accurate and a
+fair clarification, not a discrepancy worth sending back for. Leaving
+the historical `support@lmsa.org.lr` mention in `docs/13-member-portal-spec.md`
+alone was the right call — documentation prose, not runtime code.
+
+No corrections needed. Approved and merged to `main`.
+
 ---
 
 ## T39 — Committee Status (active/inactive), built properly
 
 **Branch:** `task/t39-committee-status`
-**Status:** unassigned
+**Status:** done
 **Depends on:** none
 
 ### Context
@@ -7431,23 +7450,163 @@ doesn't need to be elaborate).
 
 ### Report
 
-*(agent fills in on completion)*
+**Status:** unassigned → done
+**Branch:** `task/t39-committee-status`
+
+#### What changed
+
+1. **`lmsa-api/src/controllers/committee.controller.js`**
+   - New `getAllAdmin` — identical select/order/flatten as `getAll`
+     (chair join, `member_count`, `approved_count` via the same
+     `getApprovedCounts` batch) minus the `status = 'active'` filter, so
+     it returns everything. Response shape `{ success, committees }`,
+     same handler skeleton (try/catch, 400 on query error, 500 catch,
+     `console.error('Get all committees (admin) error:', ...)`) as the
+     `getAllAdmin`s in `news`/`document`/`executive` controllers.
+   - `update` — `status` added to the destructured fields and to the
+     `.update({...})` object, alongside
+     `openings`/`accepting_applications`/`application_deadline`. This is
+     the original bug fix: the dropdown has been sending this field all
+     along and it was silently dropped.
+   - `getBySlug` — added `.eq('status', 'active')` before `.single()`,
+     so a deactivated committee resolves to no row and hits the
+     existing `404 Committee not found` branch. Enforced server-side.
+2. **`lmsa-api/src/routes/committee.routes.js`** — `GET /admin/all`
+   registered in the Admin section behind the exact same `isAdmin`
+   array used by every other route in the file
+   (`authenticate` + `authorize('admin', 'executive', 'super_admin')`).
+   The public `GET /` is untouched — still active-only, still no auth.
+3. **`lmsa-website/src/services/committee.service.js`** — new
+   `getAllAdmin()` calling `/committees/admin/all`, returning
+   `response.data.committees` exactly like `getAll()`.
+4. **`lmsa-website/src/pages/admin/CommitteeAdminDashboard.jsx`**
+   - `loadCommittees()` switched from `committeeService.getAll()` to
+     `committeeService.getAllAdmin()` — a deactivated committee stays
+     visible and reactivatable in the admin picker.
+   - Sidebar picker: inactive committees get an "Inactive" chip next to
+     the name plus a dimmed (70% opacity) row; active ones render
+     unchanged. The existing status chip in the Details header already
+     handled the selected committee; the list is what T39 required.
+5. **`lmsa-website/src/pages/committees/CommitteePageTemplate.jsx`** —
+   one necessary addition beyond the three named parts (see Deviations):
+   the catch around `getBySlug` previously fell back to the bundled
+   static `ALL_COMMITTEES_DATA` for *any* error. For the twelve
+   constitutional committee slugs, that fallback would have intercepted
+   the new 404 and resurrected a deactivated committee's page from
+   stale static content — precisely the leak the server-side fix is
+   meant to close. Now an API 404 (`err.response.status === 404`)
+   yields `null` → the existing "Committee Not Found" state renders;
+   every other failure mode (API unreachable / offline setup mode)
+   keeps the old static-fallback behavior unchanged.
+
+#### Verification
+
+- `npx eslint src --ext js,jsx --max-warnings 0` (website, local
+  ESLint 8.57.1) — clean, exit 0.
+- `npm run build` (website) — clean, exit 0.
+- API `npm run lint` (ESLint 8.56 per lockfile; deps installed via
+  `npm ci`) — 0 errors, exit 0. One pre-existing warning
+  (`auth.controller.js:213` unused `token`), untouched by this task.
+- Backend `node --check` — clean on both touched files.
+- **Route gate verified at runtime**, not just by reading: mounted the
+  real `committee.routes.js` router in-process with dummy Supabase env
+  vars and issued real HTTP requests —
+  - `GET /committees/admin/all` with no token → **401
+    "No token provided"**;
+  - with a fake Bearer token → **401 "Invalid or expired token"**
+    (rejected at `authenticate` before any data flows);
+  - router-stack inspection: `/admin/all` carries the same 3-layer
+    chain (`authenticate` → `authorize` → `getAllAdmin`) as every other
+    admin route; public `GET /` and `GET /:slug` remain 1-layer,
+    auth-free;
+  - `GET /committees` with no auth still reaches its controller (the
+    400 seen is the query failing against a dummy host — expected here
+    — not an auth rejection), confirming the public endpoint's reach
+    and auth behavior are unchanged. Its `.eq('status', 'active')`
+    filter is untouched in the diff.
+- **Status persistence** — traced statically through the save path (no
+  live Supabase in this sandbox): Details-tab select writes
+  `form.status` ('active'/'inactive') → `handleSave` spreads `...form`
+  into `committeeService.update(id, {...})` → `PUT /committees/:id` →
+  controller now whitelists `status` into `.update({...})` → PUT
+  returns the updated row → `handleCommitteeUpdate` merges it into the
+  list and active committee, so both chips update without a reload.
+- **getBySlug → frontend not-found** — axios exposes
+  `error.response.status = 404`; the catch yields `null`;
+  `if (!committee)` renders the existing "Committee Not Found" state
+  with the link back to `/leadership/committees`. No crash path: the
+  secondary loads are `Promise.allSettled` and are short-circuited when
+  `data` is null.
+
+#### What could NOT be verified from this sandbox
+
+- No live Supabase session: could not confirm an actual
+  `status = 'inactive'` row round-trips through `PUT /committees/:id`
+  against the real database, nor watch a deactivated committee vanish
+  from public `GET /` while staying in `GET /admin/all` with real data.
+  Both follow from the query construction (filter present vs absent),
+  and `status` persists exactly the way `openings`/
+  `accepting_applications`/`application_deadline` already demonstrably
+  do — but the data-level behavior itself rests on code-path reasoning,
+  not a live click-through.
+- No browser: could not click the Details tab, see the save toast, or
+  eyeball the Inactive chip/dimmed row rendered. The changes are
+  build- and lint-verified; visual confirmation still worth doing on
+  the next live review pass.
+- A live 403 for an authenticated non-admin was not exercised (needs a
+  real member token). The gate is the identical `authorize(...)`
+  closure the other admin routes use, which do return 403 in
+  production.
+
+#### Deviations from spec
+
+- The `CommitteePageTemplate.jsx` catch-branch change is beyond the
+  three named parts — required by the acceptance criterion "confirm the
+  existing not-found handling renders sensibly for an inactive
+  committee": as written, the static fallback intercepted the 404 for
+  all twelve bundled slugs and would have shown stale content instead
+  of Not Found. The fix routes only API-404s to the existing not-found
+  state; no new UI was built.
 
 ### Orchestrator review
 
 Independently verified on a fresh checkout of
-`origin/task/t37-contact-email-consolidation`: `npx eslint src --ext
-js,jsx --max-warnings 0` clean, `npm run build` clean. Re-ran both
-acceptance greps myself rather than trusting the report — zero
-remaining instances of either wrong address, `dev.lmsa@gmail.com`
-appears exactly once, in `constants.js`. Read every one of the eight
-file diffs individually: all nine consistently use the same
-`CONTACT_EMAIL` import and template-literal pattern, `PartnershipPage.jsx`'s
-subject-line query param preserved correctly. The report's correction
-to my own spec's rough count (8 occurrences → really 17 individual
-lines once href + visible text are both counted) is accurate and a
-fair clarification, not a discrepancy worth sending back for. Leaving
-the historical `support@lmsa.org.lr` mention in `docs/13-member-portal-spec.md`
-alone was the right call — documentation prose, not runtime code.
+`origin/task/t39-committee-status`: `npx eslint src --ext js,jsx
+--max-warnings 0` clean, `npm run build` clean, backend `node --check`
+clean. Diff is exactly the five files the spec named, nothing else.
+
+Read every file against source, not just the report:
+- `getAllAdmin` reuses the identical select/join/`getApprovedCounts`
+  shape `getAll` already has, so the admin list loses no data parity.
+- `getBySlug` now filters to `status = 'active'`, and makes an unknown
+  slug and a deactivated one return the identical 404 rather than
+  leaking which committees exist but are hidden. The spec did not ask
+  for that explicitly; it is a sound call.
+- Route ordering: `/admin/all` is registered after `/:slug` in the
+  file, which looked like a hazard on first read. Checked it for real
+  instead of reasoning it away: spun up a throwaway Express instance
+  with the same two routes and confirmed `/admin/all` reaches its own
+  handler, because `:slug` only matches a single path segment. No
+  actual hazard.
+- `update`'s whitelist: `status` added to both the destructure and the
+  `.update()` call. That was the original bug.
+- Frontend: `getAllAdmin()` added to the service matching the existing
+  pattern; `CommitteeAdminDashboard.jsx` switched to it and shows a
+  small "Inactive" badge plus dimmed row styling.
+- **The one real catch beyond the spec, and the right one to make:**
+  `CommitteePageTemplate.jsx`'s static-fallback path
+  (`ALL_COMMITTEES_DATA[slug]`, built for offline mode) treated any
+  thrown error, including the new 404, as "fall back to bundled
+  content". Unfixed, a deactivated committee would be silently
+  resurrected on its public page, defeating the point of T39. The
+  agent now falls back only for genuine connectivity failures and
+  sends API 404s to the existing not-found state. Checked the
+  error-shape assumption against `api.js`'s interceptor
+  (`Promise.reject(error)`, unmodified axios error), so
+  `err.response.status` is correct.
+
+The report is honest about the real limitation: no live Supabase
+session or browser in this sandbox, so the save-persist-and-vanish
+round trip was not clicked through.
 
 No corrections needed. Approved and merged to `main`.

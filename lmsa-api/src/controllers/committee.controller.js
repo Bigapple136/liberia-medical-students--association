@@ -69,6 +69,49 @@ export const getAll = async (req, res) => {
   }
 };
 
+// ─── GET /api/committees/admin/all (admin) ──────────────────────────────────
+// Same select/order/flattening as getAll, but no status filter: the admin
+// picker must keep showing committees an admin just deactivated, or they'd
+// vanish from every admin surface the moment the toggle flips (T39).
+export const getAllAdmin = async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from('committees')
+      .select(`
+        *,
+        chair:chair_id ( id, full_name, profile_photo_url, year_level ),
+        member_count:committee_members(count)
+      `)
+      .order('name');
+
+    if (error) {
+      return res.status(400).json({
+        success: false,
+        message: 'Failed to fetch committees',
+      });
+    }
+
+    // Flatten counts (same as getAll)
+    const approvedCounts = await getApprovedCounts(data.map(c => c.id));
+    const committees = data.map(c => ({
+      ...c,
+      member_count: c.member_count?.[0]?.count ?? 0,
+      approved_count: approvedCounts[c.id] ?? 0,
+    }));
+
+    res.json({
+      success: true,
+      committees,
+    });
+  } catch (error) {
+    console.error('Get all committees (admin) error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch committees',
+    });
+  }
+};
+
 // ─── GET /api/committees/:slug ────────────────────────────────────────────────
 export const getBySlug = async (req, res) => {
   try {
@@ -82,6 +125,10 @@ export const getBySlug = async (req, res) => {
         vice_chair:vice_chair_id ( id, full_name, profile_photo_url, year_level )
       `)
       .eq('slug', slug)
+      // Public detail view resolves *active* committees only — an unknown
+      // slug and a deactivated one are indistinguishable to the public (both
+      // 404). Admin surfaces go through getAllAdmin instead (T39).
+      .eq('status', 'active')
       .single();
 
     if (error || !data) {
@@ -119,7 +166,7 @@ export const update = async (req, res) => {
     const {
       name, description, mandate, key_activities, email, meeting_schedule,
       chair_id, vice_chair_id, icon,
-      openings, accepting_applications, application_deadline,
+      openings, accepting_applications, application_deadline, status,
     } = req.body;
 
     const { data, error } = await supabase
@@ -137,6 +184,7 @@ export const update = async (req, res) => {
         openings,
         accepting_applications,
         application_deadline,
+        status,
         updated_at: new Date().toISOString(),
       })
       .eq('id', id)
