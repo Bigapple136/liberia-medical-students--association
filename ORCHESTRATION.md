@@ -7504,3 +7504,46 @@ doesn't need to be elaborate).
   all twelve bundled slugs and would have shown stale content instead
   of Not Found. The fix routes only API-404s to the existing not-found
   state; no new UI was built.
+
+### Orchestrator review
+
+Independently verified on a fresh checkout of
+`origin/task/t39-committee-status`: `npx eslint src --ext js,jsx
+--max-warnings 0` clean, `npm run build` clean, backend `node --check`
+clean. Diff is exactly the five files the spec named, nothing else.
+
+Read every file against source, not just the report:
+- `getAllAdmin` reuses the identical select/join/`getApprovedCounts`
+  shape `getAll` already has, so the admin list loses no data parity.
+- `getBySlug` now filters to `status = 'active'`, and makes an unknown
+  slug and a deactivated one return the identical 404 rather than
+  leaking which committees exist but are hidden. The spec did not ask
+  for that explicitly; it is a sound call.
+- Route ordering: `/admin/all` is registered after `/:slug` in the
+  file, which looked like a hazard on first read. Checked it for real
+  instead of reasoning it away: spun up a throwaway Express instance
+  with the same two routes and confirmed `/admin/all` reaches its own
+  handler, because `:slug` only matches a single path segment. No
+  actual hazard.
+- `update`'s whitelist: `status` added to both the destructure and the
+  `.update()` call. That was the original bug.
+- Frontend: `getAllAdmin()` added to the service matching the existing
+  pattern; `CommitteeAdminDashboard.jsx` switched to it and shows a
+  small "Inactive" badge plus dimmed row styling.
+- **The one real catch beyond the spec, and the right one to make:**
+  `CommitteePageTemplate.jsx`'s static-fallback path
+  (`ALL_COMMITTEES_DATA[slug]`, built for offline mode) treated any
+  thrown error, including the new 404, as "fall back to bundled
+  content". Unfixed, a deactivated committee would be silently
+  resurrected on its public page, defeating the point of T39. The
+  agent now falls back only for genuine connectivity failures and
+  sends API 404s to the existing not-found state. Checked the
+  error-shape assumption against `api.js`'s interceptor
+  (`Promise.reject(error)`, unmodified axios error), so
+  `err.response.status` is correct.
+
+The report is honest about the real limitation: no live Supabase
+session or browser in this sandbox, so the save-persist-and-vanish
+round trip was not clicked through.
+
+No corrections needed. Approved and merged to `main`.
