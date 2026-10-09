@@ -780,6 +780,9 @@ thread, since that decision is explicitly still pending on Stone's end.
 | T37 | Consolidate every contact email onto `dev.lmsa@gmail.com` (one source of truth) | none | **done** |
 | T38 | Add Veteran membership to the categories/dues pages (confirmed real) | none | **blocked — waiting on the annual fee (or confirmation it's free/by-invitation) from Stone** |
 | T39 | Committee Status (active/inactive) — build it properly: admin-only full list endpoint, `getBySlug` stops resolving inactive committees publicly, Status field actually persists | none | **done** |
+| T40 | Portal app shell (pushed directly by Stone, stale base `ac0bf59`) | none | **superseded — not merged; `main` already has a more complete shell** |
+| T41 | Portal dashboard hierarchy (stacked on T40, stale base) | T40 | **superseded — not merged; would resurrect removed `justLoggedIn` code and overwrite `main`'s dashboard** |
+| T42 | Admin UI/UX: shell parity, contrast, device matrix (pushed directly, stale base, 8 code conflicts) | none | **needs rework before merge — see 'T40/T41/T42 review' section** |
 
 **T22 flagged priority.** Render permanently blocks outbound SMTP ports
 (25/465/587) on free-tier web services since September 2025 — confirmed
@@ -7610,3 +7613,94 @@ session or browser in this sandbox, so the save-persist-and-vanish
 round trip was not clicked through.
 
 No corrections needed. Approved and merged to `main`.
+
+
+---
+
+## T40 / T41 / T42 review: branches pushed directly by Stone (2026-10-01)
+
+Three branches arrived on the remote outside the spec process. All were
+forked from `ac0bf59`, i.e. before T32 through T39 landed, and all three
+conflict with current `main`. Reviewed with the same rigor as any task
+branch: diffs read against their fork point, each branch trial-merged
+into a scratch branch to list conflicts (discarded afterward), and every
+claim below that could be checked against `main` was checked. Nothing
+from these branches has been merged.
+
+**T40 (portal app shell): superseded.** Its own report diagnoses the
+portal as "a dead end (no nav, no sign-out, no way back)". That was true
+at its fork point and is no longer true: `main` already has sidebar
+nav, sign-out, a mobile drawer with focus return, and real `/portal/events`
+and `/portal/profile` pages (the earlier portal bundle). T40 builds
+those destinations as disabled "Soon" rows, adds a second status
+primitive (`StatusChip.jsx`) next to the existing `StatusBadge.jsx`, and
+rewrites `PortalLayout.jsx` wholesale. Merging it would downgrade the
+shell. Not merged.
+
+**T41 (portal dashboard hierarchy): superseded, and actively unsafe to
+merge.** Stacked on T40. Its report says it preserved the
+`justLoggedIn` admin-redirect logic verbatim; that logic was removed on
+purpose in T35 (zero references on `main` now). Merging would bring
+dead code back and overwrite the dashboard rework already on `main`.
+The "status-led lead panel" is a legitimate alternative to `main`'s
+"this month" priority card, but choosing between them is a design
+decision for Stone, not something to merge by accident. Not merged.
+
+**Not evaluated, flagging honestly:** T41 also adds `PRODUCT.md`,
+`DESIGN.md` and `.impeccable/` artifacts. I did not read their contents
+or judge their accuracy against current code, so they are neither
+approved nor rejected. If Stone wants them, they should land from a
+clean branch off `main`, reviewed on their own.
+
+**T42 (admin UI/UX): worth keeping, not mergeable as it stands.** The
+substance is good: an admin shell with portal parity, contrast fixes,
+container rhythm, and a device-matrix pass that reports finding and
+fixing a real bug. Four things block the merge:
+
+1. **Auth bypass in production code.** It adds a `VITE_PREVIEW_MODE ===
+   'admin'` branch to `AuthContext.jsx` that fabricates a `super_admin`
+   client session. The backend still enforces roles from the real JWT,
+   so this is not a data-access hole, but it is a client-side auth
+   override compiled into the one file that gates every protected
+   route, safe only as long as nobody ever sets that env var in a
+   deploy. It also edits the file T35 fixed. Preview tooling must not
+   live in `AuthContext.jsx`.
+2. **Unreviewed WIP from another task.** The branch includes commit
+   `9986b4f` "wip(t33): checkpoint a11y audit work in progress (18
+   files)": 118 inserted lines across shared components (`Input.jsx`,
+   `Select.jsx`, `styles/index.css`) and most admin pages. It is a
+   mid-flight snapshot, different from T33's approved final result
+   (three layouts plus `LeadershipPage`). Same working-tree
+   contamination the T32 report disclosed. None of it has been reviewed.
+3. **Stale base.** Eight code files conflict with `main`
+   (`PortalLayout`, `DashboardPage`, `PastPresidentsPage`,
+   `DocumentsAdminPage`, `CommitteeAdminDashboard`, and others). Several
+   of its fixes already exist on `main` (the dead Announcements nav item
+   is gone; the amber contrast fixes landed), so a naive merge would
+   fight good code with equivalent code.
+4. **Committed binaries.** Device-matrix PNG screenshots are committed
+   into the repo.
+
+### T42 rework brief
+
+Start a fresh branch from current `main` (`task/t42-admin-ui-ux-v2`).
+Do not rebase the old chain; port only T42's own work.
+
+- Exclude commit `9986b4f` entirely and anything from the T40/T41 lineage.
+- `AuthContext.jsx` must end with **zero diff** from `main`. If the
+  preview harness is kept, the mock session lives wholly in `src/dev/`
+  (a dev-only wrapper around the app), or is guarded by
+  `import.meta.env.DEV` so it cannot compile into a production build
+  whatever env vars are set. T35's loading-race fix must be untouched.
+- Keep: `AdminLayout` shell parity, truthful nav, contrast and rhythm
+  fixes, **only where not already on `main`**. Where `main` already has
+  an equivalent fix, take `main`'s.
+- No committed PNGs. Put the device-matrix results in the report as a
+  table.
+- Admin shell is a UI surface, so the Design/UI standard applies: run
+  the impeccable audit/critique and disclose it per that standard.
+- Acceptance: eslint and build clean; backend untouched; a grep of
+  `dist/` for `VITE_PREVIEW_MODE`, `preview-user`, `mockAuth` returns
+  nothing; admin login still lands on `/admin/dashboard` and student
+  login on `/` (T35 behaviour unchanged); no regression to the committee
+  Status work from T39 in `CommitteeAdminDashboard.jsx`.
