@@ -7704,3 +7704,44 @@ Do not rebase the old chain; port only T42's own work.
   nothing; admin login still lands on `/admin/dashboard` and student
   login on `/` (T35 behaviour unchanged); no regression to the committee
   Status work from T39 in `CommitteeAdminDashboard.jsx`.
+
+---
+
+## 2026-10-10: caveman skill installed
+
+Stone asked for https://github.com/JuliusBrussee/caveman to be installed as
+a skill. Installed to `.agents/skills/caveman/`, next to `impeccable` and
+`grill-me`.
+
+The upstream repo is a full toolchain (CLI, proxy, editor extension, hooks,
+installers, 22 skills), so "install" was scoped to the one skill that was
+asked for: the core `caveman` skill, two markdown files. Both were read in
+full before installing. No scripts, no network calls. `SKILL.md` is
+byte-identical to upstream at commit `2e08b91` (release 3.2.0). Apache-2.0
+and the retained MIT notice are copied alongside, with provenance and the
+update procedure in `SOURCE.md`.
+
+Not installed or run: the CLI, proxy, hooks and installers, and the sibling
+skills `ultracave` and `megacave`. The `/caveman ultra` and `/caveman wenyan`
+aliases point at those siblings, so they do nothing until the siblings are
+added.
+
+Effect on this project: it is a terse response style that turns on with
+`/caveman` (or a request for fewer tokens) and stays on until "stop caveman".
+Its own rules exempt anything persisted outside chat, so Reports in this
+file, commit messages and code comments remain normal prose. Verification
+findings in a Report should stay complete regardless; the skill itself says
+clarity beats compression.
+
+**Known gap: `skills-lock.json` was not updated.** Its entries carry a
+`computedHash` produced by whatever tool wrote the file. Reproducing the
+existing `grill-me` hash was attempted (SHA-256 of `SKILL.md`, of the whole
+folder, and 24 path-and-content variants): none matched, even though the
+local `grill-me` is byte-identical to upstream. The hash algorithm is
+unknown, so writing a value would have meant inventing it. If the lock
+file needs to be in sync, re-run the tool that created it for this skill.
+
+Not verifiable from here: this installs the skill for agents working in
+this repo, if their harness reads `.agents/skills/`. It does not register
+the skill in the orchestrator's own chat environment, whose skill directory
+is read-only.
