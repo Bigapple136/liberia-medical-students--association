@@ -778,11 +778,12 @@ thread, since that decision is explicitly still pending on Stone's end.
 | T35 | Fix login redirect: root-cause AuthContext race + role-based destination (student → Homepage, admin → Admin Dashboard) + personalized welcome | none | **done** |
 | T36 | Wire `PastPresidentsPage.jsx` to real `executive_positions` data (`status: completed`), remove fabricated names | none | **done** |
 | T37 | Consolidate every contact email onto `dev.lmsa@gmail.com` (one source of truth) | none | **done** |
-| T38 | Add Veteran membership to the categories/dues pages (confirmed real) | none | **blocked — waiting on the annual fee (or confirmation it's free/by-invitation) from Stone** |
+| T38 | Add Veteran membership (free, no dues) to the Categories and Dues pages | none | **unassigned** |
 | T39 | Committee Status (active/inactive) — build it properly: admin-only full list endpoint, `getBySlug` stops resolving inactive committees publicly, Status field actually persists | none | **done** |
-| T40 | Portal app shell (pushed directly by Stone, stale base `ac0bf59`) | none | **superseded — not merged; `main` already has a more complete shell** |
-| T41 | Portal dashboard hierarchy (stacked on T40, stale base) | T40 | **superseded — not merged; would resurrect removed `justLoggedIn` code and overwrite `main`'s dashboard** |
-| T42 | Admin UI/UX: shell parity, contrast, device matrix (pushed directly, stale base, 8 code conflicts) | none | **needs rework before merge — see 'T40/T41/T42 review' section** |
+| T40 | Portal app shell (pushed directly by Stone, stale base `ac0bf59`) | none | **closed: superseded (Stone confirmed 2026-10-10). Branch retained, not merged.** |
+| T41 | Portal dashboard hierarchy (stacked on T40, stale base) | T40 | **closed: superseded (Stone confirmed 2026-10-10). Branch retained, not merged.** |
+| T42 | Admin UI/UX: shell parity, contrast, device matrix (pushed directly, stale base, 8 code conflicts) | none | **rework approved 2026-10-10: use branch `task/t42-admin-ui-ux-v2`, brief in the T40/T41/T42 review section** |
+| T43 | Compare dashboard concepts: T41 lead status panel vs `main` "this month" priority card (decision support, no merge) | none | **unassigned** |
 
 **T22 flagged priority.** Render permanently blocks outbound SMTP ports
 (25/465/587) on free-tier web services since September 2025 — confirmed
@@ -7745,3 +7746,168 @@ Not verifiable from here: this installs the skill for agents working in
 this repo, if their harness reads `.agents/skills/`. It does not register
 the skill in the orchestrator's own chat environment, whose skill directory
 is read-only.
+
+
+---
+
+## T38: Add Veteran membership (free, no dues) to the Categories and Dues pages
+
+**Branch:** `task/t38-veteran-membership`
+**Status:** unassigned
+**Depends on:** none
+
+### Context
+
+Stone confirmed Veteran membership is real and has no fee ("free or by
+invitation"). Checked where it exists today, directly in source:
+
+- **Already present:** `MEMBERSHIP_TYPES.VETERAN` in `utils/constants.js`,
+  the admin type map in `MembershipAdminPage.jsx`, the registration
+  selector in `RegisterPage.jsx` ("Veteran Member - Alumni"), the overview
+  card in `MembershipPage.jsx` (benefits: Alumni network, Mentorship
+  opportunities, Reunion events), and backend validation in both
+  `membership.controller.js` and `auth.routes.js`.
+- **Missing:** the two pages that carry fees. `CategoriesPage.jsx` shows
+  three cards and `DuesPage.jsx` has a three-row fee table, so a visitor
+  comparing categories or reading dues never learns Veteran exists, while
+  the registration form offers it.
+
+No backend or database change is needed.
+
+**Assumption to keep visible in the report.** The answer was "free or by
+invitation". This spec treats it as: no fee, open to apply, with the
+existing admin review (every application is pending until approved)
+checking alumni status. So Veteran is **not** marked `invitationOnly`,
+because that flag makes the Categories card say "there is no
+application", which would contradict the registration form that offers
+it. If Stone wants it invitation-only instead, that is a small follow-up:
+set `invitationOnly: true` and remove it from the `RegisterPage.jsx`
+selector.
+
+### What to build
+
+Canonical order everywhere (constants, admin map, registration, the
+Membership overview) is Full, Associate, Honorary, Veteran. Append Veteran
+last on both pages so the order matches.
+
+**`lmsa-website/src/pages/public/CategoriesPage.jsx`**
+- Add a fourth entry: `name: 'Veteran Member'`, `price: 'Free'`,
+  `audience: 'Alumni and past members'` (the card renders it as "For
+  alumni and past members"), `included` reusing the three benefits
+  already published on `MembershipPage.jsx` verbatim ('Alumni network',
+  'Mentorship opportunities', 'Reunion events'), and `limits: []`.
+- Do not invent limits or new benefit claims. Whether Veteran members can
+  vote or hold office is not known to this codebase; leave `limits` empty
+  and say so in the report so Stone can confirm. An empty array renders
+  fine (the card maps over it).
+- The card grid is `md:grid-cols-3`, which would leave a lone card on a
+  second row. Change it to `md:grid-cols-2 lg:grid-cols-4`, the
+  convention already used on `JoinCommitteePage`, `MembershipPage` and
+  `MentorshipPage`.
+
+**`lmsa-website/src/pages/public/DuesPage.jsx`**
+- Append a table row after Honorary: "Veteran Member", fee "Free",
+  frequency "N/A". The Honorary row is currently the last row and has no
+  bottom border; give it `border-b border-gray-200` and leave the new last
+  row without one.
+- Update the section description to: "Membership dues are paid yearly.
+  Honorary membership is offered by invitation, and Veteran membership has
+  no fee."
+- Do not add a stat card. The stat grid shows the two priced tiers and the
+  deadline.
+
+**`lmsa-website/src/components/common/PageHero.jsx`**
+- The `/membership/categories` hero reads "Whether you are a current
+  student, associate, or honorary member..." and leaves out veterans. Make
+  it "...a current student, associate, honorary or veteran member, there is
+  a place for you in LMSA."
+
+**Do not change:** `RegisterPage.jsx`, `MembershipPage.jsx`,
+`MembershipAdminPage.jsx`, `constants.js`, or anything in `lmsa-api`.
+
+### Acceptance criteria
+
+- [ ] `npx eslint src --ext js,jsx --max-warnings 0` is clean.
+- [ ] `npm run build` is clean.
+- [ ] Veteran appears on both `CategoriesPage` and `DuesPage`, last in
+      order, matching the other pages.
+- [ ] Veteran is not marked `invitationOnly` and its card shows the "Apply
+      now" action, not the invitation-only text.
+- [ ] No benefit text beyond the three strings already on
+      `MembershipPage.jsx`, and no invented limits.
+- [ ] The categories grid does not strand a card at tablet or desktop
+      widths. State how this was checked; reasoning through the classes is
+      acceptable if no browser is available, but say so.
+- [ ] Report names the open content question (voting and office
+      eligibility for Veterans) and the invitation-only assumption.
+- [ ] Not a new or restyled surface, so no impeccable run is required
+      under the Design/UI standard.
+
+### Report
+
+*(agent fills in on completion)*
+
+---
+
+## T43: Compare dashboard concepts (decision support, no merge)
+
+**Branch:** `task/t43-dashboard-design-comparison`
+**Status:** unassigned
+**Depends on:** none
+
+### Context
+
+Stone asked for T41's "status-led lead panel" dashboard to be compared with
+the "this month" priority card now on `main`. T41 is closed as code: it is
+stacked on T40's shell, was built on a stale base, and would bring back the
+`justLoggedIn` redirect that T35 removed. So the question here is which
+dashboard idea serves members better, not whether to merge that branch.
+
+The output is a recommendation. This task commits no application code.
+
+### Method
+
+- Read-only on T41. Check out its tip into a scratch `git worktree`, read
+  its `DashboardPage.jsx` and its report, and remove the worktree
+  afterward. Never merge, rebase or cherry-pick it anywhere.
+- Evaluate both dashboards against the same scenarios, using mock data
+  that lives only in the scratch worktree and is never committed:
+  1. membership application pending
+  2. active member registered for an event within 7 days
+  3. active member, no registered events, an open event upcoming
+  4. active member with overdue dues
+  5. active member, nothing pending, nothing upcoming ("all clear")
+  6. stats endpoint failing
+  7. brand-new member with no data at all
+- Judge each on: what the member needs to know first at 375px and 1280px;
+  whether every state is truthful (no fabricated numbers or implied data);
+  keyboard and screen-reader order; reliance on color alone; mobile layout.
+- Run the impeccable `critique` on both versions of `DashboardPage.jsx`
+  per the Design/UI task standard, and disclose a degraded run or missing
+  browser per that standard. Report the scores, but they are evidence, not
+  the verdict.
+- Do not add mock auth, env-var bypasses or preview hooks to any file that
+  is committed. T42's review rejected exactly that pattern.
+
+### Deliverable
+
+A Report in this section with: a scenario-by-scenario comparison table, a
+recommendation (keep `main`'s card, adopt T41's panel, or a named hybrid
+that says exactly which parts), the cost and risks of adopting it, and, only
+if the recommendation is to change something, the text of a follow-up task
+spec. Do not implement that follow-up here.
+
+### Acceptance criteria
+
+- [ ] The diff against `main` is `ORCHESTRATION.md` only.
+- [ ] The scratch worktree is removed and T41 was not merged or
+      cherry-picked anywhere.
+- [ ] All seven scenarios are covered for both dashboards.
+- [ ] The critique run and its limits are disclosed as the standard
+      requires.
+- [ ] The report says plainly which parts could not be verified (for
+      example, no live data or no browser).
+
+### Report
+
+*(agent fills in on completion)*
