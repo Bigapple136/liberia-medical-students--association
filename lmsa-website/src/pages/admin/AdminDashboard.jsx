@@ -81,9 +81,9 @@ export default function AdminDashboard() {
   ];
 
   return (
-    <div>
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">Admin Dashboard</h1>
+    <div className="max-w-6xl mx-auto p-4 sm:p-6 space-y-6">
+      <div>
+        <h1 className="text-2xl sm:text-3xl font-bold mb-2">Admin Dashboard</h1>
         <p className="text-gray-600">
           Manage LMSA operations and members
         </p>
@@ -104,19 +104,21 @@ export default function AdminDashboard() {
       )}
 
       {/* Stats — real data only; em-dash means unavailable */}
-      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
         {stats.map(({ label, value, accent }) => (
           <Card key={label}>
             <h3 className="text-sm font-medium text-gray-600 mb-1">{label}</h3>
-            <p className={`text-2xl font-bold ${accent}`}>
-              {loading || value === null ? '—' : value}
-            </p>
+            {loading ? (
+              <div className="h-7 w-16 animate-pulse rounded bg-gray-100" aria-hidden="true" />
+            ) : (
+              <p className={`text-2xl font-bold ${accent}`}>{value === null ? '—' : value}</p>
+            )}
           </Card>
         ))}
       </div>
 
       {/* Quick Actions */}
-      <div className="mb-8">
+      <div>
         <h2 className="text-2xl font-bold mb-4">Quick Actions</h2>
         <div className="grid md:grid-cols-3 gap-4">
           {quickActions.map(({ to, icon: Icon, title, description }) => (
