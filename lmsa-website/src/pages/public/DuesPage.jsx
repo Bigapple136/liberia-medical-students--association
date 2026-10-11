@@ -34,7 +34,7 @@ export default function DuesPage() {
 
       <section className="editorial-section editorial-section-muted">
         <div className="site-container">
-          <EditorialSectionHeader eyebrow="Annual fee structure" title="Know the cost before you apply." description="Membership dues are paid yearly. Honorary membership is offered by invitation." />
+          <EditorialSectionHeader eyebrow="Annual fee structure" title="Know the cost before you apply." description="Membership dues are paid yearly. Honorary membership is offered by invitation, and Veteran membership has no fee." />
           <div className="overflow-x-auto border-y border-gray-200 bg-white">
             <table className="w-full min-w-[620px]">
               <caption className="sr-only">Annual membership fee structure by membership type</caption>
@@ -56,9 +56,14 @@ export default function DuesPage() {
                   <td className="px-5 py-5 text-center text-xl font-semibold text-lmsa-700">$15</td>
                   <td className="px-5 py-5 text-center text-gray-700">Yearly</td>
                 </tr>
-                <tr>
+                <tr className="border-b border-gray-200">
                   <td className="px-5 py-5 font-semibold text-lmsa-900">Honorary Member</td>
                   <td className="px-5 py-5 text-center text-gray-600">By invitation</td>
+                  <td className="px-5 py-5 text-center text-gray-700">N/A</td>
+                </tr>
+                <tr>
+                  <td className="px-5 py-5 font-semibold text-lmsa-900">Veteran Member</td>
+                  <td className="px-5 py-5 text-center text-gray-600">Free</td>
                   <td className="px-5 py-5 text-center text-gray-700">N/A</td>
                 </tr>
               </tbody>

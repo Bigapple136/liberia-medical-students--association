@@ -26,6 +26,13 @@ const categories = [
     limits: ['No voting rights', 'Cannot hold office'],
     invitationOnly: true,
   },
+  {
+    name: 'Veteran Member',
+    price: 'Free',
+    audience: 'Alumni and past members',
+    included: ['Alumni network', 'Mentorship opportunities', 'Reunion events'],
+    limits: [],
+  },
 ];
 
 export default function CategoriesPage() {
@@ -50,7 +57,7 @@ export default function CategoriesPage() {
       <section className="editorial-section editorial-section-muted">
         <div className="site-container">
           <EditorialSectionHeader eyebrow="Compare your options" title="Membership that meets you where you are." description="Every category has a clear role, set of privileges, and way to participate in the LMSA community." />
-          <div className="grid gap-4 md:grid-cols-3">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             {categories.map((category, index) => (
               <article key={category.name} className={`flex flex-col border border-gray-200 bg-white p-6 ${category.recommended ? 'border-t-4 border-t-lmsa-600' : ''}`}>
                 {category.recommended && <span className="editorial-card-eyebrow text-lmsa-700">Most common</span>}
