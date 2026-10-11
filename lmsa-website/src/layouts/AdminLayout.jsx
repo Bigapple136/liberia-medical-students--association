@@ -198,7 +198,7 @@ export default function AdminLayout() {
     <div className="min-h-screen bg-gray-50">
       <a
         href="#main-content"
-        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-white focus:px-4 focus:py-3 focus:text-sm focus:font-semibold focus:text-gray-900 focus:shadow-lg"
+        className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:top-4 focus:left-4 focus:px-4 focus:py-2 focus:bg-lmsa-600 focus:text-white focus:rounded-md focus:outline-none focus:ring-2 focus:ring-lmsa-500 focus:ring-offset-2"
       >
         Skip to main content
       </a>
