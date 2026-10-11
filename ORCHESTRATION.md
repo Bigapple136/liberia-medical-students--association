@@ -783,7 +783,7 @@ thread, since that decision is explicitly still pending on Stone's end.
 | T40 | Portal app shell (pushed directly by Stone, stale base `ac0bf59`) | none | **closed: superseded (Stone confirmed 2026-10-10). Branch retained, not merged.** |
 | T41 | Portal dashboard hierarchy (stacked on T40, stale base) | T40 | **closed: superseded (Stone confirmed 2026-10-10). Branch retained, not merged.** |
 | T42 | Admin UI/UX: shell parity, contrast, device matrix (pushed directly, stale base, 8 code conflicts) | none | **rework approved 2026-10-10: use branch `task/t42-admin-ui-ux-v2`, brief in the T40/T41/T42 review section** |
-| T43 | Compare dashboard concepts: T41 lead status panel vs `main` "this month" priority card (decision support, no merge) | none | **unassigned** |
+| T43 | Compare dashboard concepts: T41 lead status panel vs `main` "this month" priority card (decision support, no merge) | none | **done — recommendation: keep main's card, adopt two narrow parts of T41; see Report** |
 
 **T22 flagged priority.** Render permanently blocks outbound SMTP ports
 (25/465/587) on free-tier web services since September 2025 — confirmed
@@ -7910,4 +7910,190 @@ spec. Do not implement that follow-up here.
 
 ### Report
 
-*(agent fills in on completion)*
+**Recap of what was actually done, method compliance.** Checked out
+`origin/task/t41-portal-dashboard-hierarchy` (tip `93415a2`) into a scratch
+detached worktree at `/tmp/t41wt`, read its `DashboardPage.jsx` (353 lines),
+its T41 report and `.impeccable/` artifacts inside it, then removed the
+worktree. T41 was never merged, rebased or cherry-picked anywhere. No file
+outside `ORCHESTRATION.md` was created, modified or committed on this
+branch. No mock auth, env-var bypass or preview hooks were added to
+anything. Ran the impeccable detector (`detect.mjs`) over both versions of
+`DashboardPage.jsx` (exit 0 on both — zero anti-pattern findings either
+side).
+
+⚠️ DEGRADED: single-context (no sub-agent/Task tool exposed in this session —
+assessments ran sequentially inline)
+
+⚠️ NO BROWSER: `/portal` sits behind Supabase auth and this sandbox has no
+credentials, so neither dashboard could be rendered, screenshotted or
+keyboard-walked. The 375/1280 visual judgments below are source-level
+reasoning over the layout classes and markup, not screenshots. No mock data
+was created or run: with no browser it could not have been observed, so the
+seven scenarios were evaluated by reasoning through the code paths per
+scenario rather than by executing them. No mock data was committed. Both
+disclosures follow the standard.
+
+**Prior critique evidence, carried with provenance.** T41's own critique
+snapshot (`.impeccable/critique/2026-10-06T11-43-21Z__…-dashboardpage-jsx.md`,
+committed on that branch; read in the scratch worktree, copied nothing out)
+scores the pre-T41 dashboard 25/40, leaded "⚠️ DEGRADED: single-context",
+with the browser overlay explicitly unavailable behind auth. It predates
+both candidates below and is not evidence about either; it is evidence that
+"zero hierarchy on the dashboard" is the diagnosed problem both concepts
+answer. A fresh browser-visible critique could not be run for this task at
+all because the surface is auth-gated; the standard's degraded/no-browser
+disclosure above covers that shortfall rather than silently omitting it.
+
+**Key structural facts shared across both.** Both versions use the same
+honest data layer verbatim — `Promise.allSettled` over four endpoints,
+`null` = unavailable rendered as `—`, per-section retry, the amber
+partial-error banner ("Anything shown as '—' is unavailable, not zero"),
+per-section skeletons, identical empty states. Neither fabricates numbers
+or invents a state the API cannot support. The backend `/dashboard/stats`
+returns only `membership_status`, `events_registered_count`,
+`committees_count` — there is no dues field anywhere in the API, so neither
+dashboard ever receives dues data (scenario 4's shared blind spot below).
+DOM/keyboard order is the same in both: heading → lead element → stats →
+My Upcoming Events ("Manage my events" link precedes the list) → Recent
+News ("View all news" link precedes the list), matching the visual order
+at 1280 and, via single-column stacking, at 375.
+
+### Scenario-by-scenario table
+
+| # | Scenario | T41 (status-led lead panel) | main ("this month" priority card) | Mobile (375) | Desktop (1280) | Verdict |
+|---|---|---|---|---|---|---|
+| 1 | Application pending | Lead panel renders a large amber StatusChip `pending` full-width — no CTA in this state. Truthful but the member is left to infer "and now what?". Chip is text+dot, not color alone. | Priority card fires first, ranked above everything: "Your membership application is under review" + explanatory body + truthful CTA ("View your application status" → profile). | T41: tall lead panel pushes stats/events/news down; chip first seen but no action. Main: CTA card first seen and actionable. **Main wins.** | T41: 2px-bordered panel + big chip reads fine but carries no action. Main: instruction card with CTA. Main wins. | **main** — an actionable instruction beats a passive classification for the highest-stakes state |
+| 2 | Registered for an event within 7 days | Lead = status chip; the registered event appears only mid-page in My Upcoming Events (date tiles). The member's first need (their event) is NOT first on the page. | Priority card ties to the member's soonest registered event ≤30 days: title + "You're registered — {date} at {location}" + truthful CTA into the event page. | Main surfaces the answer first; T41 requires finding the events section mid-page. | Same. | **main** — the member's first need is the event, and main puts it in the lead slot |
+| 3 | No registered events, an open event upcoming | Lead = status chip only; the site event is a count in the stat strip and a list further down. No nudge to the specific nearest event. | Priority card surfaces the nearest site-wide event by title + date + "save your spot" CTA — with a unique already-registered dedup check that downgrades to "You're registered — see you there" instead of offering a duplicate Register CTA (a truthful-state subtlety T41 lacks entirely). | Main nudges the exact event; T41 offers a count. | Same. | **main** — and truthfulness edge to main (the dedup is a fabricated-CTA guard T41 lacks) |
+| 4 | Overdue dues | **Neither concept can show this.** `/dashboard/stats` has no dues field; neither page reads dues. Shared blind spot, not a differentiator. | Same. | — | — | **tie — shared gap.** See cost/risk: fixing it needs a backend field, out of scope for a UI comparison. |
+| 5 | All clear (nothing pending, nothing upcoming) | Status chip remains the lead (e.g. "Approved"), then nothing urgent. Correct but a big bordered panel with no news is visually loud for a "nothing happening" state. | Priority card renders an explicit "Nothing due this month — all caught up" state, dismissible for the session (sessionStorage, try/catch fallback). | Both stack cleanly. | Both fine. | **slight main** — explicit all-clear beats status-only panel; dismissal keeps it from repeating forever |
+| 6 | Stats endpoint failing | Same honest partial-error banner + `—` chip + `—` stat values + per-section retry. Lead-panel skeleton has an `sr-only role="status"` "Loading your membership status…" announcement — a nice a11y pattern. | Same banner and fallbacks. The priority card degrades gracefully: with stats null it falls through to the event branches, so the card still shows something truthful from event data. | Both degrade identically. | Both degrade identically. | **tie**, with two carryable notes: T41's sr-only loading announcement and main's extra graceful degradation. See recommendation. |
+| 7 | Brand-new member with no data at all | `hasStatus` false on a loaded account → lead panel turns into one clear "Apply for membership" action, most prominent slot. Truthful and specific. | Priority card has **no** apply branch — it does not consult `membership_status`. The only apply CTA is smaller, inside the stat-grid Membership Status slot. Truthful but less prominent. | Both stack cleanly. | Both fine. | **T41** — the ONE scenario where the panel genuinely beats the card. This is the hybrid's second adoption.)
+
+### Criterion roll-up
+
+- **First-to-know at 375/1280:** main, scenarios 1–3. The card turns data
+  into an instruction; the panel states a status and stops.
+- **Truthfulness:** tie, one edge to main (already-registered dedup guard
+  T41 lacks). Both preserve the no-fabrication loader.
+- **Keyboard/screen-reader order:** tie. Same DOM order, same
+  anchors/buttons. One a11y delta: T41's `sr-only role="status"` loading
+  announcement in the lead-panel skeleton.
+- **Reliance on color alone:** tie. T41 chip = text+dot; main badge =
+  text+color. Neither uses color as sole carrier.
+- **Mobile (375):** tie mechanically (both single-grid stacks); slight
+  main in practice — T41's 2px-bordered full-width panel is a heavier
+  object to scroll past when status is "Approved" and nothing else is
+  happening; main's card is dismissible.
+- **Desktop (1280):** slight main — a 2px-border, full-width panel
+  consuming premium vertical space to say "Approved" is a louder
+  element than main's lighter, dismissible card.
+
+### Recommendation
+
+**Keep `main`'s priority card. Do not adopt T41's lead panel as a whole.**
+If anything changes, adopt T41's idea as **two specific parts** (a named
+hybrid):
+
+1. **T41's `sr-only role="status"` loading announcement**, applied to
+   main's priority-card skeleton (not to any lead panel). Zero visual
+   cost, closes the only concrete a11y delta found.
+2. **T41's brand-new-member treatment** — the "loaded account with empty
+   membership status → Apply for membership" action — as an **explicit
+   branch in main's priority-card ranking** (not as a lead panel): ranked
+   after the "pending" branch, before the registered/upcoming/all-clear
+   branches, and gated on the load having settled so a transient /stats
+   failure cannot become a permanent "apply" nudge.
+
+**Do not adopt:** the full-width lead panel itself (loses scenarios 1, 2,
+3, 5); the "first-to-know is status" IA change; the `justLoggedIn`
+redirect (T35 removed it deliberately — T41's version retains it verbatim
+and its branch is closed as code). Scenario 7 was the panel's only win;
+putting the same action inside the card gets that win without the losses.
+
+### Cost and risk of adopting the recommendation
+
+- **Cost:** small — a `useMemo` branch + one `sr-only` element, both in
+  `DashboardPage.jsx`. No service, shell or backend change; no new
+  component. Hours, not days. Per the Design/UI standard this is a
+  small change to an existing surface; the follow-up spec below already
+  requires the critique disclosure, not a full new-surface pass.
+- **Risk:** low overall, two named footguns for the implementer:
+  1. `role="status"` must NOT be placed on an `aria-hidden` element — it
+     would be silenced. Announce on a sibling of the skeleton, or an
+     un-hidden wrapper. (T41 got this right on its lead panel.)
+  2. The new apply branch must be gated on the load having settled
+     (`!loading && stats && …`), else a failed `/dashboard/stats` call
+     in scenario 6 would silently flip every *established* member whose
+     endpoint had a transient error into an "apply" nudge — a
+     truthfulness regression, not just a UX one.
+- **What could NOT be verified here:** no browser session at any width
+  (auth-gated); no live data for any scenario; no screen-reader pass; no
+  fresh 40-box score table (disclosure above covers why). Every verdict
+  in the table is source-level reasoning over two files and their shared
+  loader, not rendered observation. A reviewer with Supabase credentials
+  should treat the table as a strong structural hypothesis and re-walk
+  scenarios 1–3 and 7 at 375/1280 in a real browser before acting.
+
+### Follow-up spec (recommendation changes something; not implemented here)
+
+**T44 — Portal dashboard: adopt two pieces from the T43 comparison**
+
+**Branch:** `task/t44-dashboard-adopt-t43` (new, off current `main`)
+**Depends on:** none — T43 is decision support; this spec reads its report,
+not its branch. T41 and T40 code are closed and must not be cherry-picked.
+**Status:** unassigned
+
+**Context.** T43 compared T41's status-led lead panel with main's "this
+month" priority card across seven scenarios: the card better serves
+scenarios 1–3 (pending application; registered-for-event-≤7-days;
+upcoming-open-event), ties elsewhere, and the panel better serves only the
+brand-new-member case (scenario 7). Two narrow adoptions close that gap
+without reopening the hierarchy question.
+
+**What to build.** `lmsa-website/src/pages/portal/DashboardPage.jsx` only:
+
+1. **New priority branch, "no membership status on a loaded account"** —
+   ranked first after the "pending" branch, before the
+   registered/next-event/all-clear branches, gated on
+   `!loading && stats && !stats.membership_status` (the settled-load guard
+   is required — a transient stats failure must not trigger it). Title:
+   "Membership application not started yet". Body: "LMSA membership is how
+   you register for events, join committees, and stay in good standing."
+   CTA: "Apply for membership" → `/membership#apply`.
+2. **`sr-only` loading announcement** in the priority-card skeleton: one
+   `<span className="sr-only" role="status">Loading your next update…</span>`
+   on an un-hidden element (NOT on the `aria-hidden` skeleton itself, which
+   would silence it). No other `role=status` anywhere on the page.
+
+**Do not change:** the loader, the partial-error banner, existing ranking
+branches and their copy, the dismissal (sessionStorage) behavior, quick
+actions, the stat grid, event/news sections, or anything outside this
+file. No `StatusChip`, no lead-panel layout, no `StatusBadge` change, no
+`justLoggedIn` logic, nothing in `lmsa-api`.
+
+**Acceptance criteria.**
+
+- [ ] `npx eslint src --ext js,jsx --max-warnings 0` and `npm run build`
+      clean.
+- [ ] Regression: for every existing priority scenario (pending;
+      registered ≤30 days; next-site-event including the
+      already-registered dedupe; all clear), the rendered card is
+      byte-identical to `main` on its base commit — the new branch must
+      not fire in any of them.
+- [ ] Scenario 7: with stats loaded and membership_status empty, the card
+      shows the new branch with the exact title/body/CTA above.
+- [ ] Scenario 6: with /dashboard/stats failing but events succeeding,
+      the card must NOT show the apply branch; it falls through to the
+      event branches exactly as on main.
+- [ ] Keyboard order unchanged; the new `role=status` announcement is
+      reachable by screen readers while loading and is not inside any
+      `aria-hidden` element.
+- [ ] Report includes a fresh impeccable `critique` on the resulting
+      DashboardPage.jsx with the degraded/no-browser disclosure per the
+      standard, and states what was and was not browser-verified.
+- [ ] Diff vs main: `DashboardPage.jsx` only. No mock auth, no env-var
+      bypass, no preview hooks.
+
+*Report block ends.*
+
