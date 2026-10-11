@@ -9,7 +9,7 @@ import path from 'path';
 // `build` resolve '@services/supabase' normally, so the mock module cannot
 // be compiled into a production bundle. No runtime guard is needed:
 // production simply never references the mock.
-export default defineConfig(({ mode }) => ({
+export default defineConfig(({ command, mode }) => ({
   plugins: [react()],
   resolve: {
     alias: {
@@ -17,7 +17,9 @@ export default defineConfig(({ mode }) => ({
       // and would otherwise swallow '@services/supabase' before this entry
       // is consulted. Mode-gated so it never applies to dev/build (the mock
       // module cannot reach a production bundle).
-      ...(mode === 'preview'
+      // serve+preview only: even `vite build --mode preview` cannot pull the
+      // mock into a bundle.
+      ...(command === 'serve' && mode === 'preview'
         ? {
             '@services/supabase': path.resolve(__dirname, './src/dev/mockAuth.js'),
             '@services/api': path.resolve(__dirname, './src/dev/mockApi.js'),
