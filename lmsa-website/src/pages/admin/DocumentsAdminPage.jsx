@@ -220,7 +220,7 @@ export default function DocumentsAdminPage() {
                   <td className="px-4 py-3 text-sm text-gray-600 capitalize">{doc.category?.replace('_', ' ')}</td>
                   <td className="px-4 py-3">
                     <span className={`text-xs px-2 py-0.5 rounded-full inline-flex items-center gap-1 ${
-                      doc.access_level === 'public' ? 'bg-green-50 text-green-700'
+                      doc.access_level === 'public' ? 'bg-lmsa-50 text-lmsa-800'
                         : doc.access_level === 'members' ? 'bg-blue-50 text-blue-700'
                         : doc.access_level === 'executive' ? 'bg-amber-50 text-amber-700'
                         : 'bg-purple-50 text-purple-700'

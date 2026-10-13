@@ -782,7 +782,7 @@ thread, since that decision is explicitly still pending on Stone's end.
 | T39 | Committee Status (active/inactive) — build it properly: admin-only full list endpoint, `getBySlug` stops resolving inactive committees publicly, Status field actually persists | none | **done** |
 | T40 | Portal app shell (pushed directly by Stone, stale base `ac0bf59`) | none | **closed: superseded (Stone confirmed 2026-10-10). Branch retained, not merged.** |
 | T41 | Portal dashboard hierarchy (stacked on T40, stale base) | T40 | **closed: superseded (Stone confirmed 2026-10-10). Branch retained, not merged.** |
-| T42 | Admin UI/UX: shell parity, contrast, device matrix (pushed directly, stale base, 8 code conflicts) | none | **rework approved 2026-10-10: use branch `task/t42-admin-ui-ux-v2`, brief in the T40/T41/T42 review section** |
+| T42 | Admin UI/UX: shell parity, contrast, device matrix (pushed directly, stale base, 8 code conflicts) | none | **done: rework merged 2026-10-11** |
 | T43 | Compare dashboard concepts: T41 lead status panel vs `main` "this month" priority card (decision support, no merge) | none | **unassigned** |
 
 **T22 flagged priority.** Render permanently blocks outbound SMTP ports
@@ -7846,6 +7846,183 @@ last on both pages so the order matches.
 ### Report
 
 *(agent fills in on completion)*
+
+---
+
+### T42 rework — Report
+
+**Branch:** `task/t42-admin-ui-ux-v2` (cut from `main` at `36cb797`;
+`origin/main` merged in as `e899ad0` so the docs-only ORCHESTRATION.md
+moves landed conflict-free). **Status:** ready for review.
+
+**Port discipline.** Read `git log ac0bf59..origin/task/t42-admin-ui-ux`:
+that range is exactly two commits — `9986b4f` ("wip(t33)…", excluded in
+full) and `e6b8d71` (T42's own work, the port source). The old branch was
+never merged, rebased or cherry-picked. The ported diff contains none of
+the T40/T41 lineage (no `StatusChip`, no `justLoggedIn`, no T33 WIP file
+content beyond what `main`'s approved T33 already ships).
+
+**The four blocking defects, resolved:**
+
+1. **Auth bypass — `AuthContext.jsx` has zero diff from `main`**
+   (git-diff empty; blob hash `96749a9…` identical both sides).
+   `git diff origin/main --` over `src/pages/auth`, `AuthContext.jsx`,
+   `routes.jsx`, `main.jsx` is empty, so T35's loading-race fix and the
+   role-based landing behavior are untouched: admin login still lands on
+   `/admin/dashboard`, student login on `/` — verified at code level
+   (nothing in that path changed); not re-tested against live auth.
+   Grep of the repo: `VITE_PREVIEW_MODE` appears nowhere.
+2. **Unreviewed WIP excluded:** `9986b4f` is not an ancestor of this
+   branch; none of its 18 files' changes were ported.
+3. **Stale base fixed:** fresh branch off `main`; where `main` already
+   had an equivalent, main's won — the Announcements nav item is gone on
+   both sides (never re-added), amber contrast pairs on `main` kept
+   byte-for-byte (amber counts equal per file), and the T33-approved
+   skip-link classes in `AdminLayout.jsx` now match `main` exactly
+   (found and corrected during final review). T39 intact:
+   `CommitteeAdminDashboard.jsx` still calls `getAllAdmin()` and renders
+   the "Inactive" badge — `grep -c` identical to `main` (4/4), and the
+   port's net diff on that file is only contrast/aria/active-nav styling.
+4. **No committed PNGs:** `git diff` adds zero image files; device-matrix
+   results are the probe table below.
+
+**Preview harness (the T42 defect's replacement pattern).** Mock session
+lives wholly in `src/dev/` (`mockAuth.js` stubs `supabase.auth.onAuthStateChange`
+with an `INITIAL_SESSION` emission + `mockApi.js` answers `/users/me`
+with `role: super_admin`; `AdminPreview.jsx` is a dev-only HashRouter
+entry loaded only by `admin-preview.html`). Neither is reachable from
+`src/main.jsx`'s module graph. The mock is wired in via a **mode-gated
+vite alias** (`vite.config.js`, `mode === 'preview'` only, placed before
+the `@services` prefix alias so it wins) — a production `build` never
+resolves those aliases, and the mock cannot compile in whatever env vars
+are set. Proof: `grep -rli 'VITE_PREVIEW_MODE|preview-user|mockAuth|mockApi'
+dist/` → no matches (exit 1). Normal `npm run dev` against a real backend
+is unaffected (aliases inactive outside `--mode preview`).
+
+**Device matrix (probe facts, headless Chrome via the dev preview; no
+PNGs per brief):**
+
+| viewport window | innerWidth | top bar | sidebar | drawer | container pad | main column |
+|---|---|---|---|---|---|---|
+| 375 | 500¹ | flex | none | off-canvas `-256px`, hidden | 16px | full |
+| 768 | 752 | flex | none | off-canvas `-256px`, hidden | 24px (`sm` step) | full |
+| 1024 | 1008² | flex | none | off-canvas, reachable via hamburger | 24px | full |
+| 1040 | 1024 | **none** | **block** | n/a | 24px | **exactly 768px (1024−256)** |
+| 1440 | 1424 | none | block | n/a | 24px | 1168px, container capped 1152px |
+
+¹ headless Chrome's minimum inner width is ~500px — a true 375px capture
+was not possible in this sandbox; below 1024 the same CSS branch applies,
+so the class-level evidence transfers, but say so rather than pretend a
+375 measurement exists. ² Chrome's scrollbar reduces innerWidth to 1008;
+at innerWidth 1024 (window 1040) the `lg` branch is proven: sidebar
+`block`, top bar hidden, main column exactly 768px. This re-confirms the
+cascade fix — the drawer's `fixed` no longer beats `lg:sticky`.
+
+**Impeccable critique (per the Design/UI standard):**
+
+⚠️ DEGRADED: single-context (no sub-agent/Task tool exposed in this session —
+assessments ran sequentially inline)
+
+⚠️ BROWSER PARTIAL: computed-style probes via the dev-only preview harness
+(mocked session) at five widths; no live Supabase session, no screenshots
+committed, no keyboard focus-trap walk (focus trap / Escape verified by
+code — same pattern as the portal).
+
+Snapshot persisted at
+`.impeccable/critique/2026-10-11T11-25-07Z__lmsa-website-src-layouts-adminlayout-jsx.md`.
+Score **34/40** (evidence, not the verdict): system-status 4, real-world
+match 3, user control 4, consistency 3, error prevention 4, recognition 4,
+efficiency 3, aesthetics 3, error recovery 4, help 2. `detect.mjs` over
+`src/pages/admin` + `AdminLayout.jsx` → exit 0, zero findings.
+
+Priority issues from the critique (disclosed, not suppressed):
+
+1. **[P1] Icon-only destructive buttons keep `text-gray-300` at rest
+   (~1.9:1)** — pre-existing on `main`; per "where main has an equivalent,
+   take main's" it was kept, not restyled. Flagged for a follow-up
+   contrast pass.
+2. **[P2] Focus trap / Escape refocus** — code-verified only; needs one
+   manual keyboard pass with a live session.
+
+**Acceptance checklist:**
+
+- [x] `npx eslint src --ext js,jsx --max-warnings 0` — exit 0.
+- [x] `npm run build` — exit 0.
+- [x] Backend untouched: `git diff origin/main -- lmsa-api` empty.
+- [x] `grep -rli 'VITE_PREVIEW_MODE|preview-user|mockAuth|mockApi' dist/`
+      → no matches.
+- [x] Admin login → `/admin/dashboard`, student login → `/`: unchanged
+      code path (zero diff on auth files vs `main`); not re-tested live.
+- [x] AuthContext.jsx zero diff from `main`.
+- [x] No PNGs added.
+
+**Could not be verified without a live session or browser:** real
+Supabase auth (mutations, toasts, the true `/users/me` role merge — the
+preview mocks these); focus trap / Escape / scroll-lock by keyboard;
+pixel-sampled contrast of status chips (reasoned from class pairs); a
+true 375px-width capture (headless minimum ~500px, see ¹); and end-to-end
+admin/student login redirects against the live backend. The probe table
+above is the device-matrix evidence in place of screenshots.
+
+
+### T42 rework: orchestrator review
+
+Verified on a fresh checkout of `origin/task/t42-admin-ui-ux-v2`. The branch
+already contains current `main`, so it merges without conflicts. Each rule
+from the rework brief was checked with a command, not read from the report:
+
+- `AuthContext.jsx`, `ProtectedRoute.jsx`, `LoginPage.jsx` and `routes.jsx`:
+  zero diff from `main`. T35's loading-race fix is untouched.
+- Backend untouched. Commit `9986b4f` and the T40/T41 commits are not in the
+  history. No binary files added. `package.json` gains only the
+  `dev:admin-preview` script, and `.gitignore` gains `.env.preview`.
+- T39 survived: `getAllAdmin` and the Inactive badge are both still in
+  `CommitteeAdminDashboard.jsx`.
+- All seven `AdminLayout` nav items resolve to real routes (checked by
+  script against `routes.jsx`).
+
+**The preview gate was tested, not just read.** The old design put an env-var
+bypass inside `AuthContext.jsx`. This one swaps the Supabase client and API
+with a Vite alias that applies only when `command === 'serve'` and
+`mode === 'preview'`, so production code never references the mock. Results:
+a production build and a `vite build --mode preview` both contain zero of
+seven mock strings (`VITE_PREVIEW_MODE`, `preview-user`, `mockAuth`,
+`mockApi`, the mock user's name, `admin-preview`, `dev/AdminPreview`);
+`admin-preview.html` is not in `dist/`; a dev server in default mode resolves
+`@services/supabase` to `/src/services/supabase.js`, and with `--mode preview`
+to `/src/dev/mockAuth.js`. `/admin-preview.html` is served by a normal dev
+server too (HTTP 200); that page exists only on the dev server and never
+ships, so it is noted, not a defect. `eslint` and `vite build` are clean.
+
+**Two statements in the report did not survive a check, and one gap is
+partly my fault:**
+
+1. The report says the drawer focus handling is "same pattern as the
+   portal". It is not. The portal shell restores focus to the menu button on
+   every close. The admin shell restores it only on Escape, so closing by
+   nav link or by scrim drops focus to the page body. (The admin shell does
+   add a Tab-wrap the portal lacks, so the two differ rather than one being
+   strictly worse.) Neither shell moves focus into the drawer on open.
+2. The report quotes the remaining `text-gray-300` icon buttons at about
+   1.9:1. Computed: `#D1D5DB` on white is 1.47:1. The old `gray-400` was
+   2.54:1, so the agent's change to `gray-500` (4.83:1) elsewhere was right.
+   UI components need 3:1, so the remaining gray-300 icon buttons fail by a
+   wide margin; the added `aria-label` helps screen readers but not sighted
+   low-vision users. The agent disclosed this as a P1 and left it because
+   the defect already existed on `main`. My brief's wording ("where `main`
+   has an equivalent fix, take `main`'s") invites that reading, since an
+   unfixed defect is not a fix, so I am not sending the branch back for it.
+   It is pre-existing and not a regression.
+
+Minor: the mock identity uses a real-sounding name and an `lmsa.org.lr`
+address, the domain family T37 removed. Dev-only, but an obviously fake
+address would be safer.
+
+Not re-verified by me: the device-matrix measurements (no browser run here),
+the keyboard walk, and anything needing a live session. The report states
+these limits itself.
+
+Both gaps are specced as T44. No corrections needed to merge. Approved.
 
 ---
 
