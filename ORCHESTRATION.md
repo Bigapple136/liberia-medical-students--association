@@ -782,7 +782,7 @@ thread, since that decision is explicitly still pending on Stone's end.
 | T39 | Committee Status (active/inactive) — build it properly: admin-only full list endpoint, `getBySlug` stops resolving inactive committees publicly, Status field actually persists | none | **done** |
 | T40 | Portal app shell (pushed directly by Stone, stale base `ac0bf59`) | none | **closed: superseded (Stone confirmed 2026-10-10). Branch retained, not merged.** |
 | T41 | Portal dashboard hierarchy (stacked on T40, stale base) | T40 | **closed: superseded (Stone confirmed 2026-10-10). Branch retained, not merged.** |
-| T42 | Admin UI/UX: shell parity, contrast, device matrix (pushed directly, stale base, 8 code conflicts) | none | **rework approved 2026-10-10: use branch `task/t42-admin-ui-ux-v2`, brief in the T40/T41/T42 review section** |
+| T42 | Admin UI/UX: shell parity, contrast, device matrix (pushed directly, stale base, 8 code conflicts) | none | **done: rework merged 2026-10-11** |
 | T43 | Compare dashboard concepts: T41 lead status panel vs `main` "this month" priority card (decision support, no merge) | none | **unassigned** |
 
 **T22 flagged priority.** Render permanently blocks outbound SMTP ports
@@ -7705,6 +7705,66 @@ Do not rebase the old chain; port only T42's own work.
   nothing; admin login still lands on `/admin/dashboard` and student
   login on `/` (T35 behaviour unchanged); no regression to the committee
   Status work from T39 in `CommitteeAdminDashboard.jsx`.
+
+
+### T42 rework: orchestrator review
+
+Verified on a fresh checkout of `origin/task/t42-admin-ui-ux-v2`. The branch
+already contains current `main`, so it merges without conflicts. Each rule
+from the rework brief was checked with a command, not read from the report:
+
+- `AuthContext.jsx`, `ProtectedRoute.jsx`, `LoginPage.jsx` and `routes.jsx`:
+  zero diff from `main`. T35's loading-race fix is untouched.
+- Backend untouched. Commit `9986b4f` and the T40/T41 commits are not in the
+  history. No binary files added. `package.json` gains only the
+  `dev:admin-preview` script, and `.gitignore` gains `.env.preview`.
+- T39 survived: `getAllAdmin` and the Inactive badge are both still in
+  `CommitteeAdminDashboard.jsx`.
+- All seven `AdminLayout` nav items resolve to real routes (checked by
+  script against `routes.jsx`).
+
+**The preview gate was tested, not just read.** The old design put an env-var
+bypass inside `AuthContext.jsx`. This one swaps the Supabase client and API
+with a Vite alias that applies only when `command === 'serve'` and
+`mode === 'preview'`, so production code never references the mock. Results:
+a production build and a `vite build --mode preview` both contain zero of
+seven mock strings (`VITE_PREVIEW_MODE`, `preview-user`, `mockAuth`,
+`mockApi`, the mock user's name, `admin-preview`, `dev/AdminPreview`);
+`admin-preview.html` is not in `dist/`; a dev server in default mode resolves
+`@services/supabase` to `/src/services/supabase.js`, and with `--mode preview`
+to `/src/dev/mockAuth.js`. `/admin-preview.html` is served by a normal dev
+server too (HTTP 200); that page exists only on the dev server and never
+ships, so it is noted, not a defect. `eslint` and `vite build` are clean.
+
+**Two statements in the report did not survive a check, and one gap is
+partly my fault:**
+
+1. The report says the drawer focus handling is "same pattern as the
+   portal". It is not. The portal shell restores focus to the menu button on
+   every close. The admin shell restores it only on Escape, so closing by
+   nav link or by scrim drops focus to the page body. (The admin shell does
+   add a Tab-wrap the portal lacks, so the two differ rather than one being
+   strictly worse.) Neither shell moves focus into the drawer on open.
+2. The report quotes the remaining `text-gray-300` icon buttons at about
+   1.9:1. Computed: `#D1D5DB` on white is 1.47:1. The old `gray-400` was
+   2.54:1, so the agent's change to `gray-500` (4.83:1) elsewhere was right.
+   UI components need 3:1, so the remaining gray-300 icon buttons fail by a
+   wide margin; the added `aria-label` helps screen readers but not sighted
+   low-vision users. The agent disclosed this as a P1 and left it because
+   the defect already existed on `main`. My brief's wording ("where `main`
+   has an equivalent fix, take `main`'s") invites that reading, since an
+   unfixed defect is not a fix, so I am not sending the branch back for it.
+   It is pre-existing and not a regression.
+
+Minor: the mock identity uses a real-sounding name and an `lmsa.org.lr`
+address, the domain family T37 removed. Dev-only, but an obviously fake
+address would be safer.
+
+Not re-verified by me: the device-matrix measurements (no browser run here),
+the keyboard walk, and anything needing a live session. The report states
+these limits itself.
+
+Both gaps are specced as T44. No corrections needed to merge. Approved.
 
 ---
 
