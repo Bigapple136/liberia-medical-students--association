@@ -7753,7 +7753,7 @@ is read-only.
 ## T38: Add Veteran membership (free, no dues) to the Categories and Dues pages
 
 **Branch:** `task/t38-veteran-membership`
-**Status:** unassigned
+**Status:** done
 **Depends on:** none
 
 ### Context
@@ -7845,7 +7845,77 @@ last on both pages so the order matches.
 
 ### Report
 
-*(agent fills in on completion)*
+**Status:** unassigned → done
+**Branch:** `task/t38-veteran-membership`
+
+#### What changed
+
+- `CategoriesPage.jsx` — fourth card appended last, matching the canonical
+  order (Full, Associate, Honorary, Veteran): name "Veteran Member", price
+  "Free", audience "Alumni and past members", the three benefits already
+  published on `MembershipPage.jsx` verbatim ('Alumni network',
+  'Mentorship opportunities', 'Reunion events'), `limits: []`. Not marked
+  `invitationOnly`, so the card renders the normal "Apply now" action, not
+  the invitation-only text. Grid changed `md:grid-cols-3` →
+  `md:grid-cols-2 lg:grid-cols-4`, the convention `JoinCommitteePage`,
+  `MembershipPage` and `MentorshipPage` already use.
+- `DuesPage.jsx` — appended (Veteran Member, Free, N/A) after Honorary;
+  the Honorary row now carries `border-b border-gray-200`, and the new
+  last row has none. The section description now reads "Membership dues
+  are paid yearly. Honorary membership is offered by invitation, and
+  Veteran membership has no fee." No stat card added — the stat strip
+  still shows the two priced tiers and the deadline.
+- `PageHero.jsx` — the `/membership/categories` hero sentence now reads
+  "Whether you are a current student, associate, honorary or veteran
+  member, there is a place for you in LMSA."
+- Nothing touched in `RegisterPage.jsx`, `MembershipPage.jsx`,
+  `MembershipAdminPage.jsx`, `constants.js`, or `lmsa-api`.
+
+#### Verification
+
+- `npx eslint src --ext js,jsx --max-warnings 0` — clean (exit 0).
+- `npm run build` — clean (exit 0), with one environment caveat: in the
+  working directory itself the build fails because the project path
+  contains an apostrophe (`...students'-association`); Vite's config
+  loader cannot open its bundled `vite.config.js.timestamp-*.mjs` temp
+  file at that path, and the failure fires before any project code runs
+  (pre-existing, unrelated to T38). Building the identical source from a
+  byte-for-byte copy at an apostrophe-free path (real `node_modules`
+  junctioned in) succeeded: "✓ built in 17.95s", exit 0.
+- Benefit strings checked to be byte-identical to those on
+  `MembershipPage.jsx` (same three strings, root file says `benefits`, the
+  card data field is `included`); no new benefit claims, no invented
+  limits.
+- Grid stranding was checked in a real browser, not just by reasoning
+  through the classes: headless Edge (playwright-core) against
+  `vite preview` of the production build, measuring the card grid at
+  375px, 768px, 1024px and 1280px. Computed `grid-template-columns`:
+  1 / 2 / 4 / 4; card top-offset row groups: 1,1,1,1 / 2,2 / 4 / 4 —
+  Veteran Member last in every row group. No stranded card at tablet or
+  desktop widths; screenshots at 768px and 1280px confirm visually.
+- Dues-table order (Full, Associate, Honorary, Veteran, border moved onto
+  Honorary, none on the last row) verified by direct inspection of the
+  committed diff.
+
+#### Assumption on the record
+
+- "free or by invitation" is treated as: no fee, open to apply, with the
+  existing admin review (every application is pending until approved)
+  checking alumni status. Veteran is therefore **not** `invitationOnly` —
+  that flag would make the card say "there is no application", which
+  contradicts the registration selector offering Veteran Member. If Stone
+  wants it invitation-only instead, the follow-up is small: set
+  `invitationOnly: true` on the card and remove Veteran from the
+  `RegisterPage.jsx` selector.
+
+#### Open content question
+
+- Whether Veteran members can vote or hold office is not known to this
+  codebase, and the card publishes neither answer (`limits` is empty).
+  Once Stone confirms, the follow-up is one line: add 'No voting rights'
+  and 'Cannot hold office' under `limits` if the answer is no.
+
+Not merged to `main`; ready for orchestrator review.
 
 ---
 
