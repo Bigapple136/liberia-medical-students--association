@@ -778,12 +778,13 @@ thread, since that decision is explicitly still pending on Stone's end.
 | T35 | Fix login redirect: root-cause AuthContext race + role-based destination (student → Homepage, admin → Admin Dashboard) + personalized welcome | none | **done** |
 | T36 | Wire `PastPresidentsPage.jsx` to real `executive_positions` data (`status: completed`), remove fabricated names | none | **done** |
 | T37 | Consolidate every contact email onto `dev.lmsa@gmail.com` (one source of truth) | none | **done** |
-| T38 | Add Veteran membership (free, no dues) to the Categories and Dues pages | none | **unassigned** |
+| T38 | Add Veteran membership (free, no dues) to the Categories and Dues pages | none | **unassigned. Reported done 2026-10-11, but the branch has no commits on the remote; nothing to review yet.** |
 | T39 | Committee Status (active/inactive) — build it properly: admin-only full list endpoint, `getBySlug` stops resolving inactive committees publicly, Status field actually persists | none | **done** |
 | T40 | Portal app shell (pushed directly by Stone, stale base `ac0bf59`) | none | **closed: superseded (Stone confirmed 2026-10-10). Branch retained, not merged.** |
 | T41 | Portal dashboard hierarchy (stacked on T40, stale base) | T40 | **closed: superseded (Stone confirmed 2026-10-10). Branch retained, not merged.** |
 | T42 | Admin UI/UX: shell parity, contrast, device matrix (pushed directly, stale base, 8 code conflicts) | none | **done: rework merged 2026-10-11** |
-| T43 | Compare dashboard concepts: T41 lead status panel vs `main` "this month" priority card (decision support, no merge) | none | **unassigned** |
+| T43 | Compare dashboard concepts: T41 lead status panel vs `main` "this month" priority card (decision support, no merge) | none | **unassigned. Reported done 2026-10-11, but the branch has no commits on the remote; nothing to review yet.** |
+| T44 | Admin follow-up: icon-button contrast (gray-300) and drawer focus parity across the portal and admin shells | none | **unassigned** |
 
 **T22 flagged priority.** Render permanently blocks outbound SMTP ports
 (25/465/587) on free-tier web services since September 2025 — confirmed
@@ -8084,6 +8085,84 @@ spec. Do not implement that follow-up here.
       requires.
 - [ ] The report says plainly which parts could not be verified (for
       example, no live data or no browser).
+
+### Report
+
+*(agent fills in on completion)*
+
+
+---
+
+## T44: Admin follow-up, icon-button contrast and drawer focus parity
+
+**Branch:** `task/t44-admin-contrast-focus`
+**Status:** unassigned
+**Depends on:** none
+
+### Context
+
+Two defects left over from the T42 rework review (see "T42 rework:
+orchestrator review"). Both were disclosed by the T42 report and both
+already existed on `main`, so neither is a regression, but both belong to
+the accessibility pass that T42 was meant to finish.
+
+**1. Icon-only buttons are nearly invisible.** Several admin icon buttons
+(remove member, remove item, remove announcement and similar) still use
+`text-gray-300`. By computation, `#D1D5DB` on white is **1.47:1**. UI
+components need at least 3:1. The `aria-label` T42 added helps screen
+readers but does nothing for a sighted low-vision user. For reference,
+the old `gray-400` was 2.54:1 and `gray-500` is 4.83:1.
+
+**2. Drawer focus is inconsistent between the two shells.** Checked in
+source:
+- `PortalLayout.jsx` restores focus to the menu button on every close.
+- `AdminLayout.jsx` restores it only on Escape. Closing by nav link or by
+  clicking the scrim drops focus to the page body.
+- Neither shell moves focus into the drawer when it opens.
+(`AdminLayout` also wraps Tab at the drawer's ends, which the portal lacks.
+Keep that.)
+
+### What to build
+
+**Contrast.** Find every interactive icon-only control that uses
+`text-gray-300` (start with `grep -rn "text-gray-300" src/pages/admin
+src/components`) and raise it to at least 3:1, using `text-gray-500` with a
+darker hover. Decorative icons that are not controls may stay as they are.
+Check `opacity-50` and `disabled` states on the same buttons so a disabled
+look does not drop them back under 3:1. If the same pattern exists on a
+public or portal page, list it in the report and do not change it here.
+
+**Focus.** In both `AdminLayout.jsx` and `PortalLayout.jsx`:
+- restore focus to the menu button on every close path (Escape, nav link,
+  scrim, route change), matching what `PortalLayout` already does;
+- move focus to the first link in the drawer when it opens;
+- keep the existing scroll lock, Escape handling and Tab-wrap.
+Keep the two shells' behavior identical. Do not refactor them into a
+shared component in this task.
+
+### Constraints
+
+- `AuthContext.jsx` must end with zero diff from `main`.
+- Do not touch the dev preview gate in `vite.config.js` or `src/dev/`
+  except to use it for verification.
+- `CommitteeAdminDashboard.jsx` must keep `getAllAdmin()` and the Inactive
+  badge from T39.
+
+### Acceptance criteria
+
+- [ ] `npx eslint src --ext js,jsx --max-warnings 0` is clean.
+- [ ] `npm run build` is clean, and a grep of `dist/` for
+      `VITE_PREVIEW_MODE`, `preview-user`, `mockAuth` returns nothing.
+- [ ] No interactive control under `src/pages/admin` or `src/components`
+      uses `text-gray-300`; show the grep before and after.
+- [ ] Focus lands on the menu button after closing by each of the four
+      paths, and on the first drawer link after opening, in both shells.
+      Verify with real key and click events using the preview harness
+      (`npm run dev:admin-preview`) at a narrow width. If a browser is not
+      available, say so plainly and do not claim it was verified.
+- [ ] The admin shell is a UI surface, so run the impeccable audit or
+      critique per the Design/UI standard and disclose any degraded run.
+- [ ] The report states the measured contrast ratio of each changed color.
 
 ### Report
 
