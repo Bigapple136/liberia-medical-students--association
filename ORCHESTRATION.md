@@ -7852,7 +7852,7 @@ last on both pages so the order matches.
 ## T43: Compare dashboard concepts (decision support, no merge)
 
 **Branch:** `task/t43-dashboard-design-comparison`
-**Status:** unassigned
+**Status:** done
 **Depends on:** none
 
 ### Context
@@ -7909,6 +7909,9 @@ spec. Do not implement that follow-up here.
       example, no live data or no browser).
 
 ### Report
+
+**Status:** unassigned → done
+**Branch:** `task/t43-dashboard-design-comparison`
 
 **Recap of what was actually done, method compliance.** Checked out
 `origin/task/t41-portal-dashboard-hierarchy` (tip `93415a2`) into a scratch
