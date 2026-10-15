@@ -778,7 +778,7 @@ thread, since that decision is explicitly still pending on Stone's end.
 | T35 | Fix login redirect: root-cause AuthContext race + role-based destination (student → Homepage, admin → Admin Dashboard) + personalized welcome | none | **done** |
 | T36 | Wire `PastPresidentsPage.jsx` to real `executive_positions` data (`status: completed`), remove fabricated names | none | **done** |
 | T37 | Consolidate every contact email onto `dev.lmsa@gmail.com` (one source of truth) | none | **done** |
-| T38 | Add Veteran membership (free, no dues) to the Categories and Dues pages | none | **unassigned** |
+| T38 | Add Veteran membership (free, no dues) to the Categories and Dues pages | none | **done: merged 2026-10-11** |
 | T39 | Committee Status (active/inactive) — build it properly: admin-only full list endpoint, `getBySlug` stops resolving inactive committees publicly, Status field actually persists | none | **done** |
 | T40 | Portal app shell (pushed directly by Stone, stale base `ac0bf59`) | none | **closed: superseded (Stone confirmed 2026-10-10). Branch retained, not merged.** |
 | T41 | Portal dashboard hierarchy (stacked on T40, stale base) | T40 | **closed: superseded (Stone confirmed 2026-10-10). Branch retained, not merged.** |
@@ -7916,6 +7916,52 @@ last on both pages so the order matches.
   and 'Cannot hold office' under `limits` if the answer is no.
 
 Not merged to `main`; ready for orchestrator review.
+
+
+### Orchestrator review
+
+Verified on a fresh checkout of `origin/task/t38-veteran-membership`. The diff
+is the three specced files plus this board, and nothing else.
+
+- Read each diff against the spec. Veteran is appended last on both pages, so
+  the order matches the other four places it appears (Full, Associate,
+  Honorary, Veteran). It is not marked `invitationOnly`. The card grid moved
+  to `md:grid-cols-2 lg:grid-cols-4`, the convention three other pages use.
+  The dues description matches the specced wording, and the Honorary row now
+  carries the bottom border while the new last row has none. The hero
+  sentence includes veterans.
+- Checked directly: the three benefit strings are identical to the ones on
+  `MembershipPage.jsx`, so no new claims were added. `limits: []` renders no
+  heading and no list items (the Full Member card already uses an empty
+  array), so there is no orphan "Limits" label.
+- `eslint` and `vite build` are clean on my side too.
+- The report's browser measurement of the grid (1, 2, 4 and 4 columns at 375,
+  768, 1024 and 1280px, Veteran last in every row group) was not re-run by me,
+  since I have no browser here. My reading of the classes agrees: four cards
+  in two columns is a 2x2, and in four columns it is one row.
+
+**Environment fact worth knowing.** The report says Vite's config loader fails
+when the working directory path contains an apostrophe, which this repo's
+local folder name (`liberia-medical-students'-association`) does, and that it
+built the same source from an apostrophe-free copy instead. That is a local
+problem, not a code problem. I have not verified how the hosted build path is
+set up, so I am not claiming it cannot affect deploys.
+
+**Open items for Stone, none of them part of this task:**
+
+1. Whether Veteran members can vote or hold office is still unknown, so the
+   card lists no limits. It will need updating once that is decided.
+2. The invitation-only assumption stands as recorded in the report. Switching
+   is small: set `invitationOnly: true` and remove Veteran from the
+   registration selector.
+3. A related inconsistency that predates this task: the Categories, Dues and
+   Membership pages say Honorary membership is by invitation with "no
+   application", yet the registration form still offers "Honorary Member" to
+   anyone and the backend accepts it. Admin review gates it, but the pages
+   and the form disagree. Needs a decision: remove it from the form, or
+   soften the wording.
+
+No corrections needed. Approved and merged.
 
 ---
 
