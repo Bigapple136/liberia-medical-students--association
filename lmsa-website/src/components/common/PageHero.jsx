@@ -170,7 +170,7 @@ const heroPages = [
     eyebrow: 'Membership / Categories',
     title: 'Membership designed around your journey',
     description:
-      'Whether you are a current student, associate, or honorary member, there is a place for you in LMSA.',
+      'Whether you are a current student, associate, honorary or veteran member, there is a place for you in LMSA.',
     action: { label: 'Review dues', to: '/membership/dues' },
     accent: 'blue',
     icon: Users,
