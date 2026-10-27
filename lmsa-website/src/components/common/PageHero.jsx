@@ -435,11 +435,7 @@ export default function PageHero() {
             <div className="page-hero-icon-wrap">
               <Icon size={isHome ? 80 : 64} strokeWidth={1.25} className={styles.icon} />
             </div>
-            <div className="page-hero-index">
-              <span>01</span>
-              <span className="page-hero-index-line" />
-              <span>LMSA</span>
-            </div>
+            
           </div>
         </div>
 

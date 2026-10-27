@@ -10,7 +10,7 @@ function formatDate(start, end) {
   if (!start) return 'Date TBD';
   const startDate = new Date(start).toLocaleDateString('default', options);
   if (end && new Date(end).toDateString() !== new Date(start).toDateString()) {
-    return `${startDate} – ${new Date(end).toLocaleDateString('default', options)}`;
+    return `${startDate} - ${new Date(end).toLocaleDateString('default', options)}`;
   }
   return startDate;
 }
@@ -20,7 +20,7 @@ function formatTime(start, end) {
   const startTime = new Date(start).toLocaleTimeString('default', { hour: 'numeric', minute: '2-digit' });
   if (!end) return startTime;
   const endTime = new Date(end).toLocaleTimeString('default', { hour: 'numeric', minute: '2-digit' });
-  return `${startTime} – ${endTime}`;
+  return `${startTime} - ${endTime}`;
 }
 
 function MetaItem({ icon: Icon, label, children }) {
@@ -228,7 +228,7 @@ export default function EventDetailPage() {
                     ) : registered ? (
                       <Check size={16} aria-hidden="true" />
                     ) : null}
-                    {registered ? 'Registered — see you there' : registering ? 'Registering…' : 'Register for this event'}
+                    {registered ? 'Registered - see you there' : registering ? 'Registering…' : 'Register for this event'}
                   </button>
                 )}
               </div>

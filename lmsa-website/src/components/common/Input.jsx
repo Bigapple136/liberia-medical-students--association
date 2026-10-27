@@ -34,8 +34,7 @@ const Input = forwardRef(({
           id={inputId}
           ref={ref}
           disabled={disabled}
-          aria-invalid={error ? 'true' : 'false'}
-          aria-describedby={error ? `${inputId}-error` : helperText ? `${inputId}-helper` : undefined}
+          aria-invalid={error ? 'true' : 'false'}aria-describedby={error ? `${inputId}-error` : helperText ? `${inputId}-helper` : undefined}
           className={`input 
             ${error ? 'border-red-600 focus:ring-red-600 pr-10' : ''} 
             ${success ? 'border-lmsa-600 focus:ring-lmsa-600 pr-10' : ''}
@@ -45,18 +44,18 @@ const Input = forwardRef(({
             ${className}`}
           {...props}
         />
-        {error && (
-          <div className="absolute right-3 top-1/2 -translate-y-1/2 text-red-600 pointer-events-none">
-            <AlertCircle size={18} />
-          </div>
-        )}
-        {success && (
-          <div className="absolute right-3 top-1/2 -translate-y-1/2 text-lmsa-600 pointer-events-none">
-            <Check size={18} />
-          </div>
-        )}
+      {error && (
+        <div className="absolute right-3 top-1/2 -translate-y-1/2 text-red-600 pointer-events-none">
+          <AlertCircle size={18} />
+        </div>
+      )}
+      {success && (
+        <div className="absolute right-3 top-1/2 -translate-y-1/2 text-lmsa-600 pointer-events-none">
+          <Check size={18} />
+        </div>
+      )}
         {rightIcon && !error && !success && (
-          <div className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
+          <div className="absolute right-3 top-1/2 -translate-y-1/2 text-lmsa-500 pointer-events-none">
             {rightIcon}
           </div>
         )}
@@ -67,7 +66,7 @@ const Input = forwardRef(({
         </p>
       )}
       {!error && helperText && (
-        <p id={`${inputId}-helper`} className="mt-1.5 text-sm text-gray-500">
+        <p id={`${inputId}-helper`} className="mt-1.5 text-sm text-lmsa-500">
           {helperText}
         </p>
       )}

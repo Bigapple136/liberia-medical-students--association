@@ -92,7 +92,7 @@ export default function AdminDashboard() {
       {!loading && partialError && (
         <div className="mb-6 flex flex-wrap items-center gap-3 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
           <AlertCircle size={18} className="shrink-0" aria-hidden="true" />
-          <p className="flex-1">Some dashboard data could not be loaded. Figures shown as “—” are unavailable, not zero.</p>
+          <p className="flex-1">Some dashboard data could not be loaded. Figures shown as "-" are unavailable, not zero.</p>
           <button
             type="button"
             onClick={loadDashboard}
@@ -101,15 +101,13 @@ export default function AdminDashboard() {
             Try again
           </button>
         </div>
-      )}
-
-      {/* Stats — real data only; em-dash means unavailable */}
+      )}       {/* Stats - real data only; em-dash means unavailable */}
       <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         {stats.map(({ label, value, accent }) => (
           <Card key={label}>
             <h3 className="text-sm font-medium text-gray-600 mb-1">{label}</h3>
             <p className={`text-2xl font-bold ${accent}`}>
-              {loading || value === null ? '—' : value}
+              {loading || value === null ? 'N/A' : value}
             </p>
           </Card>
         ))}

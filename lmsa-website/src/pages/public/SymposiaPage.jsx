@@ -24,9 +24,9 @@ function formatDateRange(startDatetime, endDatetime) {
   if (sameMonth) {
     const monthYear = start.toLocaleDateString('default', { month: 'long', year: 'numeric' });
     const [month, year] = [monthYear.split(' ')[0], start.getFullYear()];
-    return `${month} ${start.getDate()}–${end.getDate()}, ${year}`;
+    return `${month} ${start.getDate()}-${end.getDate()}, ${year}`;
   }
-  return `${start.toLocaleDateString('default', options)} – ${end.toLocaleDateString('default', options)}`;
+  return `${start.toLocaleDateString('default', options)} - ${end.toLocaleDateString('default', options)}`;
 }
 
 function SymposiumCard({ event, upcoming }) {

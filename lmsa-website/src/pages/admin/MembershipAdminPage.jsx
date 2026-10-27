@@ -208,7 +208,7 @@ function ApplicationCard({ application, expanded, onToggle, onStatusUpdate }) {
         {/* Date + Expand */}
         <div className="flex items-center gap-3 shrink-0 mt-2 sm:mt-0 sm:ml-3">
           <span className="text-xs text-gray-400 hidden sm:block">
-            {app.submitted_at ? new Date(app.submitted_at).toLocaleDateString() : '—'}
+            {app.submitted_at ? new Date(app.submitted_at).toLocaleDateString() : '-'}
           </span>
           {expanded ? <ChevronUp size={16} className="text-gray-400" /> : <ChevronDown size={16} className="text-gray-400" />}
         </div>

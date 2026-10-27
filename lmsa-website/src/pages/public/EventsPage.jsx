@@ -9,7 +9,7 @@ function formatDate(start, end) {
   if (!start) return 'Date TBD';
   const startDate = new Date(start).toLocaleDateString('default', options);
   if (end && new Date(end).toDateString() !== new Date(start).toDateString()) {
-    return `${startDate} – ${new Date(end).toLocaleDateString('default', options)}`;
+    return `${startDate} - ${new Date(end).toLocaleDateString('default', options)}`;
   }
   return startDate;
 }
@@ -19,7 +19,7 @@ function formatTime(start, end) {
   const startTime = new Date(start).toLocaleTimeString('default', { hour: 'numeric', minute: '2-digit' });
   if (!end) return startTime;
   const endTime = new Date(end).toLocaleTimeString('default', { hour: 'numeric', minute: '2-digit' });
-  return `${startTime} – ${endTime}`;
+  return `${startTime} - ${endTime}`;
 }
 
 function isPastEvent(event) {

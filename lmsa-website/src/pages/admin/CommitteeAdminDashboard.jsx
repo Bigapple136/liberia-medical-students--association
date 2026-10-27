@@ -625,8 +625,7 @@ function MembersTab({ committee, onUpdate }) {
                       {ROLES.map(r => <option key={r}>{r}</option>)}
                     </select>
                   </td>
-                  <td className="px-4 py-3 text-sm text-gray-400">
-                    {member.joined_at ? new Date(member.joined_at).toLocaleDateString() : '—'}
+                  <td className="px-4 py-3 text-sm text-gray-400">                     {member.joined_at ? new Date(member.joined_at).toLocaleDateString() : 'N/A'}
                   </td>
                   <td className="px-4 py-3 text-right">
                     <button onClick={() => removeMember(member.id)} className="text-gray-300 hover:text-red-500 transition-colors">
@@ -979,8 +978,7 @@ function DocumentsTab({ committee }) {
                     <div className="flex items-center gap-3">
                       <span className="text-xl">{catIcon(doc.category)}</span>
                       <div>
-                        <p className="text-sm font-medium text-gray-900">{doc.title}</p>
-                        <p className="text-xs text-gray-400">{doc.file_type?.toUpperCase()} • {doc.file_size ? `${Math.round(doc.file_size/1024)}KB` : '—'}</p>
+                        <p className="text-sm font-medium text-gray-900">{doc.title}</p>                         <p className="text-xs text-gray-400">{doc.file_type?.toUpperCase()} • {doc.file_size ? `${Math.round(doc.file_size/1024)}KB` : 'N/A'}</p>
                       </div>
                     </div>
                   </td>
@@ -995,8 +993,7 @@ function DocumentsTab({ committee }) {
                     >
                       {doc.access_level}
                     </span>
-                  </td>
-                  <td className="px-4 py-3 text-sm text-gray-400">{doc.created_at ? new Date(doc.created_at).toLocaleDateString() : '—'}</td>
+                  </td>                   <td className="px-4 py-3 text-sm text-gray-400">{doc.created_at ? new Date(doc.created_at).toLocaleDateString() : 'N/A'}</td>
                   <td className="px-4 py-3 text-right">
                     <div className="flex gap-1 justify-end">
                       <a href={doc.file_url} target="_blank" rel="noopener noreferrer" className="p-1.5 rounded hover:bg-gray-100 text-gray-400 hover:text-gray-700">
@@ -1247,10 +1244,7 @@ function AchievementsTab({ committee }) {
 // ─── Tab: Analytics ───────────────────────────────────────────────────────────
 function AnalyticsTab({ committee }) {
   const stats = [
-    { label: 'Total Members', value: committee.member_count || 0, icon: Users, color: 'text-lmsa-600', bg: 'bg-lmsa-50' },
-    { label: 'Active Events', value: committee.active_events ?? '—', icon: Calendar, color: 'text-blue-600', bg: 'bg-blue-50' },
-    { label: 'Documents', value: committee.doc_count ?? '—', icon: FileText, color: 'text-amber-600', bg: 'bg-amber-50' },
-    { label: 'Page Views', value: committee.views || '—', icon: Eye, color: 'text-purple-600', bg: 'bg-purple-50' },
+    { label: 'Total Members', value: committee.member_count || 0, icon: Users, color: 'text-lmsa-600', bg: 'bg-lmsa-50' },     { label: 'Active Events', value: committee.active_events ?? 'N/A', icon: Calendar, color: 'text-blue-600', bg: 'bg-blue-50' },     { label: 'Documents', value: committee.doc_count ?? 'N/A', icon: FileText, color: 'text-amber-600', bg: 'bg-amber-50' },     { label: 'Page Views', value: committee.views || 'N/A', icon: Eye, color: 'text-purple-600', bg: 'bg-purple-50' },
   ];
 
   return (

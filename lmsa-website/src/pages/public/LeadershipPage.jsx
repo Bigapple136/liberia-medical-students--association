@@ -129,7 +129,7 @@ export default function LeadershipPage() {
             <EditorialSectionHeader
               eyebrow="Learn & lead / Leadership"
               title="Leadership is service made visible."
-              description="Meet the students and officers turning shared priorities into action — and see how to put your own name forward."
+              description="Meet the students and officers turning shared priorities into action - and see how to put your own name forward."
             />
             <div className="editorial-prose">
               <p>
@@ -138,11 +138,10 @@ export default function LeadershipPage() {
               </p>
               <div className="editorial-stat-grid mt-8">
                 <EditorialStat value={currentYear} label="Academic year" />
-                <EditorialStat value={executives.length || '—'} label="Leadership roles" />
+                <EditorialStat value={executives.length || '-' } label="Leadership roles" />
                 <EditorialStat
                   value={
-                    cycleLoading || cycleError
-                      ? '—'
+                    cycleLoading || cycleError                       ? '-'
                       : nominationsOpen
                         ? 'Open'
                         : STATE_LABELS[cycleState?.state] || 'Closed'
@@ -260,7 +259,7 @@ export default function LeadershipPage() {
                 </p>
                 <p className="mt-2 text-lg font-semibold">
                   {cycleError
-                    ? 'Election dates could not be loaded right now — check back shortly.'
+                    ? 'Election dates could not be loaded right now - check back shortly.'
                     : cycleMessage(cycleState)}
                 </p>
               </div>
@@ -275,15 +274,15 @@ export default function LeadershipPage() {
             <dl className="editorial-panel-grid">
               <div>
                 <dt>Nominations open</dt>
-                <dd>{formatDate(cycleState?.cycle?.nomination_opens) || '—'}</dd>
+                <dd>{formatDate(cycleState?.cycle?.nomination_opens) || '-'}</dd>
               </div>
               <div>
                 <dt>Nominations close</dt>
-                <dd>{formatDate(cycleState?.cycle?.nomination_closes) || '—'}</dd>
+                <dd>{formatDate(cycleState?.cycle?.nomination_closes) || '-'}</dd>
               </div>
               <div>
                 <dt>Election date</dt>
-                <dd>{formatDate(cycleState?.cycle?.election_date) || '—'}</dd>
+                <dd>{formatDate(cycleState?.cycle?.election_date) || '-'}</dd>
               </div>
             </dl>
           </div>

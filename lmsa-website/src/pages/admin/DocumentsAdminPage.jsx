@@ -208,8 +208,7 @@ export default function DocumentsAdminPage() {
                       <span className="text-xl">{catIcon(doc.category)}</span>
                       <div className="min-w-0">
                         <p className="text-sm font-medium text-gray-900">{doc.title}</p>
-                        <p className="text-xs text-gray-400">
-                          {doc.file_type?.toUpperCase()} • {doc.file_size ? `${Math.round(doc.file_size / 1024)}KB` : '—'}
+                        <p className="text-xs text-gray-400">                           {doc.file_type?.toUpperCase()} • {doc.file_size ? `${Math.round(doc.file_size / 1024)}KB` : 'N/A'}
                         </p>
                         {doc.description && (
                           <p className="text-xs text-gray-500 mt-0.5 truncate max-w-xs">{doc.description}</p>
@@ -229,8 +228,7 @@ export default function DocumentsAdminPage() {
                       {doc.access_level}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-sm text-gray-400">{doc.downloads ?? 0}</td>
-                  <td className="px-4 py-3 text-sm text-gray-400">{doc.created_at ? new Date(doc.created_at).toLocaleDateString() : '—'}</td>
+                  <td className="px-4 py-3 text-sm text-gray-400">{doc.downloads ?? 0}</td>                   <td className="px-4 py-3 text-sm text-gray-400">{doc.created_at ? new Date(doc.created_at).toLocaleDateString() : 'N/A'}</td>
                   <td className="px-4 py-3 text-right">
                     <div className="flex gap-1 justify-end">
                       <button

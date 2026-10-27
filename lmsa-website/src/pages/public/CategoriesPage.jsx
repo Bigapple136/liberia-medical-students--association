@@ -79,7 +79,7 @@ export default function CategoriesPage() {
                   </ul>
                   {category.invitationOnly ? (
                     <p className="mt-auto pt-7 text-sm leading-6 text-gray-600">
-                      Offered by invitation — there is no application.{' '}
+                      Offered by invitation - there is no application.{' '}
                       <Link to="/contact" className="font-semibold text-lmsa-700 hover:text-lmsa-900">Suggest someone</Link>
                     </p>
                   ) : (

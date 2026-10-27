@@ -14,13 +14,13 @@ const milestones = [
       'The Liberia Medical Students&apos; Association was founded by a small group of visionary medical students who recognized the need for a unified voice in medical education. What started as a modest gathering of 15 students began a lasting tradition of student leadership.',
   },
   {
-    year: '1980s–1990s',
+    year: '1980s-1990s',
     title: 'Growth through resilience',
     description:
       'Despite the challenges of civil unrest, LMSA continued to advocate for medical students and maintain its commitment to academic excellence. This era brought international partnerships, the first annual medical symposium, and standing committees for specialized work.',
   },
   {
-    year: '2000s–today',
+    year: '2000s-today',
     title: 'A wider horizon',
     description:
       'LMSA continues to evolve with technology, global health initiatives, and new approaches to medical education while staying true to its founding principles. Its work reaches students across Liberia and prepares them for a changing healthcare landscape.',

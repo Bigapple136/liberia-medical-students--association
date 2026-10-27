@@ -92,7 +92,7 @@ const levelFeatures = [
   'Invitations to LMSA events and symposia',
   'Annual impact report',
   'Speaking slot at a symposium or workshop',
-  'Direct student engagement — mentoring, placements, recruitment',
+  'Direct student engagement - mentoring, placements, recruitment',
   'A named programme built around your organisation',
 ];
 
@@ -151,7 +151,7 @@ export default function PartnershipPage() {
             />
             <div className="editorial-prose">
               <p>
-                LMSA is the national voice of Liberia’s medical students — the people who will be
+                LMSA is the national voice of Liberia’s medical students - the people who will be
                 practising here long after today’s projects have ended. We bring them together to
                 learn, lead, advocate, and serve the communities that need them most.
               </p>
@@ -178,7 +178,7 @@ export default function PartnershipPage() {
           <EditorialSectionHeader
             eyebrow="Who we are looking for"
             title="Start with the kind of partner you are."
-            description="LMSA is building its formal partnerships now. These are the organisations we most want to work with — and the shape we imagine the work taking."
+            description="LMSA is building its formal partnerships now. These are the organisations we most want to work with - and the shape we imagine the work taking."
           />
           <div className="grid gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:gap-16">
             <ul className="partnership-seeking">
@@ -203,8 +203,8 @@ export default function PartnershipPage() {
               overlay="bg-gradient-to-t from-lmsa-900/85 via-lmsa-900/25 to-transparent"
             >
               <p className="partnership-figure-caption">
-                Already working with LMSA? Write to us and we will add your organisation — and your
-                logo — to this page.
+                Already working with LMSA? Write to us and we will add your organisation - and your
+                logo - to this page.
               </p>
             </Photo>
           </div>
@@ -304,7 +304,7 @@ export default function PartnershipPage() {
           <EditorialSectionHeader
             eyebrow="How it works"
             title="Three steps from an email to a programme."
-            description="No procurement portal, no fixed packages — a conversation, a written scope, and then the work."
+            description="No procurement portal, no fixed packages - a conversation, a written scope, and then the work."
           />
           <ol className="partnership-steps">
             {steps.map(({ title, description }, index) => (

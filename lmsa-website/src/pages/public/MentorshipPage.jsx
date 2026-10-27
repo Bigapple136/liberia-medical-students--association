@@ -36,7 +36,7 @@ export default function MentorshipPage() {
                 preferences to help relationships become productive and meaningful.
               </p>
               <p>
-                Peer guidance can make a demanding season feel more navigable—and can give
+                Peer guidance can make a demanding season feel more navigable - can give
                 experienced students a way to turn what they have learned into support for someone else.
               </p>
             </div>
@@ -82,7 +82,7 @@ export default function MentorshipPage() {
         <div className="site-container">
           <EditorialCallout
             eyebrow="Find your place"
-            title="Need support—or ready to share what you know?"
+            title="Need support-or ready to share what you know?"
             description="Whether you want a mentor or want to become one, one message starts the match."
             action={{ label: 'Ask about mentorship', to: '/contact' }}
           />

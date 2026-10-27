@@ -98,8 +98,8 @@ export default function JoinCommitteePage() {
               <div className="editorial-stat-grid editorial-stat-grid-two mt-8">
                 {loading ? (
                   <>
-                    <EditorialStat value="—" label="Committees recruiting" />
-                    <EditorialStat value="—" label="Open positions" />
+                    <EditorialStat value="-" label="Committees recruiting" />
+                    <EditorialStat value="-" label="Open positions" />
                   </>
                 ) : (
                   <>
@@ -123,7 +123,7 @@ export default function JoinCommitteePage() {
             title="Find the committee that fits your interests."
             description={
               openCommittees.length === 0
-                ? 'No committee is recruiting right now. Everything else you need to know is still here — including when to look again.'
+                ? 'No committee is recruiting right now. Everything else you need to know is still here - including when to look again.'
                 : sharedDeadline
                   ? `Applications close ${formatDeadline(sharedDeadline)}. Read each focus area, then choose where you want to contribute.`
                   : 'Each committee lists its own closing date. Read each focus area, then choose where you want to contribute.'
@@ -218,7 +218,7 @@ export default function JoinCommitteePage() {
             title="A committee is a practical first step into LMSA leadership."
             description={
               openCommittees.length
-                ? 'Choose a focus area above and send in your application — it takes about two minutes.'
+                ? 'Choose a focus area above and send in your application - it takes about two minutes.'
                 : 'Nothing is recruiting today. Write to us and we will tell you when the next round opens.'
             }
             action={{ label: 'Contact LMSA', to: '/contact?topic=committees' }}

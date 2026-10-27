@@ -166,7 +166,7 @@ export default function NewsPage() {
           <EditorialSectionHeader
             eyebrow="Stories & events / News"
             title="Stories from the people making medical education matter."
-            description="News, announcements, achievements, and opportunities from the LMSA community — the ideas and moments moving healthcare forward in Liberia."
+            description="News, announcements, achievements, and opportunities from the LMSA community - the ideas and moments moving healthcare forward in Liberia."
           />
           <div className="flex flex-wrap gap-2 border-t border-lmsa-200 pt-6" role="group" aria-label="Filter stories by category">
             {[{ value: 'all', label: 'All stories' }, ...NEWS_CATEGORIES].map(({ value, label }) => {
@@ -207,7 +207,7 @@ export default function NewsPage() {
               <Newspaper size={40} className="mx-auto mb-4 text-gray-300" aria-hidden="true" />
               <h2 className="text-xl font-semibold tracking-[-0.02em] text-lmsa-900">We couldn’t load the news</h2>
               <p className="mx-auto mt-2 max-w-md text-gray-600">
-                Something went wrong on our end or with your connection. Your place is saved — try again in a moment.
+                Something went wrong on our end or with your connection. Your place is saved - try again in a moment.
               </p>
               <button
                 type="button"

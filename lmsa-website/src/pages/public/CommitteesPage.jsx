@@ -57,9 +57,9 @@ export default function CommitteesPage() {
                 members to contribute meaningfully to the mission.
               </p>
               <div className="editorial-stat-grid mt-8">
-                <EditorialStat value={loading ? '—' : String(committees.length)} label="Committees" />
-                <EditorialStat value={loading ? '—' : String(totalMembers)} label="Active members" />
-                <EditorialStat value={loading ? '—' : String(recruiting)} label="Recruiting now" />
+                <EditorialStat value={loading ? '-' : String(committees.length)} label="Committees" />
+                <EditorialStat value={loading ? '-' : String(totalMembers)} label="Active members" />
+                <EditorialStat value={loading ? '-' : String(recruiting)} label="Recruiting now" />
               </div>
             </div>
           </div>
