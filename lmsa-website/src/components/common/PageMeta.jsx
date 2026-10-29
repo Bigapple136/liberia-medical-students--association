@@ -109,6 +109,12 @@ const pageMeta = [
       'Explore research opportunities and support for medical students who want to improve healthcare in Liberia.',
   },
   {
+    match: (path) => path === '/academics/career-center',
+    title: 'Where do you want to practice? | LMSA',
+    description:
+      'Explore career advising, specialty pathways, application support, and opportunities through the LMSA Career Center.',
+  },
+  {
     match: (path) => path === '/documents',
     title: 'Publications, reports, and resources | LMSA',
     description:

@@ -376,6 +376,21 @@
     @apply md:grid-cols-[minmax(0,20rem)_1fr];
   }
 
+  /* ---- Career center page ---- */
+  /* FAQ rows mirror the join-committee pattern: question as term, answer as description. */
+  .career-page .editorial-article-row {
+    @apply md:grid-cols-[minmax(0,20rem)_1fr];
+  }
+
+  .career-page .editorial-article-row dt {
+    @apply text-base font-semibold leading-7 text-lmsa-900;
+  }
+
+  .career-page .editorial-article-row dd {
+    @apply text-base leading-7 text-gray-700;
+  }
+
+
   .join-committee-page .editorial-article-row dt {
     @apply text-base font-semibold leading-7 text-lmsa-900;
   }

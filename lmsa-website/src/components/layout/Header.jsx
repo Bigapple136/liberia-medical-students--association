@@ -30,6 +30,7 @@ const primaryNav = [
       { label: 'Documents', detail: 'Browse the resource library', path: '/documents' },
       { label: 'Mentorship', detail: 'Learn from those ahead', path: '/academics/mentorship' },
       { label: 'Research', detail: 'Turn questions into impact', path: '/academics/research' },
+      { label: 'Career Center', detail: 'Plan your path in medicine', path: '/academics/career-center' },
       { label: 'Leadership', detail: 'Grow through service', path: '/leadership' },
       { label: 'Committees', detail: 'Find the work that matters', path: '/leadership/committees' },
     ],

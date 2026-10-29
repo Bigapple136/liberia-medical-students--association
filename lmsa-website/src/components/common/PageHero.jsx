@@ -6,6 +6,7 @@ import {
   ArrowRight,
   BookOpen,
   CalendarDays,
+  Compass,
   FileText,
   HeartPulse,
   History,
@@ -236,6 +237,18 @@ const heroPages = [
     icon: Lightbulb,
     photoKey: 'research',
     pattern: 'hexagons',
+  },
+  {
+    match: (path) => path === '/academics/career-center',
+    eyebrow: 'Academics / Career Center',
+    title: 'Where do you want to practice?',
+    description:
+      'Connect with advisors, alumni, and opportunities as you decide where medicine will take you—in Liberia and beyond.',
+    action: { label: 'Talk to the career team', to: '/contact' },
+    accent: 'green',
+    icon: Compass,
+    photoKey: 'partnership',
+    pattern: 'grid',
   },
   {
     match: (path) => path === '/events',

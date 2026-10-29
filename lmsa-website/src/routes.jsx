@@ -28,6 +28,7 @@ const SymposiaPage = lazy(() => import('./pages/public/SymposiaPage'));
 const ResourcesPage = lazy(() => import('./pages/public/ResourcesPage'));
 const MentorshipPage = lazy(() => import('./pages/public/MentorshipPage'));
 const ResearchPage = lazy(() => import('./pages/public/ResearchPage'));
+const CareerCenterPage = lazy(() => import('./pages/public/CareerCenterPage'));
 const EventsPage = lazy(() => import('./pages/public/EventsPage'));
 const EventDetailPage = lazy(() => import('./pages/public/EventDetailPage'));
 const NewsPage = lazy(() => import('./pages/public/NewsPage'));
@@ -110,6 +111,7 @@ function AppRoutes() {
           <Route path="/academics/resources" element={<ResourcesPage />} />
           <Route path="/academics/mentorship" element={<MentorshipPage />} />
           <Route path="/academics/research" element={<ResearchPage />} />
+          <Route path="/academics/career-center" element={<CareerCenterPage />} />
           
           {/* Events routes */}
           <Route path="/events" element={<EventsPage />} />
