@@ -6,6 +6,7 @@ import {
   ArrowRight,
   BookOpen,
   CalendarDays,
+  Compass,
   FileText,
   HeartPulse,
   History,
@@ -170,7 +171,7 @@ const heroPages = [
     eyebrow: 'Membership / Categories',
     title: 'Membership designed around your journey',
     description:
-      'Whether you are a current student, associate, or honorary member, there is a place for you in LMSA.',
+      'Whether you are a current student, associate, honorary or veteran member, there is a place for you in LMSA.',
     action: { label: 'Review dues', to: '/membership/dues' },
     accent: 'blue',
     icon: Users,
@@ -236,6 +237,18 @@ const heroPages = [
     icon: Lightbulb,
     photoKey: 'research',
     pattern: 'hexagons',
+  },
+  {
+    match: (path) => path === '/academics/career-center',
+    eyebrow: 'Academics / Career Center',
+    title: 'Where do you want to practice?',
+    description:
+      'Connect with advisors, alumni, and opportunities as you decide where medicine will take you—in Liberia and beyond.',
+    action: { label: 'Talk to the career team', to: '/contact' },
+    accent: 'green',
+    icon: Compass,
+    photoKey: 'partnership',
+    pattern: 'grid',
   },
   {
     match: (path) => path === '/events',

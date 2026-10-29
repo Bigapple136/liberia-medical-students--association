@@ -27,6 +27,11 @@ router.get('/:id/achievements', authenticate, cc.getAchievements);
 // ─── Admin: manage committee details ─────────────────────────────────────────
 const isAdmin = [authenticate, authorize('admin', 'executive', 'super_admin')];
 
+// Admin-only list, no status filter — the admin picker's data source, so a
+// committee stays visible and reactivatable after an admin deactivates it.
+// The public GET / below stays active-only and untouched (T39).
+router.get('/admin/all', ...isAdmin, cc.getAllAdmin);
+
 router.put('/:id', ...isAdmin, cc.update);
 
 // Members

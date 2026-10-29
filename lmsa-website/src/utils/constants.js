@@ -27,6 +27,14 @@ export const USER_ROLES = {
 // each other the way three separately-typed literals eventually would.
 export const ADMIN_ROLES = [USER_ROLES.ADMIN, USER_ROLES.EXECUTIVE, USER_ROLES.SUPER_ADMIN];
 
+// The one real, monitored contact address for the whole site (confirmed
+// T37). Every mailto: link and displayed contact email must reference
+// this constant instead of hardcoding a literal — scattered copies
+// previously drifted across three different addresses (Footer,
+// ContactPage, ProfilePage, the auth help blocks, ErrorBoundary,
+// PartnershipPage).
+export const CONTACT_EMAIL = 'dev.lmsa@gmail.com';
+
 export const MEMBERSHIP_TYPES = {
   FULL: 'full',
   ASSOCIATE: 'associate',

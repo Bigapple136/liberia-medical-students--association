@@ -1,6 +1,6 @@
-// Dev-only preview entry (T42 rework): renders the admin shell + dashboard
-// with a mocked session. Loaded only by admin-preview.html; never part of
-// the production bundle.
+// Port the dev-only preview entry (T42 rework): renders the admin shell +
+// dashboard with a mocked session. Loaded only by admin-preview.html; never
+// part of the production bundle.
 import { useEffect } from 'react';
 import { HashRouter } from 'react-router-dom';
 import { createRoot } from 'react-dom/client';

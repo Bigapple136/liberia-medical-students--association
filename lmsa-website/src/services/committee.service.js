@@ -11,6 +11,13 @@ export const committeeService = {
     return response.data.committees;
   },
 
+  /** Get all committees regardless of status (admin) — the admin picker's
+   * source, so a deactivated committee stays visible and reactivatable */
+  async getAllAdmin() {
+    const response = await api.get('/committees/admin/all');
+    return response.data.committees;
+  },
+
   /** Get single committee by slug */
   async getBySlug(slug) {
     const response = await api.get(`/committees/${slug}`);

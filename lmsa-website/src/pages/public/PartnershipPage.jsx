@@ -2,6 +2,7 @@ import { BookOpen, Building2, Check, Globe, Heart, Mail, Minus, Target, Users } 
 import { Link } from 'react-router-dom';
 import Photo from '@components/common/Photo';
 import { stockPhotos } from '@config/images';
+import { CONTACT_EMAIL } from '@utils/constants';
 import { EditorialCallout, EditorialSectionHeader } from '@components/common/EditorialSections';
 
 const outcomes = [
@@ -327,9 +328,9 @@ export default function PartnershipPage() {
             action={{ label: 'Use our contact form', to: '/contact?topic=partnership' }}
           />
           <div className="partnership-contact">
-            <a href="mailto:partnerships@lmsa.org.lr?subject=Partnership%20enquiry">
+            <a href={`mailto:${CONTACT_EMAIL}?subject=Partnership%20enquiry`}>
               <Mail size={21} className="text-lmsa-700" aria-hidden="true" />
-              <span className="text-sm font-semibold text-lmsa-900">partnerships@lmsa.org.lr</span>
+              <span className="text-sm font-semibold text-lmsa-900">{CONTACT_EMAIL}</span>
             </a>
             <Link to="/contact?topic=partnership">
               <Users size={21} className="text-lmsa-700" aria-hidden="true" />

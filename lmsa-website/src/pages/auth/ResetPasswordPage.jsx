@@ -6,6 +6,7 @@ import { supabase } from '@services/supabase';
 import { authService } from '@services/auth.service';
 import Input from '@components/common/Input';
 import Button from '@components/common/Button';
+import { CONTACT_EMAIL } from '@utils/constants';
 
 export default function ResetPasswordPage() {
   const [password, setPassword] = useState('');
@@ -225,8 +226,8 @@ export default function ResetPasswordPage() {
           <div className="mt-8 p-4 bg-gray-100 rounded-lg">
             <p className="text-sm text-gray-600 text-balance">
               <strong>Need help?</strong> Contact us at{' '}
-              <a href="mailto:support@lmsa.org.lr" className="text-lmsa-600 hover:underline">
-                support@lmsa.org.lr
+              <a href={`mailto:${CONTACT_EMAIL}`} className="text-lmsa-600 hover:underline">
+                {CONTACT_EMAIL}
               </a>
             </p>
           </div>

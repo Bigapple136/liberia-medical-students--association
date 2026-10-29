@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Mail, Lock, Eye, EyeOff, ArrowLeft } from 'lucide-react';
 import { useAuth } from '@context/AuthContext';
-import { ADMIN_ROLES } from '@utils/constants';
+import { ADMIN_ROLES, CONTACT_EMAIL } from '@utils/constants';
 import toast from 'react-hot-toast';
 import Input from '@components/common/Input';
 import Button from '@components/common/Button';
@@ -219,8 +219,8 @@ export default function LoginPage() {
               <div className="mt-8 p-4 bg-gray-100 rounded-lg">
                 <p className="text-sm text-gray-600 text-balance">
                   <strong>Need help?</strong> Contact us at{' '}
-                  <a href="mailto:support@lmsa.org.lr" className="text-lmsa-600 hover:underline">
-                    support@lmsa.org.lr
+                  <a href={`mailto:${CONTACT_EMAIL}`} className="text-lmsa-600 hover:underline">
+                    {CONTACT_EMAIL}
                   </a>
                 </p>
               </div>

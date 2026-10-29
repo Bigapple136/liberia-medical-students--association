@@ -401,10 +401,17 @@ shortcut: `git diff main...arena/01a06232-liberia-medical-students-assoc
 
 Not done (flagged, not fixed — needs a decision or a specced task):
 
-1. **JoinCommitteePage still shows the fabricated committee list**
-   (invented names, openings, and deadlines) that the committees index
-   just dropped — needs the same registry treatment plus a decision on
-   where "openings/deadline" truth should come from.
+1. ~~**JoinCommitteePage still shows the fabricated committee list**~~
+   **Resolved, confirmed 2026-10-01.** `JoinCommitteePage.jsx` now
+   fetches real committees via `committeeService.getAll()` as primary
+   data; `committeeFallbackList` only fires in the `catch` branch (API
+   genuinely unreachable), explicitly without a fabricated deadline
+   (see its own comment). The fallback data itself uses the real
+   constitutional 12 names (re-keyed during the committee-data-reset
+   work), not the old generic placeholders. Openings/deadlines are
+   real too, sourced from `approved_count`/`openings`/
+   `application_deadline` on each committee (the recruitment-notice
+   integration work).
 2. ~~**Symposia data is still a hardcoded array**~~ **Resolved,
    confirmed 2026-09-28.** Both sides already exist: the public
    `/academics/symposia` page calls `eventService.getAll({ type:
@@ -770,6 +777,15 @@ thread, since that decision is explicitly still pending on Stone's end.
 | T34 | Homepage: replace hardcoded fake "Latest from LMSA" stories with real news data | none | **done** |
 | T35 | Fix login redirect: root-cause AuthContext race + role-based destination (student → Homepage, admin → Admin Dashboard) + personalized welcome | none | **done** |
 | T36 | Wire `PastPresidentsPage.jsx` to real `executive_positions` data (`status: completed`), remove fabricated names | none | **done** |
+| T37 | Consolidate every contact email onto `dev.lmsa@gmail.com` (one source of truth) | none | **done** |
+| T38 | Add Veteran membership (free, no dues) to the Categories and Dues pages | none | **done: merged 2026-10-11** |
+| T39 | Committee Status (active/inactive) — build it properly: admin-only full list endpoint, `getBySlug` stops resolving inactive committees publicly, Status field actually persists | none | **done** |
+| T40 | Portal app shell (pushed directly by Stone, stale base `ac0bf59`) | none | **closed: superseded (Stone confirmed 2026-10-10). Branch retained, not merged.** |
+| T41 | Portal dashboard hierarchy (stacked on T40, stale base) | T40 | **closed: superseded (Stone confirmed 2026-10-10). Branch retained, not merged.** |
+| T42 | Admin UI/UX: shell parity, contrast, device matrix (pushed directly, stale base, 8 code conflicts) | none | **done: rework merged 2026-10-11** |
+| T43 | Compare dashboard concepts: T41 lead status panel vs `main` "this month" priority card (decision support, no merge) | none | **done: report merged 2026-10-11 (decision support, no code)** |
+| T44 | Admin follow-up: icon-button contrast (gray-300) and drawer focus parity across the portal and admin shells | none | **unassigned** |
+| T45 | Priority-card loading announcement for screen readers (the one piece of T41's dashboard worth keeping; narrowed from T43's proposal) | none | **unassigned** |
 
 **T22 flagged priority.** Render permanently blocks outbound SMTP ports
 (25/465/587) on free-tier web services since September 2025 — confirmed
@@ -6883,8 +6899,14 @@ portal flows (needs credentials) would close this gap.
   forwarding refs there would prevent future silent no-ops.
 - Footer's `Member Portal` link already existed; only its dead siblings were
   corrected.
-- Dues data and password change remain backend gaps; both seams are marked
-  in the UI and ready to absorb the endpoints when they land.
+- ~~Dues data and password change remain backend gaps~~ **Correction
+  (orchestrator, 2026-10-01): dues is not a gap** — `GET
+  /membership/dues/me` is real and already wired into
+  `ProfilePage.jsx`'s dues card (confirmed directly in
+  `membership.controller.js`/`membership.routes.js` during review);
+  this note appears to predate that endpoint landing. Password change
+  is still the genuine gap — `ProfilePage.jsx` honestly marks it
+  "coming soon" rather than faking a form.
 
 
 ### Orchestrator review
@@ -7189,3 +7211,1360 @@ the admin panel. The report doesn't overclaim this as "populating" past
 presidents, which is exactly right.
 
 No corrections needed. Approved and merged to `main`.
+
+---
+
+## T37 — Consolidate every contact email onto `dev.lmsa@gmail.com`
+
+**Branch:** `task/t37-contact-email-consolidation`
+**Status:** done
+**Depends on:** none
+
+### Context
+
+Flagged as an open item back in the T30 addendum (four different
+addresses across three domain families), never specced until now.
+Stone confirmed the canonical, real, monitored address is
+`dev.lmsa@gmail.com`.
+
+Verified the current spread directly (`grep`, not memory) —
+8 occurrences across 7 files:
+
+- `dev.lmsa@gmail.com` (correct already): `Footer.jsx`,
+  `ContactPage.jsx`, `ProfilePage.jsx` (×2)
+- `support@lmsa.org.lr` (wrong, needs changing): `ErrorBoundary.jsx`,
+  `ForgotPasswordPage.jsx`, `LoginPage.jsx`, `ResetPasswordPage.jsx`
+- `partnerships@lmsa.org.lr` (wrong, needs changing):
+  `PartnershipPage.jsx`
+
+### What to build
+
+Don't just find-and-replace the literal strings — that fixes today's
+instances but does nothing to stop the same fragmentation from
+happening again the next time someone adds a new page with a contact
+link. Add a single source of truth and have every file import it,
+same pattern already established for `ADMIN_ROLES` in
+`utils/constants.js`.
+
+**`lmsa-website/src/utils/constants.js`** — add:
+```js
+export const CONTACT_EMAIL = 'dev.lmsa@gmail.com';
+```
+
+**Update all 7 files** to import `CONTACT_EMAIL` from
+`@utils/constants` and use it for both the `mailto:` href and the
+displayed address text, replacing every hardcoded literal (including
+the 3 files that already happen to have the right address — they
+should still go through the constant, not stay as hardcoded strings
+that happen to currently match).
+
+**`PartnershipPage.jsx`** specifically has a `mailto:` link with a
+`?subject=` query string
+(`mailto:partnerships@lmsa.org.lr?subject=Partnership%20enquiry`) —
+keep the subject line, just swap the address:
+`` `mailto:${CONTACT_EMAIL}?subject=Partnership%20enquiry` ``.
+
+### Acceptance criteria
+
+- [ ] `npx eslint src --ext js,jsx --max-warnings 0` — clean.
+- [ ] `npm run build` — clean.
+- [ ] Zero remaining hardcoded email-address literals across these 7
+      files — grep for `support@lmsa.org.lr` and
+      `partnerships@lmsa.org.lr` to confirm both are completely gone
+      from the codebase, and grep for `dev.lmsa@gmail.com` to confirm
+      it only appears once, in `constants.js`, with every other
+      occurrence now a `CONTACT_EMAIL` reference.
+- [ ] `PartnershipPage.jsx`'s subject-line query param still works
+      correctly with the new address.
+
+### Report
+
+**Status:** unassigned → done
+**Branch:** `task/t37-contact-email-consolidation`
+
+#### What changed
+
+1. **`lmsa-website/src/utils/constants.js`** — added the single source of
+   truth: `export const CONTACT_EMAIL = 'dev.lmsa@gmail.com';`
+2. **All 8 files** now import `CONTACT_EMAIL` from `@utils/constants`
+   and use it for both the `mailto:` href and the displayed address text:
+   `Footer.jsx`, `ContactPage.jsx`, `ProfilePage.jsx` (both links),
+   `ErrorBoundary.jsx`, `ForgotPasswordPage.jsx`, `LoginPage.jsx`,
+   `ResetPasswordPage.jsx`, `PartnershipPage.jsx`. `LoginPage.jsx` already
+   imported `ADMIN_ROLES` from that module, so its existing import was
+   extended rather than duplicated.
+3. **`PartnershipPage.jsx`** keeps its subject line — now
+   `` `mailto:${CONTACT_EMAIL}?subject=Partnership%20enquiry` ``, which
+   evaluates to `mailto:dev.lmsa@gmail.com?subject=Partnership%20enquiry`
+   (verified by evaluating the template).
+
+#### Verification (run in `lmsa-website`)
+
+- `npx eslint src --ext js,jsx --max-warnings 0` — clean (exit 0).
+- `npm run build` — clean (exit 0).
+- `grep -rn "support@lmsa.org.lr\|partnerships@lmsa.org.lr" src/` — no
+  matches; both wrong addresses are gone from application code.
+- `grep -rn "dev.lmsa@gmail.com" src/` — exactly one match, the constant
+  in `src/utils/constants.js`; every other occurrence is a
+  `CONTACT_EMAIL` reference (hrefs and displayed text).
+- Repo-wide grep over `*.js`/`*.jsx`/`*.html`/`*.json` (excluding
+  `node_modules`/`dist`/`.git`): the only hit anywhere is the constant
+  itself.
+
+#### Deviations from spec
+
+- None functionally. One count correction for the record: the spec's
+  "8 occurrences across 7 files" was an undercount — a line-level grep
+  showed 17 literal lines across 8 files (every mailto link carries the
+  address in both the href and the visible text; ProfilePage has two
+  links). All 17 were replaced; the acceptance greps above are the
+  operative check.
+- Left untouched on purpose: `docs/13-member-portal-spec.md` (line 95)
+  still quotes `support@lmsa.org.lr` as historical spec prose, and this
+  file's own T30/T37 sections name the old addresses when describing the
+  problem. Documentation records, not runtime code — the codebase-wide
+  code-file grep confirms zero remaining hits in any source file.
+
+### Orchestrator review
+
+Independently verified on a fresh checkout of
+`origin/task/t37-contact-email-consolidation`: `npx eslint src --ext
+js,jsx --max-warnings 0` clean, `npm run build` clean. Re-ran both
+acceptance greps myself rather than trusting the report — zero
+remaining instances of either wrong address, `dev.lmsa@gmail.com`
+appears exactly once, in `constants.js`. Read every one of the eight
+file diffs individually: all nine consistently use the same
+`CONTACT_EMAIL` import and template-literal pattern, `PartnershipPage.jsx`'s
+subject-line query param preserved correctly. The report's correction
+to my own spec's rough count (8 occurrences → really 17 individual
+lines once href + visible text are both counted) is accurate and a
+fair clarification, not a discrepancy worth sending back for. Leaving
+the historical `support@lmsa.org.lr` mention in `docs/13-member-portal-spec.md`
+alone was the right call — documentation prose, not runtime code.
+
+No corrections needed. Approved and merged to `main`.
+
+---
+
+## T39 — Committee Status (active/inactive), built properly
+
+**Branch:** `task/t39-committee-status`
+**Status:** done
+**Depends on:** none
+
+### Context
+
+Found during the recruitment-notice integration work (2026-09-27):
+the admin Committee Management Details tab has a Status
+(Active/Inactive) dropdown that does nothing — `status` is sent by
+the form but was never in the backend `update` whitelist, so the
+"Committee updated" toast is followed by no actual change. Flagged
+then as needing a decision rather than a quick fix, because a naive
+fix would be a trap: the admin's own committee picker loads through
+the *public* `GET /committees` endpoint, which filters to
+`status = 'active'` — so an admin who deactivates a committee would
+immediately lose it from their own admin list, with no way back in
+except direct Supabase access.
+
+Stone's decision: build it properly rather than just removing the
+dropdown. That means three things, not one.
+
+### 1. Backend — an admin-only endpoint that includes inactive committees
+
+Verified there's no existing admin-list variant for committees
+(unlike `news.controller.js`/`document.controller.js`/
+`executive.controller.js`, which all have a `getAllAdmin`
+alongside their public `getAll`). Add one, matching that established
+pattern exactly — see `news.controller.js`'s `getAllAdmin` for the
+shape to follow (admin-gated, no `status` filter by default so it
+returns everything, same ordering/join style the existing `getAll`
+already uses for `member_count`/`chair`).
+
+**`lmsa-api/src/controllers/committee.controller.js`** — add
+`getAllAdmin`, selecting all committees regardless of `status`
+(reuse the exact same `select` — including the `member_count`/`chair`
+join — `getAll` already has, so the admin list doesn't lose any data
+the current one has).
+
+**`lmsa-api/src/routes/committee.routes.js`** — register it as
+`GET /committees/admin/all`, behind the existing `isAdmin` array used
+everywhere else in this file. Keep the existing public
+`GET /committees` exactly as is (still active-only) — this task adds
+a second endpoint, it doesn't change the public one's behavior.
+
+### 2. Backend — make the Status field actually persist, and fix `getBySlug`
+
+**`lmsa-api/src/controllers/committee.controller.js`**'s `update`
+function — add `status` to the destructured fields pulled from
+`req.body` and to the `.update({...})` object, same place
+`openings`/`accepting_applications`/`application_deadline` were added
+previously. This is the actual original bug — the dropdown sends a
+value that's never been saved.
+
+Related gap, same root cause, found during the same review:
+`getBySlug` (the public committee detail page's data source) doesn't
+filter by `status` at all today — a deactivated committee's page
+would still resolve by URL even though it no longer appears in any
+public listing. Fix `getBySlug` to return 404 for a committee whose
+`status` isn't `'active'`, same as how a removed/draft piece of
+content should behave — don't rely on the frontend to hide this,
+enforce it server-side.
+
+### 3. Frontend — admin list uses the new endpoint, shows status clearly
+
+**`lmsa-website/src/services/committee.service.js`** — add a
+`getAllAdmin()` method calling the new endpoint, matching the existing
+`getAll()`'s shape.
+
+**`lmsa-website/src/pages/admin/CommitteeAdminDashboard.jsx`** —
+switch the committee-list load from `committeeService.getAll()` to
+`committeeService.getAllAdmin()`, so a deactivated committee stays
+visible and manageable (the whole point of this task — an admin must
+be able to find and reactivate something they turned off). Give each
+committee in the admin picker list a visible, honest indicator of its
+current status (an inactive one shouldn't look identical to an active
+one in the list — a small badge or dimmed treatment is enough, this
+doesn't need to be elaborate).
+
+### Acceptance criteria
+
+- [ ] `npx eslint src --ext js,jsx --max-warnings 0` — clean.
+- [ ] `npm run build` — clean.
+- [ ] Backend: `node --check` clean on every touched file.
+- [ ] New admin-list endpoint is genuinely admin-gated (same `isAdmin`
+      array used elsewhere in this route file) — not publicly
+      reachable.
+- [ ] The existing public `GET /committees` endpoint's behavior is
+      unchanged (still active-only) — this task adds a new endpoint,
+      it does not alter that one.
+- [ ] Changing a committee's Status in the admin Details tab and
+      saving actually persists — describe how this was verified
+      (reasoning through the save path is fine if a live click-through
+      isn't possible in this sandbox, but say so explicitly).
+- [ ] A deactivated committee no longer vanishes from the admin's own
+      picker list, and is visually distinguishable from an active one
+      there.
+- [ ] `getBySlug` returns 404 for a non-active committee; confirm the
+      frontend's existing "not found" handling on
+      `CommitteePageTemplate.jsx` renders sensibly for this case
+      rather than crashing (it already has a not-found path for an
+      unrecognized slug — confirm an inactive one hits the same path,
+      don't build a new one if the existing one already covers it).
+- [ ] Report states plainly what could and couldn't be verified from
+      this sandbox (no live Supabase session, no browser) — same
+      standard as every task on this board.
+
+### Report
+
+**Status:** unassigned → done
+**Branch:** `task/t39-committee-status`
+
+#### What changed
+
+1. **`lmsa-api/src/controllers/committee.controller.js`**
+   - New `getAllAdmin` — identical select/order/flatten as `getAll`
+     (chair join, `member_count`, `approved_count` via the same
+     `getApprovedCounts` batch) minus the `status = 'active'` filter, so
+     it returns everything. Response shape `{ success, committees }`,
+     same handler skeleton (try/catch, 400 on query error, 500 catch,
+     `console.error('Get all committees (admin) error:', ...)`) as the
+     `getAllAdmin`s in `news`/`document`/`executive` controllers.
+   - `update` — `status` added to the destructured fields and to the
+     `.update({...})` object, alongside
+     `openings`/`accepting_applications`/`application_deadline`. This is
+     the original bug fix: the dropdown has been sending this field all
+     along and it was silently dropped.
+   - `getBySlug` — added `.eq('status', 'active')` before `.single()`,
+     so a deactivated committee resolves to no row and hits the
+     existing `404 Committee not found` branch. Enforced server-side.
+2. **`lmsa-api/src/routes/committee.routes.js`** — `GET /admin/all`
+   registered in the Admin section behind the exact same `isAdmin`
+   array used by every other route in the file
+   (`authenticate` + `authorize('admin', 'executive', 'super_admin')`).
+   The public `GET /` is untouched — still active-only, still no auth.
+3. **`lmsa-website/src/services/committee.service.js`** — new
+   `getAllAdmin()` calling `/committees/admin/all`, returning
+   `response.data.committees` exactly like `getAll()`.
+4. **`lmsa-website/src/pages/admin/CommitteeAdminDashboard.jsx`**
+   - `loadCommittees()` switched from `committeeService.getAll()` to
+     `committeeService.getAllAdmin()` — a deactivated committee stays
+     visible and reactivatable in the admin picker.
+   - Sidebar picker: inactive committees get an "Inactive" chip next to
+     the name plus a dimmed (70% opacity) row; active ones render
+     unchanged. The existing status chip in the Details header already
+     handled the selected committee; the list is what T39 required.
+5. **`lmsa-website/src/pages/committees/CommitteePageTemplate.jsx`** —
+   one necessary addition beyond the three named parts (see Deviations):
+   the catch around `getBySlug` previously fell back to the bundled
+   static `ALL_COMMITTEES_DATA` for *any* error. For the twelve
+   constitutional committee slugs, that fallback would have intercepted
+   the new 404 and resurrected a deactivated committee's page from
+   stale static content — precisely the leak the server-side fix is
+   meant to close. Now an API 404 (`err.response.status === 404`)
+   yields `null` → the existing "Committee Not Found" state renders;
+   every other failure mode (API unreachable / offline setup mode)
+   keeps the old static-fallback behavior unchanged.
+
+#### Verification
+
+- `npx eslint src --ext js,jsx --max-warnings 0` (website, local
+  ESLint 8.57.1) — clean, exit 0.
+- `npm run build` (website) — clean, exit 0.
+- API `npm run lint` (ESLint 8.56 per lockfile; deps installed via
+  `npm ci`) — 0 errors, exit 0. One pre-existing warning
+  (`auth.controller.js:213` unused `token`), untouched by this task.
+- Backend `node --check` — clean on both touched files.
+- **Route gate verified at runtime**, not just by reading: mounted the
+  real `committee.routes.js` router in-process with dummy Supabase env
+  vars and issued real HTTP requests —
+  - `GET /committees/admin/all` with no token → **401
+    "No token provided"**;
+  - with a fake Bearer token → **401 "Invalid or expired token"**
+    (rejected at `authenticate` before any data flows);
+  - router-stack inspection: `/admin/all` carries the same 3-layer
+    chain (`authenticate` → `authorize` → `getAllAdmin`) as every other
+    admin route; public `GET /` and `GET /:slug` remain 1-layer,
+    auth-free;
+  - `GET /committees` with no auth still reaches its controller (the
+    400 seen is the query failing against a dummy host — expected here
+    — not an auth rejection), confirming the public endpoint's reach
+    and auth behavior are unchanged. Its `.eq('status', 'active')`
+    filter is untouched in the diff.
+- **Status persistence** — traced statically through the save path (no
+  live Supabase in this sandbox): Details-tab select writes
+  `form.status` ('active'/'inactive') → `handleSave` spreads `...form`
+  into `committeeService.update(id, {...})` → `PUT /committees/:id` →
+  controller now whitelists `status` into `.update({...})` → PUT
+  returns the updated row → `handleCommitteeUpdate` merges it into the
+  list and active committee, so both chips update without a reload.
+- **getBySlug → frontend not-found** — axios exposes
+  `error.response.status = 404`; the catch yields `null`;
+  `if (!committee)` renders the existing "Committee Not Found" state
+  with the link back to `/leadership/committees`. No crash path: the
+  secondary loads are `Promise.allSettled` and are short-circuited when
+  `data` is null.
+
+#### What could NOT be verified from this sandbox
+
+- No live Supabase session: could not confirm an actual
+  `status = 'inactive'` row round-trips through `PUT /committees/:id`
+  against the real database, nor watch a deactivated committee vanish
+  from public `GET /` while staying in `GET /admin/all` with real data.
+  Both follow from the query construction (filter present vs absent),
+  and `status` persists exactly the way `openings`/
+  `accepting_applications`/`application_deadline` already demonstrably
+  do — but the data-level behavior itself rests on code-path reasoning,
+  not a live click-through.
+- No browser: could not click the Details tab, see the save toast, or
+  eyeball the Inactive chip/dimmed row rendered. The changes are
+  build- and lint-verified; visual confirmation still worth doing on
+  the next live review pass.
+- A live 403 for an authenticated non-admin was not exercised (needs a
+  real member token). The gate is the identical `authorize(...)`
+  closure the other admin routes use, which do return 403 in
+  production.
+
+#### Deviations from spec
+
+- The `CommitteePageTemplate.jsx` catch-branch change is beyond the
+  three named parts — required by the acceptance criterion "confirm the
+  existing not-found handling renders sensibly for an inactive
+  committee": as written, the static fallback intercepted the 404 for
+  all twelve bundled slugs and would have shown stale content instead
+  of Not Found. The fix routes only API-404s to the existing not-found
+  state; no new UI was built.
+
+### Orchestrator review
+
+Independently verified on a fresh checkout of
+`origin/task/t39-committee-status`: `npx eslint src --ext js,jsx
+--max-warnings 0` clean, `npm run build` clean, backend `node --check`
+clean. Diff is exactly the five files the spec named, nothing else.
+
+Read every file against source, not just the report:
+- `getAllAdmin` reuses the identical select/join/`getApprovedCounts`
+  shape `getAll` already has, so the admin list loses no data parity.
+- `getBySlug` now filters to `status = 'active'`, and makes an unknown
+  slug and a deactivated one return the identical 404 rather than
+  leaking which committees exist but are hidden. The spec did not ask
+  for that explicitly; it is a sound call.
+- Route ordering: `/admin/all` is registered after `/:slug` in the
+  file, which looked like a hazard on first read. Checked it for real
+  instead of reasoning it away: spun up a throwaway Express instance
+  with the same two routes and confirmed `/admin/all` reaches its own
+  handler, because `:slug` only matches a single path segment. No
+  actual hazard.
+- `update`'s whitelist: `status` added to both the destructure and the
+  `.update()` call. That was the original bug.
+- Frontend: `getAllAdmin()` added to the service matching the existing
+  pattern; `CommitteeAdminDashboard.jsx` switched to it and shows a
+  small "Inactive" badge plus dimmed row styling.
+- **The one real catch beyond the spec, and the right one to make:**
+  `CommitteePageTemplate.jsx`'s static-fallback path
+  (`ALL_COMMITTEES_DATA[slug]`, built for offline mode) treated any
+  thrown error, including the new 404, as "fall back to bundled
+  content". Unfixed, a deactivated committee would be silently
+  resurrected on its public page, defeating the point of T39. The
+  agent now falls back only for genuine connectivity failures and
+  sends API 404s to the existing not-found state. Checked the
+  error-shape assumption against `api.js`'s interceptor
+  (`Promise.reject(error)`, unmodified axios error), so
+  `err.response.status` is correct.
+
+The report is honest about the real limitation: no live Supabase
+session or browser in this sandbox, so the save-persist-and-vanish
+round trip was not clicked through.
+
+No corrections needed. Approved and merged to `main`.
+
+
+---
+
+## T40 / T41 / T42 review: branches pushed directly by Stone (2026-10-01)
+
+Three branches arrived on the remote outside the spec process. All were
+forked from `ac0bf59`, i.e. before T32 through T39 landed, and all three
+conflict with current `main`. Reviewed with the same rigor as any task
+branch: diffs read against their fork point, each branch trial-merged
+into a scratch branch to list conflicts (discarded afterward), and every
+claim below that could be checked against `main` was checked. Nothing
+from these branches has been merged.
+
+**T40 (portal app shell): superseded.** Its own report diagnoses the
+portal as "a dead end (no nav, no sign-out, no way back)". That was true
+at its fork point and is no longer true: `main` already has sidebar
+nav, sign-out, a mobile drawer with focus return, and real `/portal/events`
+and `/portal/profile` pages (the earlier portal bundle). T40 builds
+those destinations as disabled "Soon" rows, adds a second status
+primitive (`StatusChip.jsx`) next to the existing `StatusBadge.jsx`, and
+rewrites `PortalLayout.jsx` wholesale. Merging it would downgrade the
+shell. Not merged.
+
+**T41 (portal dashboard hierarchy): superseded, and actively unsafe to
+merge.** Stacked on T40. Its report says it preserved the
+`justLoggedIn` admin-redirect logic verbatim; that logic was removed on
+purpose in T35 (zero references on `main` now). Merging would bring
+dead code back and overwrite the dashboard rework already on `main`.
+The "status-led lead panel" is a legitimate alternative to `main`'s
+"this month" priority card, but choosing between them is a design
+decision for Stone, not something to merge by accident. Not merged.
+
+**Not evaluated, flagging honestly:** T41 also adds `PRODUCT.md`,
+`DESIGN.md` and `.impeccable/` artifacts. I did not read their contents
+or judge their accuracy against current code, so they are neither
+approved nor rejected. If Stone wants them, they should land from a
+clean branch off `main`, reviewed on their own.
+
+**T42 (admin UI/UX): worth keeping, not mergeable as it stands.** The
+substance is good: an admin shell with portal parity, contrast fixes,
+container rhythm, and a device-matrix pass that reports finding and
+fixing a real bug. Four things block the merge:
+
+1. **Auth bypass in production code.** It adds a `VITE_PREVIEW_MODE ===
+   'admin'` branch to `AuthContext.jsx` that fabricates a `super_admin`
+   client session. The backend still enforces roles from the real JWT,
+   so this is not a data-access hole, but it is a client-side auth
+   override compiled into the one file that gates every protected
+   route, safe only as long as nobody ever sets that env var in a
+   deploy. It also edits the file T35 fixed. Preview tooling must not
+   live in `AuthContext.jsx`.
+2. **Unreviewed WIP from another task.** The branch includes commit
+   `9986b4f` "wip(t33): checkpoint a11y audit work in progress (18
+   files)": 118 inserted lines across shared components (`Input.jsx`,
+   `Select.jsx`, `styles/index.css`) and most admin pages. It is a
+   mid-flight snapshot, different from T33's approved final result
+   (three layouts plus `LeadershipPage`). Same working-tree
+   contamination the T32 report disclosed. None of it has been reviewed.
+3. **Stale base.** Eight code files conflict with `main`
+   (`PortalLayout`, `DashboardPage`, `PastPresidentsPage`,
+   `DocumentsAdminPage`, `CommitteeAdminDashboard`, and others). Several
+   of its fixes already exist on `main` (the dead Announcements nav item
+   is gone; the amber contrast fixes landed), so a naive merge would
+   fight good code with equivalent code.
+4. **Committed binaries.** Device-matrix PNG screenshots are committed
+   into the repo.
+
+### T42 rework brief
+
+Start a fresh branch from current `main` (`task/t42-admin-ui-ux-v2`).
+Do not rebase the old chain; port only T42's own work.
+
+- Exclude commit `9986b4f` entirely and anything from the T40/T41 lineage.
+- `AuthContext.jsx` must end with **zero diff** from `main`. If the
+  preview harness is kept, the mock session lives wholly in `src/dev/`
+  (a dev-only wrapper around the app), or is guarded by
+  `import.meta.env.DEV` so it cannot compile into a production build
+  whatever env vars are set. T35's loading-race fix must be untouched.
+- Keep: `AdminLayout` shell parity, truthful nav, contrast and rhythm
+  fixes, **only where not already on `main`**. Where `main` already has
+  an equivalent fix, take `main`'s.
+- No committed PNGs. Put the device-matrix results in the report as a
+  table.
+- Admin shell is a UI surface, so the Design/UI standard applies: run
+  the impeccable audit/critique and disclose it per that standard.
+- Acceptance: eslint and build clean; backend untouched; a grep of
+  `dist/` for `VITE_PREVIEW_MODE`, `preview-user`, `mockAuth` returns
+  nothing; admin login still lands on `/admin/dashboard` and student
+  login on `/` (T35 behaviour unchanged); no regression to the committee
+  Status work from T39 in `CommitteeAdminDashboard.jsx`.
+
+---
+
+## 2026-10-10: caveman skill installed
+
+Stone asked for https://github.com/JuliusBrussee/caveman to be installed as
+a skill. Installed to `.agents/skills/caveman/`, next to `impeccable` and
+`grill-me`.
+
+The upstream repo is a full toolchain (CLI, proxy, editor extension, hooks,
+installers, 22 skills), so "install" was scoped to the one skill that was
+asked for: the core `caveman` skill, two markdown files. Both were read in
+full before installing. No scripts, no network calls. `SKILL.md` is
+byte-identical to upstream at commit `2e08b91` (release 3.2.0). Apache-2.0
+and the retained MIT notice are copied alongside, with provenance and the
+update procedure in `SOURCE.md`.
+
+Not installed or run: the CLI, proxy, hooks and installers, and the sibling
+skills `ultracave` and `megacave`. The `/caveman ultra` and `/caveman wenyan`
+aliases point at those siblings, so they do nothing until the siblings are
+added.
+
+Effect on this project: it is a terse response style that turns on with
+`/caveman` (or a request for fewer tokens) and stays on until "stop caveman".
+Its own rules exempt anything persisted outside chat, so Reports in this
+file, commit messages and code comments remain normal prose. Verification
+findings in a Report should stay complete regardless; the skill itself says
+clarity beats compression.
+
+**Known gap: `skills-lock.json` was not updated.** Its entries carry a
+`computedHash` produced by whatever tool wrote the file. Reproducing the
+existing `grill-me` hash was attempted (SHA-256 of `SKILL.md`, of the whole
+folder, and 24 path-and-content variants): none matched, even though the
+local `grill-me` is byte-identical to upstream. The hash algorithm is
+unknown, so writing a value would have meant inventing it. If the lock
+file needs to be in sync, re-run the tool that created it for this skill.
+
+Not verifiable from here: this installs the skill for agents working in
+this repo, if their harness reads `.agents/skills/`. It does not register
+the skill in the orchestrator's own chat environment, whose skill directory
+is read-only.
+
+
+---
+
+## T38: Add Veteran membership (free, no dues) to the Categories and Dues pages
+
+**Branch:** `task/t38-veteran-membership`
+**Status:** done
+**Depends on:** none
+
+### Context
+
+Stone confirmed Veteran membership is real and has no fee ("free or by
+invitation"). Checked where it exists today, directly in source:
+
+- **Already present:** `MEMBERSHIP_TYPES.VETERAN` in `utils/constants.js`,
+  the admin type map in `MembershipAdminPage.jsx`, the registration
+  selector in `RegisterPage.jsx` ("Veteran Member - Alumni"), the overview
+  card in `MembershipPage.jsx` (benefits: Alumni network, Mentorship
+  opportunities, Reunion events), and backend validation in both
+  `membership.controller.js` and `auth.routes.js`.
+- **Missing:** the two pages that carry fees. `CategoriesPage.jsx` shows
+  three cards and `DuesPage.jsx` has a three-row fee table, so a visitor
+  comparing categories or reading dues never learns Veteran exists, while
+  the registration form offers it.
+
+No backend or database change is needed.
+
+**Assumption to keep visible in the report.** The answer was "free or by
+invitation". This spec treats it as: no fee, open to apply, with the
+existing admin review (every application is pending until approved)
+checking alumni status. So Veteran is **not** marked `invitationOnly`,
+because that flag makes the Categories card say "there is no
+application", which would contradict the registration form that offers
+it. If Stone wants it invitation-only instead, that is a small follow-up:
+set `invitationOnly: true` and remove it from the `RegisterPage.jsx`
+selector.
+
+### What to build
+
+Canonical order everywhere (constants, admin map, registration, the
+Membership overview) is Full, Associate, Honorary, Veteran. Append Veteran
+last on both pages so the order matches.
+
+**`lmsa-website/src/pages/public/CategoriesPage.jsx`**
+- Add a fourth entry: `name: 'Veteran Member'`, `price: 'Free'`,
+  `audience: 'Alumni and past members'` (the card renders it as "For
+  alumni and past members"), `included` reusing the three benefits
+  already published on `MembershipPage.jsx` verbatim ('Alumni network',
+  'Mentorship opportunities', 'Reunion events'), and `limits: []`.
+- Do not invent limits or new benefit claims. Whether Veteran members can
+  vote or hold office is not known to this codebase; leave `limits` empty
+  and say so in the report so Stone can confirm. An empty array renders
+  fine (the card maps over it).
+- The card grid is `md:grid-cols-3`, which would leave a lone card on a
+  second row. Change it to `md:grid-cols-2 lg:grid-cols-4`, the
+  convention already used on `JoinCommitteePage`, `MembershipPage` and
+  `MentorshipPage`.
+
+**`lmsa-website/src/pages/public/DuesPage.jsx`**
+- Append a table row after Honorary: "Veteran Member", fee "Free",
+  frequency "N/A". The Honorary row is currently the last row and has no
+  bottom border; give it `border-b border-gray-200` and leave the new last
+  row without one.
+- Update the section description to: "Membership dues are paid yearly.
+  Honorary membership is offered by invitation, and Veteran membership has
+  no fee."
+- Do not add a stat card. The stat grid shows the two priced tiers and the
+  deadline.
+
+**`lmsa-website/src/components/common/PageHero.jsx`**
+- The `/membership/categories` hero reads "Whether you are a current
+  student, associate, or honorary member..." and leaves out veterans. Make
+  it "...a current student, associate, honorary or veteran member, there is
+  a place for you in LMSA."
+
+**Do not change:** `RegisterPage.jsx`, `MembershipPage.jsx`,
+`MembershipAdminPage.jsx`, `constants.js`, or anything in `lmsa-api`.
+
+### Acceptance criteria
+
+- [ ] `npx eslint src --ext js,jsx --max-warnings 0` is clean.
+- [ ] `npm run build` is clean.
+- [ ] Veteran appears on both `CategoriesPage` and `DuesPage`, last in
+      order, matching the other pages.
+- [ ] Veteran is not marked `invitationOnly` and its card shows the "Apply
+      now" action, not the invitation-only text.
+- [ ] No benefit text beyond the three strings already on
+      `MembershipPage.jsx`, and no invented limits.
+- [ ] The categories grid does not strand a card at tablet or desktop
+      widths. State how this was checked; reasoning through the classes is
+      acceptable if no browser is available, but say so.
+- [ ] Report names the open content question (voting and office
+      eligibility for Veterans) and the invitation-only assumption.
+- [ ] Not a new or restyled surface, so no impeccable run is required
+      under the Design/UI standard.
+
+### Report
+
+**Status:** unassigned → done
+**Branch:** `task/t38-veteran-membership`
+
+#### What changed
+
+- `CategoriesPage.jsx` — fourth card appended last, matching the canonical
+  order (Full, Associate, Honorary, Veteran): name "Veteran Member", price
+  "Free", audience "Alumni and past members", the three benefits already
+  published on `MembershipPage.jsx` verbatim ('Alumni network',
+  'Mentorship opportunities', 'Reunion events'), `limits: []`. Not marked
+  `invitationOnly`, so the card renders the normal "Apply now" action, not
+  the invitation-only text. Grid changed `md:grid-cols-3` →
+  `md:grid-cols-2 lg:grid-cols-4`, the convention `JoinCommitteePage`,
+  `MembershipPage` and `MentorshipPage` already use.
+- `DuesPage.jsx` — appended (Veteran Member, Free, N/A) after Honorary;
+  the Honorary row now carries `border-b border-gray-200`, and the new
+  last row has none. The section description now reads "Membership dues
+  are paid yearly. Honorary membership is offered by invitation, and
+  Veteran membership has no fee." No stat card added — the stat strip
+  still shows the two priced tiers and the deadline.
+- `PageHero.jsx` — the `/membership/categories` hero sentence now reads
+  "Whether you are a current student, associate, honorary or veteran
+  member, there is a place for you in LMSA."
+- Nothing touched in `RegisterPage.jsx`, `MembershipPage.jsx`,
+  `MembershipAdminPage.jsx`, `constants.js`, or `lmsa-api`.
+
+#### Verification
+
+- `npx eslint src --ext js,jsx --max-warnings 0` — clean (exit 0).
+- `npm run build` — clean (exit 0), with one environment caveat: in the
+  working directory itself the build fails because the project path
+  contains an apostrophe (`...students'-association`); Vite's config
+  loader cannot open its bundled `vite.config.js.timestamp-*.mjs` temp
+  file at that path, and the failure fires before any project code runs
+  (pre-existing, unrelated to T38). Building the identical source from a
+  byte-for-byte copy at an apostrophe-free path (real `node_modules`
+  junctioned in) succeeded: "✓ built in 17.95s", exit 0.
+- Benefit strings checked to be byte-identical to those on
+  `MembershipPage.jsx` (same three strings, root file says `benefits`, the
+  card data field is `included`); no new benefit claims, no invented
+  limits.
+- Grid stranding was checked in a real browser, not just by reasoning
+  through the classes: headless Edge (playwright-core) against
+  `vite preview` of the production build, measuring the card grid at
+  375px, 768px, 1024px and 1280px. Computed `grid-template-columns`:
+  1 / 2 / 4 / 4; card top-offset row groups: 1,1,1,1 / 2,2 / 4 / 4 —
+  Veteran Member last in every row group. No stranded card at tablet or
+  desktop widths; screenshots at 768px and 1280px confirm visually.
+- Dues-table order (Full, Associate, Honorary, Veteran, border moved onto
+  Honorary, none on the last row) verified by direct inspection of the
+  committed diff.
+
+#### Assumption on the record
+
+- "free or by invitation" is treated as: no fee, open to apply, with the
+  existing admin review (every application is pending until approved)
+  checking alumni status. Veteran is therefore **not** `invitationOnly` —
+  that flag would make the card say "there is no application", which
+  contradicts the registration selector offering Veteran Member. If Stone
+  wants it invitation-only instead, the follow-up is small: set
+  `invitationOnly: true` on the card and remove Veteran from the
+  `RegisterPage.jsx` selector.
+
+#### Open content question
+
+- Whether Veteran members can vote or hold office is not known to this
+  codebase, and the card publishes neither answer (`limits` is empty).
+  Once Stone confirms, the follow-up is one line: add 'No voting rights'
+  and 'Cannot hold office' under `limits` if the answer is no.
+
+Not merged to `main`; ready for orchestrator review.
+
+
+### Orchestrator review
+
+Verified on a fresh checkout of `origin/task/t38-veteran-membership`. The diff
+is the three specced files plus this board, and nothing else.
+
+- Read each diff against the spec. Veteran is appended last on both pages, so
+  the order matches the other four places it appears (Full, Associate,
+  Honorary, Veteran). It is not marked `invitationOnly`. The card grid moved
+  to `md:grid-cols-2 lg:grid-cols-4`, the convention three other pages use.
+  The dues description matches the specced wording, and the Honorary row now
+  carries the bottom border while the new last row has none. The hero
+  sentence includes veterans.
+- Checked directly: the three benefit strings are identical to the ones on
+  `MembershipPage.jsx`, so no new claims were added. `limits: []` renders no
+  heading and no list items (the Full Member card already uses an empty
+  array), so there is no orphan "Limits" label.
+- `eslint` and `vite build` are clean on my side too.
+- The report's browser measurement of the grid (1, 2, 4 and 4 columns at 375,
+  768, 1024 and 1280px, Veteran last in every row group) was not re-run by me,
+  since I have no browser here. My reading of the classes agrees: four cards
+  in two columns is a 2x2, and in four columns it is one row.
+
+**Environment fact worth knowing.** The report says Vite's config loader fails
+when the working directory path contains an apostrophe, which this repo's
+local folder name (`liberia-medical-students'-association`) does, and that it
+built the same source from an apostrophe-free copy instead. That is a local
+problem, not a code problem. I have not verified how the hosted build path is
+set up, so I am not claiming it cannot affect deploys.
+
+**Open items for Stone, none of them part of this task:**
+
+1. Whether Veteran members can vote or hold office is still unknown, so the
+   card lists no limits. It will need updating once that is decided.
+2. The invitation-only assumption stands as recorded in the report. Switching
+   is small: set `invitationOnly: true` and remove Veteran from the
+   registration selector.
+3. A related inconsistency that predates this task: the Categories, Dues and
+   Membership pages say Honorary membership is by invitation with "no
+   application", yet the registration form still offers "Honorary Member" to
+   anyone and the backend accepts it. Admin review gates it, but the pages
+   and the form disagree. Needs a decision: remove it from the form, or
+   soften the wording.
+
+No corrections needed. Approved and merged.
+
+---
+
+### T42 rework — Report
+
+**Branch:** `task/t42-admin-ui-ux-v2` (cut from `main` at `36cb797`;
+`origin/main` merged in as `e899ad0` so the docs-only ORCHESTRATION.md
+moves landed conflict-free). **Status:** ready for review.
+
+**Port discipline.** Read `git log ac0bf59..origin/task/t42-admin-ui-ux`:
+that range is exactly two commits — `9986b4f` ("wip(t33)…", excluded in
+full) and `e6b8d71` (T42's own work, the port source). The old branch was
+never merged, rebased or cherry-picked. The ported diff contains none of
+the T40/T41 lineage (no `StatusChip`, no `justLoggedIn`, no T33 WIP file
+content beyond what `main`'s approved T33 already ships).
+
+**The four blocking defects, resolved:**
+
+1. **Auth bypass — `AuthContext.jsx` has zero diff from `main`**
+   (git-diff empty; blob hash `96749a9…` identical both sides).
+   `git diff origin/main --` over `src/pages/auth`, `AuthContext.jsx`,
+   `routes.jsx`, `main.jsx` is empty, so T35's loading-race fix and the
+   role-based landing behavior are untouched: admin login still lands on
+   `/admin/dashboard`, student login on `/` — verified at code level
+   (nothing in that path changed); not re-tested against live auth.
+   Grep of the repo: `VITE_PREVIEW_MODE` appears nowhere.
+2. **Unreviewed WIP excluded:** `9986b4f` is not an ancestor of this
+   branch; none of its 18 files' changes were ported.
+3. **Stale base fixed:** fresh branch off `main`; where `main` already
+   had an equivalent, main's won — the Announcements nav item is gone on
+   both sides (never re-added), amber contrast pairs on `main` kept
+   byte-for-byte (amber counts equal per file), and the T33-approved
+   skip-link classes in `AdminLayout.jsx` now match `main` exactly
+   (found and corrected during final review). T39 intact:
+   `CommitteeAdminDashboard.jsx` still calls `getAllAdmin()` and renders
+   the "Inactive" badge — `grep -c` identical to `main` (4/4), and the
+   port's net diff on that file is only contrast/aria/active-nav styling.
+4. **No committed PNGs:** `git diff` adds zero image files; device-matrix
+   results are the probe table below.
+
+**Preview harness (the T42 defect's replacement pattern).** Mock session
+lives wholly in `src/dev/` (`mockAuth.js` stubs `supabase.auth.onAuthStateChange`
+with an `INITIAL_SESSION` emission + `mockApi.js` answers `/users/me`
+with `role: super_admin`; `AdminPreview.jsx` is a dev-only HashRouter
+entry loaded only by `admin-preview.html`). Neither is reachable from
+`src/main.jsx`'s module graph. The mock is wired in via a **mode-gated
+vite alias** (`vite.config.js`, `mode === 'preview'` only, placed before
+the `@services` prefix alias so it wins) — a production `build` never
+resolves those aliases, and the mock cannot compile in whatever env vars
+are set. Proof: `grep -rli 'VITE_PREVIEW_MODE|preview-user|mockAuth|mockApi'
+dist/` → no matches (exit 1). Normal `npm run dev` against a real backend
+is unaffected (aliases inactive outside `--mode preview`).
+
+**Device matrix (probe facts, headless Chrome via the dev preview; no
+PNGs per brief):**
+
+| viewport window | innerWidth | top bar | sidebar | drawer | container pad | main column |
+|---|---|---|---|---|---|---|
+| 375 | 500¹ | flex | none | off-canvas `-256px`, hidden | 16px | full |
+| 768 | 752 | flex | none | off-canvas `-256px`, hidden | 24px (`sm` step) | full |
+| 1024 | 1008² | flex | none | off-canvas, reachable via hamburger | 24px | full |
+| 1040 | 1024 | **none** | **block** | n/a | 24px | **exactly 768px (1024−256)** |
+| 1440 | 1424 | none | block | n/a | 24px | 1168px, container capped 1152px |
+
+¹ headless Chrome's minimum inner width is ~500px — a true 375px capture
+was not possible in this sandbox; below 1024 the same CSS branch applies,
+so the class-level evidence transfers, but say so rather than pretend a
+375 measurement exists. ² Chrome's scrollbar reduces innerWidth to 1008;
+at innerWidth 1024 (window 1040) the `lg` branch is proven: sidebar
+`block`, top bar hidden, main column exactly 768px. This re-confirms the
+cascade fix — the drawer's `fixed` no longer beats `lg:sticky`.
+
+**Impeccable critique (per the Design/UI standard):**
+
+⚠️ DEGRADED: single-context (no sub-agent/Task tool exposed in this session —
+assessments ran sequentially inline)
+
+⚠️ BROWSER PARTIAL: computed-style probes via the dev-only preview harness
+(mocked session) at five widths; no live Supabase session, no screenshots
+committed, no keyboard focus-trap walk (focus trap / Escape verified by
+code — same pattern as the portal).
+
+Snapshot persisted at
+`.impeccable/critique/2026-10-11T11-25-07Z__lmsa-website-src-layouts-adminlayout-jsx.md`.
+Score **34/40** (evidence, not the verdict): system-status 4, real-world
+match 3, user control 4, consistency 3, error prevention 4, recognition 4,
+efficiency 3, aesthetics 3, error recovery 4, help 2. `detect.mjs` over
+`src/pages/admin` + `AdminLayout.jsx` → exit 0, zero findings.
+
+Priority issues from the critique (disclosed, not suppressed):
+
+1. **[P1] Icon-only destructive buttons keep `text-gray-300` at rest
+   (~1.9:1)** — pre-existing on `main`; per "where main has an equivalent,
+   take main's" it was kept, not restyled. Flagged for a follow-up
+   contrast pass.
+2. **[P2] Focus trap / Escape refocus** — code-verified only; needs one
+   manual keyboard pass with a live session.
+
+**Acceptance checklist:**
+
+- [x] `npx eslint src --ext js,jsx --max-warnings 0` — exit 0.
+- [x] `npm run build` — exit 0.
+- [x] Backend untouched: `git diff origin/main -- lmsa-api` empty.
+- [x] `grep -rli 'VITE_PREVIEW_MODE|preview-user|mockAuth|mockApi' dist/`
+      → no matches.
+- [x] Admin login → `/admin/dashboard`, student login → `/`: unchanged
+      code path (zero diff on auth files vs `main`); not re-tested live.
+- [x] AuthContext.jsx zero diff from `main`.
+- [x] No PNGs added.
+
+**Could not be verified without a live session or browser:** real
+Supabase auth (mutations, toasts, the true `/users/me` role merge — the
+preview mocks these); focus trap / Escape / scroll-lock by keyboard;
+pixel-sampled contrast of status chips (reasoned from class pairs); a
+true 375px-width capture (headless minimum ~500px, see ¹); and end-to-end
+admin/student login redirects against the live backend. The probe table
+above is the device-matrix evidence in place of screenshots.
+
+
+### T42 rework: orchestrator review
+
+Verified on a fresh checkout of `origin/task/t42-admin-ui-ux-v2`. The branch
+already contains current `main`, so it merges without conflicts. Each rule
+from the rework brief was checked with a command, not read from the report:
+
+- `AuthContext.jsx`, `ProtectedRoute.jsx`, `LoginPage.jsx` and `routes.jsx`:
+  zero diff from `main`. T35's loading-race fix is untouched.
+- Backend untouched. Commit `9986b4f` and the T40/T41 commits are not in the
+  history. No binary files added. `package.json` gains only the
+  `dev:admin-preview` script, and `.gitignore` gains `.env.preview`.
+- T39 survived: `getAllAdmin` and the Inactive badge are both still in
+  `CommitteeAdminDashboard.jsx`.
+- All seven `AdminLayout` nav items resolve to real routes (checked by
+  script against `routes.jsx`).
+
+**The preview gate was tested, not just read.** The old design put an env-var
+bypass inside `AuthContext.jsx`. This one swaps the Supabase client and API
+with a Vite alias that applies only when `command === 'serve'` and
+`mode === 'preview'`, so production code never references the mock. Results:
+a production build and a `vite build --mode preview` both contain zero of
+seven mock strings (`VITE_PREVIEW_MODE`, `preview-user`, `mockAuth`,
+`mockApi`, the mock user's name, `admin-preview`, `dev/AdminPreview`);
+`admin-preview.html` is not in `dist/`; a dev server in default mode resolves
+`@services/supabase` to `/src/services/supabase.js`, and with `--mode preview`
+to `/src/dev/mockAuth.js`. `/admin-preview.html` is served by a normal dev
+server too (HTTP 200); that page exists only on the dev server and never
+ships, so it is noted, not a defect. `eslint` and `vite build` are clean.
+
+**Two statements in the report did not survive a check, and one gap is
+partly my fault:**
+
+1. The report says the drawer focus handling is "same pattern as the
+   portal". It is not. The portal shell restores focus to the menu button on
+   every close. The admin shell restores it only on Escape, so closing by
+   nav link or by scrim drops focus to the page body. (The admin shell does
+   add a Tab-wrap the portal lacks, so the two differ rather than one being
+   strictly worse.) Neither shell moves focus into the drawer on open.
+2. The report quotes the remaining `text-gray-300` icon buttons at about
+   1.9:1. Computed: `#D1D5DB` on white is 1.47:1. The old `gray-400` was
+   2.54:1, so the agent's change to `gray-500` (4.83:1) elsewhere was right.
+   UI components need 3:1, so the remaining gray-300 icon buttons fail by a
+   wide margin; the added `aria-label` helps screen readers but not sighted
+   low-vision users. The agent disclosed this as a P1 and left it because
+   the defect already existed on `main`. My brief's wording ("where `main`
+   has an equivalent fix, take `main`'s") invites that reading, since an
+   unfixed defect is not a fix, so I am not sending the branch back for it.
+   It is pre-existing and not a regression.
+
+Minor: the mock identity uses a real-sounding name and an `lmsa.org.lr`
+address, the domain family T37 removed. Dev-only, but an obviously fake
+address would be safer.
+
+Not re-verified by me: the device-matrix measurements (no browser run here),
+the keyboard walk, and anything needing a live session. The report states
+these limits itself.
+
+Both gaps are specced as T44. No corrections needed to merge. Approved.
+
+---
+
+## T43: Compare dashboard concepts (decision support, no merge)
+
+**Branch:** `task/t43-dashboard-design-comparison`
+**Status:** done
+**Depends on:** none
+
+### Context
+
+Stone asked for T41's "status-led lead panel" dashboard to be compared with
+the "this month" priority card now on `main`. T41 is closed as code: it is
+stacked on T40's shell, was built on a stale base, and would bring back the
+`justLoggedIn` redirect that T35 removed. So the question here is which
+dashboard idea serves members better, not whether to merge that branch.
+
+The output is a recommendation. This task commits no application code.
+
+### Method
+
+- Read-only on T41. Check out its tip into a scratch `git worktree`, read
+  its `DashboardPage.jsx` and its report, and remove the worktree
+  afterward. Never merge, rebase or cherry-pick it anywhere.
+- Evaluate both dashboards against the same scenarios, using mock data
+  that lives only in the scratch worktree and is never committed:
+  1. membership application pending
+  2. active member registered for an event within 7 days
+  3. active member, no registered events, an open event upcoming
+  4. active member with overdue dues
+  5. active member, nothing pending, nothing upcoming ("all clear")
+  6. stats endpoint failing
+  7. brand-new member with no data at all
+- Judge each on: what the member needs to know first at 375px and 1280px;
+  whether every state is truthful (no fabricated numbers or implied data);
+  keyboard and screen-reader order; reliance on color alone; mobile layout.
+- Run the impeccable `critique` on both versions of `DashboardPage.jsx`
+  per the Design/UI task standard, and disclose a degraded run or missing
+  browser per that standard. Report the scores, but they are evidence, not
+  the verdict.
+- Do not add mock auth, env-var bypasses or preview hooks to any file that
+  is committed. T42's review rejected exactly that pattern.
+
+### Deliverable
+
+A Report in this section with: a scenario-by-scenario comparison table, a
+recommendation (keep `main`'s card, adopt T41's panel, or a named hybrid
+that says exactly which parts), the cost and risks of adopting it, and, only
+if the recommendation is to change something, the text of a follow-up task
+spec. Do not implement that follow-up here.
+
+### Acceptance criteria
+
+- [ ] The diff against `main` is `ORCHESTRATION.md` only.
+- [ ] The scratch worktree is removed and T41 was not merged or
+      cherry-picked anywhere.
+- [ ] All seven scenarios are covered for both dashboards.
+- [ ] The critique run and its limits are disclosed as the standard
+      requires.
+- [ ] The report says plainly which parts could not be verified (for
+      example, no live data or no browser).
+
+### Report
+
+**Status:** unassigned → done
+**Branch:** `task/t43-dashboard-design-comparison`
+
+**Recap of what was actually done, method compliance.** Checked out
+`origin/task/t41-portal-dashboard-hierarchy` (tip `93415a2`) into a scratch
+detached worktree at `/tmp/t41wt`, read its `DashboardPage.jsx` (353 lines),
+its T41 report and `.impeccable/` artifacts inside it, then removed the
+worktree. T41 was never merged, rebased or cherry-picked anywhere. No file
+outside `ORCHESTRATION.md` was created, modified or committed on this
+branch. No mock auth, env-var bypass or preview hooks were added to
+anything. Ran the impeccable detector (`detect.mjs`) over both versions of
+`DashboardPage.jsx` (exit 0 on both — zero anti-pattern findings either
+side).
+
+⚠️ DEGRADED: single-context (no sub-agent/Task tool exposed in this session —
+assessments ran sequentially inline)
+
+⚠️ NO BROWSER: `/portal` sits behind Supabase auth and this sandbox has no
+credentials, so neither dashboard could be rendered, screenshotted or
+keyboard-walked. The 375/1280 visual judgments below are source-level
+reasoning over the layout classes and markup, not screenshots. No mock data
+was created or run: with no browser it could not have been observed, so the
+seven scenarios were evaluated by reasoning through the code paths per
+scenario rather than by executing them. No mock data was committed. Both
+disclosures follow the standard.
+
+**Prior critique evidence, carried with provenance.** T41's own critique
+snapshot (`.impeccable/critique/2026-10-06T11-43-21Z__…-dashboardpage-jsx.md`,
+committed on that branch; read in the scratch worktree, copied nothing out)
+scores the pre-T41 dashboard 25/40, leaded "⚠️ DEGRADED: single-context",
+with the browser overlay explicitly unavailable behind auth. It predates
+both candidates below and is not evidence about either; it is evidence that
+"zero hierarchy on the dashboard" is the diagnosed problem both concepts
+answer. A fresh browser-visible critique could not be run for this task at
+all because the surface is auth-gated; the standard's degraded/no-browser
+disclosure above covers that shortfall rather than silently omitting it.
+
+**Key structural facts shared across both.** Both versions use the same
+honest data layer verbatim — `Promise.allSettled` over four endpoints,
+`null` = unavailable rendered as `—`, per-section retry, the amber
+partial-error banner ("Anything shown as '—' is unavailable, not zero"),
+per-section skeletons, identical empty states. Neither fabricates numbers
+or invents a state the API cannot support. The backend `/dashboard/stats`
+returns only `membership_status`, `events_registered_count`,
+`committees_count` — there is no dues field anywhere in the API, so neither
+dashboard ever receives dues data (scenario 4's shared blind spot below).
+DOM/keyboard order is the same in both: heading → lead element → stats →
+My Upcoming Events ("Manage my events" link precedes the list) → Recent
+News ("View all news" link precedes the list), matching the visual order
+at 1280 and, via single-column stacking, at 375.
+
+### Scenario-by-scenario table
+
+| # | Scenario | T41 (status-led lead panel) | main ("this month" priority card) | Mobile (375) | Desktop (1280) | Verdict |
+|---|---|---|---|---|---|---|
+| 1 | Application pending | Lead panel renders a large amber StatusChip `pending` full-width — no CTA in this state. Truthful but the member is left to infer "and now what?". Chip is text+dot, not color alone. | Priority card fires first, ranked above everything: "Your membership application is under review" + explanatory body + truthful CTA ("View your application status" → profile). | T41: tall lead panel pushes stats/events/news down; chip first seen but no action. Main: CTA card first seen and actionable. **Main wins.** | T41: 2px-bordered panel + big chip reads fine but carries no action. Main: instruction card with CTA. Main wins. | **main** — an actionable instruction beats a passive classification for the highest-stakes state |
+| 2 | Registered for an event within 7 days | Lead = status chip; the registered event appears only mid-page in My Upcoming Events (date tiles). The member's first need (their event) is NOT first on the page. | Priority card ties to the member's soonest registered event ≤30 days: title + "You're registered — {date} at {location}" + truthful CTA into the event page. | Main surfaces the answer first; T41 requires finding the events section mid-page. | Same. | **main** — the member's first need is the event, and main puts it in the lead slot |
+| 3 | No registered events, an open event upcoming | Lead = status chip only; the site event is a count in the stat strip and a list further down. No nudge to the specific nearest event. | Priority card surfaces the nearest site-wide event by title + date + "save your spot" CTA — with a unique already-registered dedup check that downgrades to "You're registered — see you there" instead of offering a duplicate Register CTA (a truthful-state subtlety T41 lacks entirely). | Main nudges the exact event; T41 offers a count. | Same. | **main** — and truthfulness edge to main (the dedup is a fabricated-CTA guard T41 lacks) |
+| 4 | Overdue dues | **Neither concept can show this.** `/dashboard/stats` has no dues field; neither page reads dues. Shared blind spot, not a differentiator. | Same. | — | — | **tie — shared gap.** See cost/risk: fixing it needs a backend field, out of scope for a UI comparison. |
+| 5 | All clear (nothing pending, nothing upcoming) | Status chip remains the lead (e.g. "Approved"), then nothing urgent. Correct but a big bordered panel with no news is visually loud for a "nothing happening" state. | Priority card renders an explicit "Nothing due this month — all caught up" state, dismissible for the session (sessionStorage, try/catch fallback). | Both stack cleanly. | Both fine. | **slight main** — explicit all-clear beats status-only panel; dismissal keeps it from repeating forever |
+| 6 | Stats endpoint failing | Same honest partial-error banner + `—` chip + `—` stat values + per-section retry. Lead-panel skeleton has an `sr-only role="status"` "Loading your membership status…" announcement — a nice a11y pattern. | Same banner and fallbacks. The priority card degrades gracefully: with stats null it falls through to the event branches, so the card still shows something truthful from event data. | Both degrade identically. | Both degrade identically. | **tie**, with two carryable notes: T41's sr-only loading announcement and main's extra graceful degradation. See recommendation. |
+| 7 | Brand-new member with no data at all | `hasStatus` false on a loaded account → lead panel turns into one clear "Apply for membership" action, most prominent slot. Truthful and specific. | Priority card has **no** apply branch — it does not consult `membership_status`. The only apply CTA is smaller, inside the stat-grid Membership Status slot. Truthful but less prominent. | Both stack cleanly. | Both fine. | **T41** — the ONE scenario where the panel genuinely beats the card. This is the hybrid's second adoption.)
+
+### Criterion roll-up
+
+- **First-to-know at 375/1280:** main, scenarios 1–3. The card turns data
+  into an instruction; the panel states a status and stops.
+- **Truthfulness:** tie, one edge to main (already-registered dedup guard
+  T41 lacks). Both preserve the no-fabrication loader.
+- **Keyboard/screen-reader order:** tie. Same DOM order, same
+  anchors/buttons. One a11y delta: T41's `sr-only role="status"` loading
+  announcement in the lead-panel skeleton.
+- **Reliance on color alone:** tie. T41 chip = text+dot; main badge =
+  text+color. Neither uses color as sole carrier.
+- **Mobile (375):** tie mechanically (both single-grid stacks); slight
+  main in practice — T41's 2px-bordered full-width panel is a heavier
+  object to scroll past when status is "Approved" and nothing else is
+  happening; main's card is dismissible.
+- **Desktop (1280):** slight main — a 2px-border, full-width panel
+  consuming premium vertical space to say "Approved" is a louder
+  element than main's lighter, dismissible card.
+
+### Recommendation
+
+**Keep `main`'s priority card. Do not adopt T41's lead panel as a whole.**
+If anything changes, adopt T41's idea as **two specific parts** (a named
+hybrid):
+
+1. **T41's `sr-only role="status"` loading announcement**, applied to
+   main's priority-card skeleton (not to any lead panel). Zero visual
+   cost, closes the only concrete a11y delta found.
+2. **T41's brand-new-member treatment** — the "loaded account with empty
+   membership status → Apply for membership" action — as an **explicit
+   branch in main's priority-card ranking** (not as a lead panel): ranked
+   after the "pending" branch, before the registered/upcoming/all-clear
+   branches, and gated on the load having settled so a transient /stats
+   failure cannot become a permanent "apply" nudge.
+
+**Do not adopt:** the full-width lead panel itself (loses scenarios 1, 2,
+3, 5); the "first-to-know is status" IA change; the `justLoggedIn`
+redirect (T35 removed it deliberately — T41's version retains it verbatim
+and its branch is closed as code). Scenario 7 was the panel's only win;
+putting the same action inside the card gets that win without the losses.
+
+### Cost and risk of adopting the recommendation
+
+- **Cost:** small — a `useMemo` branch + one `sr-only` element, both in
+  `DashboardPage.jsx`. No service, shell or backend change; no new
+  component. Hours, not days. Per the Design/UI standard this is a
+  small change to an existing surface; the follow-up spec below already
+  requires the critique disclosure, not a full new-surface pass.
+- **Risk:** low overall, two named footguns for the implementer:
+  1. `role="status"` must NOT be placed on an `aria-hidden` element — it
+     would be silenced. Announce on a sibling of the skeleton, or an
+     un-hidden wrapper. (T41 got this right on its lead panel.)
+  2. The new apply branch must be gated on the load having settled
+     (`!loading && stats && …`), else a failed `/dashboard/stats` call
+     in scenario 6 would silently flip every *established* member whose
+     endpoint had a transient error into an "apply" nudge — a
+     truthfulness regression, not just a UX one.
+- **What could NOT be verified here:** no browser session at any width
+  (auth-gated); no live data for any scenario; no screen-reader pass; no
+  fresh 40-box score table (disclosure above covers why). Every verdict
+  in the table is source-level reasoning over two files and their shared
+  loader, not rendered observation. A reviewer with Supabase credentials
+  should treat the table as a strong structural hypothesis and re-walk
+  scenarios 1–3 and 7 at 375/1280 in a real browser before acting.
+
+### Follow-up spec (recommendation changes something; not implemented here)
+
+**T44 — Portal dashboard: adopt two pieces from the T43 comparison**
+
+**Branch:** `task/t44-dashboard-adopt-t43` (new, off current `main`)
+**Depends on:** none — T43 is decision support; this spec reads its report,
+not its branch. T41 and T40 code are closed and must not be cherry-picked.
+**Status:** unassigned
+
+**Context.** T43 compared T41's status-led lead panel with main's "this
+month" priority card across seven scenarios: the card better serves
+scenarios 1–3 (pending application; registered-for-event-≤7-days;
+upcoming-open-event), ties elsewhere, and the panel better serves only the
+brand-new-member case (scenario 7). Two narrow adoptions close that gap
+without reopening the hierarchy question.
+
+**What to build.** `lmsa-website/src/pages/portal/DashboardPage.jsx` only:
+
+1. **New priority branch, "no membership status on a loaded account"** —
+   ranked first after the "pending" branch, before the
+   registered/next-event/all-clear branches, gated on
+   `!loading && stats && !stats.membership_status` (the settled-load guard
+   is required — a transient stats failure must not trigger it). Title:
+   "Membership application not started yet". Body: "LMSA membership is how
+   you register for events, join committees, and stay in good standing."
+   CTA: "Apply for membership" → `/membership#apply`.
+2. **`sr-only` loading announcement** in the priority-card skeleton: one
+   `<span className="sr-only" role="status">Loading your next update…</span>`
+   on an un-hidden element (NOT on the `aria-hidden` skeleton itself, which
+   would silence it). No other `role=status` anywhere on the page.
+
+**Do not change:** the loader, the partial-error banner, existing ranking
+branches and their copy, the dismissal (sessionStorage) behavior, quick
+actions, the stat grid, event/news sections, or anything outside this
+file. No `StatusChip`, no lead-panel layout, no `StatusBadge` change, no
+`justLoggedIn` logic, nothing in `lmsa-api`.
+
+**Acceptance criteria.**
+
+- [ ] `npx eslint src --ext js,jsx --max-warnings 0` and `npm run build`
+      clean.
+- [ ] Regression: for every existing priority scenario (pending;
+      registered ≤30 days; next-site-event including the
+      already-registered dedupe; all clear), the rendered card is
+      byte-identical to `main` on its base commit — the new branch must
+      not fire in any of them.
+- [ ] Scenario 7: with stats loaded and membership_status empty, the card
+      shows the new branch with the exact title/body/CTA above.
+- [ ] Scenario 6: with /dashboard/stats failing but events succeeding,
+      the card must NOT show the apply branch; it falls through to the
+      event branches exactly as on main.
+- [ ] Keyboard order unchanged; the new `role=status` announcement is
+      reachable by screen readers while loading and is not inside any
+      `aria-hidden` element.
+- [ ] Report includes a fresh impeccable `critique` on the resulting
+      DashboardPage.jsx with the degraded/no-browser disclosure per the
+      standard, and states what was and was not browser-verified.
+- [ ] Diff vs main: `DashboardPage.jsx` only. No mock auth, no env-var
+      bypass, no preview hooks.
+
+*Report block ends.*
+
+### Orchestrator review
+
+Verified on a fresh checkout of `origin/task/t43-dashboard-design-comparison`.
+Method compliance: the diff is `ORCHESTRATION.md` only; T41's tip is not
+reachable from this branch and its own branch is unchanged (`93415a2`), so
+it was read and not merged or cherry-picked. The report is explicit that the
+critique run was degraded, that no browser was available, and that its
+verdicts are source-level reasoning. I did not re-run the critique or the
+detector, and I have no browser here.
+
+Spot-checked the load-bearing claims against source. All held:
+- The stats API returns `membership_status`, `events_registered_count` and
+  `committees_count`, and no dues field, so neither dashboard can show dues
+  (they live on the Profile page via `/membership/dues/me`).
+- `main`'s ranking has pending, registered-soon, registered-next, next-open
+  and all-clear branches, including the already-registered guard. The apply
+  link lives in the membership stat card, not in the ranking.
+- T41 has an explicit "Apply for membership" link, no already-registered
+  guard, an `sr-only` `role="status"` loading skeleton, and four `justLoggedIn`
+  references, so it could not be merged as code.
+
+**Recommendation accepted: keep `main`'s priority card; do not adopt T41's
+lead panel.**
+
+**Two corrections to the proposed follow-up:**
+
+1. The report proposes a task named "T44" on `task/t44-dashboard-adopt-t43`.
+   T44 is already the admin contrast and focus task, with its own branch. The
+   follow-up is renumbered **T45**.
+2. Its second piece, an "apply" nudge when a loaded account has no membership
+   status, targets a state the app cannot produce for a registered account.
+   `users.membership_status` defaults to `'pending'` (`001_base_schema.sql`),
+   `register` sets `'pending'` explicitly, and that is the only code path that
+   inserts into `users`. An empty status can only come from a row created by
+   hand outside the app. So scenario 7, where the report scores T41 ahead, is
+   a hypothetical state, and that win is smaller than reported. Piece 2 is not
+   adopted. Piece 1, the screen-reader announcement for the loading skeleton,
+   is real and is specced as T45.
+
+Not verified by me: the detector's zero-findings runs, the rendered layouts,
+and anything that needs a browser.
+
+Approved as decision support. There was no code to merge.
+
+---
+
+## T44: Admin follow-up, icon-button contrast and drawer focus parity
+
+**Branch:** `task/t44-admin-contrast-focus`
+**Status:** unassigned
+**Depends on:** none
+
+### Context
+
+Two defects left over from the T42 rework review (see "T42 rework:
+orchestrator review"). Both were disclosed by the T42 report and both
+already existed on `main`, so neither is a regression, but both belong to
+the accessibility pass that T42 was meant to finish.
+
+**1. Icon-only buttons are nearly invisible.** Several admin icon buttons
+(remove member, remove item, remove announcement and similar) still use
+`text-gray-300`. By computation, `#D1D5DB` on white is **1.47:1**. UI
+components need at least 3:1. The `aria-label` T42 added helps screen
+readers but does nothing for a sighted low-vision user. For reference,
+the old `gray-400` was 2.54:1 and `gray-500` is 4.83:1.
+
+**2. Drawer focus is inconsistent between the two shells.** Checked in
+source:
+- `PortalLayout.jsx` restores focus to the menu button on every close.
+- `AdminLayout.jsx` restores it only on Escape. Closing by nav link or by
+  clicking the scrim drops focus to the page body.
+- Neither shell moves focus into the drawer when it opens.
+(`AdminLayout` also wraps Tab at the drawer's ends, which the portal lacks.
+Keep that.)
+
+### What to build
+
+**Contrast.** Find every interactive icon-only control that uses
+`text-gray-300` (start with `grep -rn "text-gray-300" src/pages/admin
+src/components`) and raise it to at least 3:1, using `text-gray-500` with a
+darker hover. Decorative icons that are not controls may stay as they are.
+Check `opacity-50` and `disabled` states on the same buttons so a disabled
+look does not drop them back under 3:1. If the same pattern exists on a
+public or portal page, list it in the report and do not change it here.
+
+**Focus.** In both `AdminLayout.jsx` and `PortalLayout.jsx`:
+- restore focus to the menu button on every close path (Escape, nav link,
+  scrim, route change), matching what `PortalLayout` already does;
+- move focus to the first link in the drawer when it opens;
+- keep the existing scroll lock, Escape handling and Tab-wrap.
+Keep the two shells' behavior identical. Do not refactor them into a
+shared component in this task.
+
+### Constraints
+
+- `AuthContext.jsx` must end with zero diff from `main`.
+- Do not touch the dev preview gate in `vite.config.js` or `src/dev/`
+  except to use it for verification.
+- `CommitteeAdminDashboard.jsx` must keep `getAllAdmin()` and the Inactive
+  badge from T39.
+
+### Acceptance criteria
+
+- [ ] `npx eslint src --ext js,jsx --max-warnings 0` is clean.
+- [ ] `npm run build` is clean, and a grep of `dist/` for
+      `VITE_PREVIEW_MODE`, `preview-user`, `mockAuth` returns nothing.
+- [ ] No interactive control under `src/pages/admin` or `src/components`
+      uses `text-gray-300`; show the grep before and after.
+- [ ] Focus lands on the menu button after closing by each of the four
+      paths, and on the first drawer link after opening, in both shells.
+      Verify with real key and click events using the preview harness
+      (`npm run dev:admin-preview`) at a narrow width. If a browser is not
+      available, say so plainly and do not claim it was verified.
+- [ ] The admin shell is a UI surface, so run the impeccable audit or
+      critique per the Design/UI standard and disclose any degraded run.
+- [ ] The report states the measured contrast ratio of each changed color.
+
+### Report
+
+*(agent fills in on completion)*
+
+---
+
+## T45: Priority-card loading announcement for screen readers
+
+**Branch:** `task/t45-dashboard-loading-announcement`
+**Status:** unassigned
+**Depends on:** none
+
+### Context
+
+The one piece of T41's dashboard worth keeping, from the T43 comparison. T41's
+membership panel announces its loading state to screen readers with an
+`sr-only` element carrying `role="status"`. `main`'s "this month" priority
+card shows a visual skeleton while the stats load and says nothing to a
+screen reader, so a member using one hears silence until the card appears.
+
+Out of scope, on purpose: the "apply" nudge for an empty membership status.
+`membership_status` defaults to `'pending'` and registration sets it, so that
+state cannot occur for a registered account. Do not add it. Also do not touch
+the ranking logic, and do not bring in anything from T41's branch.
+
+### What to build
+
+In `lmsa-website/src/pages/portal/DashboardPage.jsx`, give the priority card's
+loading state an accessible announcement.
+
+- Use a persistent live region: a `role="status"` element (visually hidden
+  with `sr-only`) that is present in the DOM from the first render, with its
+  text set to "Loading your priorities" while loading and cleared (or set to
+  a short "Priorities loaded") when done. A live region that mounts already
+  containing its text is announced unreliably, so the region must exist
+  before the text changes.
+- It must not sit inside any element that has `aria-hidden`. The skeleton
+  itself can stay `aria-hidden`; the announcement is its sibling.
+- Do not change what sighted users see.
+
+### Acceptance criteria
+
+- [ ] `npx eslint src --ext js,jsx --max-warnings 0` is clean.
+- [ ] `npm run build` is clean.
+- [ ] The diff is confined to `DashboardPage.jsx` plus this board.
+- [ ] The live region is in the DOM before loading starts, is not inside an
+      `aria-hidden` ancestor, and is visually hidden.
+- [ ] If a screen reader or a headless accessibility-tree dump is available,
+      show the announcement. If not, say plainly that it was verified by
+      reading the markup only.
+- [ ] Not a new or restyled surface, so no impeccable run is required.
+
+### Report
+
+*(agent fills in on completion)*
+
