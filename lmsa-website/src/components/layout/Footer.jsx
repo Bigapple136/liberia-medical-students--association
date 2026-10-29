@@ -179,32 +179,11 @@ export default function Footer() {
           {/* Resources Column */}
           <div>
             <h4 className="footer-column-title">Resources</h4>
-            <ul className="footer-links">
-              <li>
-                <a href="#" className="hover:text-lmsa-400 transition-colors duration-200 flex items-center gap-1">
-                  Constitution <ExternalLink size={12} />
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-lmsa-400 transition-colors duration-200 flex items-center gap-1">
-                  Study Materials <ExternalLink size={12} />
-                </a>
-              </li>
-              <li>
-                <Link to="/partnership" className="hover:text-lmsa-400 transition-colors duration-200">
-                  Partnerships
-                </Link>
-              </li>
-              <li>
-                <a href="#" className="hover:text-lmsa-400 transition-colors duration-200 flex items-center gap-1">
-                  Career Center <ExternalLink size={12} />
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-lmsa-400 transition-colors duration-200 flex items-center gap-1">
-                  Mentorship <ExternalLink size={12} />
-                </a>
-              </li>
+            <ul className="footer-links"><li>                <Link to="/about/constitution" className="hover:text-lmsa-400 transition-colors duration-200 flex items-center gap-1">                  Constitution <ExternalLink size={12} />                </Link>              </li>
+              <li>                <Link to="/academics/resources" className="hover:text-lmsa-400 transition-colors duration-200 flex items-center gap-1">                  Study Materials <ExternalLink size={12} />                </Link>              </li>
+              <li>                <Link to="/partnership" className="hover:text-lmsa-400 transition-colors duration-200">                  Partnerships                </Link>              </li>
+              <li>                <Link to="/academics/career-center" className="hover:text-lmsa-400 transition-colors duration-200 flex items-center gap-1">                  Career Center <ExternalLink size={12} />                </Link>              </li>
+              <li>                <Link to="/academics/mentorship" className="hover:text-lmsa-400 transition-colors duration-200 flex items-center gap-1">                  Mentorship <ExternalLink size={12} />                </Link>              </li>
             </ul>
           </div>
         </div>
@@ -214,16 +193,10 @@ export default function Footer() {
           <p>
             © {currentYear} Liberia Medical Students&apos; Association. All rights reserved.
           </p>
-          <div>
-            <a href="#" className="hover:text-lmsa-400 transition-colors duration-200">
-              Privacy Policy
-            </a>
-            <a href="#" className="hover:text-lmsa-400 transition-colors duration-200">
-              Terms of Service
-            </a>
-            <a href="#" className="hover:text-lmsa-400 transition-colors duration-200">
-              Accessibility
-            </a>
+          <div><a href="/privacy" className="hover:text-lmsa-400 transition-colors duration-200">
+              Privacy Policy            </a>            <a href="/terms" className="hover:text-lmsa-400 transition-colors duration-200">
+              Terms of Service            </a>            <a href="/accessibility" className="hover:text-lmsa-400 transition-colors duration-200">
+              Accessibility            </a>
           </div>
         </div>
       </div>
