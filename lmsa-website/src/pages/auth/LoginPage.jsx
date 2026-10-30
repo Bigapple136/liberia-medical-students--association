@@ -18,7 +18,7 @@ export default function LoginPage() {
   // done and we hand over to the effect below, which watches AuthContext
   // for the profile fetch that sign-in triggered.
   const [welcoming, setWelcoming] = useState(false);
-  const { login, loading: authLoading, user } = useAuth();
+  const { login, user } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
@@ -36,66 +36,76 @@ export default function LoginPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
 
     try {
       await login(email, password);
-      // Credentials are good and Supabase has a session. Do NOT navigate
-      // here: AuthContext is fetching the real profile (GET /users/me) in
-      // parallel right now, so `user`/`role` aren't final yet. Switch to the
-      // welcome state and let the effect below watch AuthContext's own
-      // `loading`/`user` — which, with the setLoading(true) fix in
-      // AuthContext's onAuthStateChange, reliably reflect *this* sign-in's
-      // fetch — then redirect once it settles. (An earlier version of this
-      // fix made a second, redundant /users/me call right here instead —
-      // see the 2026-09-23 ORCHESTRATION.md follow-up for why that's the
-      // wrong shape.)
       toast.success('Login successful!');
       setWelcoming(true);
     } catch (error) {
       toast.error(error.message || 'Invalid email or password');
-    } finally {
-      setLoading(false);
     }
   };
 
   useEffect(() => {
     if (!welcoming) return;
 
-    // Wait for AuthContext's profile fetch to settle. `authLoading` is the
-    // context's flag, not this form's submit spinner — after the T35
-    // AuthContext fix it goes true when the sign-in's fetch starts and false
-    // when it settles, so `!authLoading && user` here really does mean the
-    // profile (with its `role`) is final. If the fetch failed,
-    // fetchProfile's existing fallback leaves us signed in with the bare
-    // session user (`role` undefined) — `ADMIN_ROLES.includes(undefined)` is
-    // false, so that case still lands on the student destination below
-    // rather than hanging here.
-    if (authLoading) return;
+    // Wait for AuthContext's profile fetch to settle via the Supabase
+    // onAuthStateChange subscriber (see AuthContext.jsx). Once `user` has
+    // its `role` and `membership_status` populated from GET /users/me, we
+    // can make a reliable routing decision.
+
+    if (!user) {
+      // Profile still loading — stay in welcome state, keep watching.
+      return;
+    }
 
     // Session vanished mid-welcome (e.g. signed out from another tab) —
     // give up on the transition instead of spinning forever.
-    if (!user) {
+    if (!user?.id) {
       setWelcoming(false);
       return;
     }
 
-    // `full_name` is a display string like "Martha K. Sherman"; the welcome
-    // heading below uses its first word. If it's somehow empty, the heading
-    // degrades to a plain "Welcome back!".
-    const timer = setTimeout(() => {
-      if (explicitDestination) {
-        navigate(explicitDestination);
-      } else if (ADMIN_ROLES.includes(user.role)) {
-        navigate('/admin/dashboard');
-      } else {
-        // Student default (and fail-open on unknown role): the Homepage.
-        navigate('/');
-      }
-    }, 1200);
+    // === Priority 1: Explicit destination from ?next param (e.g. register
+    // success → /login?next=/portal/dashboard) always wins. ===
+    if (explicitDestination) {
+      navigate(explicitDestination);
+      setWelcoming(false);
+      return;
+    }
 
-    return () => clearTimeout(timer);
-  }, [welcoming, authLoading, user, navigate, explicitDestination]);
+    // === Priority 2: Membership-status-aware routing (only when no
+    // explicit destination, i.e. direct login without registration flow). ===
+    const { membership_status } = user;
+
+    if (membership_status === 'pending') {
+      // Newly registered member — redirect to profile completion so they
+      // can activate membership before accessing the portal.
+      navigate('/portal/profile');
+      setWelcoming(false);
+      return;
+    }
+
+    if (membership_status === 'inactive' || membership_status === 'suspended') {
+      // Member cannot access portal — show status and offer to contact us.
+      // Navigate to homepage with a clear message; the dashboard/profile
+      // will display the status card automatically.
+      navigate('/');
+      setWelcoming(false);
+      return;
+    }
+
+    // === Priority 3: Role-based routing for active members ===
+    if (ADMIN_ROLES.includes(user.role)) {
+      navigate('/admin/dashboard');
+    } else {
+      // Student default: the Dashboard.
+      navigate('/portal/dashboard');
+    }
+
+    // No timeout needed — we navigate immediately once the user profile
+    // is settled. The effect will re-run if user changes later.
+  }, [welcoming, user, navigate, explicitDestination, ADMIN_ROLES, membership_status]);
 
   const firstName = user?.full_name?.trim().split(/\s+/)[0];
 
@@ -109,7 +119,7 @@ export default function LoginPage() {
             Liberia Medical Students&apos; Association
           </p>
           <blockquote className="text-lg text-lmsa-100 italic mb-4 text-balance">
-            &quot;Uniting future physicians to promote excellence, advocate for student welfare, and advance healthcare in Liberia.&quot;
+            "Uniting future physicians to promote excellence, advocate for student welfare, and advance healthcare in Liberia."
           </blockquote>
           <div className="mt-12 pt-8 border-t border-lmsa-500">
             <p className="text-sm text-lmsa-200">

@@ -48,15 +48,14 @@ export const authService = {
     return response.data;
   },
 
-  // Reset password — handled entirely client-side, no backend endpoint.
-  // The recovery link establishes an authenticated session on this frontend
-  // client (detectSessionInUrl parses it from the URL), and updateUser acts
-  // on that session. The old POST /auth/reset-password call could never
-  // work: its service-role backend client has no signed-in user to update
-  // (see ORCHESTRATION.md T31).
-  async resetPassword(newPassword) {
+  // Reset password — handled entirely client-side, using the active
+  // Supabase session from login. This allows students to change their
+  // password from within the portal without requesting a recovery link.
+  // The recovery link flow (forgotPassword) is still available for
+  // cases where the user has forgotten their current password.
+  async changePassword(newPassword) {
     if (!supabase) {
-      throw new Error('Password reset is temporarily unavailable. Please try again later.');
+      throw new Error('Password change is temporarily unavailable. Please try again later.');
     }
 
     const { data, error } = await supabase.auth.updateUser({
@@ -65,6 +64,9 @@ export const authService = {
 
     if (error) throw error;
 
+    // Also update the local AuthContext user so the change is reflected
+    // immediately without a page reload. Consumers (e.g. ProfilePage)
+    // should call updateUserProfile on the returned data.
     return data;
   },
 };

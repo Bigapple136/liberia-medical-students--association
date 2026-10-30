@@ -10,6 +10,7 @@ import StatusBadge from '@components/common/StatusBadge';
 import { useAuth } from '@context/AuthContext';
 import { userService } from '@services/user.service';
 import { membershipService } from '@services/membership.service';
+import { authService } from '@services/auth.service';
 import { CONTACT_EMAIL } from '@utils/constants';
 
 const profileSchema = z.object({
@@ -195,6 +196,12 @@ export default function ProfilePage() {
   const [fieldErrors, setFieldErrors] = useState({});
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState(null);
+  // Change password form state
+  const [changePasswordModalOpen, setChangePasswordModalOpen] = useState(false);
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [changingPassword, setChangingPassword] = useState(false);
+  const [changePasswordError, setChangePasswordError] = useState(null);
 
   // Re-seed the form if the session user changes (e.g. profile re-fetched
   // after reconnect) — but never while the member is mid-edit with a save
@@ -256,6 +263,41 @@ export default function ProfilePage() {
       );
     } finally {
       setSaving(false);
+    }
+  };
+
+  // Change password handler
+  const handleChangePassword = async (event) => {
+    event.preventDefault();
+
+    if (changingPassword) return;
+
+    if (newPassword !== confirmPassword) {
+      setChangePasswordError('Passwords do not match');
+      return;
+    }
+
+    if (newPassword.length < 8) {
+      setChangePasswordError('Password must be at least 8 characters');
+      return;
+    }
+
+    setChangePasswordError(null);
+    setChangingPassword(true);
+
+    try {
+      await authService.changePassword(newPassword);
+      updateUserProfile({ password: newPassword }); // refresh local session
+      toast.success('Password updated successfully! You can now log in with your new password.');
+      setChangePasswordModalOpen(false);
+      setNewPassword('');
+      setConfirmPassword('');
+    } catch (error) {
+      setChangePasswordError(
+        error?.response?.data?.message || 'Could not change password. Please try again.'
+      );
+    } finally {
+      setChangingPassword(false);
     }
   };
 
@@ -383,29 +425,101 @@ export default function ProfilePage() {
         {/* 4.4.3 — Dues (live from GET /membership/dues/me) */}
         <DuesCard />
 
-        {/* 4.4.4 — Password: honest placeholder, no dead form */}
+        {/* 4.4.4 — Change Password (in-session, client-side via Supabase) */}
         <Card className="p-4 sm:p-6">
           <div className="flex items-start gap-3">
-            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gray-100 text-gray-500" aria-hidden="true">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-lmsa-100 text-lmsa-700" aria-hidden="true">
               <Lock size={18} />
             </span>
             <div>
-              <h2 className="text-lg font-semibold">Password</h2>
+              <h2 className="text-lg font-semibold">Change Password</h2>
               <p className="mt-1 text-sm text-gray-600 max-w-prose">
-                Password changes are coming soon. Need to change it now? Email{' '}
-                <a
-                  href={`mailto:${CONTACT_EMAIL}`}
-                  className="font-semibold text-lmsa-700 underline underline-offset-2 hover:no-underline"
-                >
-                  {CONTACT_EMAIL}
-                </a>{' '}
-                and we&apos;ll help you reset it.
+                Update your password without requesting a recovery link. The change
+                takes effect immediately and you'll be signed out of other sessions.
               </p>
+
+              {changePasswordError && (
+                <p
+                  role="alert"
+                  className="mt-2 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+                >
+                  {changePasswordError}
+                </p>
+              )}
+
+              {!changingPassword && (
+                <form onSubmit={handleChangePassword} className="space-y-4">
+                  <Input
+                    label="New Password"
+                    name="new_password"
+                    type={showNewPassword ? 'text' : 'password'}
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    error={fieldErrors.new_password}
+                    placeholder="Min 8 characters"
+                    required
+                  />
+
+                  <div>
+                    <label
+                      htmlFor="confirm-new-password"
+                      className="block text-sm font-medium text-gray-700 mb-1.5"
+                    >
+                      Confirm New Password
+                    </label>
+                    <Input
+                      label="Confirm"
+                      name="confirm_password"
+                      type={showConfirmPassword ? 'text' : 'password'}
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      error={fieldErrors.confirm_password}
+                      placeholder="Re-enter your password"
+                      required
+                    />
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <Button
+                      type="submit"
+                      loading={changingPassword}
+                      disabled={!newPassword || newPassword !== confirmPassword}
+                    >
+                      {changingPassword ? 'Updating…' : 'Change Password'}
+                    </Button>
+
+                    <button
+                      type="button"
+                      onClick={() => setChangePasswordModalOpen(false)}
+                      className="text-sm text-gray-500 hover:text-lmsa-600 transition-colors duration-200"
+                      aria-label="Close password change"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </form>
+              )}
+
+              {changingPassword && (
+                <div className="mt-3 text-center">
+                  <Spinner size="sm" label="Updating…" className="text-lmsa-600 mb-2" />
+                  <p className="text-gray-600">Updating password…</p>
+                </div>
+              )}
             </div>
           </div>
         </Card>
 
-        {/* Read-only identity — email is the auth identity (§4.4.1) */}
+        {changePasswordModalOpen && (
+          <Card className="p-4 sm:p-6">
+            <p className="text-sm text-gray-600">
+              Use the form above to change your password. If you've forgotten your
+              current password, use the <a href="/forgot-password" className="font-semibold text-lmsa-600 hover:underline">
+                forgot password link
+              </a> to reset it via email.
+            </p>
+          </Card>
+        )}
         <Card className="p-4 sm:p-6">
           <h2 className="text-lg font-semibold mb-3">Account</h2>
           <dl className="space-y-3 text-sm">
