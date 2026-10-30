@@ -144,6 +144,9 @@ export default function ContactPage() {
             {/* Contact Form */}
             <div>
               <h2 className="text-3xl font-bold mb-6 uppercase tracking-tight">Send Us a Message</h2>
+              <p className="mb-6 text-sm text-gray-600 text-balance">
+                Writing about advising, pathways, or an alumni introduction? Mention the Career Center in your subject and tell us where you are in training—the more you share, the more useful the first reply.
+              </p>
               <Card>
                 <form onSubmit={handleSubmit} className="space-y-6" autoComplete="off" key={formKey}>
                   <Input
