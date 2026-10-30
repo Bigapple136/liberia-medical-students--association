@@ -247,7 +247,7 @@ const heroPages = [
     action: { label: 'Talk to the career team', to: '/contact' },
     accent: 'green',
     icon: Compass,
-    photoKey: 'partnership',
+    photoKey: 'about',
     pattern: 'grid',
   },
   {

@@ -5,41 +5,63 @@ import {
   Stethoscope,
 } from 'lucide-react';
 import { EditorialCallout, EditorialSectionHeader } from '@components/common/EditorialSections';
+import { stockPhotos } from '@config/images';
 
-const offerings = [
-  {
+const offerings = {
+  feature: {
     title: 'Career advising',
     description:
       'One-on-one conversations with advisors who can help you turn uncertainty about the future into a workable plan.',
+    note: 'You bring the questions; the conversation works out the rest.',
     icon: Compass,
   },
-  {
-    title: 'Specialty exploration',
-    description:
-      'Structured exposure to clinical fields—what each specialty practices daily, and what training it asks of you.',
-    icon: Stethoscope,
-  },
-  {
-    title: 'Applications & CV support',
-    description:
-      'Feedback on CVs, personal statements, and application materials before your first deadline arrives.',
-    icon: FileText,
-  },
-  {
-    title: 'Opportunity board',
-    description:
-      'A running list of internships, scholarships, and postings shared by partners, alumni, and the association.',
-    icon: Briefcase,
-  },
-];
+  supporting: [
+    {
+      title: 'Specialty exploration',
+      description:
+        'Structured exposure to clinical fields—what each specialty practices daily, and what training it asks of you.',
+      icon: Stethoscope,
+    },
+    {
+      title: 'Applications & CV support',
+      description:
+        'Feedback on CVs, personal statements, and application materials before your first deadline arrives.',
+      icon: FileText,
+    },
+    {
+      title: 'Opportunity board',
+      description:
+        'A running list of internships, scholarships, and postings shared by partners, alumni, and the association.',
+      icon: Briefcase,
+    },
+  ],
+};
 
 const pathways = [
-  'Primary care & internal medicine',
-  'Surgery & procedural specialties',
-  'Pediatrics & maternal health',
-  'Public health & health systems in Liberia',
-  'Global pathways & residency applications',
-  'Research & academic medicine',
+  {
+    path: 'Primary care & internal medicine',
+    detail: 'The broadest foundation—chronic disease, infectious disease, the whole patient.',
+  },
+  {
+    path: 'Surgery & procedural specialties',
+    detail: 'For those drawn to anatomy in the hands: precise, high-stakes, immediate.',
+  },
+  {
+    path: 'Pediatrics & maternal health',
+    detail: 'Care shaped by Liberia’s youngest patients and their mothers.',
+  },
+  {
+    path: 'Public health & health systems in Liberia',
+    detail: 'Medicine at the scale of communities, policy, and prevention.',
+  },
+  {
+    path: 'Global pathways & residency applications',
+    detail: 'Training abroad without losing sight of practice at home.',
+  },
+  {
+    path: 'Research & academic medicine',
+    detail: 'Questions, teaching, and the evidence that changes guidelines.',
+  },
 ];
 
 const questions = [
@@ -107,16 +129,36 @@ export default function CareerCenterPage() {
             title="Practical support for a consequential decision."
             description="Advising, structured exploration, application feedback, and a live board of opportunities—from people invested in your success."
           />
-          <div className="grid gap-4 md:grid-cols-2">
-            {offerings.map(({ title, description, icon: Icon }) => (
-              <article key={title} className="flex min-h-[180px] flex-col border border-gray-200 bg-white p-6">
+          <article className="border border-lmsa-200 bg-white p-8 lg:p-10">
+            <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:gap-16">
+              <div>
+                <span className="flex h-14 w-14 items-center justify-center bg-lmsa-600 text-white" aria-hidden="true">
+                  <Compass size={26} strokeWidth={1.6} />
+                </span>
+                <h3 className="mt-6 text-2xl font-semibold tracking-[-0.02em] text-lmsa-900 md:text-3xl">
+                  {offerings.feature.title}
+                </h3>
+                <p className="mt-4 text-base leading-7 text-gray-600 md:text-lg md:leading-8">
+                  {offerings.feature.description}
+                </p>
+              </div>
+              <div className="flex flex-col justify-center lg:pl-16">
+                <p className="font-serif text-xl italic leading-8 text-lmsa-900 md:text-2xl md:leading-9">
+                  {offerings.feature.note}
+                </p>
+              </div>
+            </div>
+          </article>
+          <div className="mt-4 grid gap-4 md:grid-cols-3">
+            {offerings.supporting.map(({ title, description, icon: Icon }) => (
+              <article key={title} className="flex flex-col border border-gray-200 bg-white p-6">
                 <div className="flex items-center gap-4">
                   <span className="flex h-11 w-11 shrink-0 items-center justify-center bg-lmsa-50 text-lmsa-700" aria-hidden="true">
                     <Icon size={21} strokeWidth={1.6} />
                   </span>
                   <h3 className="text-xl font-semibold tracking-[-0.02em] text-lmsa-900">{title}</h3>
                 </div>
-                <p className="mt-4 text-sm leading-6 text-gray-600 md:text-base md:leading-7">{description}</p>
+                <p className="mt-3 text-sm leading-6 text-gray-600">{description}</p>
               </article>
             ))}
           </div>
@@ -131,13 +173,25 @@ export default function CareerCenterPage() {
             title="Paths LMSA students are exploring right now."
             description="Every pathway is represented in the alumni network—there is someone who has walked each of these roads and is willing to talk about it."
           />
-          <div className="grid gap-x-10 gap-y-4 md:grid-cols-2 lg:grid-cols-3">
-            {pathways.map((pathway, index) => (
-              <div key={pathway} className="flex gap-3 border-b border-gray-200 pb-4">
-                <span className="text-sm font-bold text-lmsa-700">{`0${index + 1}`}</span>
-                <p className="text-base leading-7 text-gray-700">{pathway}</p>
-              </div>
-            ))}
+          <div className="grid gap-x-10 gap-y-10 pt-12 lg:grid-cols-[1.2fr_0.8fr] lg:gap-16">
+            <div className="grid gap-x-10 gap-y-10 sm:grid-cols-2">
+              {pathways.map(({ path, detail }) => (
+                <div key={path}>
+                  <p className="text-base font-semibold leading-7 text-lmsa-900">{path}</p>
+                  <p className="mt-1 text-sm leading-6 text-gray-600">{detail}</p>
+                </div>
+              ))}
+            </div>
+            <figure className="flex flex-col">
+              <img
+                src={stockPhotos.hero.mentorship.src}
+                alt={stockPhotos.hero.mentorship.alt}
+                className="min-h-[320px] w-full flex-1 object-cover"
+              />
+              <figcaption className="mt-3 text-sm leading-6 text-gray-500">
+                Advisors and alumni who have walked these roads. Photo: {stockPhotos.hero.mentorship.credit}.
+              </figcaption>
+            </figure>
           </div>
         </div>
       </section>
@@ -166,7 +220,7 @@ export default function CareerCenterPage() {
         <div className="site-container">
           <EditorialCallout
             eyebrow="Plan the next step"
-            title="Your career starts earlier than you think."
+            title="Your career starts in year one."
             description="One message to the career team opens advising, alumni connections, and the board of current opportunities."
             action={{ label: 'Talk to the career team', to: '/contact' }}
           />
