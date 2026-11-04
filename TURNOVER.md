@@ -1,7 +1,7 @@
 # LMSA Orchestrator Handover
 
-Written 2026-10-11 by the outgoing orchestrator. `main` was at `0eb671f` (the
-T43 merge) when this was written; the handover commit sits on top of it.
+Written 2026-10-30 by the outgoing orchestrator. `main` was at `0eb671f` (the
+T43 merge, 2026-10-25) when this was written; the handover commit sits on top of it.
 
 This repo is **public**. Never commit a token, a password, or any secret to it,
 including in this file.
@@ -177,6 +177,14 @@ unrelated work, separate the sensitive part and review it on its own.
 - `cat >> ORCHESTRATION.md` appends to the end of the file, which is rarely
   where a task's review belongs.
 
+**Dates**
+- Take dates from `date -u` in the sandbox or from `git log --date=short`. Do
+  not assume them. Real time passes between Stone's messages while agents work,
+  so the gap between two steps can be days. The outgoing orchestrator stamped
+  three board rows and this file with a guessed date and had to correct them
+  against the commit history (T38 merged 2026-10-16, T42 on 2026-10-13, T43 on
+  2026-10-25).
+
 **Editing `ORCHESTRATION.md`**
 - Anchor edits on the task's **own** heading and assert the shape before writing.
   `s.index('### T42 rework')` matched the brief heading first and put a review
@@ -254,7 +262,7 @@ in production is **unconfirmed**; ask.
 4. Cleanup of merged or stale remote branches, and `skills-lock.json` sync.
 
 **B. Candidate specs, none written.** All re-verified as still live on
-2026-10-11; confirm again before speccing.
+2026-10-30; confirm again before speccing.
 1. `documentService.download()` calls `window.open` after an awaited request, so
    popup blockers can silently block it. Fix: open the window synchronously and
    set its location after the await, or use an anchor-click download.
@@ -309,6 +317,7 @@ in production is **unconfirmed**; ask.
 4. Reports contain slips even when the work is good. Recompute and cross-check.
 5. Agents bundle unrelated work and fork from stale commits. Check scope and fork
    point before reading code.
+6. Dates were guessed instead of read from the clock or the commit log (section 6).
 
 ## 12. First thirty minutes
 
