@@ -45,7 +45,6 @@ export default function PastPresidentsPage() {
         <div className="site-container">
           <div className="editorial-split">
             <div>
-              <p className="section-kicker">Learn &amp; lead / Leadership</p>
               <h1>Past Presidents</h1>
             </div>
             <div className="editorial-prose">

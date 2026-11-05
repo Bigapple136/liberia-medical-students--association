@@ -81,7 +81,7 @@ export default function MentorshipPage() {
             {/* Right — photograph with motif crop */}
             <figure className="relative lg:sticky lg:top-24 lg:self-start overflow-hidden rounded-[16px] shadow-2xl h-[60svh] lg:h-[92svh]">
               <img src="https://picsum.photos/id/634/1200/1500" alt="Pine forest in fog" className="w-full h-full object-cover" loading="eager" />
-              <figcaption className="absolute bottom-4 left-4 bg-[#0a0a0a]/70 text-[#fff] text-[12px] px-3 py-1.5 rounded-none">Mentorship is built in pairs.</figcaption>
+              <figcaption className="absolute bottom-4 left-4 bg-[#0a0a0a]/70 text-[#fff] text-[13px] px-3 py-1.5 rounded-none">Mentorship is built in pairs.</figcaption>
             </figure>
           </div>
         </div>

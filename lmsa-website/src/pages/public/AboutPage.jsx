@@ -32,7 +32,6 @@ export default function AboutPage() {
         <div className="site-container">
           <div className="editorial-split">
             <EditorialSectionHeader
-              eyebrow="A student-led institution"
               title="A stronger voice for the people becoming Liberia&apos;s doctors."
               description="LMSA brings medical students together around the work that matters: learning well, looking after one another, and preparing to serve."
             />
@@ -60,28 +59,24 @@ export default function AboutPage() {
       <section id="history" className="editorial-section editorial-section-muted">
         <div className="site-container">
           <EditorialSectionHeader
-            eyebrow="Know the work"
             title="Start with the part of LMSA you want to understand."
             description="Our story, direction, and governance are connected. Explore each one to see how students turn shared purpose into action."
           />
           <div className="grid gap-4 md:grid-cols-3">
             <EditorialLinkCard
               to="/about/history"
-              eyebrow="01 / Our story"
               title="A legacy worth carrying"
               description="Trace the generations of students who have kept the association moving."
               icon={BookOpen}
             />
             <EditorialLinkCard
               to="/about/mission-vision"
-              eyebrow="02 / Our direction"
               title="What guides our work"
               description="See the commitments behind our advocacy, learning, and service."
               icon={Target}
             />
             <EditorialLinkCard
               to="/about/constitution"
-              eyebrow="03 / Our foundation"
               title="How we are governed"
               description="Understand the principles and structures that keep LMSA accountable."
               icon={Users}
@@ -93,7 +88,6 @@ export default function AboutPage() {
       <section className="editorial-section">
         <div className="site-container">
           <EditorialSectionHeader
-            eyebrow="The way we show up"
             title="Three values. One shared standard."
             description="Our values are practical commitments for how we learn, lead, and serve together."
           />
@@ -104,7 +98,6 @@ export default function AboutPage() {
                   <Icon size={22} strokeWidth={1.6} />
                 </span>
                 <div className="editorial-link-card-copy">
-                  <span className="editorial-card-eyebrow">0{index + 1} / Value</span>
                   <h3>{title}</h3>
                   <p>{description}</p>
                 </div>
@@ -122,7 +115,6 @@ export default function AboutPage() {
       <section className="editorial-section pt-0">
         <div className="site-container">
           <EditorialCallout
-            eyebrow="Your place in the story"
             title="The next chapter is shaped by the students who show up."
             description="Join a community that turns connection into support, ideas into action, and training into service."
             action={{ label: 'Become a member', to: '/register' }}

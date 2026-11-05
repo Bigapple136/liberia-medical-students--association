@@ -104,7 +104,6 @@ export default function SymposiaPage() {
       <section className="editorial-section">
         <div className="site-container">
           <EditorialSectionHeader
-            eyebrow="Learn & lead / Symposia"
             title="Ideas become momentum when we gather around them."
             description="LMSA symposia create space for students to present research, learn from experts, and connect with professionals."
           />
@@ -117,7 +116,7 @@ export default function SymposiaPage() {
 
       <section className="editorial-section editorial-section-muted">
         <div className="site-container">
-          <EditorialSectionHeader eyebrow="Coming up" title="Upcoming symposia." description="Plan ahead for the conversations and communities you want to be part of." />
+          <EditorialSectionHeader title="Upcoming symposia." description="Plan ahead for the conversations and communities you want to be part of." />
           {loading ? (
             <div className="space-y-4">
               {[1, 2].map((i) => (
@@ -155,7 +154,7 @@ export default function SymposiaPage() {
 
       <section className="editorial-section">
         <div className="site-container">
-          <EditorialSectionHeader eyebrow="The archive" title="Past symposia." description="The conversations may be over, but the questions they raised continue to shape our work." />
+          <EditorialSectionHeader title="Past symposia." description="The conversations may be over, but the questions they raised continue to shape our work." />
           {!loading && !error && past.length > 0 ? (
             <div className="space-y-4">
               {past.map((event) => (
@@ -170,7 +169,7 @@ export default function SymposiaPage() {
 
       <section className="editorial-section pt-0">
         <div className="site-container">
-          <EditorialCallout eyebrow="Bring an idea to the room" title="Have a topic the LMSA community should explore?" description="Connect with the team about a future symposium, workshop, or academic conversation." action={{ label: 'Contact LMSA', to: '/contact' }} />
+          <EditorialCallout title="Have a topic the LMSA community should explore?" description="Connect with the team about a future symposium, workshop, or academic conversation." action={{ label: 'Contact LMSA', to: '/contact' }} />
         </div>
       </section>
     </main>

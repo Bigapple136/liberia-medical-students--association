@@ -105,7 +105,6 @@ export default function DocumentsPage() {
         <div className="site-container">
           <EditorialSectionHeader
             as="h1"
-            eyebrow="Learn & lead / Documents"
             title="The library of record for LMSA’s work."
             description="Browse and download the association’s publications, governing documents, reports, and resources."
           />
@@ -118,7 +117,7 @@ export default function DocumentsPage() {
                   type="button"
                   aria-pressed={active}
                   onClick={() => setCategory(value)}
-                  className={`border px-3.5 py-2 text-[11px] font-bold uppercase tracking-[0.14em] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2 ${
+                  className={`px-3.5 py-2 text-[13px] font-semibold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2 ${
                     active
                       ? 'border-lmsa-900 bg-lmsa-900 text-white'
                       : 'border-gray-300 bg-white text-gray-600 hover:border-lmsa-400 hover:text-lmsa-800'
@@ -200,12 +199,12 @@ export default function DocumentsPage() {
 
                   <div className="mt-auto flex flex-wrap gap-2 pt-4">
                     {doc.category && (
-                      <span className={`px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.14em] ${CATEGORY_BADGES[doc.category] || 'bg-gray-100 text-gray-700'}`}>
+                      <span className={`px-2.5 py-1 text-[13px] font-semibold ${CATEGORY_BADGES[doc.category] || 'bg-gray-100 text-gray-700'}`}>
                         {categoryLabel(doc.category)}
                       </span>
                     )}
                     {doc.access_level && (
-                      <span className={`px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.14em] ${ACCESS_BADGES[doc.access_level] || 'bg-gray-100 text-gray-700'}`}>
+                      <span className={`px-2.5 py-1 text-[13px] font-semibold ${ACCESS_BADGES[doc.access_level] || 'bg-gray-100 text-gray-700'}`}>
                         {doc.access_level}
                       </span>
                     )}
@@ -250,7 +249,6 @@ export default function DocumentsPage() {
         <div className="site-container">
           <section className="editorial-callout editorial-callout-green">
             <div>
-              <p className="editorial-overline">Keep learning</p>
               <h2>Looking for study materials and guides?</h2>
               <p>The study resources library collects tools for every stage of your training.</p>
             </div>

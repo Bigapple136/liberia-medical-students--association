@@ -44,7 +44,6 @@ export default function MissionVisionPage() {
       <section className="editorial-section">
         <div className="site-container">
           <EditorialSectionHeader
-            eyebrow="A direction for the work"
             title="Training physicians. Strengthening communities."
             description="Our mission and vision connect professional excellence with the everyday needs of Liberian communities."
           />
@@ -53,8 +52,7 @@ export default function MissionVisionPage() {
               <span className="editorial-link-card-icon" aria-hidden="true">
                 <Target size={24} strokeWidth={1.5} />
               </span>
-              <p className="editorial-overline mt-8">The work in front of us</p>
-              <h2 className="mt-3 text-3xl font-semibold tracking-[-0.03em] text-lmsa-900">Our mission</h2>
+              <h2 className="mt-8 text-3xl font-semibold tracking-[-0.03em] text-lmsa-900">Our mission</h2>
               <p className="mt-5 text-base leading-8 text-gray-700">
                 To unite, represent, and empower medical students across Liberia through advocacy,
                 academic support, and professional development, while fostering a commitment to
@@ -66,8 +64,7 @@ export default function MissionVisionPage() {
               <span className="flex h-11 w-11 items-center justify-center bg-white text-blue-700" aria-hidden="true">
                 <Eye size={24} strokeWidth={1.5} />
               </span>
-              <p className="editorial-overline mt-8 text-blue-700">The future we are building</p>
-              <h2 className="mt-3 text-3xl font-semibold tracking-[-0.03em] text-lmsa-900">Our vision</h2>
+              <h2 className="mt-8 text-3xl font-semibold tracking-[-0.03em] text-lmsa-900">Our vision</h2>
               <p className="mt-5 text-base leading-8 text-gray-700">
                 A Liberia where every medical student has access to quality education, resources,
                 and opportunities to become a competent, compassionate healthcare professional
@@ -83,7 +80,6 @@ export default function MissionVisionPage() {
         <div className="site-container">
           <div className="editorial-split">
             <EditorialSectionHeader
-              eyebrow="The standard we share"
               title="Values are not wall text. They are how the work gets done."
               description="They shape how we treat one another, how we make decisions, and how we show up for the people we hope to serve."
             />
@@ -103,7 +99,6 @@ export default function MissionVisionPage() {
       <section className="editorial-section">
         <div className="site-container">
           <EditorialSectionHeader
-            eyebrow="From principle to practice"
             title="Find the spaces where our direction becomes real."
             description="LMSA turns its commitments into daily work through learning, service, and accountable student leadership."
           />
@@ -133,7 +128,6 @@ export default function MissionVisionPage() {
       <section className="editorial-section pt-0">
         <div className="site-container">
           <EditorialCallout
-            eyebrow="Make it personal"
             title="A mission becomes meaningful when you can see your place in it."
             description="Explore membership and find the next step that fits the way you want to learn, lead, or serve."
             action={{ label: 'Explore membership', to: '/membership' }}

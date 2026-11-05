@@ -156,9 +156,8 @@ export default function CareerCenterPage() {
               { n: '02', h: 'Explore', b: ' structured exposure to specialties, paired with conversations from people who have made similar decisions.' },
               { n: '03', h: 'Decide', b: 'A plan that connects your coursework with the practice you want—whether at home, abroad, or both.' },
             ].map((s) => (
-              <div key={s.n} className="reveal-on-scroll bg-[#fff] border border-[#000]/10 p-10 md:p-12 hover:-translate-y-2 transition-transform duration-500">
-                <span className="text-[11px] font-[900] tracking-[0.15em] text-[#d0106f] uppercase">{s.n}</span>
-                <h3 className="mt-4 text-[26px] md:text-[30px] font-[900] tracking-[-0.03em] leading-[1.1] text-[#000]">{s.h}</h3>
+              <div key={s.n} className="reveal-on-scroll bg-[#fff] p-10 md:p-12 hover:-translate-y-2 transition-transform duration-500">
+                <h3 className="text-[26px] md:text-[30px] font-[900] tracking-[-0.03em] leading-[1.1] text-[#000]">{s.h}</h3>
                 <p className="mt-4 text-[16px] leading-[1.65] text-[#333]">{s.b}</p>
               </div>
             ))}

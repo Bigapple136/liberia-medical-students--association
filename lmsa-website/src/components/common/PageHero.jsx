@@ -300,11 +300,11 @@ const heroPages = [
 ];
 
 const accentStyles = {
-  green: { surface: 'bg-lmsa-900', text: 'text-lmsa-50', mark: 'bg-lmsa-400', icon: 'text-lmsa-200', overlay: 'from-lmsa-900/95 via-lmsa-900/80 to-lmsa-800/60' },
-  blue: { surface: 'bg-blue-800', text: 'text-white', mark: 'bg-blue-400', icon: 'text-blue-100', overlay: 'from-blue-900/95 via-blue-800/80 to-blue-700/60' },
-  gold: { surface: 'bg-amber-800', text: 'text-white', mark: 'bg-amber-400', icon: 'text-amber-100', overlay: 'from-amber-900/95 via-amber-800/80 to-amber-700/60' },
-  rose: { surface: 'bg-rose-800', text: 'text-white', mark: 'bg-rose-400', icon: 'text-rose-100', overlay: 'from-rose-900/95 via-rose-800/80 to-rose-700/60' },
-  ink: { surface: 'bg-gray-900', text: 'text-white', mark: 'bg-lmsa-400', icon: 'text-lmsa-200', overlay: 'from-gray-900/95 via-gray-900/80 to-lmsa-900/60' },
+  green: { surface: 'bg-lmsa-900', text: 'text-lmsa-50', mark: 'bg-lmsa-400', icon: 'text-lmsa-200', overlay: 'bg-lmsa-900/90' },
+  blue: { surface: 'bg-blue-800', text: 'text-white', mark: 'bg-blue-400', icon: 'text-blue-100', overlay: 'bg-blue-900/90' },
+  gold: { surface: 'bg-amber-800', text: 'text-white', mark: 'bg-amber-400', icon: 'text-amber-100', overlay: 'bg-amber-900/90' },
+  rose: { surface: 'bg-rose-800', text: 'text-white', mark: 'bg-rose-400', icon: 'text-rose-100', overlay: 'bg-rose-900/90' },
+  ink: { surface: 'bg-gray-900', text: 'text-white', mark: 'bg-lmsa-400', icon: 'text-lmsa-200', overlay: 'bg-gray-900/90' },
 };
 
 function getHero(pathname) {
@@ -378,15 +378,9 @@ export default function PageHero() {
       aria-labelledby="page-hero-title"
     >
       {/* Background photo with gradient overlay */}
-      {photo && (
-        <div className="absolute inset-0" aria-hidden="true">
-          <img
-            src={photo.src}
-            alt=""
-            loading="eager"
-            className="absolute inset-0 h-full w-full object-cover"
-          />
-          <div className={`absolute inset-0 bg-gradient-to-r ${styles.overlay}`} />
+      {photo && (          <div className="absolute inset-0" aria-hidden="true">
+            <img src={photo.src} alt="" loading="eager" className="absolute inset-0 h-full w-full object-cover" />
+            <div className={`absolute inset-0 ${styles.overlay}`} />
           <PatternBackground
             pattern={hero.pattern || 'dots'}
             color="white"
@@ -398,10 +392,6 @@ export default function PageHero() {
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="page-hero-grid">
           <div className="page-hero-copy">
-            <div className="flex items-center gap-3 mb-6">
-              <span className={`page-hero-mark ${styles.mark}`} aria-hidden="true" />
-              <p className="page-hero-eyebrow">{hero.eyebrow}</p>
-            </div>
             <h1 id="page-hero-title" className="page-hero-title">
               {hero.title}
             </h1>

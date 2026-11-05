@@ -28,28 +28,26 @@ export default function BenefitsPage() {
       <section className="editorial-section">
         <div className="site-container">
           <EditorialSectionHeader
-            eyebrow="Membership / Benefits"
             title="The value of membership is in what it helps you do next."
             description="LMSA membership is designed to be useful in the classroom, in community, and in the leadership opportunities between them."
           />
           <div className="grid gap-4 md:grid-cols-3">
-            <EditorialLinkCard to="/academics/resources" eyebrow="Learn" title="Study with more support" description="Find tools and people that make the work of medical school more navigable." icon={BookOpen} />
-            <EditorialLinkCard to="/academics/mentorship" eyebrow="Connect" title="Meet people ahead of you" description="Build relationships with peers, mentors, and the alumni network." icon={Users} />
-            <EditorialLinkCard to="/leadership#stand" eyebrow="Lead" title="Practice responsibility" description="Use committees, elections, and service to grow beyond the classroom." icon={Star} />
+            <EditorialLinkCard to="/academics/resources" title="Study with more support" description="Find tools and people that make the work of medical school more navigable." icon={BookOpen} />
+            <EditorialLinkCard to="/academics/mentorship" title="Meet people ahead of you" description="Build relationships with peers, mentors, and the alumni network." icon={Users} />
+            <EditorialLinkCard to="/leadership#stand" title="Practice responsibility" description="Use committees, elections, and service to grow beyond the classroom." icon={Star} />
           </div>
         </div>
       </section>
 
       <section className="editorial-section editorial-section-muted">
         <div className="site-container">
-          <EditorialSectionHeader eyebrow="The everyday benefits" title="Six ways LMSA can move with you." description="Membership follows the real shape of student life: learning, belonging, contribution, and preparation." />
+          <EditorialSectionHeader title="Six ways LMSA can move with you." description="Membership follows the real shape of student life: learning, belonging, contribution, and preparation." />
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {benefits.map(({ icon: Icon, title, description }, index) => (
-              <article key={title} className="flex flex-col border border-gray-200 bg-white p-6">
+              <article key={title} className="flex flex-col bg-white p-6">
                 <span className="mb-8 flex h-11 w-11 items-center justify-center bg-lmsa-50 text-lmsa-700" aria-hidden="true"><Icon size={22} strokeWidth={1.6} /></span>
                 <div>
-                  <span className="editorial-card-eyebrow">0{index + 1} / Benefit</span>
-                  <h3 className="mt-2 text-lg font-semibold tracking-[-0.02em] text-lmsa-900">{title}</h3>
+                  <h3 className="text-lg font-semibold tracking-[-0.02em] text-lmsa-900">{title}</h3>
                   <p className="mt-2 text-sm leading-6 text-gray-600">{description}</p>
                 </div>
               </article>
@@ -62,7 +60,6 @@ export default function BenefitsPage() {
         <div className="site-container">
           <div className="editorial-split">
             <EditorialSectionHeader
-              eyebrow="Beyond the headline"
               title="Small advantages add up over a year of training."
               description="The additional perks make it easier to stay informed, participate fully, and keep building a professional network."
             />
@@ -81,7 +78,6 @@ export default function BenefitsPage() {
       <section className="editorial-section pt-0">
         <div className="site-container">
           <EditorialCallout
-            eyebrow="Put the benefits to work"
             title="Choose the membership path that fits your next season."
             description="Review the categories, then start your application when you are ready."
             action={{ label: 'Explore membership', to: '/membership' }}

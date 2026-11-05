@@ -41,10 +41,9 @@ const focusAreas = [
 function OpportunityCard({ opportunity, index }) {
   const Icon = opportunity.icon;
   return (
-    <article className="flex min-h-[220px] flex-col border border-gray-200 bg-white p-6">
+    <article className="flex min-h-[220px] flex-col bg-white p-6">
       <span className="mb-8 flex h-11 w-11 items-center justify-center bg-lmsa-50 text-lmsa-700" aria-hidden="true"><Icon size={22} strokeWidth={1.6} /></span>
-      <span className="editorial-card-eyebrow">{`0${index + 1} / Opportunity`}</span>
-      <h3 className="mt-2 text-xl font-semibold tracking-[-0.02em] text-lmsa-900">{opportunity.title}</h3>
+      <h3 className="text-xl font-semibold tracking-[-0.02em] text-lmsa-900">{opportunity.title}</h3>
       <p className="mt-2 text-sm leading-6 text-gray-600">{opportunity.description}</p>
       <Link
         to={opportunity.action.to}
@@ -64,7 +63,6 @@ export default function ResearchPage() {
         <div className="site-container">
           <div className="editorial-split">
             <EditorialSectionHeader
-              eyebrow="Learn & lead / Research"
               title="Better questions can lead to better care."
               description="LMSA supports students who want to investigate the challenges shaping healthcare in Liberia and contribute to the knowledge that can change them."
             />
@@ -84,7 +82,7 @@ export default function ResearchPage() {
 
       <section className="editorial-section editorial-section-muted">
         <div className="site-container">
-          <EditorialSectionHeader eyebrow="Ways to begin" title="Find the research opportunity that fits your question." description="Start with a grant, a collaborator, a publication, or the skills to make your next project stronger." />
+          <EditorialSectionHeader title="Find the research opportunity that fits your question." description="Start with a grant, a collaborator, a publication, or the skills to make your next project stronger." />
           <div className="grid gap-4 md:grid-cols-2">
             {opportunities.map((opportunity, index) => (
               <OpportunityCard key={opportunity.title} opportunity={opportunity} index={index} />
@@ -95,7 +93,7 @@ export default function ResearchPage() {
 
       <section className="editorial-section">
         <div className="site-container">
-          <EditorialSectionHeader eyebrow="Questions worth pursuing" title="Priority areas for student-led inquiry." description="These focus areas reflect some of the issues where research, service, and better systems can meet." />
+          <EditorialSectionHeader title="Priority areas for student-led inquiry." description="These focus areas reflect some of the issues where research, service, and better systems can meet." />
           <div className="grid gap-x-10 gap-y-4 md:grid-cols-2 lg:grid-cols-3">
             {focusAreas.map((area, index) => (
               <div key={area} className="flex items-start gap-3 border-b border-lmsa-200 bg-lmsa-50 pb-4">
@@ -111,7 +109,6 @@ export default function ResearchPage() {
       <section className="editorial-section pt-0">
         <div className="site-container">
           <EditorialCallout
-            eyebrow="Make the next inquiry count"
             title="Bring your question to the LMSA research community."
             description="Connect your interest with resources, collaborators, and the support to take a first step."
             action={{ label: 'Explore mentorship', to: '/academics/mentorship' }}

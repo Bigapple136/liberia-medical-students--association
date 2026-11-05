@@ -110,7 +110,6 @@ export default function HomePage() {
       <section className="home-audience section-shell" aria-labelledby="audience-title">
         <div className="home-section-heading home-audience-heading">
           <div>
-            <p className="section-kicker">Find your way in</p>
             <h2 id="audience-title">Start with what brings you here.</h2>
           </div>
           <p>
@@ -143,7 +142,6 @@ export default function HomePage() {
         <PatternBackground pattern="crosses" color="white" opacity={0.03} />
         <div className="section-shell home-manifesto-grid relative z-10">
           <div className="home-manifesto-copy">
-            <p className="section-kicker section-kicker-light">Medical education, amplified in Liberia</p>
             <h2 id="manifesto-title">Become the physician your community needs.</h2>
             <p>
               LMSA is a student-led community helping future physicians learn with
@@ -174,7 +172,6 @@ export default function HomePage() {
       <section className="home-focus section-shell" aria-labelledby="focus-title">
         <div className="home-section-heading">
           <div>
-            <p className="section-kicker">What moves us forward</p>
             <h2 id="focus-title">One community. Many ways to grow.</h2>
           </div>
           <Link to="/about/mission-vision" className="text-link">
@@ -205,7 +202,6 @@ export default function HomePage() {
       <section className="home-impact" aria-labelledby="impact-title">
         <div className="section-shell home-impact-grid">
           <div className="home-impact-copy">
-            <p className="section-kicker">The work behind the name</p>
             <h2 id="impact-title">Student leadership with a lasting impact.</h2>
             <p>
               From the classroom to the community, LMSA creates practical ways for
@@ -231,7 +227,6 @@ export default function HomePage() {
       <section className="home-resources section-shell" aria-labelledby="resources-title">
         <div className="home-section-heading">
           <div>
-            <p className="section-kicker">Looking to</p>
             <h2 id="resources-title">Make your next move.</h2>
           </div>
           <p>Useful starting points for your studies, leadership, and life in LMSA.</p>
@@ -257,7 +252,6 @@ export default function HomePage() {
       <section className="home-stories section-shell" aria-labelledby="stories-title">
         <div className="home-section-heading">
           <div>
-            <p className="section-kicker">From our community</p>
             <h2 id="stories-title">The latest from LMSA.</h2>
           </div>
           {hasPosts && (
@@ -346,7 +340,6 @@ export default function HomePage() {
         <PatternBackground pattern="dots" color="white" opacity={0.05} />
         <div className="section-shell home-join-inner relative z-10">
           <div>
-            <p className="section-kicker section-kicker-light">Your next chapter starts here</p>
             <h2 id="join-title">There is more to medical school when we move together.</h2>
           </div>
           <Link to="/register" className="button-light">

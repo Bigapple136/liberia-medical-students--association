@@ -98,7 +98,6 @@ export default function ResourcesPage() {
       <section className="editorial-section">
         <div className="site-container">
           <EditorialSectionHeader
-            eyebrow="Learn & lead / Study resources"
             title="The right resource can change how a difficult week feels."
             description="LMSA curates practical study materials, guides, and shared knowledge for the realities of medical training."
           />
@@ -112,7 +111,6 @@ export default function ResourcesPage() {
       <section className="editorial-section editorial-section-muted">
         <div className="site-container">
           <EditorialSectionHeader
-            eyebrow="Where you are"
             title="Find support for the stage you are in."
             description="Each stage of training asks something different of you. Use these focus areas to decide what to look for in the library below."
           />
@@ -138,7 +136,6 @@ export default function ResourcesPage() {
       <section className="editorial-section">
         <div className="site-container">
           <EditorialSectionHeader
-            eyebrow="From the library"
             title="Study materials, ready to use."
             description="Everything below comes from the LMSA document library and is available to download right now."
           />
@@ -242,7 +239,6 @@ export default function ResourcesPage() {
       <section className="editorial-section pt-0">
         <div className="site-container">
           <EditorialCallout
-            eyebrow="Keep the library growing"
             title="Have a study guide or resource that helped you?"
             description="Share it with the next student who needs a clearer way in."
             tone="green"

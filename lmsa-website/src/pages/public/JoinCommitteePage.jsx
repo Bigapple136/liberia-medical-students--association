@@ -89,7 +89,6 @@ export default function JoinCommitteePage() {
         <div className="site-container">
           <div className="editorial-split">
             <EditorialSectionHeader
-              eyebrow="Get involved / Join a committee"
               title="You do not need to wait for a title to start doing meaningful work."
               description="Committees are where LMSA’s mission becomes practical: one project, one conversation, and one contribution at a time."
             />
@@ -119,7 +118,6 @@ export default function JoinCommitteePage() {
       <section className="editorial-section editorial-section-muted">
         <div className="site-container">
           <EditorialSectionHeader
-            eyebrow={openCommittees.length ? 'Applications open' : 'Applications closed'}
             title="Find the committee that fits your interests."
             description={
               openCommittees.length === 0
@@ -159,7 +157,6 @@ export default function JoinCommitteePage() {
       <section className="editorial-section">
         <div className="site-container">
           <EditorialSectionHeader
-            eyebrow="Why join a committee?"
             title="Small teams are where confidence becomes capability."
             description="Committee work gives you a place to practice skills while making a visible contribution to the association."
           />
@@ -177,7 +174,6 @@ export default function JoinCommitteePage() {
       <section className="editorial-section editorial-section-muted">
         <div className="site-container">
           <EditorialSectionHeader
-            eyebrow="The application process"
             title="Four steps from interest to impact."
             description="The process is designed to help you find a good fit and start with clarity."
           />
@@ -196,7 +192,6 @@ export default function JoinCommitteePage() {
       <section className="editorial-section">
         <div className="site-container">
           <EditorialSectionHeader
-            eyebrow="Questions, answered"
             title="Before you apply."
             description="A few practical details about committee membership."
           />
@@ -214,7 +209,6 @@ export default function JoinCommitteePage() {
       <section className="editorial-section pt-0">
         <div className="site-container">
           <EditorialCallout
-            eyebrow="Find your place in the work"
             title="A committee is a practical first step into LMSA leadership."
             description={
               openCommittees.length
@@ -395,8 +389,7 @@ function ApplyDialog({ committee, onClose, onSubmitted }) {
       <div className="committee-dialog" role="dialog" aria-modal="true" aria-labelledby={titleId}>
         <div className="committee-dialog-head">
           <div>
-            <p className="editorial-overline">Apply to {committee.name}</p>
-            <h2 id={titleId} className="mt-3 text-2xl font-semibold tracking-[-0.03em] text-lmsa-900">
+            <h2 id={titleId} className="text-2xl font-semibold tracking-[-0.03em] text-lmsa-900">
               {done ? 'Your application is in' : 'Tell the committee about you'}
             </h2>
           </div>

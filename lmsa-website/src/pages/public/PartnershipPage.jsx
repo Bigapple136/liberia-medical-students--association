@@ -146,7 +146,6 @@ export default function PartnershipPage() {
         <div className="site-container">
           <div className="editorial-split">
             <EditorialSectionHeader
-              eyebrow="Why partner with LMSA"
               title="Your support reaches the people who will deliver Liberia’s care."
               description="A partnership connects your organisation with the students, ideas, and programmes shaping healthcare in Liberia."
             />
@@ -177,7 +176,6 @@ export default function PartnershipPage() {
       <section className="editorial-section editorial-section-muted" id="who-we-are-looking-for">
         <div className="site-container">
           <EditorialSectionHeader
-            eyebrow="Who we are looking for"
             title="Start with the kind of partner you are."
             description="LMSA is building its formal partnerships now. These are the organisations we most want to work with - and the shape we imagine the work taking."
           />
@@ -215,7 +213,6 @@ export default function PartnershipPage() {
       <section className="editorial-section">
         <div className="site-container">
           <EditorialSectionHeader
-            eyebrow="Ways to give"
             title="Money is one route. Expertise is another."
             description="Tell us what your organisation can offer and we will build the partnership around it."
           />
@@ -249,7 +246,6 @@ export default function PartnershipPage() {
       <section className="editorial-section editorial-section-muted">
         <div className="site-container">
           <EditorialSectionHeader
-            eyebrow="Levels of engagement"
             title="Three ways to work together."
             description="Each level is a scope, not a price list. We agree the commitment with you, in writing, before anything begins."
           />
@@ -303,7 +299,6 @@ export default function PartnershipPage() {
       <section className="editorial-section">
         <div className="site-container">
           <EditorialSectionHeader
-            eyebrow="How it works"
             title="Three steps from an email to a programme."
             description="No procurement portal, no fixed packages - a conversation, a written scope, and then the work."
           />
@@ -322,7 +317,6 @@ export default function PartnershipPage() {
       <section className="editorial-section pt-0">
         <div className="site-container">
           <EditorialCallout
-            eyebrow="Start a partnership"
             title="Bring your organisation into the work."
             description="Write to us about what you can offer and we will come back to you with a first conversation."
             action={{ label: 'Use our contact form', to: '/contact?topic=partnership' }}

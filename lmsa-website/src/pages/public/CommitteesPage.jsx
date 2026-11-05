@@ -47,7 +47,6 @@ export default function CommitteesPage() {
         <div className="site-container">
           <div className="editorial-split">
             <EditorialSectionHeader
-              eyebrow="Learn & lead / Committees"
               title="Where ideas become work that people can feel."
               description="LMSA committees create focused spaces for students to contribute to academic life, welfare, advocacy, service, and community."
             />
@@ -69,7 +68,6 @@ export default function CommitteesPage() {
       <section className="editorial-section editorial-section-muted">
         <div className="site-container">
           <EditorialSectionHeader
-            eyebrow="Find your contribution"
             title="A committee for the question, skill, or cause you want to carry."
             description="Committee members are appointed annually and work throughout the year to develop programs, policies, and initiatives that advance LMSA’s goals."
           />
@@ -113,7 +111,6 @@ export default function CommitteesPage() {
       <section className="editorial-section pt-0">
         <div className="site-container">
           <EditorialCallout
-            eyebrow="Make your contribution"
             title="You do not need to wait for a title to start doing meaningful work."
             description="Find a committee that fits your interests, then explore how to join the work."
             action={{ label: 'Join a committee', to: '/get-involved/committees' }}

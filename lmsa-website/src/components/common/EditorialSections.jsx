@@ -1,17 +1,16 @@
 import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-export function EditorialSectionHeader({ eyebrow, title, description, align = 'left', as: Heading = 'h2' }) {
+export function EditorialSectionHeader({ title, description, align = 'left', as: Heading = 'h2' }) {
   return (
     <div className={`editorial-section-header ${align === 'center' ? 'editorial-section-header-center' : ''}`}>
-      {eyebrow && <p className="editorial-overline">{eyebrow}</p>}
       <Heading>{title}</Heading>
       {description && <p>{description}</p>}
     </div>
   );
 }
 
-export function EditorialLinkCard({ to, eyebrow, title, description, icon: Icon, className = '' }) {
+export function EditorialLinkCard({ to, title, description, icon: Icon, className = '' }) {
   return (
     <Link to={to} className={`group editorial-link-card ${className}`}>
       {Icon && (
@@ -20,7 +19,6 @@ export function EditorialLinkCard({ to, eyebrow, title, description, icon: Icon,
         </span>
       )}
       <div className="editorial-link-card-copy">
-        {eyebrow && <span className="editorial-card-eyebrow">{eyebrow}</span>}
         <h3>{title}</h3>
         {description && <p>{description}</p>}
       </div>
@@ -29,11 +27,10 @@ export function EditorialLinkCard({ to, eyebrow, title, description, icon: Icon,
   );
 }
 
-export function EditorialCallout({ eyebrow, title, description, action, tone = 'green' }) {
+export function EditorialCallout({ title, description, action, tone = 'green' }) {
   return (
     <section className={`editorial-callout editorial-callout-${tone}`}>
       <div>
-        {eyebrow && <p className="editorial-overline">{eyebrow}</p>}
         <h2>{title}</h2>
         {description && <p>{description}</p>}
       </div>

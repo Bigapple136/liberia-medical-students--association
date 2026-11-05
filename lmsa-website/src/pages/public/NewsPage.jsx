@@ -16,7 +16,7 @@ function formatDate(dateString) {
 function CategoryBadge({ category }) {
   if (!category) return null;
   return (
-    <span className={`px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.14em] ${categoryBadgeClass(category)}`}>
+    <span className={`px-2.5 py-1 text-[13px] font-semibold ${categoryBadgeClass(category)}`}>
       {categoryLabel(category)}
     </span>
   );
@@ -52,10 +52,8 @@ function FeatureStory({ post }) {
         ) : (
           <Newspaper size={64} className="text-lmsa-300" aria-hidden="true" />
         )}
-      </div>
-      <div className="flex flex-col p-6 md:p-10">
-        <p className="editorial-overline">Latest story</p>
-        <div className="mt-4 flex flex-wrap items-center gap-3">
+      </div>        <div className="flex flex-col p-6 md:p-10">
+          <div className="mb-4 flex flex-wrap items-center gap-3">
           <CategoryBadge category={post.category} />
           <time dateTime={post.published_at || undefined} className="text-sm text-gray-500">
             {formatDate(post.published_at)}
@@ -164,7 +162,6 @@ export default function NewsPage() {
       <section className="editorial-section">
         <div className="site-container">
           <EditorialSectionHeader
-            eyebrow="Stories & events / News"
             title="Stories from the people making medical education matter."
             description="News, announcements, achievements, and opportunities from the LMSA community - the ideas and moments moving healthcare forward in Liberia."
           />
@@ -177,7 +174,7 @@ export default function NewsPage() {
                   type="button"
                   aria-pressed={active}
                   onClick={() => setCategory(value)}
-                  className={`border px-3.5 py-2 text-[11px] font-bold uppercase tracking-[0.14em] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2 ${
+                  className={`px-3.5 py-2 text-[13px] font-semibold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2 ${
                     active
                       ? 'border-lmsa-900 bg-lmsa-900 text-white'
                       : 'border-gray-300 bg-white text-gray-600 hover:border-lmsa-400 hover:text-lmsa-800'
@@ -279,7 +276,6 @@ export default function NewsPage() {
       <section className="editorial-section pt-0">
         <div className="site-container">
           <EditorialCallout
-            eyebrow="Have a story to share?"
             title="The student community is always becoming something new."
             description="Tell us about an achievement, opportunity, or idea that deserves a wider audience."
             action={{ label: 'Get involved', to: '/get-involved/volunteer' }}

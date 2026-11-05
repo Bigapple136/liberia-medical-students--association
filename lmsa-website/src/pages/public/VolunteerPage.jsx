@@ -25,7 +25,7 @@ export default function VolunteerPage() {
       <section className="editorial-section">
         <div className="site-container">
           <div className="editorial-split">
-            <EditorialSectionHeader eyebrow="Volunteer with LMSA" title="What a few hours can do." description="LMSA volunteers gain practical experience while helping expand healthcare access and education across Liberia." />
+            <EditorialSectionHeader title="What a few hours can do." description="LMSA volunteers gain practical experience while helping expand healthcare access and education across Liberia." />
             <div className="editorial-prose">
               <p>Bring your skills, energy, and attention to the communities we hope to serve. There are different ways to contribute, and meaningful work does not always require a large amount of time.</p>
               <section aria-label="Leadership workshop" className="mt-10 rise">
@@ -39,7 +39,7 @@ export default function VolunteerPage() {
 
       <section className="editorial-section editorial-section-muted">
         <div className="site-container">
-          <EditorialSectionHeader eyebrow="Ways to serve" title="Find a commitment that fits your season." description="Choose the kind of work that speaks to your interests and the time you can share." />
+          <EditorialSectionHeader title="Find a commitment that fits your season." description="Choose the kind of work that speaks to your interests and the time you can share." />
           <div className="grid gap-4 md:grid-cols-2">
             {opportunities.map(({ title, description, timeCommitment, icon: Icon }, index) => (
               <article key={index} className="editorial-link-card rise" style={{ animationDelay: `${index * 70}ms` }}>
@@ -60,7 +60,7 @@ export default function VolunteerPage() {
         <div className="site-container">
           <div className="editorial-split">
             <div>
-              <EditorialSectionHeader eyebrow="Why volunteer?" title="Service teaches the whole picture." description="Community work builds habits that stay with you long after a single event ends." />
+              <EditorialSectionHeader title="Service teaches the whole picture." description="Community work builds habits that stay with you long after a single event ends." />
               <section aria-label="Learning through service" className="mt-10 rise">
                 <Photo src={stockPhotos.sections.learn.src} alt={stockPhotos.sections.learn.alt} width={4} height={3} fallbackGradient="bg-lmsa-900" className="w-full" />
                 <p className="mt-2 text-[13px] text-gray-500">{stockPhotos.sections.learn.credit}</p>
@@ -83,7 +83,7 @@ export default function VolunteerPage() {
 
       <section className="editorial-section pt-0">
         <div className="site-container">
-          <EditorialCallout eyebrow="Start where you are" title="Ready to make a difference?" description="Join the volunteer network and help LMSA serve communities across Liberia." action={{ label: 'Contact LMSA', to: '/contact' }} />
+          <EditorialCallout title="Ready to make a difference?" description="Join the volunteer network and help LMSA serve communities across Liberia." action={{ label: 'Contact LMSA', to: '/contact' }} />
         </div>
       </section>
     </main>

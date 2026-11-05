@@ -1,6 +1,6 @@
 {
  "url": "http://localhost:5173/leadership",
- "at": "2026-11-05T11:51:43.409Z",
+ "at": "2026-11-05T12:21:46.391Z",
  "allow": [],
  "viewports": [
   {
@@ -9,14 +9,14 @@
    "load": "load",
    "screens": 8,
    "filled": [
-    0.68,
+    0.71,
     0.69,
-    0.85,
-    0.59,
+    0.97,
+    0.45,
+    0.92,
     1,
-    0.96,
-    1,
-    1
+    0.97,
+    0.93
    ],
    "motion": {
     "elements": 21,
@@ -32,13 +32,13 @@
      "h": 900
     },
     "page": {
-     "height": 6314,
-     "screens": 7,
-     "words": 701,
+     "height": 7158,
+     "screens": 8,
+     "words": 672,
      "img": 5,
      "video": 0,
      "canvas": 0,
-     "svg": 34,
+     "svg": 32,
      "sections": 10,
      "horizontalOverflow": 0,
      "overflowCulprits": [],
@@ -75,7 +75,7 @@
      "align": "left",
      "position": "left",
      "widthRatio": 0.53,
-     "top": 248,
+     "top": 210,
      "tag": "h1",
      "kind": "heading"
     },
@@ -104,7 +104,7 @@
       "align": "left",
       "position": "left",
       "widthRatio": 0.53,
-      "top": 248,
+      "top": 210,
       "tag": "h1",
       "kind": "heading"
      },
@@ -125,7 +125,7 @@
       "align": "left",
       "position": "left",
       "widthRatio": 0.31,
-      "top": 674,
+      "top": 616,
       "tag": "h2",
       "kind": "heading"
      },
@@ -146,7 +146,7 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.14,
-      "top": 758,
+      "top": 716,
       "tag": "strong",
       "kind": "heading"
      },
@@ -167,7 +167,7 @@
       "align": "left",
       "position": "right",
       "widthRatio": 0.12,
-      "top": 758,
+      "top": 716,
       "tag": "strong",
       "kind": "heading"
      },
@@ -188,7 +188,7 @@
       "align": "left",
       "position": "right",
       "widthRatio": 0.12,
-      "top": 758,
+      "top": 716,
       "tag": "strong",
       "kind": "heading"
      },
@@ -209,7 +209,7 @@
       "align": "left",
       "position": "left",
       "widthRatio": 0.47,
-      "top": 1560,
+      "top": 1512,
       "tag": "h2",
       "kind": "heading"
      },
@@ -230,7 +230,7 @@
       "align": "left",
       "position": "left",
       "widthRatio": 0.31,
-      "top": 2614,
+      "top": 2990,
       "tag": "h2",
       "kind": "heading"
      },
@@ -251,7 +251,7 @@
       "align": "left",
       "position": "left",
       "widthRatio": 0.47,
-      "top": 4204,
+      "top": 4579,
       "tag": "h2",
       "kind": "heading"
      },
@@ -272,15 +272,15 @@
       "align": "left",
       "position": "left",
       "widthRatio": 0.47,
-      "top": 5229,
+      "top": 6184,
       "tag": "h2",
       "kind": "heading"
      },
      {
-      "text": "Keep learning. Keep leading. Keep showing up.",
-      "words": 7,
-      "chars": 45,
-      "lines": 2,
+      "text": "Keep learning. Keep leading.",
+      "words": 4,
+      "chars": 28,
+      "lines": 1,
       "size": 36,
       "vw": 2.5,
       "font": "Inter",
@@ -292,8 +292,8 @@
       "mono": false,
       "align": "left",
       "position": "left",
-      "widthRatio": 0.4,
-      "top": 5594,
+      "widthRatio": 0.32,
+      "top": 6532,
       "tag": "h2",
       "kind": "heading"
      }
@@ -304,7 +304,7 @@
      "over2Lines": 0,
      "statements": 0,
      "centered": 0,
-     "medianWords": 6,
+     "medianWords": 5,
      "mixedFontHeadings": 0
     },
     "type": {
@@ -317,9 +317,6 @@
      ],
      "familyCount": 1,
      "sizes": [
-      10,
-      11,
-      12,
       13,
       14,
       16,
@@ -329,7 +326,7 @@
       36,
       60
      ],
-     "sizeCount": 11,
+     "sizeCount": 8,
      "notLoaded": [],
      "body": {
       "font": "Inter",
@@ -350,72 +347,14 @@
      "monoProseShare": 0,
      "monoFamilies": [],
      "monoSamples": [],
-     "microLabels": 13,
-     "microLabelShare": 0.046,
-     "microSamples": [
-      "Leadership",
-      "Learn & lead / Leadership",
-      "Academic year",
-      "Leadership roles",
-      "Nominations",
-      "Executive committee / 2025-2026"
-     ],
-     "upperShare": 0.06,
+     "microLabels": 0,
+     "microLabelShare": 0,
+     "microSamples": [],
+     "upperShare": 0,
      "centerShare": 0.03,
-     "smallText": 17
+     "smallText": 0
     },
-    "eyebrows": [
-     {
-      "text": "Leadership",
-      "above": "Name on the ballot.",
-      "upper": true,
-      "tracked": true,
-      "mono": false,
-      "pill": false,
-      "size": 12,
-      "top": 208
-     },
-     {
-      "text": "Executive committee / 2025-2026",
-      "above": "The students carrying the work forward.",
-      "upper": true,
-      "tracked": true,
-      "mono": false,
-      "pill": false,
-      "size": 11,
-      "top": 1531
-     },
-     {
-      "text": "How the work is organized",
-      "above": "A shared structure keeps leadership acco",
-      "upper": true,
-      "tracked": true,
-      "mono": false,
-      "pill": false,
-      "size": 11,
-      "top": 2586
-     },
-     {
-      "text": "How to stand / 2025-2026",
-      "above": "Three ways in. Two are on the ballot.",
-      "upper": true,
-      "tracked": true,
-      "mono": false,
-      "pill": false,
-      "size": 11,
-      "top": 4175
-     },
-     {
-      "text": "Your turn to lead",
-      "above": "Elections come around once a year.",
-      "upper": true,
-      "tracked": true,
-      "mono": false,
-      "pill": false,
-      "size": 11,
-      "top": 5200
-     }
-    ],
+    "eyebrows": [],
     "numbered": [],
     "color": {
      "bodyBg": "#f7f6f2",
@@ -437,7 +376,7 @@
       },
       {
        "color": "#f7f6f2",
-       "top": 565,
+       "top": 524,
        "hsl": {
         "h": 48,
         "s": 0.24,
@@ -446,7 +385,7 @@
       },
       {
        "color": "#ebeae4",
-       "top": 1451,
+       "top": 1420,
        "hsl": {
         "h": 51,
         "s": 0.15,
@@ -455,7 +394,7 @@
       },
       {
        "color": "#111827",
-       "top": 5502,
+       "top": 6456,
        "hsl": {
         "h": 221,
         "s": 0.39,
@@ -466,23 +405,23 @@
      "textColors": [
       {
        "color": "#4b5563",
-       "share": 0.43
+       "share": 0.46
       },
       {
-       "color": "#0a7343",
+       "color": "#064629",
        "share": 0.1
       },
       {
        "color": "#9ca3af",
-       "share": 0.09
+       "share": 0.1
       },
       {
-       "color": "#064629",
+       "color": "#374151",
        "share": 0.08
       },
       {
        "color": "#e8f7f0",
-       "share": 0.08
+       "share": 0.07
       }
      ],
      "button": {
@@ -497,10 +436,10 @@
      "lowContrast": []
     },
     "buttons": {
-     "count": 8,
+     "count": 5,
      "inHero": 2,
      "radius": 0,
-     "height": 28,
+     "height": 44,
      "withShadow": 0,
      "withGradient": 0,
      "mono": 0,
@@ -514,21 +453,13 @@
      "shadowStatic": 0,
      "shadowOverlay": 1,
      "shadowSamples": [],
-     "gradients": 1,
+     "gradients": 0,
      "scrims": 0,
-     "gradientSamples": [
-      "div.absolute.inset-0 → linear-gradient(to right, rgba(6, 70, 41, 0.95), rgba(6, 70, 41, 0.8), rgba(8, 92, 54, 0.6))"
-     ],
+     "gradientSamples": [],
      "gradientText": 0,
-     "hairlines": 10,
-     "hairlineSamples": [
-      "section.page-hero.bg-lmsa-900 1440px",
-      "section.editorial-section 1440px",
-      "div.editorial-stat-grid.mt-8 672px",
-      "section.editorial-section.editorial-section-muted 1440px",
-      "section.editorial-section 1440px"
-     ],
-     "outlinedBoxes": 11,
+     "hairlines": 0,
+     "hairlineSamples": [],
+     "outlinedBoxes": 1,
      "dashed": 0,
      "blurred": 0,
      "roundedBoxes": 1,
@@ -537,29 +468,16 @@
      "roundedMedia": 0,
      "mediaRadius": 0,
      "textShadow": 0,
-     "cardRows": [
-      {
-       "count": 6,
-       "iconTopped": true,
-       "rounded": false,
-       "top": 1712
-      },
-      {
-       "count": 3,
-       "iconTopped": true,
-       "rounded": false,
-       "top": 4653
-      }
-     ]
+     "cardRows": []
     },
     "heroMedia": [
      {
       "type": "img",
-      "ratio": 0.5
+      "ratio": 0.46
      },
      {
       "type": "svg",
-      "ratio": 0.5
+      "ratio": 0.46
      }
     ],
     "nav": {
@@ -581,11 +499,11 @@
    "load": "load",
    "screens": 8,
    "filled": [
-    0.73,
-    0.83,
+    0.56,
+    0.84,
+    0.98,
+    0.4,
     1,
-    0.52,
-    0.88,
     1,
     0.89,
     1
@@ -604,13 +522,13 @@
      "h": 1024
     },
     "page": {
-     "height": 7955,
-     "screens": 7.8,
-     "words": 690,
+     "height": 7674,
+     "screens": 7.5,
+     "words": 661,
      "img": 5,
      "video": 0,
      "canvas": 0,
-     "svg": 34,
+     "svg": 32,
      "sections": 10,
      "horizontalOverflow": 0,
      "overflowCulprits": [],
@@ -647,7 +565,7 @@
      "align": "left",
      "position": "left",
      "widthRatio": 0.52,
-     "top": 232,
+     "top": 192,
      "tag": "h1",
      "kind": "heading"
     },
@@ -676,7 +594,7 @@
       "align": "left",
       "position": "left",
       "widthRatio": 0.52,
-      "top": 232,
+      "top": 192,
       "tag": "h1",
       "kind": "heading"
      },
@@ -697,7 +615,7 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.88,
-      "top": 730,
+      "top": 668,
       "tag": "h2",
       "kind": "heading"
      },
@@ -718,7 +636,7 @@
       "align": "left",
       "position": "left",
       "widthRatio": 0.27,
-      "top": 1035,
+      "top": 972,
       "tag": "strong",
       "kind": "heading"
      },
@@ -739,7 +657,7 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.24,
-      "top": 1035,
+      "top": 972,
       "tag": "strong",
       "kind": "heading"
      },
@@ -760,7 +678,7 @@
       "align": "left",
       "position": "right",
       "widthRatio": 0.24,
-      "top": 1035,
+      "top": 972,
       "tag": "strong",
       "kind": "heading"
      },
@@ -781,7 +699,7 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.88,
-      "top": 1857,
+      "top": 1789,
       "tag": "h2",
       "kind": "heading"
      },
@@ -802,7 +720,7 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.88,
-      "top": 3371,
+      "top": 3267,
       "tag": "h2",
       "kind": "heading"
      },
@@ -823,7 +741,7 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.88,
-      "top": 4809,
+      "top": 4688,
       "tag": "h2",
       "kind": "heading"
      },
@@ -844,15 +762,15 @@
       "align": "left",
       "position": "left",
       "widthRatio": 0.51,
-      "top": 6538,
+      "top": 6329,
       "tag": "h2",
       "kind": "heading"
      },
      {
-      "text": "Keep learning. Keep leading. Keep showing up.",
-      "words": 7,
-      "chars": 45,
-      "lines": 3,
+      "text": "Keep learning. Keep leading.",
+      "words": 4,
+      "chars": 28,
+      "lines": 2,
       "size": 36,
       "vw": 4.7,
       "font": "Inter",
@@ -865,18 +783,18 @@
       "align": "left",
       "position": "left",
       "widthRatio": 0.55,
-      "top": 6971,
+      "top": 6745,
       "tag": "h2",
       "kind": "heading"
      }
     ],
     "headingSummary": {
      "count": 10,
-     "maxLines": 3,
-     "over2Lines": 1,
+     "maxLines": 2,
+     "over2Lines": 0,
      "statements": 0,
      "centered": 0,
-     "medianWords": 6,
+     "medianWords": 5,
      "mixedFontHeadings": 0
     },
     "type": {
@@ -889,9 +807,6 @@
      ],
      "familyCount": 1,
      "sizes": [
-      10,
-      11,
-      12,
       13,
       14,
       16,
@@ -901,7 +816,7 @@
       36,
       60
      ],
-     "sizeCount": 11,
+     "sizeCount": 8,
      "notLoaded": [],
      "body": {
       "font": "Inter",
@@ -922,82 +837,14 @@
      "monoProseShare": 0,
      "monoFamilies": [],
      "monoSamples": [],
-     "microLabels": 13,
-     "microLabelShare": 0.047,
-     "microSamples": [
-      "Leadership",
-      "Learn & lead / Leadership",
-      "Academic year",
-      "Leadership roles",
-      "Nominations",
-      "Executive committee / 2025-2026"
-     ],
-     "upperShare": 0.06,
+     "microLabels": 0,
+     "microLabelShare": 0,
+     "microSamples": [],
+     "upperShare": 0,
      "centerShare": 0.02,
-     "smallText": 17
+     "smallText": 0
     },
-    "eyebrows": [
-     {
-      "text": "Leadership",
-      "above": "Name on the ballot.",
-      "upper": true,
-      "tracked": true,
-      "mono": false,
-      "pill": false,
-      "size": 12,
-      "top": 192
-     },
-     {
-      "text": "Learn & lead / Leadership",
-      "above": "Leadership is service made visible.",
-      "upper": true,
-      "tracked": true,
-      "mono": false,
-      "pill": false,
-      "size": 11,
-      "top": 701
-     },
-     {
-      "text": "Executive committee / 2025-2026",
-      "above": "The students carrying the work forward.",
-      "upper": true,
-      "tracked": true,
-      "mono": false,
-      "pill": false,
-      "size": 11,
-      "top": 1829
-     },
-     {
-      "text": "How the work is organized",
-      "above": "A shared structure keeps leadership acco",
-      "upper": true,
-      "tracked": true,
-      "mono": false,
-      "pill": false,
-      "size": 11,
-      "top": 3342
-     },
-     {
-      "text": "How to stand / 2025-2026",
-      "above": "Three ways in. Two are on the ballot.",
-      "upper": true,
-      "tracked": true,
-      "mono": false,
-      "pill": false,
-      "size": 11,
-      "top": 4780
-     },
-     {
-      "text": "Your turn to lead",
-      "above": "Elections come around once a year.",
-      "upper": true,
-      "tracked": true,
-      "mono": false,
-      "pill": false,
-      "size": 11,
-      "top": 6509
-     }
-    ],
+    "eyebrows": [],
     "numbered": [],
     "color": {
      "bodyBg": "#f7f6f2",
@@ -1019,7 +866,7 @@
       },
       {
        "color": "#f7f6f2",
-       "top": 621,
+       "top": 576,
        "hsl": {
         "h": 48,
         "s": 0.24,
@@ -1028,7 +875,7 @@
       },
       {
        "color": "#ebeae4",
-       "top": 1749,
+       "top": 1697,
        "hsl": {
         "h": 51,
         "s": 0.15,
@@ -1036,17 +883,8 @@
        }
       },
       {
-       "color": "#ffffff",
-       "top": 5294,
-       "hsl": {
-        "h": 0,
-        "s": 0,
-        "l": 1
-       }
-      },
-      {
        "color": "#111827",
-       "top": 6879,
+       "top": 6669,
        "hsl": {
         "h": 221,
         "s": 0.39,
@@ -1057,23 +895,23 @@
      "textColors": [
       {
        "color": "#4b5563",
-       "share": 0.44
-      },
-      {
-       "color": "#0a7343",
-       "share": 0.09
-      },
-      {
-       "color": "#9ca3af",
-       "share": 0.09
+       "share": 0.46
       },
       {
        "color": "#064629",
-       "share": 0.08
+       "share": 0.1
+      },
+      {
+       "color": "#9ca3af",
+       "share": 0.1
       },
       {
        "color": "#e8f7f0",
-       "share": 0.08
+       "share": 0.07
+      },
+      {
+       "color": "#374151",
+       "share": 0.07
       }
      ],
      "button": {
@@ -1088,10 +926,10 @@
      "lowContrast": []
     },
     "buttons": {
-     "count": 8,
+     "count": 5,
      "inHero": 2,
      "radius": 0,
-     "height": 28,
+     "height": 44,
      "withShadow": 0,
      "withGradient": 0,
      "mono": 0,
@@ -1105,21 +943,13 @@
      "shadowStatic": 0,
      "shadowOverlay": 1,
      "shadowSamples": [],
-     "gradients": 1,
+     "gradients": 0,
      "scrims": 0,
-     "gradientSamples": [
-      "div.absolute.inset-0 → linear-gradient(to right, rgba(6, 70, 41, 0.95), rgba(6, 70, 41, 0.8), rgba(8, 92, 54, 0.6))"
-     ],
+     "gradientSamples": [],
      "gradientText": 0,
-     "hairlines": 10,
-     "hairlineSamples": [
-      "section.page-hero.bg-lmsa-900 768px",
-      "section.editorial-section 768px",
-      "div.editorial-stat-grid.mt-8 704px",
-      "section.editorial-section.editorial-section-muted 768px",
-      "section.editorial-section 768px"
-     ],
-     "outlinedBoxes": 11,
+     "hairlines": 0,
+     "hairlineSamples": [],
+     "outlinedBoxes": 1,
      "dashed": 0,
      "blurred": 0,
      "roundedBoxes": 1,
@@ -1128,23 +958,16 @@
      "roundedMedia": 0,
      "mediaRadius": 0,
      "textShadow": 0,
-     "cardRows": [
-      {
-       "count": 6,
-       "iconTopped": true,
-       "rounded": false,
-       "top": 2009
-      }
-     ]
+     "cardRows": []
     },
     "heroMedia": [
      {
       "type": "img",
-      "ratio": 0.5
+      "ratio": 0.45
      },
      {
       "type": "svg",
-      "ratio": 0.5
+      "ratio": 0.45
      }
     ],
     "nav": {
@@ -1166,16 +989,16 @@
    "load": "load",
    "screens": 12,
    "filled": [
-    0.93,
+    0.92,
     0.38,
-    0.88,
-    1,
-    1,
-    0.61,
-    0.62,
-    1,
+    0.86,
     1,
     0.86,
+    0.58,
+    1,
+    1,
+    0.98,
+    0.87,
     1,
     1
    ],
@@ -1193,13 +1016,13 @@
      "h": 844
     },
     "page": {
-     "height": 9976,
-     "screens": 11.8,
-     "words": 674,
+     "height": 9291,
+     "screens": 11,
+     "words": 645,
      "img": 5,
      "video": 0,
      "canvas": 0,
-     "svg": 34,
+     "svg": 32,
      "sections": 10,
      "horizontalOverflow": 0,
      "overflowCulprits": [],
@@ -1235,7 +1058,7 @@
      "align": "left",
      "position": "center",
      "widthRatio": 0.92,
-     "top": 208,
+     "top": 168,
      "tag": "h1",
      "kind": "heading"
     },
@@ -1264,7 +1087,7 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.92,
-      "top": 208,
+      "top": 168,
       "tag": "h1",
       "kind": "heading"
      },
@@ -1285,7 +1108,7 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.9,
-      "top": 864,
+      "top": 803,
       "tag": "h2",
       "kind": "heading"
      },
@@ -1306,7 +1129,7 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.9,
-      "top": 1276,
+      "top": 1214,
       "tag": "strong",
       "kind": "heading"
      },
@@ -1327,7 +1150,7 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.9,
-      "top": 1389,
+      "top": 1342,
       "tag": "strong",
       "kind": "heading"
      },
@@ -1348,7 +1171,7 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.9,
-      "top": 1502,
+      "top": 1470,
       "tag": "strong",
       "kind": "heading"
      },
@@ -1369,7 +1192,7 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.9,
-      "top": 2062,
+      "top": 2027,
       "tag": "h2",
       "kind": "heading"
      },
@@ -1390,7 +1213,7 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.9,
-      "top": 4678,
+      "top": 4205,
       "tag": "h2",
       "kind": "heading"
      },
@@ -1410,8 +1233,8 @@
       "mono": false,
       "align": "left",
       "position": "center",
-      "widthRatio": 0.82,
-      "top": 4981,
+      "widthRatio": 0.9,
+      "top": 4508,
       "tag": "h3",
       "kind": "heading"
      },
@@ -1431,8 +1254,8 @@
       "mono": false,
       "align": "left",
       "position": "center",
-      "widthRatio": 0.82,
-      "top": 5157,
+      "widthRatio": 0.9,
+      "top": 4684,
       "tag": "h3",
       "kind": "heading"
      },
@@ -1452,8 +1275,8 @@
       "mono": false,
       "align": "left",
       "position": "center",
-      "widthRatio": 0.82,
-      "top": 5333,
+      "widthRatio": 0.9,
+      "top": 4860,
       "tag": "h3",
       "kind": "heading"
      },
@@ -1474,8 +1297,71 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.9,
-      "top": 5940,
+      "top": 5450,
       "tag": "h2",
+      "kind": "heading"
+     },
+     {
+      "text": "Executive Committee",
+      "words": 2,
+      "chars": 19,
+      "lines": 1,
+      "size": 24,
+      "vw": 6.2,
+      "font": "Inter",
+      "weight": 600,
+      "tracking": -0.02,
+      "leading": 1.33,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.9,
+      "top": 6154,
+      "tag": "h3",
+      "kind": "heading"
+     },
+     {
+      "text": "Class Representatives",
+      "words": 2,
+      "chars": 21,
+      "lines": 1,
+      "size": 24,
+      "vw": 6.2,
+      "font": "Inter",
+      "weight": 600,
+      "tracking": -0.02,
+      "leading": 1.33,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.9,
+      "top": 6570,
+      "tag": "h3",
+      "kind": "heading"
+     },
+     {
+      "text": "Committee Chairs",
+      "words": 2,
+      "chars": 16,
+      "lines": 1,
+      "size": 24,
+      "vw": 6.2,
+      "font": "Inter",
+      "weight": 600,
+      "tracking": -0.02,
+      "leading": 1.33,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.9,
+      "top": 6958,
+      "tag": "h3",
       "kind": "heading"
      },
      {
@@ -1495,15 +1381,15 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.73,
-      "top": 8019,
+      "top": 7442,
       "tag": "h2",
       "kind": "heading"
      },
      {
-      "text": "Keep learning. Keep leading. Keep showing up.",
-      "words": 7,
-      "chars": 45,
-      "lines": 3,
+      "text": "Keep learning. Keep leading.",
+      "words": 4,
+      "chars": 28,
+      "lines": 2,
       "size": 30,
       "vw": 7.7,
       "font": "Inter",
@@ -1516,7 +1402,7 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.9,
-      "top": 8506,
+      "top": 7909,
       "tag": "h2",
       "kind": "heading"
      },
@@ -1537,18 +1423,18 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.9,
-      "top": 8785,
+      "top": 8116,
       "tag": "h3",
       "kind": "heading"
      }
     ],
     "headingSummary": {
-     "count": 14,
-     "maxLines": 3,
-     "over2Lines": 1,
+     "count": 17,
+     "maxLines": 2,
+     "over2Lines": 0,
      "statements": 0,
      "centered": 0,
-     "medianWords": 5,
+     "medianWords": 3,
      "mixedFontHeadings": 0
     },
     "type": {
@@ -1561,8 +1447,6 @@
      ],
      "familyCount": 1,
      "sizes": [
-      11,
-      12,
       13,
       14,
       16,
@@ -1572,7 +1456,7 @@
       30,
       36
      ],
-     "sizeCount": 10,
+     "sizeCount": 8,
      "notLoaded": [],
      "body": {
       "font": "Inter",
@@ -1593,82 +1477,14 @@
      "monoProseShare": 0,
      "monoFamilies": [],
      "monoSamples": [],
-     "microLabels": 13,
-     "microLabelShare": 0.048,
-     "microSamples": [
-      "Leadership",
-      "Learn & lead / Leadership",
-      "Academic year",
-      "Leadership roles",
-      "Nominations",
-      "Executive committee / 2025-2026"
-     ],
-     "upperShare": 0.05,
+     "microLabels": 0,
+     "microLabelShare": 0,
+     "microSamples": [],
+     "upperShare": 0,
      "centerShare": 0.02,
-     "smallText": 14
+     "smallText": 0
     },
-    "eyebrows": [
-     {
-      "text": "Leadership",
-      "above": "Name on the ballot.",
-      "upper": true,
-      "tracked": true,
-      "mono": false,
-      "pill": false,
-      "size": 12,
-      "top": 168
-     },
-     {
-      "text": "Learn & lead / Leadership",
-      "above": "Leadership is service made visible.",
-      "upper": true,
-      "tracked": true,
-      "mono": false,
-      "pill": false,
-      "size": 11,
-      "top": 836
-     },
-     {
-      "text": "Executive committee / 2025-2026",
-      "above": "The students carrying the work forward.",
-      "upper": true,
-      "tracked": true,
-      "mono": false,
-      "pill": false,
-      "size": 11,
-      "top": 2034
-     },
-     {
-      "text": "How the work is organized",
-      "above": "A shared structure keeps leadership acco",
-      "upper": true,
-      "tracked": true,
-      "mono": false,
-      "pill": false,
-      "size": 11,
-      "top": 4649
-     },
-     {
-      "text": "How to stand / 2025-2026",
-      "above": "Three ways in. Two are on the ballot.",
-      "upper": true,
-      "tracked": true,
-      "mono": false,
-      "pill": false,
-      "size": 11,
-      "top": 5912
-     },
-     {
-      "text": "Your turn to lead",
-      "above": "Elections come around once a year.",
-      "upper": true,
-      "tracked": true,
-      "mono": false,
-      "pill": false,
-      "size": 11,
-      "top": 7991
-     }
-    ],
+    "eyebrows": [],
     "numbered": [],
     "color": {
      "bodyBg": "#f7f6f2",
@@ -1690,7 +1506,7 @@
       },
       {
        "color": "#f7f6f2",
-       "top": 772,
+       "top": 727,
        "hsl": {
         "h": 48,
         "s": 0.24,
@@ -1699,7 +1515,7 @@
       },
       {
        "color": "#ebeae4",
-       "top": 1970,
+       "top": 1951,
        "hsl": {
         "h": 51,
         "s": 0.15,
@@ -1707,17 +1523,8 @@
        }
       },
       {
-       "color": "#ffffff",
-       "top": 2277,
-       "hsl": {
-        "h": 0,
-        "s": 0,
-        "l": 1
-       }
-      },
-      {
        "color": "#f9fafb",
-       "top": 6183,
+       "top": 5693,
        "hsl": {
         "h": 210,
         "s": 0.2,
@@ -1726,7 +1533,7 @@
       },
       {
        "color": "#111827",
-       "top": 8429,
+       "top": 7849,
        "hsl": {
         "h": 221,
         "s": 0.39,
@@ -1737,22 +1544,22 @@
      "textColors": [
       {
        "color": "#4b5563",
-       "share": 0.45
+       "share": 0.46
       },
       {
-       "color": "#0a7343",
-       "share": 0.1
+       "color": "#064629",
+       "share": 0.11
       },
       {
        "color": "#9ca3af",
        "share": 0.1
       },
       {
-       "color": "#064629",
-       "share": 0.09
+       "color": "#374151",
+       "share": 0.07
       },
       {
-       "color": "#374151",
+       "color": "#8a5a00",
        "share": 0.07
       }
      ],
@@ -1763,15 +1570,15 @@
        "s": 0,
        "l": 1
       },
-      "fg": "#111827"
+      "fg": "#ffffff"
      },
      "lowContrast": []
     },
     "buttons": {
-     "count": 7,
+     "count": 4,
      "inHero": 1,
-     "radius": 8,
-     "height": 28,
+     "radius": 0,
+     "height": 44,
      "withShadow": 0,
      "withGradient": 0,
      "mono": 0,
@@ -1784,21 +1591,13 @@
      "shadowStatic": 0,
      "shadowOverlay": 1,
      "shadowSamples": [],
-     "gradients": 1,
+     "gradients": 0,
      "scrims": 0,
-     "gradientSamples": [
-      "div.absolute.inset-0 → linear-gradient(to right, rgba(6, 70, 41, 0.95), rgba(6, 70, 41, 0.8), rgba(8, 92, 54, 0.6))"
-     ],
+     "gradientSamples": [],
      "gradientText": 0,
-     "hairlines": 13,
-     "hairlineSamples": [
-      "section.page-hero.bg-lmsa-900 390px",
-      "section.editorial-section 390px",
-      "div.editorial-stat-grid.mt-8 350px",
-      "div.editorial-stat 350px",
-      "div.editorial-stat 350px"
-     ],
-     "outlinedBoxes": 11,
+     "hairlines": 0,
+     "hairlineSamples": [],
+     "outlinedBoxes": 1,
      "dashed": 0,
      "blurred": 0,
      "roundedBoxes": 1,
@@ -1807,29 +1606,16 @@
      "roundedMedia": 0,
      "mediaRadius": 0,
      "textShadow": 0,
-     "cardRows": [
-      {
-       "count": 6,
-       "iconTopped": true,
-       "rounded": false,
-       "top": 2277
-      },
-      {
-       "count": 3,
-       "iconTopped": true,
-       "rounded": false,
-       "top": 6636
-      }
-     ]
+     "cardRows": []
     },
     "heroMedia": [
      {
       "type": "img",
-      "ratio": 0.79
+      "ratio": 0.74
      },
      {
       "type": "svg",
-      "ratio": 0.79
+      "ratio": 0.74
      }
     ],
     "nav": {
@@ -1848,66 +1634,11 @@
  ],
  "findings": [
   {
-   "level": "FAIL",
-   "id": "eyebrow",
-   "width": 1440,
-   "message": "5 eyebrow/kicker label(s) above headings: \"Leadership\" above \"Name on the ballot.\"; \"Executive committee / 2025-2026\" above \"The students carrying the work forward.\"; \"How the work is organized\" above \"A shared structure keeps leadership acco\"; \"How to stand / 2025-2026\" above \"Three ways in. Two are on the ballot.\"; \"Your turn to lead\" above \"Elections come around once a year.\"",
-   "fix": "Delete them. If the label carried real information, fold it into the headline or the supporting sentence.",
-   "alsoAt": [
-    768,
-    390
-   ]
-  },
-  {
-   "level": "FAIL",
-   "id": "micro-label",
-   "width": 1440,
-   "message": "13 tiny uppercase letter-spaced labels (e.g. \"Leadership\", \"Learn & lead / Leadership\", \"Academic year\", \"Leadership roles\").",
-   "fix": "Use sentence-case text at a readable size, or delete the label.",
-   "alsoAt": [
-    768,
-    390
-   ]
-  },
-  {
-   "level": "FAIL",
-   "id": "gradient",
-   "width": 1440,
-   "message": "1 gradient fill(s): div.absolute.inset-0 → linear-gradient(to right, rgba(6, 70, 41, 0.95), rgba(6, 70, 41, 0.8), rgba(8, 92, 54, 0.6))",
-   "fix": "Use a flat colour or a real image. The only gradient allowed by default is a neutral scrim over a photo for legibility.",
-   "alsoAt": [
-    768,
-    390
-   ]
-  },
-  {
-   "level": "FAIL",
-   "id": "hairline",
-   "width": 1440,
-   "message": "10 thin rule(s)/divider line(s): section.page-hero.bg-lmsa-900 1440px | section.editorial-section 1440px | div.editorial-stat-grid.mt-8 672px | section.editorial-section.editorial-section-muted 1440px",
-   "fix": "Delete. Separate with space, a tone change, or scale. Lines are only for real tables and form fields.",
-   "alsoAt": [
-    768,
-    390
-   ]
-  },
-  {
-   "level": "FAIL",
+   "level": "WARN",
    "id": "outlined-box",
    "width": 1440,
-   "message": "11 boxes drawn with a 1px outline.",
-   "fix": "Define a surface by its fill (one tone step from the page) or leave the content unboxed.",
-   "alsoAt": [
-    768,
-    390
-   ]
-  },
-  {
-   "level": "FAIL",
-   "id": "icon-cards",
-   "width": 1440,
-   "message": "2 row(s) of identical cards each topped with a small icon (6, 3 cards).",
-   "fix": "Replace with one composed section from the direction: a narrative split, a list set in large type, or real imagery per item.",
+   "message": "1 box(es) drawn with a 1px outline.",
+   "fix": "Prefer a filled surface or no box.",
    "alsoAt": [
     768,
     390
@@ -1926,46 +1657,10 @@
   },
   {
    "level": "WARN",
-   "id": "size-count",
-   "width": 1440,
-   "message": "11 different font sizes (10, 11, 12, 13, 14, 16, 18, 20, 24, 36, 60).",
-   "fix": "A page needs about five: display, heading, lead, body, small.",
-   "alsoAt": [
-    768,
-    390
-   ]
-  },
-  {
-   "level": "WARN",
    "id": "no-footage",
    "width": 1440,
    "message": "No video anywhere on the page.",
    "fix": "Look for one honest clip with scripts/assets.mjs --video (the place, the material, the process) and use it as a muted loop with a poster frame. Defend its absence only if no clip fits the subject."
-  },
-  {
-   "level": "FAIL",
-   "id": "small-text",
-   "width": 1440,
-   "message": "17 text blocks under 13px.",
-   "fix": "Nothing meant to be read goes below 13px.",
-   "alsoAt": [
-    768,
-    390
-   ]
-  },
-  {
-   "level": "FAIL",
-   "id": "headline-lines",
-   "width": 768,
-   "message": "1 headline(s) wrap past two lines at 768px: \"Keep learning. Keep leading. Keep showing up.\" → 3 lines (7 words, 36px)",
-   "fix": "Cut words first (a headline is a title, not a sentence). Then give it a wider measure. Lower the size only as a last resort and never below the scale you chose. A real statement paragraph belongs in a <p> or <blockquote> at 32px or less."
-  },
-  {
-   "level": "FAIL",
-   "id": "headline-lines",
-   "width": 390,
-   "message": "1 headline(s) wrap past two lines at 390px: \"Keep learning. Keep leading. Keep showing up.\" → 3 lines (7 words, 30px)",
-   "fix": "Cut words first (a headline is a title, not a sentence). Then give it a wider measure. Lower the size only as a last resort and never below the scale you chose. A real statement paragraph belongs in a <p> or <blockquote> at 24px or less."
   }
  ],
  "images": [

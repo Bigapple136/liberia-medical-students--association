@@ -22,7 +22,6 @@ export default function ConstitutionPage() {
         <div className="site-container">
           <div className="editorial-split">
             <EditorialSectionHeader
-              eyebrow="A shared foundation"
               title="Good governance makes student leadership possible."
               description="The LMSA Constitution gives the association a clear structure for representation, accountability, and democratic decision-making."
             />
@@ -55,7 +54,6 @@ export default function ConstitutionPage() {
       <section className="editorial-section editorial-section-muted">
         <div className="site-container">
           <EditorialSectionHeader
-            eyebrow="Inside the document"
             title="The articles that hold LMSA together."
             description="Use this overview to find the part of our governing framework you want to understand."
           />
@@ -80,8 +78,7 @@ export default function ConstitutionPage() {
               <FileText size={38} strokeWidth={1.2} aria-hidden="true" />
             </div>
             <div>
-              <p className="editorial-overline">The complete document</p>
-              <h2 className="mt-3 text-3xl font-semibold tracking-[-0.03em] text-lmsa-900">Download the LMSA Constitution</h2>
+              <h2 className="text-3xl font-semibold tracking-[-0.03em] text-lmsa-900">Download the LMSA Constitution</h2>
               <p className="mt-3 max-w-2xl text-base leading-7 text-gray-700">The PDF is being prepared. Contact us for immediate access or questions about our governing document.</p>
             </div>
             <button type="button" className="inline-flex items-center gap-2 border border-gray-300 bg-white px-5 py-3 text-sm font-semibold text-gray-500" disabled>
@@ -95,7 +92,6 @@ export default function ConstitutionPage() {
       <section className="editorial-section pt-0">
         <div className="site-container">
           <EditorialCallout
-            eyebrow="Questions about governance?"
             title="A healthy association makes room for questions."
             description="Reach out to the LMSA team if you need immediate access or want to understand how the constitution applies to your work."
             tone="ink"

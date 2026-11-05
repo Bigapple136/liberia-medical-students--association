@@ -28,7 +28,7 @@ function MetaItem({ icon: Icon, label, children }) {
     <div className="flex items-start gap-3 border border-gray-200 bg-white p-4">
       <Icon size={18} className="mt-0.5 shrink-0 text-lmsa-600" aria-hidden="true" />
       <div>
-        <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-gray-500">{label}</p>
+        <p className="text-[13px] font-semibold text-gray-500">{label}</p>
         <p className="mt-1 text-sm font-medium text-lmsa-900">{children}</p>
       </div>
     </div>
@@ -97,9 +97,8 @@ export default function EventDetailPage() {
       <main className="editorial-page">
         <section className="editorial-section">
           <div className="site-container">
-            <div className="mx-auto max-w-2xl border border-gray-200 bg-white p-10 text-center md:p-14">
-              <p className="editorial-overline">Event not found</p>
-              <h1 className="mt-3 text-3xl font-semibold leading-tight tracking-[-0.03em] text-lmsa-900 md:text-4xl">
+            <div className="mx-auto max-w-2xl bg-white p-10 text-center md:p-14">
+              <h1 className="text-3xl font-semibold leading-tight tracking-[-0.03em] text-lmsa-900 md:text-4xl">
                 We couldn’t find that event.
               </h1>
               <p className="mt-4 text-base leading-7 text-gray-600">
@@ -133,7 +132,7 @@ export default function EventDetailPage() {
           <div className="mx-auto max-w-3xl">
             <Link
               to="/events"
-              className="group inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.18em] text-lmsa-700 transition-colors hover:text-lmsa-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
+              className="group inline-flex items-center gap-2 text-[13px] font-semibold text-lmsa-700 transition-colors hover:text-lmsa-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
             >
               <ArrowLeft size={14} className="transition-transform duration-200 group-hover:-translate-x-1" aria-hidden="true" />
               All events
@@ -178,8 +177,8 @@ export default function EventDetailPage() {
             </div>
 
             {event.registration_required && (
-              <div className="mt-10 border border-lmsa-200 bg-white p-6 md:p-8">
-                <p className="editorial-overline">Registration</p>
+              <div className="mt-10 bg-white p-6 md:p-8">
+                <p className="text-[13px] font-semibold text-lmsa-700">Registration</p>
                 <div className="mt-4 flex flex-wrap gap-x-8 gap-y-3 text-sm text-gray-600">
                   {deadline && (
                     <span className="flex items-center gap-2">
@@ -241,7 +240,6 @@ export default function EventDetailPage() {
         <div className="site-container">
           <section className="editorial-callout editorial-callout-green">
             <div>
-              <p className="editorial-overline">Keep exploring</p>
               <h2>More moments on the LMSA calendar.</h2>
               <p>Workshops, ceremonies, service activities, and gatherings shaping the student community.</p>
             </div>

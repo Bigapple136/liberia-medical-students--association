@@ -50,9 +50,8 @@ export default function NewsDetailPage() {
       <main className="editorial-page">
         <section className="editorial-section">
           <div className="site-container">
-            <div className="mx-auto max-w-2xl border border-gray-200 bg-white p-10 text-center md:p-14">
-              <p className="editorial-overline">Story not found</p>
-              <h1 className="mt-3 text-3xl font-semibold leading-tight tracking-[-0.03em] text-lmsa-900 md:text-4xl">
+            <div className="mx-auto max-w-2xl bg-white p-10 text-center md:p-14">
+              <h1 className="text-3xl font-semibold leading-tight tracking-[-0.03em] text-lmsa-900 md:text-4xl">
                 We couldn’t find that story.
               </h1>
               <p className="mt-4 text-base leading-7 text-gray-600">
@@ -86,7 +85,7 @@ export default function NewsDetailPage() {
           <div className="mx-auto max-w-3xl">
             <Link
               to="/news"
-              className="group inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.18em] text-lmsa-700 transition-colors hover:text-lmsa-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
+              className="group inline-flex items-center gap-2 text-[13px] font-semibold text-lmsa-700 transition-colors hover:text-lmsa-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
             >
               <ArrowLeft size={14} className="transition-transform duration-200 group-hover:-translate-x-1" aria-hidden="true" />
               All news
@@ -95,7 +94,7 @@ export default function NewsDetailPage() {
             <header className="mt-8">
               <div className="flex flex-wrap items-center gap-3">
                 {post.category && (
-                  <span className={`px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.14em] ${categoryBadgeClass(post.category)}`}>
+                  <span className={`px-2.5 py-1 text-[13px] font-semibold ${categoryBadgeClass(post.category)}`}>
                     {categoryLabel(post.category)}
                   </span>
                 )}
@@ -137,8 +136,8 @@ export default function NewsDetailPage() {
             </div>
 
             {tags.length > 0 && (
-              <footer className="mt-12 border-t border-gray-200 pt-6">
-                <p className="editorial-overline">Tagged</p>
+              <footer className="mt-12">
+                <p className="text-[13px] font-semibold text-gray-500">Tagged</p>
                 <div className="mt-3 flex flex-wrap gap-2">
                   {tags.map((tag) => (
                     <span key={tag.id} className="bg-white px-3 py-1.5 text-xs font-medium text-gray-600 ring-1 ring-gray-200">
@@ -156,7 +155,6 @@ export default function NewsDetailPage() {
         <div className="site-container">
           <section className="editorial-callout editorial-callout-green">
             <div>
-              <p className="editorial-overline">Keep reading</p>
               <h2>More stories from the LMSA community.</h2>
               <p>Announcements, achievements, and opportunities from Liberia’s future physicians.</p>
             </div>

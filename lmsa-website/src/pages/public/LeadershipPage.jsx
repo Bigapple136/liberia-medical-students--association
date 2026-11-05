@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Crown, Loader, User, Link as LinkIcon, Vote, ArrowRight } from 'lucide-react';
+import { Loader, User, Link as LinkIcon, Vote, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { EditorialCallout, EditorialSectionHeader, EditorialStat } from '@components/common/EditorialSections';
 import Photo from '@components/common/Photo';
@@ -129,7 +129,6 @@ export default function LeadershipPage() {
         <div className="site-container">
           <div className="editorial-split">
             <EditorialSectionHeader
-              eyebrow="Learn & lead / Leadership"
               title="Leadership is service made visible."
               description="Meet the officers serving this year - and see how to put your own name forward."
             />
@@ -170,7 +169,6 @@ export default function LeadershipPage() {
       <section className="editorial-section editorial-section-muted">
         <div className="site-container">
           <EditorialSectionHeader
-            eyebrow={`Executive committee / ${currentYear}`}
             title="The students carrying the work forward."
             description="Leadership changes each year, but the responsibility to represent peers thoughtfully remains."
           />
@@ -179,25 +177,23 @@ export default function LeadershipPage() {
               <Loader className="animate-spin text-lmsa-600" size={28} aria-label="Loading leadership" />
             </div>
           ) : (
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            <div className="max-w-4xl space-y-10">
               {executives.map((exec, index) => (
-                <article key={exec.id || index} className="flex flex-col border border-gray-200 bg-white p-6 rise" style={{ animationDelay: `${index * 60}ms` }}>
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-full bg-lmsa-50 text-lmsa-700">
-                      {exec.holder_photo_url ? (
-                        <img src={exec.holder_photo_url} alt={exec.holder_name || exec.position_name} className="h-full w-full object-cover" />
-                      ) : (
-                        <User size={29} strokeWidth={1.4} />
-                      )}
-                    </div>
-                    {exec.position_rank <= 2 && <Crown size={18} className="text-amber-500" aria-label="Senior executive role" />}
+                <article key={exec.id || index} className="flex flex-col gap-5 sm:flex-row sm:gap-8 rise" style={{ animationDelay: `${index * 60}ms` }}>
+                  <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-full bg-lmsa-50 text-lmsa-700">
+                    {exec.holder_photo_url ? (
+                      <img src={exec.holder_photo_url} alt={exec.holder_name || exec.position_name} className="h-full w-full object-cover" />
+                    ) : (
+                      <User size={29} strokeWidth={1.4} />
+                    )}
                   </div>
-                  <p className="mt-8 text-sm font-semibold text-lmsa-700">{exec.position_name}</p>
-                  <h3 className="mt-2 text-xl font-semibold text-lmsa-900">{exec.holder_name || 'Position Available'}</h3>
-                  {exec.bio && <p className="mt-3 text-sm leading-6 text-gray-600">{exec.bio}</p>}
-                  {exec.holder_year_level && <p className="mt-4 text-[13px] text-gray-600">Year {exec.holder_year_level}</p>}
-                  {error && <p className="mt-4 text-[13px] font-medium text-[#8a5a00]">Placeholder officers shown, live data didn't load.</p>}
-                  <div className="mt-6">
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-semibold text-lmsa-700">{exec.position_name}</p>
+                    <h3 className="mt-1 text-xl font-semibold text-lmsa-900">{exec.holder_name || 'Position Available'}</h3>
+                    {exec.bio && <p className="mt-3 max-w-2xl text-sm leading-6 text-gray-600">{exec.bio}</p>}
+                    {exec.holder_year_level && <p className="mt-3 text-[13px] text-gray-600">Year {exec.holder_year_level}</p>}
+                    {error && <p className="mt-3 text-[13px] font-medium text-[#8a5a00]">Placeholder officers shown, live data didn't load.</p>}
+                    <div className="mt-5">
                     {nominationsOpen ? (
                       user ? (
                         <button
@@ -222,6 +218,7 @@ export default function LeadershipPage() {
                         Elected in the {cycleYear} election. Nominations open with the next cycle.
                       </p>
                     )}
+                    </div>
                   </div>
                 </article>
               ))}
@@ -233,7 +230,7 @@ export default function LeadershipPage() {
       <section className="editorial-section">
         <div className="site-container">
           <div className="editorial-split">
-            <EditorialSectionHeader eyebrow="How the work is organized" title="A shared structure keeps leadership accountable." description="Different bodies carry different responsibilities, but each one exists to keep members represented and the work moving." />
+            <EditorialSectionHeader title="A shared structure keeps leadership accountable." description="Different bodies carry different responsibilities, but each one exists to keep members represented and the work moving." />
             <div className="editorial-timeline">
               <article className="editorial-timeline-item rise">
                 <p className="text-sm font-semibold text-lmsa-700">General assembly</p>
@@ -284,7 +281,6 @@ export default function LeadershipPage() {
       <section id="stand" className="editorial-section editorial-section-muted">
         <div className="site-container">
           <EditorialSectionHeader
-            eyebrow={`How to stand / ${cycleYear}`}
             title="Three ways in. Two are on the ballot."
             description="Executive officers and class representatives are elected by the general assembly. Committee chairs are appointed from members already doing the work."
           />
@@ -325,7 +321,7 @@ export default function LeadershipPage() {
             </dl>
           </div>
 
-          <div className="mt-12 grid gap-4 lg:grid-cols-3">
+          <div className="mt-14 max-w-5xl space-y-12">
             {LEADERSHIP_LEVELS.map(level => {
               const action = actionFor(level, cycleState, user);
               const options =
@@ -338,11 +334,11 @@ export default function LeadershipPage() {
                     : null;
 
               return (
-                <article key={level.id} className="flex flex-col border border-gray-200 bg-white p-6 rise" style={{ animationDelay: `${level.id.length * 40}ms` }}>
-                  <p className="text-sm font-semibold text-lmsa-700">{level.level}</p>
-                  <p className="mt-4 text-sm leading-6 text-gray-600">{level.summary}</p>
+                <article key={level.id} className="rise" style={{ animationDelay: `${level.id.length * 40}ms` }}>
+                  <h3 className="text-2xl font-semibold tracking-[-0.02em] text-lmsa-900">{level.level}</h3>
+                  <p className="mt-3 max-w-2xl text-base leading-7 text-gray-600">{level.summary}</p>
 
-                  <dl className="mt-6 space-y-2 text-sm">
+                  <dl className="mt-5 space-y-2 text-sm">
                     <div className="flex gap-2">
                       <dt className="font-semibold text-lmsa-900">Term:</dt>
                       <dd className="text-gray-600">{level.term}</dd>
@@ -359,7 +355,7 @@ export default function LeadershipPage() {
                     </p>
                   )}
 
-                  <div className="mt-auto pt-8">
+                  <div className="mt-8">
                     {level.nominable && options.length > 0 && (
                       <>
                         <label
@@ -397,7 +393,7 @@ export default function LeadershipPage() {
                     ) : (
                       <Link
                         to={action.to}
-                        className="btn mt-4 flex w-full items-center justify-center gap-2 border-2 border-lmsa-700 text-lmsa-700 hover:bg-lmsa-50 focus-visible:ring-lmsa-700"
+                        className="btn mt-4 flex w-full items-center justify-center gap-2 bg-lmsa-50 text-lmsa-800 hover:bg-lmsa-100 focus-visible:ring-lmsa-700"
                       >
                         {action.label}
                         <ArrowRight size={16} />
@@ -414,7 +410,6 @@ export default function LeadershipPage() {
       <section className="editorial-section pt-0">
         <div className="site-container">
           <EditorialCallout
-            eyebrow={nominationsOpen ? `Nominations open / ${cycleYear}` : 'Your turn to lead'}
             title={
               nominationsOpen
                 ? 'Nominations are open right now.'

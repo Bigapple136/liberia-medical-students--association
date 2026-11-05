@@ -176,7 +176,6 @@ export default function MembershipPage() {
         <div className="site-container">
           <div className="editorial-split">
             <EditorialSectionHeader
-              eyebrow="A community for the journey"
               title="Membership should make medical school feel less like a solo experience."
               description="LMSA gives students a place to find support, build relationships, and turn their time in training into something shared."
             />
@@ -197,18 +196,16 @@ export default function MembershipPage() {
       <section className="editorial-section editorial-section-muted">
         <div className="site-container">
           <EditorialSectionHeader
-            eyebrow="Choose your path"
             title="Find the membership that fits your place in the community."
             description="Every category comes with a different relationship to LMSA, but each one creates a way to participate."
           />
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             {membershipTypes.map((type, index) => (
-              <article key={type.name} className={`flex flex-col border border-gray-200 bg-white p-6 ${type.featured ? 'border-t-4 border-t-lmsa-600' : ''}`}>
+              <article key={type.name} className={`flex flex-col bg-white p-6 ${type.featured ? 'ring-2 ring-lmsa-600' : ''}`}>
                 {type.featured && <span className="editorial-card-eyebrow text-lmsa-700">Most common</span>}
                 {type.invitationOnly && <span className="editorial-card-eyebrow text-gray-500">By invitation</span>}
                 <div>
-                  <span className="mt-2 block text-xs font-bold text-gray-500">0{index + 1}</span>
-                  <h3 className="mt-2 text-lg font-semibold tracking-[-0.02em] text-lmsa-900">{type.name}</h3>
+                  <h3 className="text-lg font-semibold tracking-[-0.02em] text-lmsa-900">{type.name}</h3>
                   <p className="mt-2 text-sm leading-6 text-gray-600">{type.description}</p>
                   <ul className="mt-5 space-y-2 text-sm text-gray-700">
                     {type.benefits.map((benefit) => (
@@ -228,7 +225,6 @@ export default function MembershipPage() {
       <section className="editorial-section">
         <div className="site-container">
           <EditorialSectionHeader
-            eyebrow="What membership unlocks"
             title="Useful support, not just a name on a list."
             description="The best membership benefits are the ones that help you move through the week with more confidence."
           />
@@ -252,7 +248,6 @@ export default function MembershipPage() {
         <div className="site-container">
           <div className="grid gap-10 lg:grid-cols-[0.75fr_1.25fr] lg:gap-20">
             <EditorialSectionHeader
-              eyebrow="Before you apply"
               title="A clear start makes for a better membership experience."
               description="Review the basic requirements, then choose the membership path that best describes you."
             />
@@ -271,7 +266,6 @@ export default function MembershipPage() {
       <section id="apply" className="editorial-section">
         <div className="site-container">
           <EditorialSectionHeader
-            eyebrow="Your next step"
             title="Ready to become part of LMSA?"
             description="Sign in to submit an application, or create your member account first."
             align="center"
@@ -283,7 +277,6 @@ export default function MembershipPage() {
       <section className="editorial-section pt-0">
         <div className="site-container">
           <EditorialCallout
-            eyebrow="Still deciding?"
             title="See the full benefits and fee structure before you choose."
             description="Take the next practical step with a closer look at what membership includes and how dues work."
             action={{ label: 'Review membership benefits', to: '/membership/benefits' }}

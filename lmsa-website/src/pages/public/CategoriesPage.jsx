@@ -42,7 +42,6 @@ export default function CategoriesPage() {
         <div className="site-container">
           <div className="editorial-split">
             <EditorialSectionHeader
-              eyebrow="Membership / Categories"
               title="There is more than one way to belong to LMSA."
               description="Choose the category that reflects your current relationship to medical education and the association."
             />
@@ -56,17 +55,16 @@ export default function CategoriesPage() {
 
       <section className="editorial-section editorial-section-muted">
         <div className="site-container">
-          <EditorialSectionHeader eyebrow="Compare your options" title="Membership that meets you where you are." description="Every category has a clear role, set of privileges, and way to participate in the LMSA community." />
+          <EditorialSectionHeader title="Membership that meets you where you are." description="Every category has a clear role, set of privileges, and way to participate in the LMSA community." />
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             {categories.map((category, index) => (
-              <article key={category.name} className={`flex flex-col border border-gray-200 bg-white p-6 ${category.recommended ? 'border-t-4 border-t-lmsa-600' : ''}`}>
+              <article key={category.name} className={`flex flex-col bg-white p-6 ${category.recommended ? 'ring-2 ring-lmsa-600' : ''}`}>
                 {category.recommended && <span className="editorial-card-eyebrow text-lmsa-700">Most common</span>}
                 <span className="mt-4 flex h-11 w-11 items-center justify-center bg-lmsa-50 text-lmsa-700" aria-hidden="true"><Award size={22} strokeWidth={1.5} /></span>
                 <div className="mt-5 flex grow flex-col">
-                  <span className="editorial-card-eyebrow">0{index + 1} / Membership type</span>
-                  <h3 className="mt-2 text-xl font-semibold tracking-[-0.02em] text-lmsa-900">{category.name}</h3>
+                  <h3 className="text-xl font-semibold tracking-[-0.02em] text-lmsa-900">{category.name}</h3>
                   <p className="mt-3 text-2xl font-semibold text-lmsa-700">{category.price}</p>
-                  <p className="mt-3 border-l-2 border-lmsa-200 pl-3 text-sm leading-6 text-gray-600">For {category.audience.charAt(0).toLowerCase() + category.audience.slice(1)}</p>
+                  <p className="mt-3 text-sm leading-6 text-gray-600">For {category.audience.charAt(0).toLowerCase() + category.audience.slice(1)}</p>
                   <ul className="mt-5 space-y-3">
                     {category.included.map((feature) => (
                       <li key={feature} className="flex items-start gap-2 text-sm leading-6 text-gray-700">
@@ -125,7 +123,6 @@ export default function CategoriesPage() {
       <section className="editorial-section pt-0">
         <div className="site-container">
           <EditorialCallout
-            eyebrow="Keep moving"
             title="Once you know your category, the next step is straightforward."
             description="See the annual dues and payment options, then submit your application through LMSA."
             action={{ label: 'View dues and payments', to: '/membership/dues' }}

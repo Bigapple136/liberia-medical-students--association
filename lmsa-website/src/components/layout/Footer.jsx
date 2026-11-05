@@ -37,8 +37,7 @@ export default function Footer() {
       <div className="site-container site-footer-container">
         <div className="footer-intro">
           <div>
-            <p className="section-kicker section-kicker-light">Stay connected</p>
-            <h2>Keep learning. Keep leading. Keep showing up.</h2>
+            <h2>Keep learning. Keep leading.</h2>
           </div>
           <Link to="/register" className="footer-join-link">
             Join the LMSA community <ExternalLink size={16} aria-hidden="true" />

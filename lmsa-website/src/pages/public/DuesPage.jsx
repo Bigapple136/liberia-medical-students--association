@@ -20,7 +20,6 @@ export default function DuesPage() {
       <section className="editorial-section">
         <div className="site-container">
           <EditorialSectionHeader
-            eyebrow="Membership / Dues"
             title="A transparent contribution to a shared student infrastructure."
             description="Review the current fee structure, payment routes, and the practical details that keep your membership active."
           />
@@ -34,7 +33,7 @@ export default function DuesPage() {
 
       <section className="editorial-section editorial-section-muted">
         <div className="site-container">
-          <EditorialSectionHeader eyebrow="Annual fee structure" title="Know the cost before you apply." description="Membership dues are paid yearly. Honorary membership is offered by invitation, and Veteran membership has no fee." />
+          <EditorialSectionHeader title="Know the cost before you apply." description="Membership dues are paid yearly. Honorary membership is offered by invitation, and Veteran membership has no fee." />
           <div className="overflow-x-auto border-y border-gray-200 bg-white">
             <table className="w-full min-w-[620px]">
               <caption className="sr-only">Annual membership fee structure by membership type</caption>
@@ -74,7 +73,7 @@ export default function DuesPage() {
 
       <section className="editorial-section">
         <div className="site-container">
-          <EditorialSectionHeader eyebrow="Ways to pay" title="Choose the route that works for you." description="If you are unsure which payment option to use, reach out before sending your dues." />
+          <EditorialSectionHeader title="Choose the route that works for you." description="If you are unsure which payment option to use, reach out before sending your dues." />
           <div className="grid gap-4 md:grid-cols-2">
             {paymentNotes.map(({ icon: Icon, title, items }) => (
               <article key={title} className="border-t-4 border-lmsa-600 bg-white p-7">
@@ -92,7 +91,7 @@ export default function DuesPage() {
       <section className="editorial-section editorial-section-muted">
         <div className="site-container">
           <div className="grid gap-10 lg:grid-cols-[0.75fr_1.25fr] lg:gap-20">
-            <EditorialSectionHeader eyebrow="Important information" title="A few details to keep your membership in good standing." description="Save these reminders when you plan your application or renewal." />
+            <EditorialSectionHeader title="A few details to keep your membership in good standing." description="Save these reminders when you plan your application or renewal." />
             <div className="editorial-article-list">
               {importantInformation.map(([label, detail], index) => (
                 <div key={label} className="editorial-article-row">
@@ -112,7 +111,6 @@ export default function DuesPage() {
       <section className="editorial-section pt-0">
         <div className="site-container">
           <EditorialCallout
-            eyebrow="Ready when you are"
             title="Activate your place in the LMSA community."
             description="Review your membership category, then start the application process."
             action={{ label: 'Start your membership', to: '/membership#apply' }}

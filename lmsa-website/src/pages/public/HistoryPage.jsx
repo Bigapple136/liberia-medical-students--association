@@ -34,7 +34,6 @@ export default function HistoryPage() {
         <div className="site-container">
           <div className="grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:gap-20">
             <EditorialSectionHeader
-              eyebrow="Since 1972"
               title="Every generation leaves LMSA stronger than it found it."
               description="The association’s history is a record of students choosing to stay connected through change."
             />
@@ -51,7 +50,6 @@ export default function HistoryPage() {
           <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_280px] lg:gap-20">
             <div>
               <EditorialSectionHeader
-                eyebrow="The timeline"
                 title="A story still being written."
                 description="LMSA has changed with the needs of medical students, but its reason for existing has stayed clear."
               />
@@ -81,7 +79,6 @@ export default function HistoryPage() {
       <section className="editorial-section">
         <div className="site-container">
           <EditorialSectionHeader
-            eyebrow="By the numbers"
             title="The legacy is measured in people."
             description="These milestones give shape to the scale of LMSA’s service and the generations still ahead."
           />
@@ -96,7 +93,6 @@ export default function HistoryPage() {
       <section className="editorial-section pt-0">
         <div className="site-container">
           <EditorialCallout
-            eyebrow="Carry it forward"
             title="History matters most when it gives the next generation room to lead."
             description="Meet the students serving LMSA today and find the place where your own contribution can begin."
             tone="gold"

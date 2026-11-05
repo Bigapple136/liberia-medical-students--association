@@ -124,7 +124,6 @@ export default function EventsPage() {
       <section className="editorial-section">
         <div className="site-container">
           <EditorialSectionHeader
-            eyebrow="Stories & events / Upcoming events"
             title="The moments where LMSA becomes a room full of people."
             description="Stay close to the conversations, workshops, service activities, and gatherings shaping our student community."
           />
@@ -137,7 +136,7 @@ export default function EventsPage() {
 
       <section className="editorial-section editorial-section-muted">
         <div className="site-container">
-          <EditorialSectionHeader eyebrow="On the calendar" title="Coming up across LMSA." description="Open an event to see the schedule, location, and ways to take part." />
+          <EditorialSectionHeader title="Coming up across LMSA." description="Open an event to see the schedule, location, and ways to take part." />
           {loading ? (
             <div role="status" aria-label="Loading events">
               <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -191,7 +190,7 @@ export default function EventsPage() {
       {!loading && !error && past.length > 0 && (
         <section className="editorial-section">
           <div className="site-container">
-            <EditorialSectionHeader eyebrow="The archive" title="Recently held." description="A record of the workshops, ceremonies, and gatherings the community has already shared." />
+            <EditorialSectionHeader title="Recently held." description="A record of the workshops, ceremonies, and gatherings the community has already shared." />
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               {past.map((event) => (
                 <EventCard key={event.id} event={event} past />
@@ -204,7 +203,6 @@ export default function EventsPage() {
       <section className="editorial-section pt-0">
         <div className="site-container">
           <EditorialCallout
-            eyebrow="Bring something to the calendar"
             title="Have an idea for an event, workshop, or conversation?"
             description="Reach out to the LMSA team and help create the next moment for students to gather."
             action={{ label: 'Contact LMSA', to: '/contact' }}
