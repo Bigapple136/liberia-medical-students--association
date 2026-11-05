@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { Crown, Loader, User, Link as LinkIcon, Vote, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { EditorialCallout, EditorialSectionHeader, EditorialStat } from '@components/common/EditorialSections';
+import Photo from '@components/common/Photo';
+import { stockPhotos } from '@config/images';
 import { executiveService } from '@services/executive.service';
 import { nominationService } from '@services/nomination.service';
 import { useAuth } from '@context/AuthContext';
@@ -129,7 +131,7 @@ export default function LeadershipPage() {
             <EditorialSectionHeader
               eyebrow="Learn & lead / Leadership"
               title="Leadership is service made visible."
-              description="Meet the students and officers turning shared priorities into action - and see how to put your own name forward."
+              description="Meet the officers serving this year - and see how to put your own name forward."
             />
             <div className="editorial-prose">
               <p>
@@ -149,6 +151,17 @@ export default function LeadershipPage() {
                   label="Nominations"
                 />
               </div>
+              <section aria-label="Leadership team at work" className="mt-10 rise">
+                <Photo
+                  src={stockPhotos.sections.lead.src}
+                  alt={stockPhotos.sections.lead.alt}
+                  width={3}
+                  height={2}
+                  fallbackGradient="bg-lmsa-900"
+                  className="w-full"
+                />
+                <p className="mt-2 text-[13px] text-gray-500">{stockPhotos.sections.lead.credit}</p>
+              </section>
             </div>
           </div>
         </div>
@@ -168,7 +181,7 @@ export default function LeadershipPage() {
           ) : (
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               {executives.map((exec, index) => (
-                <article key={exec.id || index} className="flex flex-col border border-gray-200 bg-white p-6">
+                <article key={exec.id || index} className="flex flex-col border border-gray-200 bg-white p-6 rise" style={{ animationDelay: `${index * 60}ms` }}>
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-full bg-lmsa-50 text-lmsa-700">
                       {exec.holder_photo_url ? (
@@ -179,12 +192,12 @@ export default function LeadershipPage() {
                     </div>
                     {exec.position_rank <= 2 && <Crown size={18} className="text-amber-500" aria-label="Senior executive role" />}
                   </div>
-                  <p className="mt-8 text-xs font-bold uppercase tracking-[0.15em] text-lmsa-700">{exec.position_name}</p>
+                  <p className="mt-8 text-sm font-semibold text-lmsa-700">{exec.position_name}</p>
                   <h3 className="mt-2 text-xl font-semibold text-lmsa-900">{exec.holder_name || 'Position Available'}</h3>
                   {exec.bio && <p className="mt-3 text-sm leading-6 text-gray-600">{exec.bio}</p>}
-                  {exec.holder_year_level && <p className="mt-4 text-xs text-gray-500">Year {exec.holder_year_level}</p>}
-                  {error && <p className="mt-4 text-xs text-amber-600">Using placeholder data</p>}
-                  <div className="mt-6 pt-4 border-t border-gray-100">
+                  {exec.holder_year_level && <p className="mt-4 text-[13px] text-gray-600">Year {exec.holder_year_level}</p>}
+                  {error && <p className="mt-4 text-[13px] font-medium text-[#8a5a00]">Placeholder officers shown, live data didn't load.</p>}
+                  <div className="mt-6">
                     {nominationsOpen ? (
                       user ? (
                         <button
@@ -205,7 +218,7 @@ export default function LeadershipPage() {
                         </Link>
                       )
                     ) : (
-                      <p className="text-xs text-gray-500">
+                      <p className="text-[13px] text-gray-600">
                         Elected in the {cycleYear} election. Nominations open with the next cycle.
                       </p>
                     )}
@@ -222,24 +235,49 @@ export default function LeadershipPage() {
           <div className="editorial-split">
             <EditorialSectionHeader eyebrow="How the work is organized" title="A shared structure keeps leadership accountable." description="Different bodies carry different responsibilities, but each one exists to keep members represented and the work moving." />
             <div className="editorial-timeline">
-              <article className="editorial-timeline-item">
-                <span className="editorial-timeline-year">01 / General assembly</span>
+              <article className="editorial-timeline-item rise">
+                <p className="text-sm font-semibold text-lmsa-700">General assembly</p>
                 <h3>The members decide.</h3>
                 <p>The supreme decision-making body comprising all registered members.</p>
               </article>
-              <article className="editorial-timeline-item">
-                <span className="editorial-timeline-year">02 / Executive committee</span>
+              <article className="editorial-timeline-item rise">
+                <p className="text-sm font-semibold text-lmsa-700">Executive committee</p>
                 <h3>The officers deliver.</h3>
                 <p>Elected officers responsible for day-to-day operations and representation.</p>
               </article>
-              <article className="editorial-timeline-item">
-                <span className="editorial-timeline-year">03 / Standing committees</span>
+              <article className="editorial-timeline-item rise">
+                <p className="text-sm font-semibold text-lmsa-700">Standing committees</p>
                 <h3>The teams deepen the work.</h3>
-                <p>Academic, Finance, Welfare, Events, and Public Relations teams focused on specific priorities.</p>
+                <p>The Academic, Finance, Welfare, Events, and Public Relations teams focused on specific priorities.</p>
               </article>
             </div>
           </div>
         </div>
+        <div className="site-container mt-10 rise">
+          <section aria-label="Association assembly">
+            <Photo
+              src={stockPhotos.stories.symposium.src}
+              alt={stockPhotos.stories.symposium.alt}
+              width={4}
+              height={1}
+              fallbackGradient="bg-lmsa-900"
+              className="w-full"
+            />
+            <p className="mt-2 text-[13px] text-gray-500">{stockPhotos.stories.symposium.credit}</p>
+          </section>
+        </div>
+      </section>
+
+      {/* ─── Full-bleed photo band before the “stand” pathway ────────────── */}
+      <section aria-label="Students working together" className="rise">
+        <Photo
+          src={stockPhotos.sections.connect.src}
+          alt={stockPhotos.sections.connect.alt}
+          width={21}
+          height={9}
+          fallbackGradient="bg-lmsa-900"
+          className="w-full"
+        />
       </section>
 
       {/* ─── How to stand: the merged pathway section ─────────────────────── */}
@@ -247,14 +285,14 @@ export default function LeadershipPage() {
         <div className="site-container">
           <EditorialSectionHeader
             eyebrow={`How to stand / ${cycleYear}`}
-            title="There are three ways in, and two of them are on the ballot."
+            title="Three ways in. Two are on the ballot."
             description="Executive officers and class representatives are elected by the general assembly. Committee chairs are appointed from members already doing the work."
           />
 
-          <div className={`editorial-panel ${STATE_STYLES[cycleState?.state] || STATE_STYLES.none}`}>
+          <div className={`editorial-panel ${STATE_STYLES[cycleState?.state] || STATE_STYLES.none} rise`}>
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div>
-                <p className="text-xs font-bold uppercase tracking-[0.15em]">
+                <p className="text-sm font-semibold">
                   {cycleLoading ? 'Election cycle' : STATE_LABELS[cycleState?.state] || 'Not scheduled'}
                 </p>
                 <p className="mt-2 text-lg font-semibold">
@@ -300,8 +338,8 @@ export default function LeadershipPage() {
                     : null;
 
               return (
-                <article key={level.id} className="flex flex-col border border-gray-200 bg-white p-6">
-                  <p className="text-xs font-bold uppercase tracking-[0.15em] text-lmsa-700">{level.level}</p>
+                <article key={level.id} className="flex flex-col border border-gray-200 bg-white p-6 rise" style={{ animationDelay: `${level.id.length * 40}ms` }}>
+                  <p className="text-sm font-semibold text-lmsa-700">{level.level}</p>
                   <p className="mt-4 text-sm leading-6 text-gray-600">{level.summary}</p>
 
                   <dl className="mt-6 space-y-2 text-sm">
@@ -316,7 +354,7 @@ export default function LeadershipPage() {
                   </dl>
 
                   {level.appointed && (
-                    <p className="mt-6 border-l-2 border-amber-400 bg-amber-100 p-3 text-xs leading-5 text-amber-900">
+                    <p className="mt-6 bg-amber-100 p-3 text-[13px] leading-6 text-amber-900">
                       Appointed, not elected. Chairs are chosen from committee members.
                     </p>
                   )}
@@ -379,8 +417,8 @@ export default function LeadershipPage() {
             eyebrow={nominationsOpen ? `Nominations open / ${cycleYear}` : 'Your turn to lead'}
             title={
               nominationsOpen
-                ? 'Nominations are open right now. Put your name forward before the window closes.'
-                : 'Elections are held annually. Start by finding the work that matters to you.'
+                ? 'Nominations are open right now.'
+                : 'Elections come around once a year.'
             }
             description={
               nominationsOpen

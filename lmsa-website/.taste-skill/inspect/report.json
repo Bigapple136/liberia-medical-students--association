@@ -1,25 +1,27 @@
 {
- "url": "http://localhost:4173/academics/career-center",
- "at": "2026-10-30T11:55:27.030Z",
+ "url": "http://localhost:5173/leadership",
+ "at": "2026-11-05T11:51:43.409Z",
  "allow": [],
  "viewports": [
   {
    "width": 1440,
    "height": 900,
    "load": "load",
-   "screens": 6,
+   "screens": 8,
    "filled": [
-    0.79,
-    0.9,
-    0.45,
+    0.68,
+    0.69,
+    0.85,
+    0.59,
     1,
-    0.91,
+    0.96,
+    1,
     1
    ],
    "motion": {
-    "elements": 1,
-    "css": 1,
-    "transitions": 0,
+    "elements": 21,
+    "css": 18,
+    "transitions": 3,
     "scripted": 0,
     "videos": 0,
     "playingVideos": 0
@@ -30,24 +32,26 @@
      "h": 900
     },
     "page": {
-     "height": 4710,
-     "screens": 5.2,
-     "words": 706,
-     "img": 3,
+     "height": 6314,
+     "screens": 7,
+     "words": 701,
+     "img": 5,
      "video": 0,
      "canvas": 0,
-     "svg": 26,
-     "sections": 7,
+     "svg": 34,
+     "sections": 10,
      "horizontalOverflow": 0,
      "overflowCulprits": [],
      "uiFragments": 0,
      "uiAbuse": false,
-     "realPictures": 2,
+     "realPictures": 4,
      "videoCount": 0,
      "uiPictures": 0,
      "pictureSamples": [
-      "photo-1579684385127-1ef15d508118?w=1200&q=80",
-      "photo-1516321318423-f06f85e504b3?w=1200&q=80"
+      "photo-1557804506-669a67965ba0?w=1200&q=80",
+      "photo-1552664730-d307ca884978?w=600&q=80",
+      "photo-1576091160399-112ba8d25d1d?w=800&q=80",
+      "photo-1521737711867-e3b97375f902?w=600&q=80"
      ],
      "blendText": 0,
      "sideScrollers": 0,
@@ -55,10 +59,10 @@
      "emoji": []
     },
     "hero": {
-     "text": "Where do you want to practice?",
-     "words": 6,
-     "chars": 30,
-     "lines": 2,
+     "text": "Name on the ballot.",
+     "words": 4,
+     "chars": 19,
+     "lines": 1,
      "size": 60,
      "vw": 4.2,
      "font": "Inter",
@@ -76,18 +80,18 @@
      "kind": "heading"
     },
     "h1": {
-     "text": "Where do you want to practice?",
-     "words": 6,
-     "lines": 2,
+     "text": "Name on the ballot.",
+     "words": 4,
+     "lines": 1,
      "size": 60,
      "font": "Inter"
     },
     "headings": [
      {
-      "text": "Where do you want to practice?",
-      "words": 6,
-      "chars": 30,
-      "lines": 2,
+      "text": "Name on the ballot.",
+      "words": 4,
+      "chars": 19,
+      "lines": 1,
       "size": 60,
       "vw": 4.2,
       "font": "Inter",
@@ -105,8 +109,113 @@
       "kind": "heading"
      },
      {
-      "text": "You do not have to figure out your future alone.",
-      "words": 10,
+      "text": "Leadership is service made visible.",
+      "words": 5,
+      "chars": 35,
+      "lines": 2,
+      "size": 36,
+      "vw": 2.5,
+      "font": "Inter",
+      "weight": 600,
+      "tracking": -0.03,
+      "leading": 1.11,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "left",
+      "widthRatio": 0.31,
+      "top": 674,
+      "tag": "h2",
+      "kind": "heading"
+     },
+     {
+      "text": "2025-2026",
+      "words": 1,
+      "chars": 9,
+      "lines": 1,
+      "size": 36,
+      "vw": 2.5,
+      "font": "Inter",
+      "weight": 600,
+      "tracking": -0.05,
+      "leading": 1.11,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.14,
+      "top": 758,
+      "tag": "strong",
+      "kind": "heading"
+     },
+     {
+      "text": "6",
+      "words": 1,
+      "chars": 1,
+      "lines": 1,
+      "size": 36,
+      "vw": 2.5,
+      "font": "Inter",
+      "weight": 600,
+      "tracking": -0.05,
+      "leading": 1.11,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "right",
+      "widthRatio": 0.12,
+      "top": 758,
+      "tag": "strong",
+      "kind": "heading"
+     },
+     {
+      "text": "-",
+      "words": 1,
+      "chars": 1,
+      "lines": 1,
+      "size": 36,
+      "vw": 2.5,
+      "font": "Inter",
+      "weight": 600,
+      "tracking": -0.05,
+      "leading": 1.11,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "right",
+      "widthRatio": 0.12,
+      "top": 758,
+      "tag": "strong",
+      "kind": "heading"
+     },
+     {
+      "text": "The students carrying the work forward.",
+      "words": 6,
+      "chars": 39,
+      "lines": 1,
+      "size": 36,
+      "vw": 2.5,
+      "font": "Inter",
+      "weight": 600,
+      "tracking": -0.03,
+      "leading": 1.11,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "left",
+      "widthRatio": 0.47,
+      "top": 1560,
+      "tag": "h2",
+      "kind": "heading"
+     },
+     {
+      "text": "A shared structure keeps leadership accountable.",
+      "words": 6,
       "chars": 48,
       "lines": 2,
       "size": 36,
@@ -121,77 +230,35 @@
       "align": "left",
       "position": "left",
       "widthRatio": 0.31,
-      "top": 734,
+      "top": 2614,
       "tag": "h2",
       "kind": "heading"
      },
      {
-      "text": "Practical support for a consequential decision.",
+      "text": "Three ways in. Two are on the ballot.",
+      "words": 8,
+      "chars": 37,
+      "lines": 1,
+      "size": 36,
+      "vw": 2.5,
+      "font": "Inter",
+      "weight": 600,
+      "tracking": -0.03,
+      "leading": 1.11,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "left",
+      "widthRatio": 0.47,
+      "top": 4204,
+      "tag": "h2",
+      "kind": "heading"
+     },
+     {
+      "text": "Elections come around once a year.",
       "words": 6,
-      "chars": 47,
-      "lines": 2,
-      "size": 36,
-      "vw": 2.5,
-      "font": "Inter",
-      "weight": 600,
-      "tracking": -0.03,
-      "leading": 1.11,
-      "upper": false,
-      "italic": false,
-      "mono": false,
-      "align": "left",
-      "position": "left",
-      "widthRatio": 0.47,
-      "top": 1255,
-      "tag": "h2",
-      "kind": "heading"
-     },
-     {
-      "text": "Career advising",
-      "words": 2,
-      "chars": 15,
-      "lines": 1,
-      "size": 30,
-      "vw": 2.1,
-      "font": "Inter",
-      "weight": 600,
-      "tracking": -0.02,
-      "leading": 1.2,
-      "upper": false,
-      "italic": false,
-      "mono": false,
-      "align": "left",
-      "position": "left",
-      "widthRatio": 0.4,
-      "top": 1568,
-      "tag": "h3",
-      "kind": "heading"
-     },
-     {
-      "text": "Paths LMSA students are exploring right now.",
-      "words": 7,
-      "chars": 44,
-      "lines": 2,
-      "size": 36,
-      "vw": 2.5,
-      "font": "Inter",
-      "weight": 600,
-      "tracking": -0.03,
-      "leading": 1.11,
-      "upper": false,
-      "italic": false,
-      "mono": false,
-      "align": "left",
-      "position": "left",
-      "widthRatio": 0.47,
-      "top": 2108,
-      "tag": "h2",
-      "kind": "heading"
-     },
-     {
-      "text": "Questions students ask us.",
-      "words": 4,
-      "chars": 26,
+      "chars": 34,
       "lines": 1,
       "size": 36,
       "vw": 2.5,
@@ -205,28 +272,7 @@
       "align": "left",
       "position": "left",
       "widthRatio": 0.47,
-      "top": 2946,
-      "tag": "h2",
-      "kind": "heading"
-     },
-     {
-      "text": "Your career starts in year one.",
-      "words": 6,
-      "chars": 31,
-      "lines": 1,
-      "size": 36,
-      "vw": 2.5,
-      "font": "Inter",
-      "weight": 600,
-      "tracking": -0.03,
-      "leading": 1.11,
-      "upper": false,
-      "italic": false,
-      "mono": false,
-      "align": "left",
-      "position": "left",
-      "widthRatio": 0.47,
-      "top": 3664,
+      "top": 5229,
       "tag": "h2",
       "kind": "heading"
      },
@@ -247,13 +293,13 @@
       "align": "left",
       "position": "left",
       "widthRatio": 0.4,
-      "top": 3990,
+      "top": 5594,
       "tag": "h2",
       "kind": "heading"
      }
     ],
     "headingSummary": {
-     "count": 8,
+     "count": 10,
      "maxLines": 2,
      "over2Lines": 0,
      "statements": 0,
@@ -265,16 +311,11 @@
      "families": [
       {
        "family": "Inter",
-       "share": 0.97,
-       "mono": false
-      },
-      {
-       "family": "Merriweather",
-       "share": 0.03,
+       "share": 1,
        "mono": false
       }
      ],
-     "familyCount": 2,
+     "familyCount": 1,
      "sizes": [
       10,
       11,
@@ -285,11 +326,10 @@
       18,
       20,
       24,
-      30,
       36,
       60
      ],
-     "sizeCount": 12,
+     "sizeCount": 11,
      "notLoaded": [],
      "body": {
       "font": "Inter",
@@ -299,35 +339,35 @@
       "tracking": 0,
       "contrast": 7
      },
-     "measureChars": 106,
+     "measureChars": 64,
      "max": {
       "size": 60,
       "vw": 4.2,
       "font": "Inter",
-      "text": "Where do you want to practice?"
+      "text": "Name on the ballot."
      },
      "monoShare": 0,
      "monoProseShare": 0,
      "monoFamilies": [],
      "monoSamples": [],
-     "microLabels": 11,
-     "microLabelShare": 0.041,
+     "microLabels": 13,
+     "microLabelShare": 0.046,
      "microSamples": [
-      "Academics / Career Center",
-      "Learn & lead / Career Center",
-      "The case for starting early",
-      "What the center offers",
-      "Career pathways",
-      "Straight answers"
+      "Leadership",
+      "Learn & lead / Leadership",
+      "Academic year",
+      "Leadership roles",
+      "Nominations",
+      "Executive committee / 2025-2026"
      ],
-     "upperShare": 0.05,
-     "centerShare": 0.01,
+     "upperShare": 0.06,
+     "centerShare": 0.03,
      "smallText": 17
     },
     "eyebrows": [
      {
-      "text": "Academics / Career Center",
-      "above": "Where do you want to practice?",
+      "text": "Leadership",
+      "above": "Name on the ballot.",
       "upper": true,
       "tracked": true,
       "mono": false,
@@ -336,44 +376,44 @@
       "top": 208
      },
      {
-      "text": "What the center offers",
-      "above": "Practical support for a consequential de",
+      "text": "Executive committee / 2025-2026",
+      "above": "The students carrying the work forward.",
       "upper": true,
       "tracked": true,
       "mono": false,
       "pill": false,
       "size": 11,
-      "top": 1226
+      "top": 1531
      },
      {
-      "text": "Career pathways",
-      "above": "Paths LMSA students are exploring right ",
+      "text": "How the work is organized",
+      "above": "A shared structure keeps leadership acco",
       "upper": true,
       "tracked": true,
       "mono": false,
       "pill": false,
       "size": 11,
-      "top": 2080
+      "top": 2586
      },
      {
-      "text": "Straight answers",
-      "above": "Questions students ask us.",
+      "text": "How to stand / 2025-2026",
+      "above": "Three ways in. Two are on the ballot.",
       "upper": true,
       "tracked": true,
       "mono": false,
       "pill": false,
       "size": 11,
-      "top": 2917
+      "top": 4175
      },
      {
-      "text": "Plan the next step",
-      "above": "Your career starts in year one.",
+      "text": "Your turn to lead",
+      "above": "Elections come around once a year.",
       "upper": true,
       "tracked": true,
       "mono": false,
       "pill": false,
       "size": 11,
-      "top": 3636
+      "top": 5200
      }
     ],
     "numbered": [],
@@ -397,7 +437,7 @@
       },
       {
        "color": "#f7f6f2",
-       "top": 625,
+       "top": 565,
        "hsl": {
         "h": 48,
         "s": 0.24,
@@ -406,7 +446,7 @@
       },
       {
        "color": "#ebeae4",
-       "top": 1146,
+       "top": 1451,
        "hsl": {
         "h": 51,
         "s": 0.15,
@@ -415,7 +455,7 @@
       },
       {
        "color": "#111827",
-       "top": 3897,
+       "top": 5502,
        "hsl": {
         "h": 221,
         "s": 0.39,
@@ -426,23 +466,23 @@
      "textColors": [
       {
        "color": "#4b5563",
-       "share": 0.29
+       "share": 0.43
       },
       {
-       "color": "#374151",
-       "share": 0.26
-      },
-      {
-       "color": "#064629",
-       "share": 0.17
-      },
-      {
-       "color": "#e8f7f0",
-       "share": 0.09
+       "color": "#0a7343",
+       "share": 0.1
       },
       {
        "color": "#9ca3af",
-       "share": 0.07
+       "share": 0.09
+      },
+      {
+       "color": "#064629",
+       "share": 0.08
+      },
+      {
+       "color": "#e8f7f0",
+       "share": 0.08
       }
      ],
      "button": {
@@ -454,53 +494,20 @@
       },
       "fg": "#ffffff"
      },
-     "lowContrast": [
-      {
-       "text": "© 2026 Liberia Medical Students' Associa",
-       "ratio": 3.7,
-       "need": 4.5,
-       "size": 12,
-       "fg": "#6b7280",
-       "bg": "#111827"
-      },
-      {
-       "text": "Privacy Policy",
-       "ratio": 3.7,
-       "need": 4.5,
-       "size": 12,
-       "fg": "#6b7280",
-       "bg": "#111827"
-      },
-      {
-       "text": "Terms of Service",
-       "ratio": 3.7,
-       "need": 4.5,
-       "size": 12,
-       "fg": "#6b7280",
-       "bg": "#111827"
-      },
-      {
-       "text": "Accessibility",
-       "ratio": 3.7,
-       "need": 4.5,
-       "size": 12,
-       "fg": "#6b7280",
-       "bg": "#111827"
-      }
-     ]
+     "lowContrast": []
     },
     "buttons": {
-     "count": 5,
+     "count": 8,
      "inHero": 2,
      "radius": 0,
-     "height": 46,
+     "height": 28,
      "withShadow": 0,
      "withGradient": 0,
      "mono": 0,
      "upper": 0,
      "heroLabels": [
       "Join LMSA",
-      "Talk to the career team"
+      "Explore committees"
      ]
     },
     "surfaces": {
@@ -513,46 +520,46 @@
       "div.absolute.inset-0 → linear-gradient(to right, rgba(6, 70, 41, 0.95), rgba(6, 70, 41, 0.8), rgba(8, 92, 54, 0.6))"
      ],
      "gradientText": 0,
-     "hairlines": 12,
+     "hairlines": 10,
      "hairlineSamples": [
       "section.page-hero.bg-lmsa-900 1440px",
       "section.editorial-section 1440px",
+      "div.editorial-stat-grid.mt-8 672px",
       "section.editorial-section.editorial-section-muted 1440px",
-      "section.editorial-section 1440px",
-      "section.editorial-section.editorial-section-muted 1440px"
+      "section.editorial-section 1440px"
      ],
-     "outlinedBoxes": 5,
+     "outlinedBoxes": 11,
      "dashed": 0,
      "blurred": 0,
      "roundedBoxes": 1,
      "boxRadius": 99,
-     "squareMedia": 2,
+     "squareMedia": 4,
      "roundedMedia": 0,
      "mediaRadius": 0,
      "textShadow": 0,
      "cardRows": [
       {
-       "count": 3,
+       "count": 6,
        "iconTopped": true,
        "rounded": false,
-       "top": 1741
+       "top": 1712
       },
       {
        "count": 3,
-       "iconTopped": false,
+       "iconTopped": true,
        "rounded": false,
-       "top": 3195
+       "top": 4653
       }
      ]
     },
     "heroMedia": [
      {
       "type": "img",
-      "ratio": 0.57
+      "ratio": 0.5
      },
      {
       "type": "svg",
-      "ratio": 0.57
+      "ratio": 0.5
      }
     ],
     "nav": {
@@ -563,8 +570,7 @@
      "blur": false
     },
     "fontsLoaded": [
-     "inter",
-     "merriweather"
+     "inter"
     ]
    },
    "consoleErrors": []
@@ -573,20 +579,21 @@
    "width": 768,
    "height": 1024,
    "load": "load",
-   "screens": 7,
+   "screens": 8,
    "filled": [
-    0.8,
-    0.84,
-    0.62,
-    0.76,
-    0.98,
-    0.93,
+    0.73,
+    0.83,
+    1,
+    0.52,
+    0.88,
+    1,
+    0.89,
     1
    ],
    "motion": {
-    "elements": 1,
-    "css": 1,
-    "transitions": 0,
+    "elements": 21,
+    "css": 18,
+    "transitions": 3,
     "scripted": 0,
     "videos": 0,
     "playingVideos": 0
@@ -597,24 +604,26 @@
      "h": 1024
     },
     "page": {
-     "height": 6383,
-     "screens": 6.2,
-     "words": 695,
-     "img": 3,
+     "height": 7955,
+     "screens": 7.8,
+     "words": 690,
+     "img": 5,
      "video": 0,
      "canvas": 0,
-     "svg": 26,
-     "sections": 7,
+     "svg": 34,
+     "sections": 10,
      "horizontalOverflow": 0,
      "overflowCulprits": [],
      "uiFragments": 0,
      "uiAbuse": false,
-     "realPictures": 2,
+     "realPictures": 4,
      "videoCount": 0,
      "uiPictures": 0,
      "pictureSamples": [
-      "photo-1579684385127-1ef15d508118?w=1200&q=80",
-      "photo-1516321318423-f06f85e504b3?w=1200&q=80"
+      "photo-1557804506-669a67965ba0?w=1200&q=80",
+      "photo-1552664730-d307ca884978?w=600&q=80",
+      "photo-1576091160399-112ba8d25d1d?w=800&q=80",
+      "photo-1521737711867-e3b97375f902?w=600&q=80"
      ],
      "blendText": 0,
      "sideScrollers": 0,
@@ -622,10 +631,10 @@
      "emoji": []
     },
     "hero": {
-     "text": "Where do you want to practice?",
-     "words": 6,
-     "chars": 30,
-     "lines": 3,
+     "text": "Name on the ballot.",
+     "words": 4,
+     "chars": 19,
+     "lines": 2,
      "size": 60,
      "vw": 7.8,
      "font": "Inter",
@@ -643,18 +652,18 @@
      "kind": "heading"
     },
     "h1": {
-     "text": "Where do you want to practice?",
-     "words": 6,
-     "lines": 3,
+     "text": "Name on the ballot.",
+     "words": 4,
+     "lines": 2,
      "size": 60,
      "font": "Inter"
     },
     "headings": [
      {
-      "text": "Where do you want to practice?",
-      "words": 6,
-      "chars": 30,
-      "lines": 3,
+      "text": "Name on the ballot.",
+      "words": 4,
+      "chars": 19,
+      "lines": 2,
       "size": 60,
       "vw": 7.8,
       "font": "Inter",
@@ -672,8 +681,113 @@
       "kind": "heading"
      },
      {
-      "text": "You do not have to figure out your future alone.",
-      "words": 10,
+      "text": "Leadership is service made visible.",
+      "words": 5,
+      "chars": 35,
+      "lines": 1,
+      "size": 36,
+      "vw": 4.7,
+      "font": "Inter",
+      "weight": 600,
+      "tracking": -0.03,
+      "leading": 1.11,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.88,
+      "top": 730,
+      "tag": "h2",
+      "kind": "heading"
+     },
+     {
+      "text": "2025-2026",
+      "words": 1,
+      "chars": 9,
+      "lines": 1,
+      "size": 36,
+      "vw": 4.7,
+      "font": "Inter",
+      "weight": 600,
+      "tracking": -0.05,
+      "leading": 1.11,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "left",
+      "widthRatio": 0.27,
+      "top": 1035,
+      "tag": "strong",
+      "kind": "heading"
+     },
+     {
+      "text": "6",
+      "words": 1,
+      "chars": 1,
+      "lines": 1,
+      "size": 36,
+      "vw": 4.7,
+      "font": "Inter",
+      "weight": 600,
+      "tracking": -0.05,
+      "leading": 1.11,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.24,
+      "top": 1035,
+      "tag": "strong",
+      "kind": "heading"
+     },
+     {
+      "text": "-",
+      "words": 1,
+      "chars": 1,
+      "lines": 1,
+      "size": 36,
+      "vw": 4.7,
+      "font": "Inter",
+      "weight": 600,
+      "tracking": -0.05,
+      "leading": 1.11,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "right",
+      "widthRatio": 0.24,
+      "top": 1035,
+      "tag": "strong",
+      "kind": "heading"
+     },
+     {
+      "text": "The students carrying the work forward.",
+      "words": 6,
+      "chars": 39,
+      "lines": 1,
+      "size": 36,
+      "vw": 4.7,
+      "font": "Inter",
+      "weight": 600,
+      "tracking": -0.03,
+      "leading": 1.11,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.88,
+      "top": 1857,
+      "tag": "h2",
+      "kind": "heading"
+     },
+     {
+      "text": "A shared structure keeps leadership accountable.",
+      "words": 6,
       "chars": 48,
       "lines": 2,
       "size": 36,
@@ -688,77 +802,14 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.88,
-      "top": 818,
+      "top": 3371,
       "tag": "h2",
       "kind": "heading"
      },
      {
-      "text": "Practical support for a consequential decision.",
-      "words": 6,
-      "chars": 47,
-      "lines": 2,
-      "size": 36,
-      "vw": 4.7,
-      "font": "Inter",
-      "weight": 600,
-      "tracking": -0.03,
-      "leading": 1.11,
-      "upper": false,
-      "italic": false,
-      "mono": false,
-      "align": "left",
-      "position": "center",
-      "widthRatio": 0.88,
-      "top": 1627,
-      "tag": "h2",
-      "kind": "heading"
-     },
-     {
-      "text": "Career advising",
-      "words": 2,
-      "chars": 15,
-      "lines": 1,
-      "size": 30,
-      "vw": 3.9,
-      "font": "Inter",
-      "weight": 600,
-      "tracking": -0.02,
-      "leading": 1.2,
-      "upper": false,
-      "italic": false,
-      "mono": false,
-      "align": "left",
-      "position": "center",
-      "widthRatio": 0.83,
-      "top": 1932,
-      "tag": "h3",
-      "kind": "heading"
-     },
-     {
-      "text": "Paths LMSA students are exploring right now.",
-      "words": 7,
-      "chars": 44,
-      "lines": 2,
-      "size": 36,
-      "vw": 4.7,
-      "font": "Inter",
-      "weight": 600,
-      "tracking": -0.03,
-      "leading": 1.11,
-      "upper": false,
-      "italic": false,
-      "mono": false,
-      "align": "left",
-      "position": "center",
-      "widthRatio": 0.88,
-      "top": 2657,
-      "tag": "h2",
-      "kind": "heading"
-     },
-     {
-      "text": "Questions students ask us.",
-      "words": 4,
-      "chars": 26,
+      "text": "Three ways in. Two are on the ballot.",
+      "words": 8,
+      "chars": 37,
       "lines": 1,
       "size": 36,
       "vw": 4.7,
@@ -772,14 +823,14 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.88,
-      "top": 3979,
+      "top": 4809,
       "tag": "h2",
       "kind": "heading"
      },
      {
-      "text": "Your career starts in year one.",
+      "text": "Elections come around once a year.",
       "words": 6,
-      "chars": 31,
+      "chars": 34,
       "lines": 2,
       "size": 36,
       "vw": 4.7,
@@ -792,8 +843,8 @@
       "mono": false,
       "align": "left",
       "position": "left",
-      "widthRatio": 0.48,
-      "top": 5006,
+      "widthRatio": 0.51,
+      "top": 6538,
       "tag": "h2",
       "kind": "heading"
      },
@@ -814,15 +865,15 @@
       "align": "left",
       "position": "left",
       "widthRatio": 0.55,
-      "top": 5399,
+      "top": 6971,
       "tag": "h2",
       "kind": "heading"
      }
     ],
     "headingSummary": {
-     "count": 8,
+     "count": 10,
      "maxLines": 3,
-     "over2Lines": 2,
+     "over2Lines": 1,
      "statements": 0,
      "centered": 0,
      "medianWords": 6,
@@ -832,26 +883,21 @@
      "families": [
       {
        "family": "Inter",
-       "share": 0.97,
-       "mono": false
-      },
-      {
-       "family": "Merriweather",
-       "share": 0.03,
+       "share": 1,
        "mono": false
       }
      ],
-     "familyCount": 2,
+     "familyCount": 1,
      "sizes": [
       10,
       11,
       12,
+      13,
       14,
       16,
       18,
       20,
       24,
-      30,
       36,
       60
      ],
@@ -865,35 +911,35 @@
       "tracking": 0,
       "contrast": 7
      },
-     "measureChars": 44,
+     "measureChars": 64,
      "max": {
       "size": 60,
       "vw": 7.8,
       "font": "Inter",
-      "text": "Where do you want to practice?"
+      "text": "Name on the ballot."
      },
      "monoShare": 0,
      "monoProseShare": 0,
      "monoFamilies": [],
      "monoSamples": [],
-     "microLabels": 11,
-     "microLabelShare": 0.041,
+     "microLabels": 13,
+     "microLabelShare": 0.047,
      "microSamples": [
-      "Academics / Career Center",
-      "Learn & lead / Career Center",
-      "The case for starting early",
-      "What the center offers",
-      "Career pathways",
-      "Straight answers"
+      "Leadership",
+      "Learn & lead / Leadership",
+      "Academic year",
+      "Leadership roles",
+      "Nominations",
+      "Executive committee / 2025-2026"
      ],
-     "upperShare": 0.05,
-     "centerShare": 0,
+     "upperShare": 0.06,
+     "centerShare": 0.02,
      "smallText": 17
     },
     "eyebrows": [
      {
-      "text": "Academics / Career Center",
-      "above": "Where do you want to practice?",
+      "text": "Leadership",
+      "above": "Name on the ballot.",
       "upper": true,
       "tracked": true,
       "mono": false,
@@ -902,54 +948,54 @@
       "top": 192
      },
      {
-      "text": "Learn & lead / Career Center",
-      "above": "You do not have to figure out your futur",
+      "text": "Learn & lead / Leadership",
+      "above": "Leadership is service made visible.",
       "upper": true,
       "tracked": true,
       "mono": false,
       "pill": false,
       "size": 11,
-      "top": 789
+      "top": 701
      },
      {
-      "text": "What the center offers",
-      "above": "Practical support for a consequential de",
+      "text": "Executive committee / 2025-2026",
+      "above": "The students carrying the work forward.",
       "upper": true,
       "tracked": true,
       "mono": false,
       "pill": false,
       "size": 11,
-      "top": 1599
+      "top": 1829
      },
      {
-      "text": "Career pathways",
-      "above": "Paths LMSA students are exploring right ",
+      "text": "How the work is organized",
+      "above": "A shared structure keeps leadership acco",
       "upper": true,
       "tracked": true,
       "mono": false,
       "pill": false,
       "size": 11,
-      "top": 2628
+      "top": 3342
      },
      {
-      "text": "Straight answers",
-      "above": "Questions students ask us.",
+      "text": "How to stand / 2025-2026",
+      "above": "Three ways in. Two are on the ballot.",
       "upper": true,
       "tracked": true,
       "mono": false,
       "pill": false,
       "size": 11,
-      "top": 3951
+      "top": 4780
      },
      {
-      "text": "Plan the next step",
-      "above": "Your career starts in year one.",
+      "text": "Your turn to lead",
+      "above": "Elections come around once a year.",
       "upper": true,
       "tracked": true,
       "mono": false,
       "pill": false,
       "size": 11,
-      "top": 4977
+      "top": 6509
      }
     ],
     "numbered": [],
@@ -973,7 +1019,7 @@
       },
       {
        "color": "#f7f6f2",
-       "top": 709,
+       "top": 621,
        "hsl": {
         "h": 48,
         "s": 0.24,
@@ -982,7 +1028,7 @@
       },
       {
        "color": "#ebeae4",
-       "top": 1519,
+       "top": 1749,
        "hsl": {
         "h": 51,
         "s": 0.15,
@@ -991,7 +1037,7 @@
       },
       {
        "color": "#ffffff",
-       "top": 1819,
+       "top": 5294,
        "hsl": {
         "h": 0,
         "s": 0,
@@ -1000,7 +1046,7 @@
       },
       {
        "color": "#111827",
-       "top": 5307,
+       "top": 6879,
        "hsl": {
         "h": 221,
         "s": 0.39,
@@ -1011,23 +1057,23 @@
      "textColors": [
       {
        "color": "#4b5563",
-       "share": 0.3
+       "share": 0.44
       },
       {
-       "color": "#374151",
-       "share": 0.25
-      },
-      {
-       "color": "#064629",
-       "share": 0.18
-      },
-      {
-       "color": "#e8f7f0",
+       "color": "#0a7343",
        "share": 0.09
       },
       {
        "color": "#9ca3af",
-       "share": 0.07
+       "share": 0.09
+      },
+      {
+       "color": "#064629",
+       "share": 0.08
+      },
+      {
+       "color": "#e8f7f0",
+       "share": 0.08
       }
      ],
      "button": {
@@ -1042,17 +1088,17 @@
      "lowContrast": []
     },
     "buttons": {
-     "count": 5,
+     "count": 8,
      "inHero": 2,
      "radius": 0,
-     "height": 46,
+     "height": 28,
      "withShadow": 0,
      "withGradient": 0,
      "mono": 0,
      "upper": 0,
      "heroLabels": [
       "Join LMSA",
-      "Talk to the career team"
+      "Explore committees"
      ]
     },
     "surfaces": {
@@ -1065,40 +1111,40 @@
       "div.absolute.inset-0 → linear-gradient(to right, rgba(6, 70, 41, 0.95), rgba(6, 70, 41, 0.8), rgba(8, 92, 54, 0.6))"
      ],
      "gradientText": 0,
-     "hairlines": 12,
+     "hairlines": 10,
      "hairlineSamples": [
       "section.page-hero.bg-lmsa-900 768px",
       "section.editorial-section 768px",
+      "div.editorial-stat-grid.mt-8 704px",
       "section.editorial-section.editorial-section-muted 768px",
-      "section.editorial-section 768px",
-      "section.editorial-section.editorial-section-muted 768px"
+      "section.editorial-section 768px"
      ],
-     "outlinedBoxes": 5,
+     "outlinedBoxes": 11,
      "dashed": 0,
      "blurred": 0,
      "roundedBoxes": 1,
      "boxRadius": 99,
-     "squareMedia": 2,
+     "squareMedia": 4,
      "roundedMedia": 0,
      "mediaRadius": 0,
      "textShadow": 0,
      "cardRows": [
       {
-       "count": 3,
+       "count": 6,
        "iconTopped": true,
        "rounded": false,
-       "top": 2201
+       "top": 2009
       }
      ]
     },
     "heroMedia": [
      {
       "type": "img",
-      "ratio": 0.58
+      "ratio": 0.5
      },
      {
       "type": "svg",
-      "ratio": 0.58
+      "ratio": 0.5
      }
     ],
     "nav": {
@@ -1109,8 +1155,7 @@
      "blur": false
     },
     "fontsLoaded": [
-     "inter",
-     "merriweather"
+     "inter"
     ]
    },
    "consoleErrors": []
@@ -1119,23 +1164,25 @@
    "width": 390,
    "height": 844,
    "load": "load",
-   "screens": 10,
+   "screens": 12,
    "filled": [
-    1,
-    0.77,
     0.93,
-    0.92,
-    0.49,
-    0.89,
+    0.38,
+    0.88,
     1,
-    0.9,
+    1,
+    0.61,
+    0.62,
+    1,
+    1,
+    0.86,
     1,
     1
    ],
    "motion": {
-    "elements": 1,
-    "css": 1,
-    "transitions": 0,
+    "elements": 21,
+    "css": 18,
+    "transitions": 3,
     "scripted": 0,
     "videos": 0,
     "playingVideos": 0
@@ -1146,24 +1193,25 @@
      "h": 844
     },
     "page": {
-     "height": 8159,
-     "screens": 9.7,
-     "words": 679,
-     "img": 3,
+     "height": 9976,
+     "screens": 11.8,
+     "words": 674,
+     "img": 5,
      "video": 0,
      "canvas": 0,
-     "svg": 26,
-     "sections": 7,
+     "svg": 34,
+     "sections": 10,
      "horizontalOverflow": 0,
      "overflowCulprits": [],
      "uiFragments": 0,
      "uiAbuse": false,
-     "realPictures": 2,
+     "realPictures": 3,
      "videoCount": 0,
      "uiPictures": 0,
      "pictureSamples": [
-      "photo-1579684385127-1ef15d508118?w=1200&q=80",
-      "photo-1516321318423-f06f85e504b3?w=1200&q=80"
+      "photo-1557804506-669a67965ba0?w=1200&q=80",
+      "photo-1552664730-d307ca884978?w=600&q=80",
+      "photo-1521737711867-e3b97375f902?w=600&q=80"
      ],
      "blendText": 0,
      "sideScrollers": 0,
@@ -1171,10 +1219,10 @@
      "emoji": []
     },
     "hero": {
-     "text": "Where do you want to practice?",
-     "words": 6,
-     "chars": 30,
-     "lines": 2,
+     "text": "Name on the ballot.",
+     "words": 4,
+     "chars": 19,
+     "lines": 1,
      "size": 36,
      "vw": 9.2,
      "font": "Inter",
@@ -1192,18 +1240,18 @@
      "kind": "heading"
     },
     "h1": {
-     "text": "Where do you want to practice?",
-     "words": 6,
-     "lines": 2,
+     "text": "Name on the ballot.",
+     "words": 4,
+     "lines": 1,
      "size": 36,
      "font": "Inter"
     },
     "headings": [
      {
-      "text": "Where do you want to practice?",
-      "words": 6,
-      "chars": 30,
-      "lines": 2,
+      "text": "Name on the ballot.",
+      "words": 4,
+      "chars": 19,
+      "lines": 1,
       "size": 36,
       "vw": 9.2,
       "font": "Inter",
@@ -1221,8 +1269,113 @@
       "kind": "heading"
      },
      {
-      "text": "You do not have to figure out your future alone.",
-      "words": 10,
+      "text": "Leadership is service made visible.",
+      "words": 5,
+      "chars": 35,
+      "lines": 2,
+      "size": 30,
+      "vw": 7.7,
+      "font": "Inter",
+      "weight": 600,
+      "tracking": -0.03,
+      "leading": 1.25,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.9,
+      "top": 864,
+      "tag": "h2",
+      "kind": "heading"
+     },
+     {
+      "text": "2025-2026",
+      "words": 1,
+      "chars": 9,
+      "lines": 1,
+      "size": 36,
+      "vw": 9.2,
+      "font": "Inter",
+      "weight": 600,
+      "tracking": -0.05,
+      "leading": 1.11,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.9,
+      "top": 1276,
+      "tag": "strong",
+      "kind": "heading"
+     },
+     {
+      "text": "6",
+      "words": 1,
+      "chars": 1,
+      "lines": 1,
+      "size": 36,
+      "vw": 9.2,
+      "font": "Inter",
+      "weight": 600,
+      "tracking": -0.05,
+      "leading": 1.11,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.9,
+      "top": 1389,
+      "tag": "strong",
+      "kind": "heading"
+     },
+     {
+      "text": "-",
+      "words": 1,
+      "chars": 1,
+      "lines": 1,
+      "size": 36,
+      "vw": 9.2,
+      "font": "Inter",
+      "weight": 600,
+      "tracking": -0.05,
+      "leading": 1.11,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.9,
+      "top": 1502,
+      "tag": "strong",
+      "kind": "heading"
+     },
+     {
+      "text": "The students carrying the work forward.",
+      "words": 6,
+      "chars": 39,
+      "lines": 2,
+      "size": 30,
+      "vw": 7.7,
+      "font": "Inter",
+      "weight": 600,
+      "tracking": -0.03,
+      "leading": 1.25,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.9,
+      "top": 2062,
+      "tag": "h2",
+      "kind": "heading"
+     },
+     {
+      "text": "A shared structure keeps leadership accountable.",
+      "words": 6,
       "chars": 48,
       "lines": 2,
       "size": 30,
@@ -1237,35 +1390,14 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.9,
-      "top": 935,
+      "top": 4678,
       "tag": "h2",
       "kind": "heading"
      },
      {
-      "text": "Practical support for a consequential decision.",
-      "words": 6,
-      "chars": 47,
-      "lines": 2,
-      "size": 30,
-      "vw": 7.7,
-      "font": "Inter",
-      "weight": 600,
-      "tracking": -0.03,
-      "leading": 1.25,
-      "upper": false,
-      "italic": false,
-      "mono": false,
-      "align": "left",
-      "position": "center",
-      "widthRatio": 0.9,
-      "top": 1948,
-      "tag": "h2",
-      "kind": "heading"
-     },
-     {
-      "text": "Career advising",
-      "words": 2,
-      "chars": 15,
+      "text": "The members decide.",
+      "words": 3,
+      "chars": 19,
       "lines": 1,
       "size": 24,
       "vw": 6.2,
@@ -1278,36 +1410,57 @@
       "mono": false,
       "align": "left",
       "position": "center",
-      "widthRatio": 0.73,
-      "top": 2276,
+      "widthRatio": 0.82,
+      "top": 4981,
       "tag": "h3",
       "kind": "heading"
      },
      {
-      "text": "Paths LMSA students are exploring right now.",
-      "words": 7,
-      "chars": 44,
-      "lines": 2,
-      "size": 30,
-      "vw": 7.7,
+      "text": "The officers deliver.",
+      "words": 3,
+      "chars": 21,
+      "lines": 1,
+      "size": 24,
+      "vw": 6.2,
       "font": "Inter",
       "weight": 600,
-      "tracking": -0.03,
-      "leading": 1.25,
+      "tracking": -0.02,
+      "leading": 1.33,
       "upper": false,
       "italic": false,
       "mono": false,
       "align": "left",
       "position": "center",
-      "widthRatio": 0.9,
-      "top": 3348,
-      "tag": "h2",
+      "widthRatio": 0.82,
+      "top": 5157,
+      "tag": "h3",
       "kind": "heading"
      },
      {
-      "text": "Questions students ask us.",
-      "words": 4,
+      "text": "The teams deepen the work.",
+      "words": 5,
       "chars": 26,
+      "lines": 1,
+      "size": 24,
+      "vw": 6.2,
+      "font": "Inter",
+      "weight": 600,
+      "tracking": -0.02,
+      "leading": 1.33,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.82,
+      "top": 5333,
+      "tag": "h3",
+      "kind": "heading"
+     },
+     {
+      "text": "Three ways in. Two are on the ballot.",
+      "words": 8,
+      "chars": 37,
       "lines": 2,
       "size": 30,
       "vw": 7.7,
@@ -1321,14 +1474,14 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.9,
-      "top": 4897,
+      "top": 5940,
       "tag": "h2",
       "kind": "heading"
      },
      {
-      "text": "Your career starts in year one.",
+      "text": "Elections come around once a year.",
       "words": 6,
-      "chars": 31,
+      "chars": 34,
       "lines": 2,
       "size": 30,
       "vw": 7.7,
@@ -1342,7 +1495,7 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.73,
-      "top": 6234,
+      "top": 8019,
       "tag": "h2",
       "kind": "heading"
      },
@@ -1363,7 +1516,7 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.9,
-      "top": 6689,
+      "top": 8506,
       "tag": "h2",
       "kind": "heading"
      },
@@ -1384,37 +1537,33 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.9,
-      "top": 6968,
+      "top": 8785,
       "tag": "h3",
       "kind": "heading"
      }
     ],
     "headingSummary": {
-     "count": 9,
+     "count": 14,
      "maxLines": 3,
      "over2Lines": 1,
      "statements": 0,
      "centered": 0,
-     "medianWords": 6,
+     "medianWords": 5,
      "mixedFontHeadings": 0
     },
     "type": {
      "families": [
       {
        "family": "Inter",
-       "share": 0.96,
-       "mono": false
-      },
-      {
-       "family": "Merriweather",
-       "share": 0.04,
+       "share": 1,
        "mono": false
       }
      ],
-     "familyCount": 2,
+     "familyCount": 1,
      "sizes": [
       11,
       12,
+      13,
       14,
       16,
       18,
@@ -1423,7 +1572,7 @@
       30,
       36
      ],
-     "sizeCount": 9,
+     "sizeCount": 10,
      "notLoaded": [],
      "body": {
       "font": "Inter",
@@ -1438,30 +1587,30 @@
       "size": 36,
       "vw": 9.2,
       "font": "Inter",
-      "text": "Where do you want to practice?"
+      "text": "Name on the ballot."
      },
      "monoShare": 0,
      "monoProseShare": 0,
      "monoFamilies": [],
      "monoSamples": [],
-     "microLabels": 11,
-     "microLabelShare": 0.042,
+     "microLabels": 13,
+     "microLabelShare": 0.048,
      "microSamples": [
-      "Academics / Career Center",
-      "Learn & lead / Career Center",
-      "The case for starting early",
-      "What the center offers",
-      "Career pathways",
-      "Straight answers"
+      "Leadership",
+      "Learn & lead / Leadership",
+      "Academic year",
+      "Leadership roles",
+      "Nominations",
+      "Executive committee / 2025-2026"
      ],
-     "upperShare": 0.04,
-     "centerShare": 0,
+     "upperShare": 0.05,
+     "centerShare": 0.02,
      "smallText": 14
     },
     "eyebrows": [
      {
-      "text": "Academics / Career Center",
-      "above": "Where do you want to practice?",
+      "text": "Leadership",
+      "above": "Name on the ballot.",
       "upper": true,
       "tracked": true,
       "mono": false,
@@ -1470,54 +1619,54 @@
       "top": 168
      },
      {
-      "text": "Learn & lead / Career Center",
-      "above": "You do not have to figure out your futur",
+      "text": "Learn & lead / Leadership",
+      "above": "Leadership is service made visible.",
       "upper": true,
       "tracked": true,
       "mono": false,
       "pill": false,
       "size": 11,
-      "top": 907
+      "top": 836
      },
      {
-      "text": "What the center offers",
-      "above": "Practical support for a consequential de",
+      "text": "Executive committee / 2025-2026",
+      "above": "The students carrying the work forward.",
       "upper": true,
       "tracked": true,
       "mono": false,
       "pill": false,
       "size": 11,
-      "top": 1919
+      "top": 2034
      },
      {
-      "text": "Career pathways",
-      "above": "Paths LMSA students are exploring right ",
+      "text": "How the work is organized",
+      "above": "A shared structure keeps leadership acco",
       "upper": true,
       "tracked": true,
       "mono": false,
       "pill": false,
       "size": 11,
-      "top": 3320
+      "top": 4649
      },
      {
-      "text": "Straight answers",
-      "above": "Questions students ask us.",
+      "text": "How to stand / 2025-2026",
+      "above": "Three ways in. Two are on the ballot.",
       "upper": true,
       "tracked": true,
       "mono": false,
       "pill": false,
       "size": 11,
-      "top": 4868
+      "top": 5912
      },
      {
-      "text": "Plan the next step",
-      "above": "Your career starts in year one.",
+      "text": "Your turn to lead",
+      "above": "Elections come around once a year.",
       "upper": true,
       "tracked": true,
       "mono": false,
       "pill": false,
       "size": 11,
-      "top": 6206
+      "top": 7991
      }
     ],
     "numbered": [],
@@ -1541,7 +1690,7 @@
       },
       {
        "color": "#f7f6f2",
-       "top": 843,
+       "top": 772,
        "hsl": {
         "h": 48,
         "s": 0.24,
@@ -1550,7 +1699,7 @@
       },
       {
        "color": "#ebeae4",
-       "top": 1855,
+       "top": 1970,
        "hsl": {
         "h": 51,
         "s": 0.15,
@@ -1559,7 +1708,7 @@
       },
       {
        "color": "#ffffff",
-       "top": 2163,
+       "top": 2277,
        "hsl": {
         "h": 0,
         "s": 0,
@@ -1567,8 +1716,17 @@
        }
       },
       {
+       "color": "#f9fafb",
+       "top": 6183,
+       "hsl": {
+        "h": 210,
+        "s": 0.2,
+        "l": 0.98
+       }
+      },
+      {
        "color": "#111827",
-       "top": 6612,
+       "top": 8429,
        "hsl": {
         "h": 221,
         "s": 0.39,
@@ -1579,22 +1737,22 @@
      "textColors": [
       {
        "color": "#4b5563",
-       "share": 0.3
+       "share": 0.45
       },
       {
-       "color": "#374151",
-       "share": 0.26
-      },
-      {
-       "color": "#064629",
-       "share": 0.18
-      },
-      {
-       "color": "#e8f7f0",
-       "share": 0.08
+       "color": "#0a7343",
+       "share": 0.1
       },
       {
        "color": "#9ca3af",
+       "share": 0.1
+      },
+      {
+       "color": "#064629",
+       "share": 0.09
+      },
+      {
+       "color": "#374151",
        "share": 0.07
       }
      ],
@@ -1610,16 +1768,16 @@
      "lowContrast": []
     },
     "buttons": {
-     "count": 4,
+     "count": 7,
      "inHero": 1,
-     "radius": 0,
-     "height": 46,
+     "radius": 8,
+     "height": 28,
      "withShadow": 0,
      "withGradient": 0,
      "mono": 0,
      "upper": 0,
      "heroLabels": [
-      "Talk to the career team"
+      "Explore committees"
      ]
     },
     "surfaces": {
@@ -1632,46 +1790,46 @@
       "div.absolute.inset-0 → linear-gradient(to right, rgba(6, 70, 41, 0.95), rgba(6, 70, 41, 0.8), rgba(8, 92, 54, 0.6))"
      ],
      "gradientText": 0,
-     "hairlines": 12,
+     "hairlines": 13,
      "hairlineSamples": [
       "section.page-hero.bg-lmsa-900 390px",
       "section.editorial-section 390px",
-      "section.editorial-section.editorial-section-muted 390px",
-      "section.editorial-section 390px",
-      "section.editorial-section.editorial-section-muted 390px"
+      "div.editorial-stat-grid.mt-8 350px",
+      "div.editorial-stat 350px",
+      "div.editorial-stat 350px"
      ],
-     "outlinedBoxes": 5,
+     "outlinedBoxes": 11,
      "dashed": 0,
      "blurred": 0,
      "roundedBoxes": 1,
      "boxRadius": 99,
-     "squareMedia": 2,
+     "squareMedia": 3,
      "roundedMedia": 0,
      "mediaRadius": 0,
      "textShadow": 0,
      "cardRows": [
       {
-       "count": 3,
+       "count": 6,
        "iconTopped": true,
        "rounded": false,
-       "top": 2613
+       "top": 2277
       },
       {
        "count": 3,
-       "iconTopped": false,
+       "iconTopped": true,
        "rounded": false,
-       "top": 5333
+       "top": 6636
       }
      ]
     },
     "heroMedia": [
      {
       "type": "img",
-      "ratio": 0.87
+      "ratio": 0.79
      },
      {
       "type": "svg",
-      "ratio": 0.87
+      "ratio": 0.79
      }
     ],
     "nav": {
@@ -1682,8 +1840,7 @@
      "blur": false
     },
     "fontsLoaded": [
-     "inter",
-     "merriweather"
+     "inter"
     ]
    },
    "consoleErrors": []
@@ -1694,7 +1851,7 @@
    "level": "FAIL",
    "id": "eyebrow",
    "width": 1440,
-   "message": "5 eyebrow/kicker label(s) above headings: \"Academics / Career Center\" above \"Where do you want to practice?\"; \"What the center offers\" above \"Practical support for a consequential de\"; \"Career pathways\" above \"Paths LMSA students are exploring right \"; \"Straight answers\" above \"Questions students ask us.\"; \"Plan the next step\" above \"Your career starts in year one.\"",
+   "message": "5 eyebrow/kicker label(s) above headings: \"Leadership\" above \"Name on the ballot.\"; \"Executive committee / 2025-2026\" above \"The students carrying the work forward.\"; \"How the work is organized\" above \"A shared structure keeps leadership acco\"; \"How to stand / 2025-2026\" above \"Three ways in. Two are on the ballot.\"; \"Your turn to lead\" above \"Elections come around once a year.\"",
    "fix": "Delete them. If the label carried real information, fold it into the headline or the supporting sentence.",
    "alsoAt": [
     768,
@@ -1705,7 +1862,7 @@
    "level": "FAIL",
    "id": "micro-label",
    "width": 1440,
-   "message": "11 tiny uppercase letter-spaced labels (e.g. \"Academics / Career Center\", \"Learn & lead / Career Center\", \"The case for starting early\", \"What the center offers\").",
+   "message": "13 tiny uppercase letter-spaced labels (e.g. \"Leadership\", \"Learn & lead / Leadership\", \"Academic year\", \"Leadership roles\").",
    "fix": "Use sentence-case text at a readable size, or delete the label.",
    "alsoAt": [
     768,
@@ -1727,7 +1884,7 @@
    "level": "FAIL",
    "id": "hairline",
    "width": 1440,
-   "message": "12 thin rule(s)/divider line(s): section.page-hero.bg-lmsa-900 1440px | section.editorial-section 1440px | section.editorial-section.editorial-section-muted 1440px | section.editorial-section 1440px",
+   "message": "10 thin rule(s)/divider line(s): section.page-hero.bg-lmsa-900 1440px | section.editorial-section 1440px | div.editorial-stat-grid.mt-8 672px | section.editorial-section.editorial-section-muted 1440px",
    "fix": "Delete. Separate with space, a tone change, or scale. Lines are only for real tables and form fields.",
    "alsoAt": [
     768,
@@ -1738,7 +1895,7 @@
    "level": "FAIL",
    "id": "outlined-box",
    "width": 1440,
-   "message": "5 boxes drawn with a 1px outline.",
+   "message": "11 boxes drawn with a 1px outline.",
    "fix": "Define a surface by its fill (one tone step from the page) or leave the content unboxed.",
    "alsoAt": [
     768,
@@ -1749,7 +1906,7 @@
    "level": "FAIL",
    "id": "icon-cards",
    "width": 1440,
-   "message": "1 row(s) of identical cards each topped with a small icon (3 cards).",
+   "message": "2 row(s) of identical cards each topped with a small icon (6, 3 cards).",
    "fix": "Replace with one composed section from the direction: a narrative split, a list set in large type, or real imagery per item.",
    "alsoAt": [
     768,
@@ -1769,27 +1926,14 @@
   },
   {
    "level": "WARN",
-   "id": "contrast",
-   "width": 1440,
-   "message": "Low-contrast text: \"© 2026 Liberia Medical Students' Associa\" 3.7:1 needs 4.5:1; \"Privacy Policy\" 3.7:1 needs 4.5:1; \"Terms of Service\" 3.7:1 needs 4.5:1; \"Accessibility\" 3.7:1 needs 4.5:1",
-   "fix": "Darken or lighten the text colour."
-  },
-  {
-   "level": "WARN",
    "id": "size-count",
    "width": 1440,
-   "message": "12 different font sizes (10, 11, 12, 13, 14, 16, 18, 20, 24, 30, 36, 60).",
+   "message": "11 different font sizes (10, 11, 12, 13, 14, 16, 18, 20, 24, 36, 60).",
    "fix": "A page needs about five: display, heading, lead, body, small.",
    "alsoAt": [
-    768
+    768,
+    390
    ]
-  },
-  {
-   "level": "FAIL",
-   "id": "few-pictures",
-   "width": 1440,
-   "message": "Only 2 picture(s) on the page (2 photographs, footage or raster images, 0 interface fragments). Drawings in SVG do not count.",
-   "fix": "Find real pictures of the subject's world with scripts/assets.mjs (photographs, archival images, maps, engravings, footage), download them to assets/ and give them room: a hero picture, one per section that has a subject, a full-width band. At least four, usually six to twelve."
   },
   {
    "level": "WARN",
@@ -1797,13 +1941,6 @@
    "width": 1440,
    "message": "No video anywhere on the page.",
    "fix": "Look for one honest clip with scripts/assets.mjs --video (the place, the material, the process) and use it as a muted loop with a poster frame. Defend its absence only if no clip fits the subject."
-  },
-  {
-   "level": "WARN",
-   "id": "measure",
-   "width": 1440,
-   "message": "Longest paragraph runs about 106 characters per line.",
-   "fix": "Cap paragraphs at 45–75 characters (max-width: 60ch)."
   },
   {
    "level": "FAIL",
@@ -1818,16 +1955,9 @@
   },
   {
    "level": "FAIL",
-   "id": "still-page",
-   "width": 1440,
-   "message": "Only 1 element(s) moved while the page loaded and scrolled.",
-   "fix": "Build the motion layer (SKILL.md step 9, references/motion.md): the signature move, an entrance for the parts of every section, feedback on every control, and one moving picture. Transform and opacity only, with a reduced-motion fallback."
-  },
-  {
-   "level": "FAIL",
    "id": "headline-lines",
    "width": 768,
-   "message": "2 headline(s) wrap past two lines at 768px: \"Where do you want to practice?\" → 3 lines (6 words, 60px); \"Keep learning. Keep leading. Keep showing up.\" → 3 lines (7 words, 36px)",
+   "message": "1 headline(s) wrap past two lines at 768px: \"Keep learning. Keep leading. Keep showing up.\" → 3 lines (7 words, 36px)",
    "fix": "Cut words first (a headline is a title, not a sentence). Then give it a wider measure. Lower the size only as a last resort and never below the scale you chose. A real statement paragraph belongs in a <p> or <blockquote> at 32px or less."
   },
   {

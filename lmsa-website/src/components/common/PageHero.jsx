@@ -95,9 +95,9 @@ const heroPages = [
   {
     match: (path) => path === '/leadership',
     eyebrow: 'Leadership',
-    title: 'The people moving LMSA forward',
+    title: 'Name on the ballot.',
     description:
-      'Meet the students and officers serving the association and turning our shared mission into action.',
+      'Meet the students and officers serving the association, and how to put your own name forward.',
     action: { label: 'Explore committees', to: '/leadership/committees' },
     accent: 'green',
     icon: Users,
