@@ -52,16 +52,16 @@ export const stockPhotos = {
       gradient: 'from-amber-800/90 to-amber-700/70',
     },
     news: {
-      src: `${UNSPLASH_BASE}/photo-1504711434969-e33886168d6c?w=1200&q=80`,
-      alt: 'Storytelling and communication',
-      credit: 'Sian Cooper / Unsplash',
+      src: `${UNSPLASH_BASE}/photo-1499750310107-5fef28a66643?w=1200&q=80`,
+      alt: 'Writing and storytelling',
+      credit: 'Unsplash',
       gradient: 'from-lmsa-900/90 to-teal-800/70',
     },
     volunteer: {
       src: `${UNSPLASH_BASE}/photo-1559027615-cd4628902d4a?w=1200&q=80`,
       alt: 'Community service and volunteering',
       credit: 'Kat Yukawa / Unsplash',
-      gradient: 'from-rose-800/90 to-rose-700/70',
+      gradient: 'from-lmsa-900/90 to-lmsa-700/70',
     },
     mentorship: {
       src: `${UNSPLASH_BASE}/photo-1516321318423-f06f85e504b3?w=1200&q=80`,
@@ -113,11 +113,6 @@ export const stockPhotos = {
       src: `${UNSPLASH_BASE}/photo-1552664730-d307ca884978?w=600&q=80`,
       alt: 'Team leadership workshop',
       credit: 'Crew / Unsplash',
-    },
-    serve: {
-      src: `${UNSPLASH_BASE}/photo-1593113646441-dad4ed6c1ae0?w=600&q=80`,
-      alt: 'Community health service',
-      credit: 'Ibrahim Boran / Unsplash',
     },
     connect: {
       src: `${UNSPLASH_BASE}/photo-1521737711867-e3b97375f902?w=600&q=80`,

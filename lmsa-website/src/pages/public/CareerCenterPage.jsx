@@ -175,8 +175,8 @@ export default function CareerCenterPage() {
               <p className="text-[18px] leading-[1.6] text-[#333] font-medium tracking-[-0.01em]">If yours is not here, ask it directly—the career team answers every message.</p>
             </div>
             <div>
-              {questions.map(({ q, a }) => (
-                <details key={q} className="group bg-[#fff] border border-[#000]/10 mb-3" name="career-faq">
+              {questions.map(({ q, a }, index) => (
+                <details key={index} className="group bg-[#fff] border border-[#000]/10 mb-3" name="career-faq">
                   <summary className="cursor-pointer flex items-center justify-between gap-4 px-6 py-6 text-left text-[18px] md:text-[20px] font-[900] tracking-[-0.02em] leading-[1.25] text-[#000] hover:bg-[#ebebe8] transition">
                     {q}
                     <span className="shrink-0 w-6 h-6 relative" aria-hidden="true"><span className="absolute top-1/2 left-0 w-full h-[3px] bg-[#d0106f] -translate-y-1/2" /><span className="absolute top-0 left-1/2 w-[3px] h-full bg-[#d0106f] -translate-x-1/2 group-open:rotate-90 transition-transform duration-300 origin-center" /></span>
@@ -219,7 +219,7 @@ export default function CareerCenterPage() {
               <a href="#" className="hover:text-[#d0106f]">Privacy</a>
             </div>
           </div>
-          <div className="mt-12 flex flex-wrap items-center gap-8 text-[13px] text-[#000]/50">
+          <div className="mt-12 flex flex-wrap items-center gap-8 text-[13px] text-[#000]/60">
             <span>© 2026 LMSA</span>
             <span>Photo credits: Unsplash (cloud / mist sets)</span>
           </div>

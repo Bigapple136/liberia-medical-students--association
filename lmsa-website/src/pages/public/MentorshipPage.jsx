@@ -160,7 +160,7 @@ export default function MentorshipPage() {
               <a href="#" className="hover:text-[#1f6b3a]">Privacy</a>
             </div>
           </div>
-          <div className="mt-12 flex flex-wrap items-center gap-8 text-[13px] text-[#0a0a0a]/40">
+          <div className="mt-12 flex flex-wrap items-center gap-8 text-[13px] text-[#0a0a0a]/60">
             <span>© 2026 LMSA</span>
             <span>Image credits: Unsplash (mist / forest / sea)</span>
           </div>

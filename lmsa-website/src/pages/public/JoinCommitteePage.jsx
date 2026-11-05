@@ -201,8 +201,8 @@ export default function JoinCommitteePage() {
             description="A few practical details about committee membership."
           />
           <dl className="editorial-article-list">
-            {faqs.map(([question, answer]) => (
-              <div key={question} className="editorial-article-row">
+            {faqs.map(([question, answer], index) => (
+              <div key={index} className="editorial-article-row">
                 <dt className="font-semibold text-lmsa-900">{question}</dt>
                 <dd>{answer}</dd>
               </div>

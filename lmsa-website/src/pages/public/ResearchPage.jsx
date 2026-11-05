@@ -1,4 +1,4 @@
-import { ArrowRight, Award, BookOpen, FlaskConical, Users } from 'lucide-react';
+import { ArrowRight, Award, BookOpen, FlaskConical, Users, CheckCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { EditorialCallout, EditorialSectionHeader } from '@components/common/EditorialSections';
 
@@ -42,9 +42,7 @@ function OpportunityCard({ opportunity, index }) {
   const Icon = opportunity.icon;
   return (
     <article className="flex min-h-[220px] flex-col border border-gray-200 bg-white p-6">
-      <span className="mb-8 flex h-11 w-11 items-center justify-center bg-lmsa-50 text-lmsa-700" aria-hidden="true">
-        <Icon size={22} strokeWidth={1.6} />
-      </span>
+      <span className="mb-8 flex h-11 w-11 items-center justify-center bg-lmsa-50 text-lmsa-700" aria-hidden="true"><Icon size={22} strokeWidth={1.6} /></span>
       <span className="editorial-card-eyebrow">{`0${index + 1} / Opportunity`}</span>
       <h3 className="mt-2 text-xl font-semibold tracking-[-0.02em] text-lmsa-900">{opportunity.title}</h3>
       <p className="mt-2 text-sm leading-6 text-gray-600">{opportunity.description}</p>
@@ -100,9 +98,10 @@ export default function ResearchPage() {
           <EditorialSectionHeader eyebrow="Questions worth pursuing" title="Priority areas for student-led inquiry." description="These focus areas reflect some of the issues where research, service, and better systems can meet." />
           <div className="grid gap-x-10 gap-y-4 md:grid-cols-2 lg:grid-cols-3">
             {focusAreas.map((area, index) => (
-              <div key={area} className="flex gap-3 border-b border-gray-200 pb-4">
+              <div key={area} className="flex items-start gap-3 border-b border-lmsa-200 bg-lmsa-50 pb-4">
+                <span className="flex-shrink-0 flex h-6 w-6 items-center justify-center bg-lmsa-100 text-lmsa-600 rounded" aria-hidden="true"><CheckCircle size={16} /></span>
                 <span className="text-sm font-bold text-lmsa-700">0{index + 1}</span>
-                <p className="text-base leading-7 text-gray-700">{area}</p>
+                <p className="text-base leading-7 text-lmsa-700">{area}</p>
               </div>
             ))}
           </div>

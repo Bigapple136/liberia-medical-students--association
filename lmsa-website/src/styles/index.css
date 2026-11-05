@@ -228,6 +228,28 @@
     @apply text-[10px] font-bold uppercase tracking-[0.15em] text-gray-500;
   }
 
+  /* Entrance motion (transform/opacity only; honored by prefers-reduced-motion) */
+  @keyframes rise-in {
+    from {
+      opacity: 0;
+      transform: translateY(18px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .rise {
+    animation: rise-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .rise {
+      animation: none;
+    }
+  }
+
   .editorial-link-card h3 {
     @apply mt-2 text-xl font-semibold tracking-[-0.02em] text-lmsa-900;
   }
@@ -1260,7 +1282,7 @@
   }
 
   .footer-newsletter-input {
-    @apply min-w-0 flex-1 border border-gray-700 bg-gray-800 px-3 py-2.5 text-sm text-white placeholder-gray-500 focus:border-lmsa-400 focus:outline-none focus:ring-1 focus:ring-lmsa-400;
+    @apply min-w-0 flex-1 border border-gray-700 bg-gray-800 px-3 py-2.5 text-sm text-white placeholder-gray-400 focus:border-lmsa-400 focus:outline-none focus:ring-1 focus:ring-lmsa-400;
   }
 
   .footer-newsletter-button {
@@ -1280,7 +1302,7 @@
   }
 
   .footer-bottom {
-    @apply mt-12 flex flex-col justify-between gap-4 border-t border-gray-700 pt-6 text-xs text-gray-500 md:flex-row md:items-center;
+    @apply mt-12 flex flex-col justify-between gap-4 border-t border-gray-700 pt-6 text-xs text-gray-400 md:flex-row md:items-center;
   }
 
   .footer-bottom > div {

@@ -6,7 +6,6 @@ import {
   ArrowRight,
   BookOpen,
   CalendarDays,
-  Compass,
   FileText,
   HeartPulse,
   History,
@@ -215,18 +214,6 @@ const heroPages = [
     pattern: 'grid',
   },
   {
-    match: (path) => path === '/academics/mentorship',
-    eyebrow: 'Academics / Mentorship',
-    title: 'Learn from those one step ahead',
-    description:
-      'Build confidence through peer guidance, honest conversations, and a community invested in your progress.',
-    action: { label: 'Explore research', to: '/academics/research' },
-    accent: 'gold',
-    icon: Users,
-    photoKey: 'mentorship',
-    pattern: 'circles',
-  },
-  {
     match: (path) => path === '/academics/research',
     eyebrow: 'Academics / Research',
     title: 'Ask better questions. Improve healthcare.',
@@ -237,18 +224,6 @@ const heroPages = [
     icon: Lightbulb,
     photoKey: 'research',
     pattern: 'hexagons',
-  },
-  {
-    match: (path) => path === '/academics/career-center',
-    eyebrow: 'Academics / Career Center',
-    title: 'Where do you want to practice?',
-    description:
-      'Connect with advisors, alumni, and opportunities as you decide where medicine will take you—in Liberia and beyond.',
-    action: { label: 'Talk to the career team', to: '/contact' },
-    accent: 'green',
-    icon: Compass,
-    photoKey: 'about',
-    pattern: 'grid',
   },
   {
     match: (path) => path === '/events',
@@ -277,11 +252,11 @@ const heroPages = [
   {
     match: (path) => path === '/get-involved/volunteer',
     eyebrow: 'Get involved / Volunteer',
-    title: 'Your time can improve someone\u2019s care',
+    title: 'Give time. Improve care.',
     description:
       'Bring your skills and energy to outreach, health education, and community service with LMSA.',
     action: { label: 'Join a committee', to: '/get-involved/committees' },
-    accent: 'rose',
+    accent: 'green',
     icon: HeartPulse,
     photoKey: 'volunteer',
     pattern: 'circles',
