@@ -59,20 +59,16 @@ export default function CareerCenterPage() {
       </nav>
 
       {/* ---------- HERO: Attention (AIDA) ---------- */}
-      <header ref={heroRef} className="relative min-h-[92svh] flex flex-col items-start justify-end bg-[#ebebe8] overflow-hidden">
-        {/* Two-field hero concept (design-taste-frontend) — paper above / colour below */}
-        <div className="absolute inset-0 z-0">
-          <div className="absolute top-0 left-0 w-full h-[46svh] bg-[#f7f7f5]" />
-          <div className="absolute bottom-0 left-0 w-full h-[54svh] bg-[#d0106f]" />
-        </div>
-
+        {/* Paper field carries the setup line; the magenta bar carries the punch line,
+            anchored to the text in normal flow so it can never drift off the seam */}
+      <header ref={heroRef} className="relative min-h-[92svh] flex flex-col items-start justify-end bg-[#f7f7f5] overflow-hidden">
         <div className="relative z-10 mx-auto w-full max-w-[1400px] px-6 md:px-10 pt-[28svh] pb-16 md:pb-24">
-          {/* Headline clipped across seam (2 lines max, 9.5vw, red-forge-black) */}
+          {/* Headline (2 lines max, 9.5vw, red-forge-black) */}
           <h1 className="relative text-[clamp(4rem,9.5vw,11rem)] font-[900] leading-[0.86] tracking-[-0.05em] text-[#000] uppercase">
             <span className="block">You are</span>
-            <span className="block text-[#fff]">not alone.</span>
+            <span className="block -mx-6 md:-mx-10 bg-[#d0106f] px-6 pb-[0.08em] md:px-10 text-[#fff]">not alone.</span>
           </h1>
-          <p className="mt-8 max-w-2xl text-[20px] md:text-[24px] leading-[1.35] text-[#000]/90 font-medium tracking-[-0.02em]">
+          <p className="mt-8 max-w-2xl text-[20px] md:text-[24px] leading-[1.35] text-[#000] font-medium tracking-[-0.02em]">
             The LMSA Career Center connects coursework with the doctor you want to become—through advising, specialty exploration, and a community that has walked these roads.
           </p>
           <div className="mt-10 flex items-center gap-4">
