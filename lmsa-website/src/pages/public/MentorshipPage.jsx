@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { MessageCircle, Users, Heart, CheckCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -25,6 +26,16 @@ const benefits = [
 ];
 
 export default function MentorshipPage() {
+  useEffect(() => {
+    // Reveal pass: matches the shared .reveal-on-scroll styles in index.css
+    const observer = new IntersectionObserver(
+      (entries) => entries.forEach((e) => { if (e.isIntersecting) e.target.classList.add('revealed'); }),
+      { threshold: 0.12, rootMargin: '0px 0px -50px 0px' }
+    );
+    document.querySelectorAll('.reveal-on-scroll').forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <main className="overflow-x-hidden w-full max-w-full bg-[#f8f8f8]" style={{ fontFamily: "'Libre Franklin', system-ui, sans-serif" }}>
       {/* Nav */}
