@@ -161,18 +161,6 @@ const heroPages = [
     ],
   },
   {
-    match: (path) => path === '/membership/categories',
-    eyebrow: 'Membership / Categories',
-    title: 'Membership designed around your journey',
-    description:
-      'Whether you are a current student, associate, honorary or veteran member, there is a place for you in LMSA.',
-    action: { label: 'Review dues', to: '/membership/dues' },
-    accent: 'blue',
-    icon: Users,
-    photoKey: 'membership',
-    pattern: 'grid',
-  },
-  {
     match: (path) => path === '/membership/dues',
     eyebrow: 'Membership / Dues',
     title: 'A simple path to active membership',

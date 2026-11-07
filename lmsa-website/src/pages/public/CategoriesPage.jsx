@@ -1,132 +1,221 @@
-import { Award, Check, Info, Minus } from 'lucide-react';
+import { useEffect } from 'react';
+import { ArrowRight, ArrowDown } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { EditorialCallout, EditorialSectionHeader } from '@components/common/EditorialSections';
 
 const categories = [
   {
     name: 'Full Member',
-    price: '$25/year',
-    audience: 'All medical students currently enrolled',
-    included: ['Full voting rights', 'Eligible to run for office', 'Access to all resources', 'Committee participation', 'Register for LMSA events'],
-    limits: [],
-    recommended: true,
+    price: '$25',
+    period: 'a year',
+    audience: 'Current medical students',
+    included:
+      'Voting rights, eligibility to run for office, access to all resources, committee participation, and registration for LMSA events.',
+    limits: '',
+    note: 'Most medical students qualify for this category.',
+    apply: true,
   },
   {
     name: 'Associate Member',
-    price: '$15/year',
+    price: '$15',
+    period: 'a year',
     audience: 'Pre-medical and health sciences students',
-    included: ['Access to events and resources', 'Committee participation', 'Pathway to full membership'],
-    limits: ['No voting rights', 'Cannot hold elected office'],
+    included:
+      'Access to events and resources, committee participation, and a pathway to full membership.',
+    limits: 'no voting rights and no elected office',
+    apply: true,
   },
   {
     name: 'Honorary Member',
     price: 'By invitation',
+    period: '',
     audience: 'Faculty and alumni supporters',
-    included: ['Recognized contributors', 'Advisory role', 'Lifetime appointment'],
-    limits: ['No voting rights', 'Cannot hold office'],
-    invitationOnly: true,
+    included:
+      'Recognition as a contributor, an advisory role, and a lifetime appointment.',
+    limits: 'no voting rights and no elected office',
+    note: 'Offered by invitation — there is no application.',
+    invite: true,
   },
   {
     name: 'Veteran Member',
     price: 'Free',
+    period: '',
     audience: 'Alumni and past members',
-    included: ['Alumni network', 'Mentorship opportunities', 'Reunion events'],
-    limits: [],
+    included: 'The alumni network, mentorship opportunities, and reunion events.',
+    limits: '',
+    apply: true,
   },
 ];
 
 export default function CategoriesPage() {
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => entries.forEach((entry) => {
+        if (entry.isIntersecting) entry.target.classList.add('revealed');
+      }),
+      { threshold: 0.12, rootMargin: '0px 0px -50px 0px' }
+    );
+    document.querySelectorAll('.reveal-on-scroll').forEach((element) => observer.observe(element));
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <main className="editorial-page">
-      <section className="editorial-section">
+      {/* Opener: a tariff page, so the four prices are the first thing on screen. */}
+      <section className="editorial-section pb-8">
         <div className="site-container">
-          <div className="editorial-split">
-            <EditorialSectionHeader
-              title="There is more than one way to belong to LMSA."
-              description="Choose the category that reflects your current relationship to medical education and the association."
-            />
-            <div className="editorial-note self-start">
-              <p>Most medical students qualify as Full Members with complete privileges and responsibilities.</p>
-              <span>A simple place to begin</span>
+          <div className="grid gap-12 lg:grid-cols-[1.15fr_0.85fr] lg:gap-20">
+            <div className="reveal-on-scroll">
+              <h1 className="max-w-[13ch] font-serif text-[clamp(2.6rem,6vw,5rem)] font-bold leading-[1.02] tracking-[-0.02em] text-lmsa-900">
+                Four ways to belong.
+              </h1>
+              <p className="mt-7 max-w-[52ch] text-lg leading-8 text-gray-800">
+                Each category carries a different set of rights, responsibilities, and costs. Pick
+                the one that matches where you are in your training.
+              </p>
+              <a
+                href="#categories"
+                className="mt-8 inline-flex min-h-12 items-center justify-center gap-2 bg-lmsa-600 px-6 text-sm font-semibold text-white transition-colors hover:bg-lmsa-700"
+              >
+                Compare the four categories
+                <ArrowDown size={15} aria-hidden="true" />
+              </a>
             </div>
+            <dl className="reveal-on-scroll self-start" style={{ transitionDelay: '80ms' }}>
+              {categories.map(({ name, price, period }, index) => (
+                <div
+                  key={name}
+                  className="reveal-on-scroll flex items-baseline justify-between gap-6 py-3"
+                  style={{ transitionDelay: `${index * 60 + 120}ms` }}
+                >
+                  <dt className="text-sm font-medium text-gray-700">{name}</dt>
+                  <dd className="whitespace-nowrap text-right font-serif text-xl font-bold text-lmsa-900">
+                    {price}
+                    {period && <span className="ml-1 text-sm font-normal text-gray-600">{period}</span>}
+                  </dd>
+                </div>
+              ))}
+            </dl>
           </div>
         </div>
       </section>
 
-      <section className="editorial-section editorial-section-muted">
+      {/* The ledger: four priced rows instead of four equal cards. */}
+      <section id="categories" className="editorial-section editorial-section-muted">
         <div className="site-container">
-          <EditorialSectionHeader title="Membership that meets you where you are." description="Every category has a clear role, set of privileges, and way to participate in the LMSA community." />
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          <div className="reveal-on-scroll max-w-2xl">
+            <h2 className="text-[clamp(1.7rem,3.2vw,2.75rem)] font-semibold leading-tight tracking-[-0.03em] text-lmsa-900">
+              The four categories, line by line.
+            </h2>
+            <p className="mt-4 text-base leading-7 text-gray-700 md:text-lg">
+              Prices are annual. Every row lists what the category includes and, where it applies,
+              what it does not.
+            </p>
+          </div>
+          <ol className="mt-10">
             {categories.map((category, index) => (
-              <article key={category.name} className={`flex flex-col bg-white p-6 ${category.recommended ? 'ring-2 ring-lmsa-600' : ''}`}>
-                {category.recommended && <span className="editorial-card-eyebrow text-lmsa-700">Most common</span>}
-                <span className="mt-4 flex h-11 w-11 items-center justify-center bg-lmsa-50 text-lmsa-700" aria-hidden="true"><Award size={22} strokeWidth={1.5} /></span>
-                <div className="mt-5 flex grow flex-col">
-                  <h3 className="text-xl font-semibold tracking-[-0.02em] text-lmsa-900">{category.name}</h3>
-                  <p className="mt-3 text-2xl font-semibold text-lmsa-700">{category.price}</p>
-                  <p className="mt-3 text-sm leading-6 text-gray-600">For {category.audience.charAt(0).toLowerCase() + category.audience.slice(1)}</p>
-                  <ul className="mt-5 space-y-3">
-                    {category.included.map((feature) => (
-                      <li key={feature} className="flex items-start gap-2 text-sm leading-6 text-gray-700">
-                        <Check size={16} className="mt-1 shrink-0 text-lmsa-600" aria-hidden="true" />
-                        <span>{feature}</span>
-                      </li>
-                    ))}
-                    {category.limits.map((limit) => (
-                      <li key={limit} className="flex items-start gap-2 text-sm leading-6 text-gray-500">
-                        <Minus size={16} className="mt-1 shrink-0 text-gray-400" aria-hidden="true" />
-                        <span>
-                          {limit}
-                          <span className="sr-only"> (limitation)</span>
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                  {category.invitationOnly ? (
-                    <p className="mt-auto pt-7 text-sm leading-6 text-gray-600">
-                      Offered by invitation - there is no application.{' '}
-                      <Link to="/contact" className="font-semibold text-lmsa-700 hover:text-lmsa-900">Suggest someone</Link>
-                    </p>
-                  ) : (
-                    <div className="mt-auto pt-7">
-                      <Link
-                        to="/membership#apply"
-                        className={`flex items-center justify-center px-4 py-3 text-sm font-semibold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2 ${category.recommended ? 'bg-lmsa-600 text-white hover:bg-lmsa-700' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
-                      >
-                        <span className="sr-only">{category.name}: </span>
-                        Apply now
-                      </Link>
-                    </div>
+              <li
+                key={category.name}
+                className="grid gap-5 py-9 md:py-11 lg:grid-cols-[1fr_0.62fr_1.45fr_auto] lg:items-start lg:gap-10"
+              >
+                <div
+                  className="reveal-on-scroll"
+                  style={{ transitionDelay: `${index * 70}ms` }}
+                >
+                  <h3 className="font-serif text-2xl font-bold leading-snug tracking-[-0.01em] text-lmsa-900 md:text-[1.75rem]">
+                    {category.name}
+                  </h3>
+                  <p className="mt-1 text-sm leading-6 text-gray-600">For {category.audience.charAt(0).toLowerCase() + category.audience.slice(1)}</p>
+                  {category.note && (
+                    <p className="mt-3 max-w-[30ch] text-sm leading-6 text-lmsa-800">{category.note}</p>
                   )}
                 </div>
-              </article>
+                <p
+                  className="reveal-on-scroll whitespace-nowrap font-serif text-[clamp(1.6rem,2.2vw,1.9rem)] font-bold leading-none tracking-[-0.02em] text-lmsa-800"
+                  style={{ transitionDelay: `${index * 70 + 60}ms` }}
+                >
+                  {category.price}
+                  {category.period && (
+                    <span className="mt-1 block text-sm font-normal tracking-normal text-gray-600">
+                      {category.period}
+                    </span>
+                  )}
+                </p>
+                <div
+                  className="reveal-on-scroll"
+                  style={{ transitionDelay: `${index * 70 + 120}ms` }}
+                >
+                  <p className="max-w-[48ch] text-base leading-7 text-gray-800">{category.included}</p>
+                  {category.limits && (
+                    <p className="mt-2 max-w-[48ch] text-base leading-7 text-gray-600">
+                      Limits: {category.limits}.
+                    </p>
+                  )}
+                </div>
+                <div
+                  className="reveal-on-scroll lg:pt-1 lg:text-right"
+                  style={{ transitionDelay: `${index * 70 + 180}ms` }}
+                >
+                  {category.invite ? (
+                    <Link
+                      to="/contact"
+                      className="inline-flex min-h-11 items-center gap-1.5 whitespace-nowrap text-sm font-semibold text-lmsa-800 underline decoration-lmsa-400 decoration-2 underline-offset-[6px] transition-colors hover:decoration-lmsa-800"
+                    >
+                      Suggest someone
+                      <ArrowRight size={15} aria-hidden="true" />
+                    </Link>
+                  ) : (
+                    <Link
+                      to="/membership#apply"
+                      className="inline-flex min-h-11 items-center gap-1.5 whitespace-nowrap text-sm font-semibold text-lmsa-800 underline decoration-lmsa-400 decoration-2 underline-offset-[6px] transition-colors hover:decoration-lmsa-800"
+                    >
+                      Apply
+                      <ArrowRight size={15} aria-hidden="true" />
+                    </Link>
+                  )}
+                </div>
+              </li>
             ))}
-          </div>
+          </ol>
         </div>
       </section>
 
+      {/* Closing: three honest next steps on the page's own cream. */}
       <section className="editorial-section">
         <div className="site-container">
-          <div className="flex items-start gap-4 border-l-2 border-lmsa-600 bg-lmsa-50 p-6">
-            <Info size={22} className="mt-1 shrink-0 text-lmsa-700" aria-hidden="true" />
-            <div>
-              <h2 className="text-xl font-semibold text-lmsa-900">Need help choosing?</h2>
-              <p className="mt-2 text-base leading-7 text-gray-700">
-                Questions about eligibility or member rights?{' '}
-                <Link to="/contact" className="font-semibold text-lmsa-700 hover:underline">Contact the LMSA team</Link> and we will point you to the right category.
+          <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-end">
+            <div className="reveal-on-scroll">
+              <h2 className="max-w-[20ch] font-serif text-[clamp(2rem,4vw,3.25rem)] font-bold leading-[1.06] tracking-[-0.015em] text-lmsa-900">
+                Choose a category, then apply.
+              </h2>
+              <p className="mt-4 max-w-[48ch] text-base leading-7 text-gray-700">
+                Applications are submitted through your member account. If you are unsure which
+                category fits, ask first — it is a short conversation.
               </p>
             </div>
+            <div className="reveal-on-scroll flex flex-col gap-4 sm:flex-row sm:items-center lg:flex-col lg:items-end" style={{ transitionDelay: '90ms' }}>
+              <Link
+                to="/membership#apply"
+                className="inline-flex min-h-12 items-center justify-center gap-2 bg-lmsa-600 px-6 text-sm font-semibold text-white transition-colors hover:bg-lmsa-700"
+              >
+                Start your application
+                <ArrowRight size={16} aria-hidden="true" />
+              </Link>
+              <div className="flex flex-col gap-3 sm:flex-row sm:gap-6 lg:items-end">
+                <Link
+                  to="/membership/dues"
+                  className="inline-flex min-h-11 items-center text-sm font-semibold text-lmsa-800 underline decoration-lmsa-400 decoration-2 underline-offset-[6px] transition-colors hover:decoration-lmsa-800"
+                >
+                  View dues and payments
+                </Link>
+                <Link
+                  to="/contact"
+                  className="inline-flex min-h-11 items-center text-sm font-semibold text-lmsa-800 underline decoration-lmsa-400 decoration-2 underline-offset-[6px] transition-colors hover:decoration-lmsa-800"
+                >
+                  Ask the team
+                </Link>
+              </div>
+            </div>
           </div>
-        </div>
-      </section>
-
-      <section className="editorial-section pt-0">
-        <div className="site-container">
-          <EditorialCallout
-            title="Once you know your category, the next step is straightforward."
-            description="See the annual dues and payment options, then submit your application through LMSA."
-            action={{ label: 'View dues and payments', to: '/membership/dues' }}
-          />
         </div>
       </section>
     </main>
