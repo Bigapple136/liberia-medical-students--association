@@ -161,18 +161,6 @@ const heroPages = [
     ],
   },
   {
-    match: (path) => path === '/membership/benefits',
-    eyebrow: 'Membership / Benefits',
-    title: 'More support for every stage of medical school',
-    description:
-      'Discover the people, resources, and opportunities that make LMSA membership useful every day.',
-    action: { label: 'Choose your membership', to: '/membership/categories' },
-    accent: 'gold',
-    icon: HeartPulse,
-    photoKey: 'membership',
-    pattern: 'dots',
-  },
-  {
     match: (path) => path === '/membership/categories',
     eyebrow: 'Membership / Categories',
     title: 'Membership designed around your journey',
