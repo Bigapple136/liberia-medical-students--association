@@ -218,16 +218,16 @@ export default function CategoriesPage() {
             <div className="reveal-on-scroll lg:pb-1" style={{ transitionDelay: '90ms' }}>
               <figure>
                 <Photo
-                  src={stockPhotos.hero.membership.src}
-                  alt={stockPhotos.hero.membership.alt}
-                  width={4}
-                  height={3}
+                  src={stockPhotos.hero.about.src}
+                  alt={stockPhotos.hero.about.alt}
+                  width={1}
+                  height={1}
                   fallbackGradient="bg-lmsa-800"
                   className="w-full"
                 />
                 <figcaption className="mt-3 text-[13px] leading-5 text-gray-600">
-                  Students gathered together in a library. Stock photograph by{' '}
-                  {stockPhotos.hero.membership.credit}.
+                  A surgical team gathered around an operating light. Stock photograph by{' '}
+                  {stockPhotos.hero.about.credit}.
                 </figcaption>
               </figure>
             </div>
