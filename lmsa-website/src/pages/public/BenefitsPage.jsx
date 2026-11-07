@@ -183,6 +183,30 @@ export default function BenefitsPage() {
         </div>
       </section>
 
+      {/* A photograph-led band: the community side of membership, bled to the edge. */}
+      <section className="bg-lmsa-900">
+        <div className="grid items-stretch lg:grid-cols-[minmax(0,1fr)_minmax(0,0.85fr)]">
+          <div className="reveal-on-scroll px-6 py-14 sm:px-10 md:py-20 lg:pl-[max(2.5rem,calc((100vw-80rem)/2+2.5rem))] lg:pr-16">
+            <h2 className="max-w-[16ch] font-serif text-[clamp(1.9rem,3.4vw,3rem)] font-bold leading-[1.06] tracking-[-0.015em] text-white">
+              The work is shared.
+            </h2>
+            <p className="mt-4 max-w-[44ch] text-base leading-7 text-lmsa-100">
+              Members serve on committees, organise campus events, and take health camps into
+              counties without a resident doctor.
+            </p>
+            <p className="mt-8 text-[13px] text-lmsa-200">
+              Photograph: {stockPhotos.stories.medicalCamp.credit}
+            </p>
+          </div>
+          <Photo
+            src={stockPhotos.stories.medicalCamp.src}
+            alt={stockPhotos.stories.medicalCamp.alt}
+            fallbackGradient="bg-lmsa-800"
+            className="h-[300px] w-full sm:h-[380px] lg:h-full lg:min-h-[460px]"
+          />
+        </div>
+      </section>
+
       {/* Where the benefits lead: three image-led paths, not link cards. */}
       <section id="paths" className="editorial-section editorial-section-muted">
         <div className="site-container">

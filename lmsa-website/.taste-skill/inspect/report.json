@@ -1,6 +1,6 @@
 {
  "url": "http://localhost:5173/membership/benefits",
- "at": "2026-11-07T00:55:41.954Z",
+ "at": "2026-11-07T10:14:52.390Z",
  "allow": [],
  "viewports": [
   {
@@ -11,14 +11,14 @@
    "filled": [
     0.71,
     0.89,
-    0.82,
-    0.76,
+    0.87,
+    0.67,
     0.93
    ],
    "motion": {
-    "elements": 25,
+    "elements": 27,
     "css": 1,
-    "transitions": 24,
+    "transitions": 26,
     "scripted": 0,
     "videos": 0,
     "playingVideos": 0
@@ -29,23 +29,24 @@
      "h": 900
     },
     "page": {
-     "height": 3824,
-     "screens": 4.2,
-     "words": 403,
-     "img": 5,
+     "height": 4284,
+     "screens": 4.8,
+     "words": 428,
+     "img": 6,
      "video": 0,
      "canvas": 0,
      "svg": 34,
-     "sections": 5,
+     "sections": 6,
      "horizontalOverflow": 0,
      "overflowCulprits": [],
      "uiFragments": 0,
      "uiAbuse": false,
-     "realPictures": 4,
+     "realPictures": 5,
      "videoCount": 0,
      "uiPictures": 0,
      "pictureSamples": [
       "photo-1523240795612-9a054b0db644?w=1200&q=80",
+      "photo-1576765608535-5f04d1e3f289?w=800&q=80",
       "photo-1456513080510-7bf3a84b82f8?w=600&q=80",
       "photo-1521737711867-e3b97375f902?w=600&q=80",
       "photo-1576091160399-112ba8d25d1d?w=800&q=80"
@@ -274,6 +275,27 @@
       "kind": "heading"
      },
      {
+      "text": "The work is shared.",
+      "words": 4,
+      "chars": 19,
+      "lines": 1,
+      "size": 48,
+      "vw": 3.3,
+      "font": "Merriweather",
+      "weight": 700,
+      "tracking": -0.015,
+      "leading": 1.06,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "left",
+      "widthRatio": 0.36,
+      "top": 2097,
+      "tag": "h2",
+      "kind": "heading"
+     },
+     {
       "text": "Where it leads.",
       "words": 3,
       "chars": 15,
@@ -290,7 +312,7 @@
       "align": "left",
       "position": "left",
       "widthRatio": 0.47,
-      "top": 2097,
+      "top": 2557,
       "tag": "h2",
       "kind": "heading"
      },
@@ -311,7 +333,7 @@
       "align": "left",
       "position": "left",
       "widthRatio": 0.43,
-      "top": 2860,
+      "top": 3320,
       "tag": "h2",
       "kind": "heading"
      },
@@ -332,13 +354,13 @@
       "align": "left",
       "position": "left",
       "widthRatio": 0.32,
-      "top": 3198,
+      "top": 3658,
       "tag": "h2",
       "kind": "heading"
      }
     ],
     "headingSummary": {
-     "count": 12,
+     "count": 13,
      "maxLines": 2,
      "over2Lines": 0,
      "statements": 0,
@@ -350,12 +372,12 @@
      "families": [
       {
        "family": "Inter",
-       "share": 0.93,
+       "share": 0.92,
        "mono": false
       },
       {
        "family": "Merriweather",
-       "share": 0.07,
+       "share": 0.08,
        "mono": false
       }
      ],
@@ -371,10 +393,11 @@
       36,
       42,
       44,
+      48,
       52,
       76
      ],
-     "sizeCount": 12,
+     "sizeCount": 13,
      "notLoaded": [],
      "body": {
       "font": "Inter",
@@ -441,8 +464,17 @@
        }
       },
       {
+       "color": "#064629",
+       "top": 2017,
+       "hsl": {
+        "h": 153,
+        "s": 0.84,
+        "l": 0.15
+       }
+      },
+      {
        "color": "#111827",
-       "top": 3122,
+       "top": 3582,
        "hsl": {
         "h": 221,
         "s": 0.39,
@@ -453,15 +485,15 @@
      "textColors": [
       {
        "color": "#374151",
-       "share": 0.44
+       "share": 0.42
       },
       {
        "color": "#9ca3af",
-       "share": 0.16
+       "share": 0.15
       },
       {
        "color": "#064629",
-       "share": 0.12
+       "share": 0.11
       },
       {
        "color": "#4b5563",
@@ -512,7 +544,7 @@
      "blurred": 0,
      "roundedBoxes": 0,
      "boxRadius": 0,
-     "squareMedia": 4,
+     "squareMedia": 5,
      "roundedMedia": 0,
      "mediaRadius": 0,
      "textShadow": 0,
@@ -546,15 +578,15 @@
    "filled": [
     0.64,
     1,
-    0.87,
-    0.79,
+    0.89,
     1,
+    0.7,
     1
    ],
    "motion": {
-    "elements": 24,
+    "elements": 25,
     "css": 1,
-    "transitions": 23,
+    "transitions": 24,
     "scripted": 0,
     "videos": 0,
     "playingVideos": 0
@@ -565,23 +597,24 @@
      "h": 1024
     },
     "page": {
-     "height": 5226,
-     "screens": 5.1,
-     "words": 392,
-     "img": 5,
+     "height": 5950,
+     "screens": 5.8,
+     "words": 417,
+     "img": 6,
      "video": 0,
      "canvas": 0,
      "svg": 34,
-     "sections": 5,
+     "sections": 6,
      "horizontalOverflow": 0,
      "overflowCulprits": [],
      "uiFragments": 0,
      "uiAbuse": false,
-     "realPictures": 4,
+     "realPictures": 5,
      "videoCount": 0,
      "uiPictures": 0,
      "pictureSamples": [
       "photo-1523240795612-9a054b0db644?w=1200&q=80",
+      "photo-1576765608535-5f04d1e3f289?w=800&q=80",
       "photo-1456513080510-7bf3a84b82f8?w=600&q=80",
       "photo-1521737711867-e3b97375f902?w=600&q=80",
       "photo-1576091160399-112ba8d25d1d?w=800&q=80"
@@ -810,6 +843,27 @@
       "kind": "heading"
      },
      {
+      "text": "The work is shared.",
+      "words": 4,
+      "chars": 19,
+      "lines": 1,
+      "size": 30.4,
+      "vw": 4,
+      "font": "Merriweather",
+      "weight": 700,
+      "tracking": -0.015,
+      "leading": 1.06,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "left",
+      "widthRatio": 0.42,
+      "top": 2896,
+      "tag": "h2",
+      "kind": "heading"
+     },
+     {
       "text": "Where it leads.",
       "words": 3,
       "chars": 15,
@@ -826,7 +880,7 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.88,
-      "top": 2896,
+      "top": 3620,
       "tag": "h2",
       "kind": "heading"
      },
@@ -847,7 +901,7 @@
       "align": "left",
       "position": "left",
       "widthRatio": 0.49,
-      "top": 3922,
+      "top": 4646,
       "tag": "h2",
       "kind": "heading"
      },
@@ -868,13 +922,13 @@
       "align": "left",
       "position": "left",
       "widthRatio": 0.55,
-      "top": 4298,
+      "top": 5022,
       "tag": "h2",
       "kind": "heading"
      }
     ],
     "headingSummary": {
-     "count": 12,
+     "count": 13,
      "maxLines": 2,
      "over2Lines": 0,
      "statements": 0,
@@ -986,8 +1040,17 @@
        }
       },
       {
+       "color": "#064629",
+       "top": 2816,
+       "hsl": {
+        "h": 153,
+        "s": 0.84,
+        "l": 0.15
+       }
+      },
+      {
        "color": "#111827",
-       "top": 4222,
+       "top": 4946,
        "hsl": {
         "h": 221,
         "s": 0.39,
@@ -998,15 +1061,15 @@
      "textColors": [
       {
        "color": "#374151",
-       "share": 0.43
+       "share": 0.41
       },
       {
        "color": "#9ca3af",
-       "share": 0.16
+       "share": 0.15
       },
       {
        "color": "#064629",
-       "share": 0.12
+       "share": 0.11
       },
       {
        "color": "#4b5563",
@@ -1057,7 +1120,7 @@
      "blurred": 0,
      "roundedBoxes": 0,
      "boxRadius": 0,
-     "squareMedia": 4,
+     "squareMedia": 5,
      "roundedMedia": 0,
      "mediaRadius": 0,
      "textShadow": 0,
@@ -1087,21 +1150,22 @@
    "width": 390,
    "height": 844,
    "load": "load",
-   "screens": 8,
+   "screens": 9,
    "filled": [
     0.62,
     0.97,
     0.9,
     0.89,
-    0.91,
-    0.76,
+    0.98,
+    0.96,
+    0.69,
     1,
     1
    ],
    "motion": {
-    "elements": 25,
+    "elements": 26,
     "css": 1,
-    "transitions": 24,
+    "transitions": 25,
     "scripted": 0,
     "videos": 0,
     "playingVideos": 0
@@ -1112,23 +1176,24 @@
      "h": 844
     },
     "page": {
-     "height": 6632,
-     "screens": 7.9,
-     "words": 376,
-     "img": 5,
+     "height": 7227,
+     "screens": 8.6,
+     "words": 401,
+     "img": 6,
      "video": 0,
      "canvas": 0,
      "svg": 34,
-     "sections": 5,
+     "sections": 6,
      "horizontalOverflow": 0,
      "overflowCulprits": [],
      "uiFragments": 0,
      "uiAbuse": false,
-     "realPictures": 4,
+     "realPictures": 5,
      "videoCount": 0,
      "uiPictures": 0,
      "pictureSamples": [
       "photo-1523240795612-9a054b0db644?w=1200&q=80",
+      "photo-1576765608535-5f04d1e3f289?w=800&q=80",
       "photo-1456513080510-7bf3a84b82f8?w=600&q=80",
       "photo-1521737711867-e3b97375f902?w=600&q=80",
       "photo-1576091160399-112ba8d25d1d?w=800&q=80"
@@ -1357,6 +1422,27 @@
       "kind": "heading"
      },
      {
+      "text": "The work is shared.",
+      "words": 4,
+      "chars": 19,
+      "lines": 1,
+      "size": 30.4,
+      "vw": 7.8,
+      "font": "Merriweather",
+      "weight": 700,
+      "tracking": -0.015,
+      "leading": 1.06,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.82,
+      "top": 3163,
+      "tag": "h2",
+      "kind": "heading"
+     },
+     {
       "text": "Where it leads.",
       "words": 3,
       "chars": 15,
@@ -1373,7 +1459,7 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.9,
-      "top": 3171,
+      "top": 3766,
       "tag": "h2",
       "kind": "heading"
      },
@@ -1394,7 +1480,7 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.9,
-      "top": 4842,
+      "top": 5437,
       "tag": "h2",
       "kind": "heading"
      },
@@ -1415,7 +1501,7 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.9,
-      "top": 5250,
+      "top": 5845,
       "tag": "h2",
       "kind": "heading"
      },
@@ -1436,13 +1522,13 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.9,
-      "top": 5457,
+      "top": 6052,
       "tag": "h3",
       "kind": "heading"
      }
     ],
     "headingSummary": {
-     "count": 13,
+     "count": 14,
      "maxLines": 2,
      "over2Lines": 0,
      "statements": 0,
@@ -1543,8 +1629,26 @@
        }
       },
       {
+       "color": "#064629",
+       "top": 3107,
+       "hsl": {
+        "h": 153,
+        "s": 0.84,
+        "l": 0.15
+       }
+      },
+      {
+       "color": "#085c36",
+       "top": 3402,
+       "hsl": {
+        "h": 153,
+        "s": 0.84,
+        "l": 0.2
+       }
+      },
+      {
        "color": "#111827",
-       "top": 5190,
+       "top": 5785,
        "hsl": {
         "h": 221,
         "s": 0.39,
@@ -1555,15 +1659,15 @@
      "textColors": [
       {
        "color": "#374151",
-       "share": 0.45
+       "share": 0.43
       },
       {
        "color": "#9ca3af",
-       "share": 0.17
+       "share": 0.16
       },
       {
        "color": "#064629",
-       "share": 0.13
+       "share": 0.12
       },
       {
        "color": "#4b5563",
@@ -1613,7 +1717,7 @@
      "blurred": 0,
      "roundedBoxes": 0,
      "boxRadius": 0,
-     "squareMedia": 4,
+     "squareMedia": 5,
      "roundedMedia": 0,
      "mediaRadius": 0,
      "textShadow": 0,
@@ -1656,7 +1760,7 @@
    "level": "WARN",
    "id": "size-count",
    "width": 1440,
-   "message": "12 different font sizes (13, 14, 16, 18, 20, 24, 28, 36, 42, 44, 52, 76).",
+   "message": "13 different font sizes (13, 14, 16, 18, 20, 24, 28, 36, 42, 44, 48, 52, 76).",
    "fix": "A page needs about five: display, heading, lead, body, small.",
    "alsoAt": [
     768,
@@ -1694,7 +1798,8 @@
    "width": 390,
    "fold": "C:\\Users\\goldw\\Desktop\\freelance\\liberia-medical-students-association\\lmsa-website\\.taste-skill\\inspect\\mobile-fold.jpg",
    "pages": [
-    "C:\\Users\\goldw\\Desktop\\freelance\\liberia-medical-students-association\\lmsa-website\\.taste-skill\\inspect\\mobile-page-01.jpg"
+    "C:\\Users\\goldw\\Desktop\\freelance\\liberia-medical-students-association\\lmsa-website\\.taste-skill\\inspect\\mobile-page-01.jpg",
+    "C:\\Users\\goldw\\Desktop\\freelance\\liberia-medical-students-association\\lmsa-website\\.taste-skill\\inspect\\mobile-page-02.jpg"
    ]
   }
  ]
