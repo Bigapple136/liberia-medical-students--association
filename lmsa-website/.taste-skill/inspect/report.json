@@ -1,6 +1,6 @@
 {
  "url": "http://localhost:5173/membership/categories",
- "at": "2026-11-07T10:35:29.017Z",
+ "at": "2026-11-07T10:58:10.156Z",
  "allow": [],
  "viewports": [
   {
@@ -11,13 +11,13 @@
    "filled": [
     0.66,
     0.82,
-    0.87,
+    0.81,
     0.93
    ],
    "motion": {
-    "elements": 26,
+    "elements": 27,
     "css": 1,
-    "transitions": 25,
+    "transitions": 26,
     "scripted": 0,
     "videos": 0,
     "playingVideos": 0
@@ -28,10 +28,10 @@
      "h": 900
     },
     "page": {
-     "height": 2721,
-     "screens": 3,
-     "words": 340,
-     "img": 1,
+     "height": 2941,
+     "screens": 3.3,
+     "words": 352,
+     "img": 2,
      "video": 0,
      "canvas": 0,
      "svg": 24,
@@ -40,10 +40,12 @@
      "overflowCulprits": [],
      "uiFragments": 0,
      "uiAbuse": false,
-     "realPictures": 0,
+     "realPictures": 1,
      "videoCount": 0,
      "uiPictures": 0,
-     "pictureSamples": [],
+     "pictureSamples": [
+      "photo-1523240795612-9a054b0db644?w=1200&q=80"
+     ],
      "blendText": 0,
      "sideScrollers": 0,
      "brokenImages": [],
@@ -305,7 +307,7 @@
       "align": "left",
       "position": "left",
       "widthRatio": 0.44,
-      "top": 1730,
+      "top": 1869,
       "tag": "h2",
       "kind": "heading"
      },
@@ -326,7 +328,7 @@
       "align": "left",
       "position": "left",
       "widthRatio": 0.32,
-      "top": 2096,
+      "top": 2315,
       "tag": "h2",
       "kind": "heading"
      }
@@ -427,7 +429,7 @@
       },
       {
        "color": "#111827",
-       "top": 2020,
+       "top": 2239,
        "hsl": {
         "h": 221,
         "s": 0.39,
@@ -438,22 +440,22 @@
      "textColors": [
       {
        "color": "#1f2937",
-       "share": 0.23
+       "share": 0.22
       },
       {
        "color": "#9ca3af",
-       "share": 0.2
-      },
-      {
-       "color": "#374151",
-       "share": 0.16
+       "share": 0.19
       },
       {
        "color": "#4b5563",
-       "share": 0.13
+       "share": 0.17
       },
       {
-       "color": "#085c36",
+       "color": "#374151",
+       "share": 0.15
+      },
+      {
+       "color": "#ffffff",
        "share": 0.08
       }
      ],
@@ -497,7 +499,7 @@
      "blurred": 0,
      "roundedBoxes": 0,
      "boxRadius": 0,
-     "squareMedia": 0,
+     "squareMedia": 1,
      "roundedMedia": 0,
      "mediaRadius": 0,
      "textShadow": 0,
@@ -526,8 +528,8 @@
    "filled": [
     0.53,
     1,
-    0.65,
-    1,
+    0.67,
+    0.84,
     1
    ],
    "motion": {
@@ -544,10 +546,10 @@
      "h": 1024
     },
     "page": {
-     "height": 4101,
-     "screens": 4,
-     "words": 329,
-     "img": 1,
+     "height": 4701,
+     "screens": 4.6,
+     "words": 341,
+     "img": 2,
      "video": 0,
      "canvas": 0,
      "svg": 24,
@@ -556,10 +558,12 @@
      "overflowCulprits": [],
      "uiFragments": 0,
      "uiAbuse": false,
-     "realPictures": 0,
+     "realPictures": 1,
      "videoCount": 0,
      "uiPictures": 0,
-     "pictureSamples": [],
+     "pictureSamples": [
+      "photo-1523240795612-9a054b0db644?w=1200&q=80"
+     ],
      "blendText": 0,
      "sideScrollers": 0,
      "brokenImages": [],
@@ -758,7 +762,7 @@
       "align": "left",
       "position": "left",
       "widthRatio": 0.55,
-      "top": 3172,
+      "top": 3772,
       "tag": "h2",
       "kind": "heading"
      }
@@ -858,8 +862,17 @@
        }
       },
       {
+       "color": "#085c36",
+       "top": 3056,
+       "hsl": {
+        "h": 153,
+        "s": 0.84,
+        "l": 0.2
+       }
+      },
+      {
        "color": "#111827",
-       "top": 3096,
+       "top": 3696,
        "hsl": {
         "h": 221,
         "s": 0.39,
@@ -874,19 +887,19 @@
       },
       {
        "color": "#9ca3af",
-       "share": 0.2
-      },
-      {
-       "color": "#374151",
-       "share": 0.14
+       "share": 0.19
       },
       {
        "color": "#4b5563",
-       "share": 0.14
+       "share": 0.17
       },
       {
-       "color": "#085c36",
-       "share": 0.09
+       "color": "#374151",
+       "share": 0.13
+      },
+      {
+       "color": "#ffffff",
+       "share": 0.08
       }
      ],
      "button": {
@@ -929,7 +942,7 @@
      "blurred": 0,
      "roundedBoxes": 0,
      "boxRadius": 0,
-     "squareMedia": 0,
+     "squareMedia": 1,
      "roundedMedia": 0,
      "mediaRadius": 0,
      "textShadow": 0,
@@ -959,14 +972,14 @@
     0.44,
     1,
     1,
-    0.55,
-    1,
+    0.6,
+    0.92,
     1
    ],
    "motion": {
-    "elements": 25,
+    "elements": 26,
     "css": 1,
-    "transitions": 24,
+    "transitions": 25,
     "scripted": 0,
     "videos": 0,
     "playingVideos": 0
@@ -977,10 +990,10 @@
      "h": 844
     },
     "page": {
-     "height": 4681,
-     "screens": 5.5,
-     "words": 313,
-     "img": 1,
+     "height": 5040,
+     "screens": 6,
+     "words": 325,
+     "img": 2,
      "video": 0,
      "canvas": 0,
      "svg": 24,
@@ -989,10 +1002,12 @@
      "overflowCulprits": [],
      "uiFragments": 0,
      "uiAbuse": false,
-     "realPictures": 0,
+     "realPictures": 1,
      "videoCount": 0,
      "uiPictures": 0,
-     "pictureSamples": [],
+     "pictureSamples": [
+      "photo-1523240795612-9a054b0db644?w=1200&q=80"
+     ],
      "blendText": 0,
      "sideScrollers": 0,
      "brokenImages": [],
@@ -1275,7 +1290,7 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.9,
-      "top": 3299,
+      "top": 3658,
       "tag": "h2",
       "kind": "heading"
      },
@@ -1296,7 +1311,7 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.9,
-      "top": 3506,
+      "top": 3865,
       "tag": "h3",
       "kind": "heading"
      }
@@ -1314,12 +1329,12 @@
      "families": [
       {
        "family": "Inter",
-       "share": 0.91,
+       "share": 0.92,
        "mono": false
       },
       {
        "family": "Merriweather",
-       "share": 0.09,
+       "share": 0.08,
        "mono": false
       }
      ],
@@ -1396,7 +1411,7 @@
       },
       {
        "color": "#111827",
-       "top": 3239,
+       "top": 3598,
        "hsl": {
         "h": 221,
         "s": 0.39,
@@ -1407,23 +1422,23 @@
      "textColors": [
       {
        "color": "#1f2937",
-       "share": 0.25
+       "share": 0.24
       },
       {
        "color": "#9ca3af",
-       "share": 0.21
-      },
-      {
-       "color": "#374151",
-       "share": 0.15
+       "share": 0.2
       },
       {
        "color": "#4b5563",
-       "share": 0.13
+       "share": 0.16
+      },
+      {
+       "color": "#374151",
+       "share": 0.14
       },
       {
        "color": "#085c36",
-       "share": 0.09
+       "share": 0.08
       }
      ],
      "button": {
@@ -1465,7 +1480,7 @@
      "blurred": 0,
      "roundedBoxes": 0,
      "boxRadius": 0,
-     "squareMedia": 0,
+     "squareMedia": 1,
      "roundedMedia": 0,
      "mediaRadius": 0,
      "textShadow": 0,
@@ -1514,7 +1529,7 @@
    "level": "FAIL",
    "id": "few-pictures",
    "width": 1440,
-   "message": "Only 0 picture(s) on the page (0 photographs, footage or raster images, 0 interface fragments). Drawings in SVG do not count.",
+   "message": "Only 1 picture(s) on the page (1 photographs, footage or raster images, 0 interface fragments). Drawings in SVG do not count.",
    "fix": "Find real pictures of the subject's world with scripts/assets.mjs (photographs, archival images, maps, engravings, footage), download them to assets/ and give them room: a hero picture, one per section that has a subject, a full-width band. At least four, usually six to twelve."
   },
   {

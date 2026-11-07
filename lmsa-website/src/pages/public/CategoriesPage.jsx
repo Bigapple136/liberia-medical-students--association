@@ -1,6 +1,8 @@
 import { useEffect } from 'react';
 import { ArrowRight, ArrowDown } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import Photo from '../../components/common/Photo';
+import { stockPhotos } from '../../config/images';
 
 const categories = [
   {
@@ -179,10 +181,10 @@ export default function CategoriesPage() {
         </div>
       </section>
 
-      {/* Closing: three honest next steps on the page's own cream. */}
+      {/* Closing: the last word is the people a category belongs to, not a button. */}
       <section className="editorial-section">
         <div className="site-container">
-          <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-end">
+          <div className="grid gap-12 lg:grid-cols-[1fr_0.78fr] lg:items-end lg:gap-16">
             <div className="reveal-on-scroll">
               <h2 className="max-w-[20ch] font-serif text-[clamp(2rem,4vw,3.25rem)] font-bold leading-[1.06] tracking-[-0.015em] text-lmsa-900">
                 Choose a category, then apply.
@@ -191,21 +193,19 @@ export default function CategoriesPage() {
                 Applications are submitted through your member account. If you are unsure which
                 category fits, ask first — it is a short conversation.
               </p>
-            </div>
-            <div className="reveal-on-scroll flex flex-col gap-4 sm:flex-row sm:items-center lg:flex-col lg:items-end" style={{ transitionDelay: '90ms' }}>
-              <Link
-                to="/membership#apply"
-                className="inline-flex min-h-12 items-center justify-center gap-2 bg-lmsa-600 px-6 text-sm font-semibold text-white transition-colors hover:bg-lmsa-700"
-              >
-                Start your application
-                <ArrowRight size={16} aria-hidden="true" />
-              </Link>
-              <div className="flex flex-col gap-3 sm:flex-row sm:gap-6 lg:items-end">
+              <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-6">
+                <Link
+                  to="/membership#apply"
+                  className="inline-flex min-h-12 items-center justify-center gap-2 bg-lmsa-600 px-6 text-sm font-semibold text-white transition-colors hover:bg-lmsa-700"
+                >
+                  Start your application
+                  <ArrowRight size={16} aria-hidden="true" />
+                </Link>
                 <Link
                   to="/membership/dues"
                   className="inline-flex min-h-11 items-center text-sm font-semibold text-lmsa-800 underline decoration-lmsa-400 decoration-2 underline-offset-[6px] transition-colors hover:decoration-lmsa-800"
                 >
-                  View dues and payments
+                  View dues
                 </Link>
                 <Link
                   to="/contact"
@@ -214,6 +214,22 @@ export default function CategoriesPage() {
                   Ask the team
                 </Link>
               </div>
+            </div>
+            <div className="reveal-on-scroll lg:pb-1" style={{ transitionDelay: '90ms' }}>
+              <figure>
+                <Photo
+                  src={stockPhotos.hero.membership.src}
+                  alt={stockPhotos.hero.membership.alt}
+                  width={4}
+                  height={3}
+                  fallbackGradient="bg-lmsa-800"
+                  className="w-full"
+                />
+                <figcaption className="mt-3 text-[13px] leading-5 text-gray-600">
+                  Students gathered together in a library. Stock photograph by{' '}
+                  {stockPhotos.hero.membership.credit}.
+                </figcaption>
+              </figure>
             </div>
           </div>
         </div>
