@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { CreditCard, DollarSign, Info } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { EditorialCallout, EditorialSectionHeader } from '@components/common/EditorialSections';
@@ -14,7 +15,26 @@ const importantInformation = [
   ['Receipt', 'Always request and keep your payment receipt'],
 ];
 
+// One row per category, priced the same way as the membership-types ledger.
+const duesCategories = [
+  { name: 'Full Member', audience: 'currently enrolled medical students', price: '$25', period: 'a year' },
+  { name: 'Associate Member', audience: 'prospective students and affiliates', price: '$15', period: 'a year' },
+  { name: 'Honorary Member', audience: 'faculty and alumni supporters', price: 'By invitation', period: '' },
+  { name: 'Veteran Member', audience: 'alumni and past members', price: 'Free', period: '' },
+];
+
 export default function DuesPage() {
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => entries.forEach((entry) => {
+        if (entry.isIntersecting) entry.target.classList.add('revealed');
+      }),
+      { threshold: 0.12, rootMargin: '0px 0px -50px 0px' }
+    );
+    document.querySelectorAll('.reveal-on-scroll').forEach((element) => observer.observe(element));
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <main className="editorial-page">
       <section className="editorial-section">
@@ -33,41 +53,49 @@ export default function DuesPage() {
 
       <section className="editorial-section editorial-section-muted">
         <div className="site-container">
-          <EditorialSectionHeader title="Know the cost before you apply." description="Membership dues are paid yearly. Honorary membership is offered by invitation, and Veteran membership has no fee." />
-          <div className="overflow-x-auto border-y border-gray-200 bg-white">
-            <table className="w-full min-w-[620px]">
-              <caption className="sr-only">Annual membership fee structure by membership type</caption>
-              <thead>
-                <tr className="border-b-2 border-gray-200 text-left">
-                  <th scope="col" className="px-5 py-4 text-xs font-bold uppercase tracking-[0.12em] text-gray-500">Membership type</th>
-                  <th scope="col" className="px-5 py-4 text-center text-xs font-bold uppercase tracking-[0.12em] text-gray-500">Annual fee</th>
-                  <th scope="col" className="px-5 py-4 text-center text-xs font-bold uppercase tracking-[0.12em] text-gray-500">Payment frequency</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr className="border-b border-gray-200 bg-lmsa-50">
-                  <td className="px-5 py-5 font-semibold text-lmsa-900">Full Member</td>
-                  <td className="px-5 py-5 text-center text-xl font-semibold text-lmsa-700">$25</td>
-                  <td className="px-5 py-5 text-center text-gray-700">Yearly</td>
-                </tr>
-                <tr className="border-b border-gray-200">
-                  <td className="px-5 py-5 font-semibold text-lmsa-900">Associate Member</td>
-                  <td className="px-5 py-5 text-center text-xl font-semibold text-lmsa-700">$15</td>
-                  <td className="px-5 py-5 text-center text-gray-700">Yearly</td>
-                </tr>
-                <tr className="border-b border-gray-200">
-                  <td className="px-5 py-5 font-semibold text-lmsa-900">Honorary Member</td>
-                  <td className="px-5 py-5 text-center text-gray-600">By invitation</td>
-                  <td className="px-5 py-5 text-center text-gray-700">N/A</td>
-                </tr>
-                <tr>
-                  <td className="px-5 py-5 font-semibold text-lmsa-900">Veteran Member</td>
-                  <td className="px-5 py-5 text-center text-gray-600">Free</td>
-                  <td className="px-5 py-5 text-center text-gray-700">N/A</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+          <EditorialSectionHeader
+            title="Know the cost before you apply."
+            description="Dues cover a full year and are due by October 31st each year."
+          />
+          <ol className="lg:max-w-4xl">
+            {duesCategories.map((category, index) => (
+              <li
+                key={category.name}
+                className="-mx-2 grid px-2 py-7 sm:-mx-3 sm:px-3 lg:-mx-4 lg:grid-cols-[1fr_auto] lg:items-baseline lg:gap-12 lg:px-4 lg:py-6"
+              >
+                <div className="reveal-on-scroll" style={{ transitionDelay: `${index * 70}ms` }}>
+                  <div className="flex flex-wrap items-baseline gap-x-3">
+                    <h3 className="font-serif text-2xl font-bold leading-snug tracking-[-0.01em] text-lmsa-900 md:text-[1.75rem]">
+                      {category.name}
+                    </h3>
+                    {/* The fee reads on the name line; the column takes over at lg. */}
+                    <p className="ml-auto whitespace-nowrap font-serif text-lg font-bold leading-none tracking-[-0.02em] text-lmsa-800 lg:hidden">
+                      {category.price}
+                      {category.period && (
+                        <span className="ml-1 text-sm font-normal tracking-normal text-gray-600">
+                          {category.period}
+                        </span>
+                      )}
+                    </p>
+                  </div>
+                  <p className="mt-1 text-balance text-sm leading-6 text-gray-600">
+                    For {category.audience}
+                  </p>
+                </div>
+                <p
+                  className="reveal-on-scroll hidden whitespace-nowrap font-serif text-[clamp(1.6rem,2.2vw,1.9rem)] font-bold leading-none tracking-[-0.02em] text-lmsa-800 lg:block"
+                  style={{ transitionDelay: `${index * 70 + 60}ms` }}
+                >
+                  {category.price}
+                  {category.period && (
+                    <span className="ml-2 text-sm font-normal tracking-normal text-gray-600">
+                      {category.period}
+                    </span>
+                  )}
+                </p>
+              </li>
+            ))}
+          </ol>
         </div>
       </section>
 

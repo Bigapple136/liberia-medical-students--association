@@ -1,23 +1,24 @@
 {
- "url": "http://localhost:5173/membership/categories",
- "at": "2026-11-08T03:33:37.731Z",
+ "url": "http://localhost:5173/membership/dues",
+ "at": "2026-11-08T03:57:34.702Z",
  "allow": [],
  "viewports": [
   {
    "width": 1440,
    "height": 900,
    "load": "load",
-   "screens": 4,
+   "screens": 5,
    "filled": [
-    0.66,
+    0.73,
+    0.87,
+    0.61,
     0.82,
-    0.74,
     0.93
    ],
    "motion": {
-    "elements": 27,
+    "elements": 9,
     "css": 1,
-    "transitions": 26,
+    "transitions": 8,
     "scripted": 0,
     "videos": 0,
     "playingVideos": 0
@@ -28,14 +29,14 @@
      "h": 900
     },
     "page": {
-     "height": 3065,
-     "screens": 3.4,
-     "words": 354,
+     "height": 4098,
+     "screens": 4.6,
+     "words": 390,
      "img": 2,
      "video": 0,
      "canvas": 0,
-     "svg": 24,
-     "sections": 3,
+     "svg": 25,
+     "sections": 7,
      "horizontalOverflow": 0,
      "overflowCulprits": [],
      "uiFragments": 0,
@@ -44,7 +45,7 @@
      "videoCount": 0,
      "uiPictures": 0,
      "pictureSamples": [
-      "photo-1579684385127-1ef15d508118?w=1200&q=80"
+      "photo-1523240795612-9a054b0db644?w=1200&q=80"
      ],
      "blendText": 0,
      "sideScrollers": 0,
@@ -52,96 +53,159 @@
      "emoji": []
     },
     "hero": {
-     "text": "Four ways to belong.",
-     "words": 4,
-     "chars": 20,
+     "text": "A simple path to active membership",
+     "words": 6,
+     "chars": 34,
      "lines": 2,
-     "size": 80,
-     "vw": 5.6,
-     "font": "Merriweather",
+     "size": 60,
+     "vw": 4.2,
+     "font": "Inter",
      "weight": 700,
-     "tracking": -0.02,
-     "leading": 1.02,
+     "tracking": -0.025,
+     "leading": 1,
      "upper": false,
      "italic": false,
      "mono": false,
      "align": "left",
      "position": "left",
-     "widthRatio": 0.45,
-     "top": 192,
+     "widthRatio": 0.53,
+     "top": 208,
      "tag": "h1",
      "kind": "heading"
     },
     "h1": {
-     "text": "Four ways to belong.",
-     "words": 4,
+     "text": "A simple path to active membership",
+     "words": 6,
      "lines": 2,
-     "size": 80,
-     "font": "Merriweather"
+     "size": 60,
+     "font": "Inter"
     },
     "headings": [
      {
-      "text": "Four ways to belong.",
-      "words": 4,
-      "chars": 20,
-      "lines": 2,
-      "size": 80,
-      "vw": 5.6,
-      "font": "Merriweather",
-      "weight": 700,
-      "tracking": -0.02,
-      "leading": 1.02,
-      "upper": false,
-      "italic": false,
-      "mono": false,
-      "align": "left",
-      "position": "left",
-      "widthRatio": 0.45,
-      "top": 192,
-      "tag": "h1",
-      "kind": "heading"
-     },
-     {
-      "text": "The four categories, line by line.",
+      "text": "A simple path to active membership",
       "words": 6,
       "chars": 34,
-      "lines": 1,
-      "size": 44,
-      "vw": 3.1,
-      "font": "Inter",
-      "weight": 600,
-      "tracking": -0.03,
-      "leading": 1.25,
-      "upper": false,
-      "italic": false,
-      "mono": false,
-      "align": "left",
-      "position": "left",
-      "widthRatio": 0.47,
-      "top": 639,
-      "tag": "h2",
-      "kind": "heading"
-     },
-     {
-      "text": "$25 a year",
-      "words": 3,
-      "chars": 10,
       "lines": 2,
-      "size": 30.4,
-      "vw": 2.1,
-      "font": "Merriweather",
+      "size": 60,
+      "vw": 4.2,
+      "font": "Inter",
       "weight": 700,
-      "tracking": -0.02,
+      "tracking": -0.025,
       "leading": 1,
       "upper": false,
       "italic": false,
       "mono": false,
       "align": "left",
       "position": "left",
-      "widthRatio": 0.14,
-      "top": 850,
-      "tag": "p",
-      "kind": "statement"
+      "widthRatio": 0.53,
+      "top": 208,
+      "tag": "h1",
+      "kind": "heading"
+     },
+     {
+      "text": "A transparent contribution to a shared student infrastructure.",
+      "words": 8,
+      "chars": 62,
+      "lines": 2,
+      "size": 36,
+      "vw": 2.5,
+      "font": "Inter",
+      "weight": 600,
+      "tracking": -0.03,
+      "leading": 1.11,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "left",
+      "widthRatio": 0.47,
+      "top": 672,
+      "tag": "h2",
+      "kind": "heading"
+     },
+     {
+      "text": "$25",
+      "words": 1,
+      "chars": 3,
+      "lines": 1,
+      "size": 36,
+      "vw": 2.5,
+      "font": "Inter",
+      "weight": 600,
+      "tracking": -0.05,
+      "leading": 1.11,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "left",
+      "widthRatio": 0.26,
+      "top": 888,
+      "tag": "strong",
+      "kind": "heading"
+     },
+     {
+      "text": "$15",
+      "words": 1,
+      "chars": 3,
+      "lines": 1,
+      "size": 36,
+      "vw": 2.5,
+      "font": "Inter",
+      "weight": 600,
+      "tracking": -0.05,
+      "leading": 1.11,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.24,
+      "top": 888,
+      "tag": "strong",
+      "kind": "heading"
+     },
+     {
+      "text": "Oct 31",
+      "words": 2,
+      "chars": 6,
+      "lines": 1,
+      "size": 36,
+      "vw": 2.5,
+      "font": "Inter",
+      "weight": 600,
+      "tracking": -0.05,
+      "leading": 1.11,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "right",
+      "widthRatio": 0.24,
+      "top": 888,
+      "tag": "strong",
+      "kind": "heading"
+     },
+     {
+      "text": "Know the cost before you apply.",
+      "words": 6,
+      "chars": 31,
+      "lines": 1,
+      "size": 36,
+      "vw": 2.5,
+      "font": "Inter",
+      "weight": 600,
+      "tracking": -0.03,
+      "leading": 1.11,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "left",
+      "widthRatio": 0.47,
+      "top": 1236,
+      "tag": "h2",
+      "kind": "heading"
      },
      {
       "text": "Full Member",
@@ -160,15 +224,15 @@
       "align": "left",
       "position": "left",
       "widthRatio": 0.12,
-      "top": 850,
+      "top": 1384,
       "tag": "h3",
       "kind": "heading"
      },
      {
-      "text": "$15 a year",
-      "words": 3,
-      "chars": 10,
-      "lines": 2,
+      "text": "$25a year",
+      "words": 2,
+      "chars": 9,
+      "lines": 1,
       "size": 30.4,
       "vw": 2.1,
       "font": "Merriweather",
@@ -179,9 +243,9 @@
       "italic": false,
       "mono": false,
       "align": "left",
-      "position": "left",
-      "widthRatio": 0.14,
-      "top": 1065,
+      "position": "right",
+      "widthRatio": 0.07,
+      "top": 1387,
       "tag": "p",
       "kind": "statement"
      },
@@ -202,14 +266,14 @@
       "align": "left",
       "position": "left",
       "widthRatio": 0.17,
-      "top": 1065,
+      "top": 1498,
       "tag": "h3",
       "kind": "heading"
      },
      {
-      "text": "By invitation",
+      "text": "$15a year",
       "words": 2,
-      "chars": 13,
+      "chars": 9,
       "lines": 1,
       "size": 30.4,
       "vw": 2.1,
@@ -221,9 +285,9 @@
       "italic": false,
       "mono": false,
       "align": "left",
-      "position": "left",
-      "widthRatio": 0.13,
-      "top": 1245,
+      "position": "right",
+      "widthRatio": 0.07,
+      "top": 1501,
       "tag": "p",
       "kind": "statement"
      },
@@ -244,14 +308,14 @@
       "align": "left",
       "position": "left",
       "widthRatio": 0.18,
-      "top": 1245,
+      "top": 1613,
       "tag": "h3",
       "kind": "heading"
      },
      {
-      "text": "Free",
-      "words": 1,
-      "chars": 4,
+      "text": "By invitation",
+      "words": 2,
+      "chars": 13,
       "lines": 1,
       "size": 30.4,
       "vw": 2.1,
@@ -263,9 +327,9 @@
       "italic": false,
       "mono": false,
       "align": "left",
-      "position": "left",
-      "widthRatio": 0.14,
-      "top": 1459,
+      "position": "right",
+      "widthRatio": 0.13,
+      "top": 1616,
       "tag": "p",
       "kind": "statement"
      },
@@ -286,28 +350,91 @@
       "align": "left",
       "position": "left",
       "widthRatio": 0.16,
-      "top": 1459,
+      "top": 1727,
       "tag": "h3",
       "kind": "heading"
      },
      {
-      "text": "Choose a category, then apply.",
-      "words": 5,
-      "chars": 30,
-      "lines": 2,
-      "size": 52,
-      "vw": 3.6,
+      "text": "Free",
+      "words": 1,
+      "chars": 4,
+      "lines": 1,
+      "size": 30.4,
+      "vw": 2.1,
       "font": "Merriweather",
       "weight": 700,
-      "tracking": -0.015,
-      "leading": 1.06,
+      "tracking": -0.02,
+      "leading": 1,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "right",
+      "widthRatio": 0.04,
+      "top": 1730,
+      "tag": "p",
+      "kind": "statement"
+     },
+     {
+      "text": "Choose the route that works for you.",
+      "words": 7,
+      "chars": 36,
+      "lines": 1,
+      "size": 36,
+      "vw": 2.5,
+      "font": "Inter",
+      "weight": 600,
+      "tracking": -0.03,
+      "leading": 1.11,
       "upper": false,
       "italic": false,
       "mono": false,
       "align": "left",
       "position": "left",
-      "widthRatio": 0.44,
-      "top": 1993,
+      "widthRatio": 0.47,
+      "top": 1990,
+      "tag": "h2",
+      "kind": "heading"
+     },
+     {
+      "text": "A few details to keep your membership in good standing.",
+      "words": 10,
+      "chars": 55,
+      "lines": 3,
+      "size": 36,
+      "vw": 2.5,
+      "font": "Inter",
+      "weight": 600,
+      "tracking": -0.03,
+      "leading": 1.11,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "left",
+      "widthRatio": 0.29,
+      "top": 2602,
+      "tag": "h2",
+      "kind": "heading"
+     },
+     {
+      "text": "Activate your place in the LMSA community.",
+      "words": 7,
+      "chars": 42,
+      "lines": 2,
+      "size": 36,
+      "vw": 2.5,
+      "font": "Inter",
+      "weight": 600,
+      "tracking": -0.03,
+      "leading": 1.11,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "left",
+      "widthRatio": 0.47,
+      "top": 3113,
       "tag": "h2",
       "kind": "heading"
      },
@@ -328,15 +455,15 @@
       "align": "left",
       "position": "left",
       "widthRatio": 0.32,
-      "top": 2440,
+      "top": 3473,
       "tag": "h2",
       "kind": "heading"
      }
     ],
     "headingSummary": {
-     "count": 12,
-     "maxLines": 2,
-     "over2Lines": 0,
+     "count": 18,
+     "maxLines": 3,
+     "over2Lines": 1,
      "statements": 4,
      "centered": 0,
      "medianWords": 2,
@@ -346,12 +473,12 @@
      "families": [
       {
        "family": "Inter",
-       "share": 0.92,
+       "share": 0.96,
        "mono": false
       },
       {
        "family": "Merriweather",
-       "share": 0.08,
+       "share": 0.04,
        "mono": false
       }
      ],
@@ -366,26 +493,24 @@
       28,
       30,
       36,
-      44,
-      52,
-      80
+      60
      ],
-     "sizeCount": 12,
+     "sizeCount": 10,
      "notLoaded": [],
      "body": {
       "font": "Inter",
-      "size": 16,
-      "leading": 1.75,
+      "size": 18,
+      "leading": 1.56,
       "weight": 400,
       "tracking": 0,
-      "contrast": 12.2
+      "contrast": 7
      },
      "measureChars": 64,
      "max": {
-      "size": 80,
-      "vw": 5.6,
-      "font": "Merriweather",
-      "text": "Four ways to belong."
+      "size": 60,
+      "vw": 4.2,
+      "font": "Inter",
+      "text": "A simple path to active membership"
      },
      "monoShare": 0,
      "monoProseShare": 0,
@@ -395,11 +520,32 @@
      "microLabelShare": 0,
      "microSamples": [],
      "upperShare": 0,
-     "centerShare": 0.03,
+     "centerShare": 0.04,
      "smallText": 0
     },
     "eyebrows": [],
-    "numbered": [],
+    "numbered": [
+     {
+      "text": "01",
+      "size": 14,
+      "top": 2611
+     },
+     {
+      "text": "02",
+      "size": 14,
+      "top": 2680
+     },
+     {
+      "text": "03",
+      "size": 14,
+      "top": 2749
+     },
+     {
+      "text": "04",
+      "size": 14,
+      "top": 2818
+     }
+    ],
     "color": {
      "bodyBg": "#f7f6f2",
      "bodyBgHsl": {
@@ -410,8 +556,17 @@
      "dark": false,
      "sectionBgs": [
       {
-       "color": "#f7f6f2",
+       "color": "#064629",
        "top": 112,
+       "hsl": {
+        "h": 153,
+        "s": 0.84,
+        "l": 0.15
+       }
+      },
+      {
+       "color": "#f7f6f2",
+       "top": 580,
        "hsl": {
         "h": 48,
         "s": 0.24,
@@ -420,7 +575,7 @@
       },
       {
        "color": "#ebeae4",
-       "top": 559,
+       "top": 1144,
        "hsl": {
         "h": 51,
         "s": 0.15,
@@ -429,7 +584,7 @@
       },
       {
        "color": "#111827",
-       "top": 2364,
+       "top": 3397,
        "hsl": {
         "h": 221,
         "s": 0.39,
@@ -439,24 +594,24 @@
      ],
      "textColors": [
       {
-       "color": "#1f2937",
-       "share": 0.22
-      },
-      {
-       "color": "#9ca3af",
-       "share": 0.19
-      },
-      {
        "color": "#4b5563",
-       "share": 0.17
+       "share": 0.27
       },
       {
        "color": "#374151",
+       "share": 0.18
+      },
+      {
+       "color": "#9ca3af",
+       "share": 0.17
+      },
+      {
+       "color": "#064629",
        "share": 0.15
       },
       {
-       "color": "#ffffff",
-       "share": 0.08
+       "color": "#e8f7f0",
+       "share": 0.13
       }
      ],
      "button": {
@@ -481,7 +636,7 @@
      "upper": 0,
      "heroLabels": [
       "Join LMSA",
-      "Compare the four categories"
+      "Start membership"
      ]
     },
     "surfaces": {
@@ -492,20 +647,34 @@
      "scrims": 0,
      "gradientSamples": [],
      "gradientText": 0,
-     "hairlines": 0,
-     "hairlineSamples": [],
+     "hairlines": 4,
+     "hairlineSamples": [
+      "div.editorial-article-list 700px",
+      "div.editorial-article-row 700px",
+      "div.editorial-article-row 700px",
+      "div.editorial-article-row 700px"
+     ],
      "outlinedBoxes": 0,
      "dashed": 0,
      "blurred": 0,
-     "roundedBoxes": 0,
-     "boxRadius": 0,
+     "roundedBoxes": 1,
+     "boxRadius": 99,
      "squareMedia": 1,
      "roundedMedia": 0,
      "mediaRadius": 0,
      "textShadow": 0,
      "cardRows": []
     },
-    "heroMedia": [],
+    "heroMedia": [
+     {
+      "type": "img",
+      "ratio": 0.52
+     },
+     {
+      "type": "svg",
+      "ratio": 0.52
+     }
+    ],
     "nav": {
      "links": 6,
      "fixed": true,
@@ -526,16 +695,16 @@
    "load": "load",
    "screens": 5,
    "filled": [
-    0.53,
-    1,
-    0.68,
-    0.9,
+    0.71,
+    0.87,
+    0.84,
+    0.88,
     1
    ],
    "motion": {
-    "elements": 22,
+    "elements": 5,
     "css": 1,
-    "transitions": 21,
+    "transitions": 4,
     "scripted": 0,
     "videos": 0,
     "playingVideos": 0
@@ -546,14 +715,14 @@
      "h": 1024
     },
     "page": {
-     "height": 4614,
-     "screens": 4.5,
-     "words": 341,
+     "height": 4755,
+     "screens": 4.6,
+     "words": 379,
      "img": 2,
      "video": 0,
      "canvas": 0,
-     "svg": 24,
-     "sections": 3,
+     "svg": 25,
+     "sections": 7,
      "horizontalOverflow": 0,
      "overflowCulprits": [],
      "uiFragments": 0,
@@ -562,7 +731,7 @@
      "videoCount": 0,
      "uiPictures": 0,
      "pictureSamples": [
-      "photo-1579684385127-1ef15d508118?w=1200&q=80"
+      "photo-1523240795612-9a054b0db644?w=1200&q=80"
      ],
      "blendText": 0,
      "sideScrollers": 0,
@@ -570,73 +739,157 @@
      "emoji": []
     },
     "hero": {
-     "text": "Four ways to belong.",
-     "words": 4,
-     "chars": 20,
-     "lines": 2,
-     "size": 46.1,
-     "vw": 6,
-     "font": "Merriweather",
+     "text": "A simple path to active membership",
+     "words": 6,
+     "chars": 34,
+     "lines": 3,
+     "size": 60,
+     "vw": 7.8,
+     "font": "Inter",
      "weight": 700,
-     "tracking": -0.02,
-     "leading": 1.02,
+     "tracking": -0.025,
+     "leading": 1,
      "upper": false,
      "italic": false,
      "mono": false,
      "align": "left",
      "position": "left",
-     "widthRatio": 0.51,
+     "widthRatio": 0.52,
      "top": 192,
      "tag": "h1",
      "kind": "heading"
     },
     "h1": {
-     "text": "Four ways to belong.",
-     "words": 4,
-     "lines": 2,
-     "size": 46.1,
-     "font": "Merriweather"
+     "text": "A simple path to active membership",
+     "words": 6,
+     "lines": 3,
+     "size": 60,
+     "font": "Inter"
     },
     "headings": [
      {
-      "text": "Four ways to belong.",
-      "words": 4,
-      "chars": 20,
-      "lines": 2,
-      "size": 46.1,
-      "vw": 6,
-      "font": "Merriweather",
+      "text": "A simple path to active membership",
+      "words": 6,
+      "chars": 34,
+      "lines": 3,
+      "size": 60,
+      "vw": 7.8,
+      "font": "Inter",
       "weight": 700,
-      "tracking": -0.02,
-      "leading": 1.02,
+      "tracking": -0.025,
+      "leading": 1,
       "upper": false,
       "italic": false,
       "mono": false,
       "align": "left",
       "position": "left",
-      "widthRatio": 0.51,
+      "widthRatio": 0.52,
       "top": 192,
       "tag": "h1",
       "kind": "heading"
      },
      {
-      "text": "The four categories, line by line.",
-      "words": 6,
-      "chars": 34,
-      "lines": 1,
-      "size": 27.2,
-      "vw": 3.5,
+      "text": "A transparent contribution to a shared student infrastructure.",
+      "words": 8,
+      "chars": 62,
+      "lines": 2,
+      "size": 36,
+      "vw": 4.7,
       "font": "Inter",
       "weight": 600,
       "tracking": -0.03,
-      "leading": 1.25,
+      "leading": 1.11,
       "upper": false,
       "italic": false,
       "mono": false,
       "align": "left",
       "position": "center",
       "widthRatio": 0.88,
-      "top": 826,
+      "top": 728,
+      "tag": "h2",
+      "kind": "heading"
+     },
+     {
+      "text": "$25",
+      "words": 1,
+      "chars": 3,
+      "lines": 1,
+      "size": 36,
+      "vw": 4.7,
+      "font": "Inter",
+      "weight": 600,
+      "tracking": -0.05,
+      "leading": 1.11,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "left",
+      "widthRatio": 0.27,
+      "top": 944,
+      "tag": "strong",
+      "kind": "heading"
+     },
+     {
+      "text": "$15",
+      "words": 1,
+      "chars": 3,
+      "lines": 1,
+      "size": 36,
+      "vw": 4.7,
+      "font": "Inter",
+      "weight": 600,
+      "tracking": -0.05,
+      "leading": 1.11,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.24,
+      "top": 944,
+      "tag": "strong",
+      "kind": "heading"
+     },
+     {
+      "text": "Oct 31",
+      "words": 2,
+      "chars": 6,
+      "lines": 1,
+      "size": 36,
+      "vw": 4.7,
+      "font": "Inter",
+      "weight": 600,
+      "tracking": -0.05,
+      "leading": 1.11,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "right",
+      "widthRatio": 0.24,
+      "top": 944,
+      "tag": "strong",
+      "kind": "heading"
+     },
+     {
+      "text": "Know the cost before you apply.",
+      "words": 6,
+      "chars": 31,
+      "lines": 1,
+      "size": 36,
+      "vw": 4.7,
+      "font": "Inter",
+      "weight": 600,
+      "tracking": -0.03,
+      "leading": 1.11,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.88,
+      "top": 1292,
       "tag": "h2",
       "kind": "heading"
      },
@@ -657,7 +910,7 @@
       "align": "left",
       "position": "left",
       "widthRatio": 0.23,
-      "top": 1016,
+      "top": 1444,
       "tag": "h3",
       "kind": "heading"
      },
@@ -678,7 +931,7 @@
       "align": "left",
       "position": "left",
       "widthRatio": 0.33,
-      "top": 1390,
+      "top": 1566,
       "tag": "h3",
       "kind": "heading"
      },
@@ -699,7 +952,7 @@
       "align": "left",
       "position": "left",
       "widthRatio": 0.33,
-      "top": 1713,
+      "top": 1689,
       "tag": "h3",
       "kind": "heading"
      },
@@ -720,28 +973,70 @@
       "align": "left",
       "position": "left",
       "widthRatio": 0.29,
-      "top": 2095,
+      "top": 1811,
       "tag": "h3",
       "kind": "heading"
      },
      {
-      "text": "Choose a category, then apply.",
-      "words": 5,
-      "chars": 30,
+      "text": "Choose the route that works for you.",
+      "words": 7,
+      "chars": 36,
+      "lines": 1,
+      "size": 36,
+      "vw": 4.7,
+      "font": "Inter",
+      "weight": 600,
+      "tracking": -0.03,
+      "leading": 1.11,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.88,
+      "top": 2078,
+      "tag": "h2",
+      "kind": "heading"
+     },
+     {
+      "text": "A few details to keep your membership in good standing.",
+      "words": 10,
+      "chars": 55,
       "lines": 2,
-      "size": 32,
-      "vw": 4.2,
-      "font": "Merriweather",
-      "weight": 700,
-      "tracking": -0.015,
-      "leading": 1.06,
+      "size": 36,
+      "vw": 4.7,
+      "font": "Inter",
+      "weight": 600,
+      "tracking": -0.03,
+      "leading": 1.11,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.88,
+      "top": 2690,
+      "tag": "h2",
+      "kind": "heading"
+     },
+     {
+      "text": "Activate your place in the LMSA community.",
+      "words": 7,
+      "chars": 42,
+      "lines": 2,
+      "size": 36,
+      "vw": 4.7,
+      "font": "Inter",
+      "weight": 600,
+      "tracking": -0.03,
+      "leading": 1.11,
       "upper": false,
       "italic": false,
       "mono": false,
       "align": "left",
       "position": "left",
-      "widthRatio": 0.55,
-      "top": 2498,
+      "widthRatio": 0.48,
+      "top": 3439,
       "tag": "h2",
       "kind": "heading"
      },
@@ -762,15 +1057,15 @@
       "align": "left",
       "position": "left",
       "widthRatio": 0.55,
-      "top": 3686,
+      "top": 3827,
       "tag": "h2",
       "kind": "heading"
      }
     ],
     "headingSummary": {
-     "count": 8,
-     "maxLines": 2,
-     "over2Lines": 0,
+     "count": 14,
+     "maxLines": 3,
+     "over2Lines": 1,
      "statements": 0,
      "centered": 0,
      "medianWords": 2,
@@ -780,12 +1075,12 @@
      "families": [
       {
        "family": "Inter",
-       "share": 0.92,
+       "share": 0.96,
        "mono": false
       },
       {
        "family": "Merriweather",
-       "share": 0.08,
+       "share": 0.04,
        "mono": false
       }
      ],
@@ -797,28 +1092,26 @@
       18,
       20,
       24,
-      27,
       28,
-      32,
       36,
-      46
+      60
      ],
-     "sizeCount": 11,
+     "sizeCount": 9,
      "notLoaded": [],
      "body": {
       "font": "Inter",
-      "size": 16,
-      "leading": 1.75,
+      "size": 18,
+      "leading": 1.56,
       "weight": 400,
       "tracking": 0,
-      "contrast": 12.2
+      "contrast": 7
      },
      "measureChars": 64,
      "max": {
-      "size": 46.1,
-      "vw": 6,
-      "font": "Merriweather",
-      "text": "Four ways to belong."
+      "size": 60,
+      "vw": 7.8,
+      "font": "Inter",
+      "text": "A simple path to active membership"
      },
      "monoShare": 0,
      "monoProseShare": 0,
@@ -828,11 +1121,32 @@
      "microLabelShare": 0,
      "microSamples": [],
      "upperShare": 0,
-     "centerShare": 0,
+     "centerShare": 0.02,
      "smallText": 0
     },
     "eyebrows": [],
-    "numbered": [],
+    "numbered": [
+     {
+      "text": "01",
+      "size": 14,
+      "top": 2915
+     },
+     {
+      "text": "02",
+      "size": 14,
+      "top": 2984
+     },
+     {
+      "text": "03",
+      "size": 14,
+      "top": 3053
+     },
+     {
+      "text": "04",
+      "size": 14,
+      "top": 3122
+     }
+    ],
     "color": {
      "bodyBg": "#f7f6f2",
      "bodyBgHsl": {
@@ -843,8 +1157,17 @@
      "dark": false,
      "sectionBgs": [
       {
-       "color": "#f7f6f2",
+       "color": "#064629",
        "top": 112,
+       "hsl": {
+        "h": 153,
+        "s": 0.84,
+        "l": 0.15
+       }
+      },
+      {
+       "color": "#f7f6f2",
+       "top": 636,
        "hsl": {
         "h": 48,
         "s": 0.24,
@@ -853,7 +1176,7 @@
       },
       {
        "color": "#ebeae4",
-       "top": 746,
+       "top": 1200,
        "hsl": {
         "h": 51,
         "s": 0.15,
@@ -861,17 +1184,8 @@
        }
       },
       {
-       "color": "#085c36",
-       "top": 2794,
-       "hsl": {
-        "h": 153,
-        "s": 0.84,
-        "l": 0.2
-       }
-      },
-      {
        "color": "#111827",
-       "top": 3610,
+       "top": 3751,
        "hsl": {
         "h": 221,
         "s": 0.39,
@@ -881,24 +1195,24 @@
      ],
      "textColors": [
       {
-       "color": "#1f2937",
-       "share": 0.22
+       "color": "#4b5563",
+       "share": 0.28
       },
       {
        "color": "#9ca3af",
-       "share": 0.19
-      },
-      {
-       "color": "#4b5563",
-       "share": 0.18
+       "share": 0.17
       },
       {
        "color": "#374151",
-       "share": 0.13
+       "share": 0.16
       },
       {
-       "color": "#ffffff",
-       "share": 0.08
+       "color": "#064629",
+       "share": 0.15
+      },
+      {
+       "color": "#e8f7f0",
+       "share": 0.13
       }
      ],
      "button": {
@@ -923,7 +1237,7 @@
      "upper": 0,
      "heroLabels": [
       "Join LMSA",
-      "Compare the four categories"
+      "Start membership"
      ]
     },
     "surfaces": {
@@ -934,20 +1248,34 @@
      "scrims": 0,
      "gradientSamples": [],
      "gradientText": 0,
-     "hairlines": 0,
-     "hairlineSamples": [],
+     "hairlines": 4,
+     "hairlineSamples": [
+      "div.editorial-article-list 704px",
+      "div.editorial-article-row 704px",
+      "div.editorial-article-row 704px",
+      "div.editorial-article-row 704px"
+     ],
      "outlinedBoxes": 0,
      "dashed": 0,
      "blurred": 0,
-     "roundedBoxes": 0,
-     "boxRadius": 0,
+     "roundedBoxes": 1,
+     "boxRadius": 99,
      "squareMedia": 1,
      "roundedMedia": 0,
      "mediaRadius": 0,
      "textShadow": 0,
      "cardRows": []
     },
-    "heroMedia": [],
+    "heroMedia": [
+     {
+      "type": "img",
+      "ratio": 0.51
+     },
+     {
+      "type": "svg",
+      "ratio": 0.51
+     }
+    ],
     "nav": {
      "links": 5,
      "fixed": true,
@@ -966,19 +1294,21 @@
    "width": 390,
    "height": 844,
    "load": "load",
-   "screens": 6,
+   "screens": 8,
    "filled": [
-    0.44,
+    0.93,
+    0.39,
+    0.93,
+    0.8,
     1,
-    0.83,
-    0.62,
+    0.89,
     1,
     1
    ],
    "motion": {
-    "elements": 23,
+    "elements": 5,
     "css": 1,
-    "transitions": 22,
+    "transitions": 4,
     "scripted": 0,
     "videos": 0,
     "playingVideos": 0
@@ -989,14 +1319,14 @@
      "h": 844
     },
     "page": {
-     "height": 4801,
-     "screens": 5.7,
-     "words": 325,
+     "height": 6387,
+     "screens": 7.6,
+     "words": 363,
      "img": 2,
      "video": 0,
      "canvas": 0,
-     "svg": 24,
-     "sections": 3,
+     "svg": 25,
+     "sections": 7,
      "horizontalOverflow": 0,
      "overflowCulprits": [],
      "uiFragments": 0,
@@ -1005,7 +1335,7 @@
      "videoCount": 0,
      "uiPictures": 0,
      "pictureSamples": [
-      "photo-1579684385127-1ef15d508118?w=1200&q=80"
+      "photo-1523240795612-9a054b0db644?w=1200&q=80"
      ],
      "blendText": 0,
      "sideScrollers": 0,
@@ -1013,62 +1343,62 @@
      "emoji": []
     },
     "hero": {
-     "text": "Four ways to belong.",
-     "words": 4,
-     "chars": 20,
+     "text": "A simple path to active membership",
+     "words": 6,
+     "chars": 34,
      "lines": 2,
-     "size": 41.6,
-     "vw": 10.7,
-     "font": "Merriweather",
+     "size": 36,
+     "vw": 9.2,
+     "font": "Inter",
      "weight": 700,
-     "tracking": -0.02,
-     "leading": 1.02,
+     "tracking": -0.025,
+     "leading": 1.08,
      "upper": false,
      "italic": false,
      "mono": false,
      "align": "left",
      "position": "center",
-     "widthRatio": 0.9,
+     "widthRatio": 0.92,
      "top": 168,
      "tag": "h1",
      "kind": "heading"
     },
     "h1": {
-     "text": "Four ways to belong.",
-     "words": 4,
+     "text": "A simple path to active membership",
+     "words": 6,
      "lines": 2,
-     "size": 41.6,
-     "font": "Merriweather"
+     "size": 36,
+     "font": "Inter"
     },
     "headings": [
      {
-      "text": "Four ways to belong.",
-      "words": 4,
-      "chars": 20,
+      "text": "A simple path to active membership",
+      "words": 6,
+      "chars": 34,
       "lines": 2,
-      "size": 41.6,
-      "vw": 10.7,
-      "font": "Merriweather",
+      "size": 36,
+      "vw": 9.2,
+      "font": "Inter",
       "weight": 700,
-      "tracking": -0.02,
-      "leading": 1.02,
+      "tracking": -0.025,
+      "leading": 1.08,
       "upper": false,
       "italic": false,
       "mono": false,
       "align": "left",
       "position": "center",
-      "widthRatio": 0.9,
+      "widthRatio": 0.92,
       "top": 168,
       "tag": "h1",
       "kind": "heading"
      },
      {
-      "text": "The four categories, line by line.",
-      "words": 6,
-      "chars": 34,
-      "lines": 2,
-      "size": 27.2,
-      "vw": 7,
+      "text": "A transparent contribution to a shared student infrastructure.",
+      "words": 8,
+      "chars": 62,
+      "lines": 3,
+      "size": 30,
+      "vw": 7.7,
       "font": "Inter",
       "weight": 600,
       "tracking": -0.03,
@@ -1079,7 +1409,91 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.9,
-      "top": 841,
+      "top": 842,
+      "tag": "h2",
+      "kind": "heading"
+     },
+     {
+      "text": "$25",
+      "words": 1,
+      "chars": 3,
+      "lines": 1,
+      "size": 36,
+      "vw": 9.2,
+      "font": "Inter",
+      "weight": 600,
+      "tracking": -0.05,
+      "leading": 1.11,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.9,
+      "top": 1118,
+      "tag": "strong",
+      "kind": "heading"
+     },
+     {
+      "text": "$15",
+      "words": 1,
+      "chars": 3,
+      "lines": 1,
+      "size": 36,
+      "vw": 9.2,
+      "font": "Inter",
+      "weight": 600,
+      "tracking": -0.05,
+      "leading": 1.11,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.9,
+      "top": 1294,
+      "tag": "strong",
+      "kind": "heading"
+     },
+     {
+      "text": "Oct 31",
+      "words": 2,
+      "chars": 6,
+      "lines": 1,
+      "size": 36,
+      "vw": 9.2,
+      "font": "Inter",
+      "weight": 600,
+      "tracking": -0.05,
+      "leading": 1.11,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.9,
+      "top": 1493,
+      "tag": "strong",
+      "kind": "heading"
+     },
+     {
+      "text": "Know the cost before you apply.",
+      "words": 6,
+      "chars": 31,
+      "lines": 2,
+      "size": 30,
+      "vw": 7.7,
+      "font": "Inter",
+      "weight": 600,
+      "tracking": -0.03,
+      "leading": 1.25,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.9,
+      "top": 1785,
       "tag": "h2",
       "kind": "heading"
      },
@@ -1100,7 +1514,7 @@
       "align": "left",
       "position": "left",
       "widthRatio": 0.38,
-      "top": 1077,
+      "top": 2000,
       "tag": "h3",
       "kind": "heading"
      },
@@ -1121,7 +1535,7 @@
       "align": "left",
       "position": "left",
       "widthRatio": 0.55,
-      "top": 1442,
+      "top": 2117,
       "tag": "h3",
       "kind": "heading"
      },
@@ -1142,7 +1556,7 @@
       "align": "left",
       "position": "left",
       "widthRatio": 0.55,
-      "top": 1755,
+      "top": 2234,
       "tag": "h3",
       "kind": "heading"
      },
@@ -1163,28 +1577,112 @@
       "align": "left",
       "position": "left",
       "widthRatio": 0.49,
-      "top": 2100,
+      "top": 2351,
       "tag": "h3",
       "kind": "heading"
      },
      {
-      "text": "Choose a category, then apply.",
-      "words": 5,
-      "chars": 30,
+      "text": "Choose the route that works for you.",
+      "words": 7,
+      "chars": 36,
       "lines": 2,
-      "size": 32,
-      "vw": 8.2,
-      "font": "Merriweather",
-      "weight": 700,
-      "tracking": -0.015,
-      "leading": 1.06,
+      "size": 30,
+      "vw": 7.7,
+      "font": "Inter",
+      "weight": 600,
+      "tracking": -0.03,
+      "leading": 1.25,
       "upper": false,
       "italic": false,
       "mono": false,
       "align": "left",
       "position": "center",
       "widthRatio": 0.9,
-      "top": 2449,
+      "top": 2580,
+      "tag": "h2",
+      "kind": "heading"
+     },
+     {
+      "text": "Online payment",
+      "words": 2,
+      "chars": 14,
+      "lines": 1,
+      "size": 24,
+      "vw": 6.2,
+      "font": "Inter",
+      "weight": 600,
+      "tracking": 0,
+      "leading": 1.33,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.75,
+      "top": 2871,
+      "tag": "h3",
+      "kind": "heading"
+     },
+     {
+      "text": "In-person payment",
+      "words": 2,
+      "chars": 17,
+      "lines": 1,
+      "size": 24,
+      "vw": 6.2,
+      "font": "Inter",
+      "weight": 600,
+      "tracking": 0,
+      "leading": 1.33,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.75,
+      "top": 3175,
+      "tag": "h3",
+      "kind": "heading"
+     },
+     {
+      "text": "A few details to keep your membership in good standing.",
+      "words": 10,
+      "chars": 55,
+      "lines": 3,
+      "size": 30,
+      "vw": 7.7,
+      "font": "Inter",
+      "weight": 600,
+      "tracking": -0.03,
+      "leading": 1.25,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.9,
+      "top": 3499,
+      "tag": "h2",
+      "kind": "heading"
+     },
+     {
+      "text": "Activate your place in the LMSA community.",
+      "words": 7,
+      "chars": 42,
+      "lines": 3,
+      "size": 30,
+      "vw": 7.7,
+      "font": "Inter",
+      "weight": 600,
+      "tracking": -0.03,
+      "leading": 1.25,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.73,
+      "top": 4548,
       "tag": "h2",
       "kind": "heading"
      },
@@ -1205,7 +1703,7 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.9,
-      "top": 3419,
+      "top": 5005,
       "tag": "h2",
       "kind": "heading"
      },
@@ -1226,15 +1724,15 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.9,
-      "top": 3626,
+      "top": 5212,
       "tag": "h3",
       "kind": "heading"
      }
     ],
     "headingSummary": {
-     "count": 9,
-     "maxLines": 2,
-     "over2Lines": 0,
+     "count": 17,
+     "maxLines": 3,
+     "over2Lines": 3,
      "statements": 0,
      "centered": 0,
      "medianWords": 2,
@@ -1244,12 +1742,12 @@
      "families": [
       {
        "family": "Inter",
-       "share": 0.92,
+       "share": 0.96,
        "mono": false
       },
       {
        "family": "Merriweather",
-       "share": 0.08,
+       "share": 0.04,
        "mono": false
       }
      ],
@@ -1259,14 +1757,11 @@
       14,
       16,
       18,
-      20,
       24,
-      27,
       30,
-      32,
-      42
+      36
      ],
-     "sizeCount": 10,
+     "sizeCount": 7,
      "notLoaded": [],
      "body": {
       "font": "Inter",
@@ -1274,14 +1769,14 @@
       "leading": 1.75,
       "weight": 400,
       "tracking": 0,
-      "contrast": 8.6
+      "contrast": 7
      },
-     "measureChars": 39,
+     "measureChars": 44,
      "max": {
-      "size": 41.6,
-      "vw": 10.7,
-      "font": "Merriweather",
-      "text": "Four ways to belong."
+      "size": 36,
+      "vw": 9.2,
+      "font": "Inter",
+      "text": "A simple path to active membership"
      },
      "monoShare": 0,
      "monoProseShare": 0,
@@ -1291,11 +1786,32 @@
      "microLabelShare": 0,
      "microSamples": [],
      "upperShare": 0,
-     "centerShare": 0,
+     "centerShare": 0.02,
      "smallText": 0
     },
     "eyebrows": [],
-    "numbered": [],
+    "numbered": [
+     {
+      "text": "01",
+      "size": 14,
+      "top": 3784
+     },
+     {
+      "text": "02",
+      "size": 14,
+      "top": 3913
+     },
+     {
+      "text": "03",
+      "size": 14,
+      "top": 4042
+     },
+     {
+      "text": "04",
+      "size": 14,
+      "top": 4171
+     }
+    ],
     "color": {
      "bodyBg": "#f7f6f2",
      "bodyBgHsl": {
@@ -1306,8 +1822,17 @@
      "dark": false,
      "sectionBgs": [
       {
-       "color": "#f7f6f2",
+       "color": "#064629",
        "top": 104,
+       "hsl": {
+        "h": 153,
+        "s": 0.84,
+        "l": 0.15
+       }
+      },
+      {
+       "color": "#f7f6f2",
+       "top": 766,
        "hsl": {
         "h": 48,
         "s": 0.24,
@@ -1316,7 +1841,7 @@
       },
       {
        "color": "#ebeae4",
-       "top": 777,
+       "top": 1709,
        "hsl": {
         "h": 51,
         "s": 0.15,
@@ -1324,17 +1849,17 @@
        }
       },
       {
-       "color": "#085c36",
-       "top": 2893,
+       "color": "#ffffff",
+       "top": 2767,
        "hsl": {
-        "h": 153,
-        "s": 0.84,
-        "l": 0.2
+        "h": 0,
+        "s": 0,
+        "l": 1
        }
       },
       {
        "color": "#111827",
-       "top": 3359,
+       "top": 4945,
        "hsl": {
         "h": 221,
         "s": 0.39,
@@ -1344,32 +1869,32 @@
      ],
      "textColors": [
       {
-       "color": "#1f2937",
-       "share": 0.24
+       "color": "#4b5563",
+       "share": 0.27
       },
       {
        "color": "#9ca3af",
-       "share": 0.2
-      },
-      {
-       "color": "#4b5563",
-       "share": 0.17
+       "share": 0.18
       },
       {
        "color": "#374151",
-       "share": 0.14
+       "share": 0.17
       },
       {
-       "color": "#085c36",
-       "share": 0.08
+       "color": "#064629",
+       "share": 0.16
+      },
+      {
+       "color": "#e8f7f0",
+       "share": 0.11
       }
      ],
      "button": {
-      "bg": "#0c8950",
+      "bg": "#ffffff",
       "hsl": {
-       "h": 153,
-       "s": 0.84,
-       "l": 0.29
+       "h": 0,
+       "s": 0,
+       "l": 1
       },
       "fg": "#ffffff"
      },
@@ -1379,13 +1904,13 @@
      "count": 4,
      "inHero": 1,
      "radius": 0,
-     "height": 48,
+     "height": 44,
      "withShadow": 0,
      "withGradient": 0,
      "mono": 0,
      "upper": 0,
      "heroLabels": [
-      "Compare the four categories"
+      "Start membership"
      ]
     },
     "surfaces": {
@@ -1396,20 +1921,41 @@
      "scrims": 0,
      "gradientSamples": [],
      "gradientText": 0,
-     "hairlines": 0,
-     "hairlineSamples": [],
+     "hairlines": 4,
+     "hairlineSamples": [
+      "div.editorial-article-list 350px",
+      "div.editorial-article-row 350px",
+      "div.editorial-article-row 350px",
+      "div.editorial-article-row 350px"
+     ],
      "outlinedBoxes": 0,
      "dashed": 0,
      "blurred": 0,
-     "roundedBoxes": 0,
-     "boxRadius": 0,
+     "roundedBoxes": 1,
+     "boxRadius": 99,
      "squareMedia": 1,
      "roundedMedia": 0,
      "mediaRadius": 0,
      "textShadow": 0,
-     "cardRows": []
+     "cardRows": [
+      {
+       "count": 3,
+       "iconTopped": false,
+       "rounded": false,
+       "top": 3892
+      }
+     ]
     },
-    "heroMedia": [],
+    "heroMedia": [
+     {
+      "type": "img",
+      "ratio": 0.78
+     },
+     {
+      "type": "svg",
+      "ratio": 0.78
+     }
+    ],
     "nav": {
      "links": 3,
      "fixed": true,
@@ -1427,6 +1973,35 @@
  ],
  "findings": [
   {
+   "level": "FAIL",
+   "id": "headline-lines",
+   "width": 1440,
+   "message": "1 headline(s) wrap past two lines at 1440px: \"A few details to keep your membership in good st\" → 3 lines (10 words, 36px)",
+   "fix": "Cut words first (a headline is a title, not a sentence). Then give it a wider measure. Lower the size only as a last resort and never below the scale you chose. A real statement paragraph belongs in a <p> or <blockquote> at 36px or less."
+  },
+  {
+   "level": "FAIL",
+   "id": "numbering",
+   "width": 1440,
+   "message": "Decorative index numbers: \"01\", \"02\", \"03\", \"04\"",
+   "fix": "Remove them. If order truly matters, write it into the words (\"First, …\") or use a real <ol>.",
+   "alsoAt": [
+    768,
+    390
+   ]
+  },
+  {
+   "level": "FAIL",
+   "id": "hairline",
+   "width": 1440,
+   "message": "4 thin rule(s)/divider line(s): div.editorial-article-list 700px | div.editorial-article-row 700px | div.editorial-article-row 700px | div.editorial-article-row 700px",
+   "fix": "Delete. Separate with space, a tone change, or scale. Lines are only for real tables and form fields.",
+   "alsoAt": [
+    768,
+    390
+   ]
+  },
+  {
    "level": "WARN",
    "id": "palette-cream",
    "width": 1440,
@@ -1441,12 +2016,8 @@
    "level": "WARN",
    "id": "size-count",
    "width": 1440,
-   "message": "12 different font sizes (13, 14, 16, 18, 20, 24, 28, 30, 36, 44, 52, 80).",
-   "fix": "A page needs about five: display, heading, lead, body, small.",
-   "alsoAt": [
-    768,
-    390
-   ]
+   "message": "10 different font sizes (13, 14, 16, 18, 20, 24, 28, 30, 36, 60).",
+   "fix": "A page needs about five: display, heading, lead, body, small."
   },
   {
    "level": "FAIL",
@@ -1461,6 +2032,27 @@
    "width": 1440,
    "message": "No video anywhere on the page.",
    "fix": "Look for one honest clip with scripts/assets.mjs --video (the place, the material, the process) and use it as a muted loop with a poster frame. Defend its absence only if no clip fits the subject."
+  },
+  {
+   "level": "WARN",
+   "id": "still-page",
+   "width": 1440,
+   "message": "Little motion: 9 element(s) moved while the page loaded and scrolled.",
+   "fix": "Give every section an entrance for its parts (not one fade of the whole block) and add one moving picture: a looping clip or a slow move on a photograph."
+  },
+  {
+   "level": "FAIL",
+   "id": "headline-lines",
+   "width": 768,
+   "message": "1 headline(s) wrap past two lines at 768px: \"A simple path to active membership\" → 3 lines (6 words, 60px)",
+   "fix": "Cut words first (a headline is a title, not a sentence). Then give it a wider measure. Lower the size only as a last resort and never below the scale you chose. A real statement paragraph belongs in a <p> or <blockquote> at 32px or less."
+  },
+  {
+   "level": "FAIL",
+   "id": "headline-lines",
+   "width": 390,
+   "message": "3 headline(s) wrap past two lines at 390px: \"A transparent contribution to a shared student i\" → 3 lines (8 words, 30px); \"A few details to keep your membership in good st\" → 3 lines (10 words, 30px); \"Activate your place in the LMSA community.\" → 3 lines (7 words, 30px)",
+   "fix": "Cut words first (a headline is a title, not a sentence). Then give it a wider measure. Lower the size only as a last resort and never below the scale you chose. A real statement paragraph belongs in a <p> or <blockquote> at 24px or less."
   }
  ],
  "images": [
@@ -1469,7 +2061,8 @@
    "width": 1440,
    "fold": "C:\\Users\\goldw\\Desktop\\freelance\\liberia-medical-students-association\\lmsa-website\\.taste-skill\\inspect\\desktop-fold.jpg",
    "pages": [
-    "C:\\Users\\goldw\\Desktop\\freelance\\liberia-medical-students-association\\lmsa-website\\.taste-skill\\inspect\\desktop-page-01.jpg"
+    "C:\\Users\\goldw\\Desktop\\freelance\\liberia-medical-students-association\\lmsa-website\\.taste-skill\\inspect\\desktop-page-01.jpg",
+    "C:\\Users\\goldw\\Desktop\\freelance\\liberia-medical-students-association\\lmsa-website\\.taste-skill\\inspect\\desktop-page-02.jpg"
    ]
   },
   {
