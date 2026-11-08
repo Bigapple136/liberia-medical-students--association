@@ -102,13 +102,13 @@ export default function CategoriesPage() {
       </section>
 
       {/* The ledger: four priced rows instead of four equal cards. */}
-      <section id="categories" className="editorial-section editorial-section-muted">
+      <section id="categories" className="editorial-section editorial-section-muted scroll-mt-28">
         <div className="site-container">
           <div className="reveal-on-scroll max-w-2xl">
             <h2 className="text-[clamp(1.7rem,3.2vw,2.75rem)] font-semibold leading-tight tracking-[-0.03em] text-lmsa-900">
               The four categories, line by line.
             </h2>
-            <p className="mt-4 text-base leading-7 text-gray-700 md:text-lg">
+            <p className="mt-4 text-balance text-base leading-7 text-gray-700 md:text-lg">
               Prices are annual. Every row lists what the category includes and, where it applies,
               what it does not.
             </p>
@@ -126,9 +126,9 @@ export default function CategoriesPage() {
                   <h3 className="font-serif text-2xl font-bold leading-snug tracking-[-0.01em] text-lmsa-900 md:text-[1.75rem]">
                     {category.name}
                   </h3>
-                  <p className="mt-1 text-sm leading-6 text-gray-600">For {category.audience.charAt(0).toLowerCase() + category.audience.slice(1)}</p>
+                  <p className="mt-1 text-balance text-sm leading-6 text-gray-600">For {category.audience.charAt(0).toLowerCase() + category.audience.slice(1)}</p>
                   {category.note && (
-                    <p className="mt-3 max-w-[30ch] text-sm leading-6 text-lmsa-800">{category.note}</p>
+                    <p className="mt-3 max-w-[30ch] text-balance text-sm leading-6 text-lmsa-800">{category.note}</p>
                   )}
                 </div>
                 <p
@@ -146,9 +146,11 @@ export default function CategoriesPage() {
                   className="reveal-on-scroll"
                   style={{ transitionDelay: `${index * 70 + 120}ms` }}
                 >
-                  <p className="max-w-[48ch] text-base leading-7 text-gray-800">{category.included}</p>
+                  <p className="max-w-[48ch] text-balance text-base leading-7 text-gray-800">
+                    {category.included}
+                  </p>
                   {category.limits && (
-                    <p className="mt-2 max-w-[48ch] text-base leading-7 text-gray-600">
+                    <p className="mt-2 max-w-[48ch] text-balance text-base leading-7 text-gray-600">
                       Limits: {category.limits}.
                     </p>
                   )}
