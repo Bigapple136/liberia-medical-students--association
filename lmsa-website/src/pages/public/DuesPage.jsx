@@ -39,13 +39,11 @@ export default function DuesPage() {
     <main className="editorial-page">
       <section className="editorial-section">
         <div className="site-container">
-          <EditorialSectionHeader
-            title="A transparent contribution to a shared student infrastructure."
-            description="Review the current fee structure, payment routes, and the practical details that keep your membership active."
-          />
-          <div className="editorial-stat-grid">
-            <div className="editorial-stat"><strong>$25</strong><span>Full member</span><small>Annual membership for currently enrolled medical students.</small></div>
-            <div className="editorial-stat"><strong>$15</strong><span>Associate member</span><small>Annual membership for prospective students and affiliates.</small></div>
+          <div className="grid lg:grid-cols-[1fr_auto] lg:items-end lg:gap-x-16">
+            <EditorialSectionHeader
+              title="A transparent contribution to a shared student infrastructure."
+              description="Review the current fee structure, payment routes, and the practical details that keep your membership active."
+            />
             <div className="editorial-stat"><strong>Oct 31</strong><span>Payment deadline</span><small>A 30-day grace period follows the annual deadline.</small></div>
           </div>
         </div>
