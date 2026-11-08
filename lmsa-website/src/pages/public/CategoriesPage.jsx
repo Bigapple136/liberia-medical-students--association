@@ -117,22 +117,33 @@ export default function CategoriesPage() {
             {categories.map((category, index) => (
               <li
                 key={category.name}
-                className="group -mx-2 grid gap-5 px-2 py-9 transition-colors duration-200 focus-within:bg-[#f7f6f2] sm:-mx-3 sm:px-3 md:py-11 lg:-mx-4 lg:grid-cols-[1fr_0.62fr_1.45fr_auto] lg:items-start lg:gap-10 lg:px-4 [@media(hover:hover)]:hover:bg-[#f7f6f2]"
+                className="group -mx-2 grid gap-4 px-2 py-7 transition-colors duration-200 focus-within:bg-[#f7f6f2] sm:-mx-3 sm:px-3 md:py-11 lg:-mx-4 lg:grid-cols-[1fr_0.62fr_1.45fr_auto] lg:items-start lg:gap-10 lg:px-4 [@media(hover:hover)]:hover:bg-[#f7f6f2]"
               >
                 <div
                   className="reveal-on-scroll"
                   style={{ transitionDelay: `${index * 70}ms` }}
                 >
-                  <h3 className="font-serif text-2xl font-bold leading-snug tracking-[-0.01em] text-lmsa-900 md:text-[1.75rem]">
-                    {category.name}
-                  </h3>
+                  <div className="flex flex-wrap items-baseline gap-x-3">
+                    <h3 className="font-serif text-2xl font-bold leading-snug tracking-[-0.01em] text-lmsa-900 md:text-[1.75rem]">
+                      {category.name}
+                    </h3>
+                    {/* Phones read the fee on the name line; the grid column takes over at lg. */}
+                    <p className="ml-auto whitespace-nowrap font-serif text-lg font-bold leading-none tracking-[-0.02em] text-lmsa-800 lg:hidden">
+                      {category.price}
+                      {category.period && (
+                        <span className="ml-1 text-sm font-normal tracking-normal text-gray-600">
+                          {category.period}
+                        </span>
+                      )}
+                    </p>
+                  </div>
                   <p className="mt-1 text-balance text-sm leading-6 text-gray-600">For {category.audience.charAt(0).toLowerCase() + category.audience.slice(1)}</p>
                   {category.note && (
                     <p className="mt-3 max-w-[30ch] text-balance text-sm leading-6 text-lmsa-800">{category.note}</p>
                   )}
                 </div>
                 <p
-                  className="reveal-on-scroll whitespace-nowrap font-serif text-[clamp(1.6rem,2.2vw,1.9rem)] font-bold leading-none tracking-[-0.02em] text-lmsa-800"
+                  className="reveal-on-scroll hidden whitespace-nowrap font-serif text-[clamp(1.6rem,2.2vw,1.9rem)] font-bold leading-none tracking-[-0.02em] text-lmsa-800 lg:block"
                   style={{ transitionDelay: `${index * 70 + 60}ms` }}
                 >
                   {category.price}
