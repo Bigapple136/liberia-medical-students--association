@@ -117,7 +117,7 @@ export default function CategoriesPage() {
             {categories.map((category, index) => (
               <li
                 key={category.name}
-                className="grid gap-5 py-9 md:py-11 lg:grid-cols-[1fr_0.62fr_1.45fr_auto] lg:items-start lg:gap-10"
+                className="group -mx-2 grid gap-5 px-2 py-9 transition-colors duration-200 focus-within:bg-[#f7f6f2] sm:-mx-3 sm:px-3 md:py-11 lg:-mx-4 lg:grid-cols-[1fr_0.62fr_1.45fr_auto] lg:items-start lg:gap-10 lg:px-4 [@media(hover:hover)]:hover:bg-[#f7f6f2]"
               >
                 <div
                   className="reveal-on-scroll"
@@ -160,18 +160,26 @@ export default function CategoriesPage() {
                   {category.invite ? (
                     <Link
                       to="/contact"
-                      className="inline-flex min-h-11 items-center gap-1.5 whitespace-nowrap text-sm font-semibold text-lmsa-800 underline decoration-lmsa-400 decoration-2 underline-offset-[6px] transition-colors hover:decoration-lmsa-800"
+                      className="inline-flex min-h-11 items-center gap-1.5 whitespace-nowrap text-sm font-semibold text-lmsa-800 underline decoration-lmsa-400 decoration-2 underline-offset-[6px] transition-colors duration-200 hover:text-lmsa-900 hover:decoration-lmsa-900 group-focus-within:text-lmsa-900 group-focus-within:decoration-lmsa-900 group-hover:text-lmsa-900 group-hover:decoration-lmsa-900"
                     >
                       Suggest someone
-                      <ArrowRight size={15} aria-hidden="true" />
+                      <ArrowRight
+                        size={15}
+                        aria-hidden="true"
+                        className="transition-transform duration-200 group-focus-within:translate-x-0.5 group-hover:translate-x-0.5"
+                      />
                     </Link>
                   ) : (
                     <Link
                       to="/membership#apply"
-                      className="inline-flex min-h-11 items-center gap-1.5 whitespace-nowrap text-sm font-semibold text-lmsa-800 underline decoration-lmsa-400 decoration-2 underline-offset-[6px] transition-colors hover:decoration-lmsa-800"
+                      className="inline-flex min-h-11 items-center gap-1.5 whitespace-nowrap text-sm font-semibold text-lmsa-800 underline decoration-lmsa-400 decoration-2 underline-offset-[6px] transition-colors duration-200 hover:text-lmsa-900 hover:decoration-lmsa-900 group-focus-within:text-lmsa-900 group-focus-within:decoration-lmsa-900 group-hover:text-lmsa-900 group-hover:decoration-lmsa-900"
                     >
                       Apply
-                      <ArrowRight size={15} aria-hidden="true" />
+                      <ArrowRight
+                        size={15}
+                        aria-hidden="true"
+                        className="transition-transform duration-200 group-focus-within:translate-x-0.5 group-hover:translate-x-0.5"
+                      />
                     </Link>
                   )}
                 </div>

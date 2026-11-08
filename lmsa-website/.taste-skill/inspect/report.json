@@ -1,6 +1,6 @@
 {
  "url": "http://localhost:5173/membership/categories",
- "at": "2026-11-07T11:10:06.552Z",
+ "at": "2026-11-08T03:01:40.733Z",
  "allow": [],
  "viewports": [
   {
@@ -533,9 +533,9 @@
     1
    ],
    "motion": {
-    "elements": 26,
+    "elements": 27,
     "css": 1,
-    "transitions": 25,
+    "transitions": 26,
     "scripted": 0,
     "videos": 0,
     "playingVideos": 0
@@ -978,9 +978,9 @@
     1
    ],
    "motion": {
-    "elements": 25,
+    "elements": 26,
     "css": 1,
-    "transitions": 24,
+    "transitions": 25,
     "scripted": 0,
     "videos": 0,
     "playingVideos": 0
