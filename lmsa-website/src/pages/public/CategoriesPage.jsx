@@ -67,10 +67,10 @@ export default function CategoriesPage() {
         <div className="site-container">
           <div className="grid gap-12 lg:grid-cols-[1.15fr_0.85fr] lg:gap-20">
             <div className="reveal-on-scroll">
-              <h1 className="max-w-[13ch] font-serif text-[clamp(2.6rem,6vw,5rem)] font-bold leading-[1.02] tracking-[-0.02em] text-lmsa-900">
+              <h1 className="max-w-[13ch] font-serif text-[2.25rem] font-bold leading-[1.04] tracking-[-0.02em] text-lmsa-900 md:text-[3.75rem] xl:text-[5.75rem]">
                 Four ways to belong.
               </h1>
-              <p className="mt-7 max-w-[52ch] text-lg leading-8 text-gray-800">
+              <p className="mt-7 max-w-[52ch] text-pretty text-xl leading-8 text-gray-800">
                 Each category carries a different set of rights, responsibilities, and costs. Pick
                 the one that matches where you are in your training.
               </p>
@@ -89,10 +89,10 @@ export default function CategoriesPage() {
                   className="reveal-on-scroll flex items-baseline justify-between gap-6 py-3"
                   style={{ transitionDelay: `${index * 60 + 120}ms` }}
                 >
-                  <dt className="text-sm font-medium text-gray-700">{name}</dt>
-                  <dd className="whitespace-nowrap text-right font-serif text-xl font-bold text-lmsa-900">
+                  <dt className="text-base text-gray-700">{name}</dt>
+                  <dd className="whitespace-nowrap text-right font-serif text-xl font-bold leading-none tracking-[-0.02em] text-lmsa-900">
                     {price}
-                    {period && <span className="ml-1 text-sm font-normal text-gray-600">{period}</span>}
+                    {period && <span className="ml-2 text-sm font-normal tracking-normal text-gray-600">{period}</span>}
                   </dd>
                 </div>
               ))}
@@ -105,10 +105,10 @@ export default function CategoriesPage() {
       <section id="categories" className="editorial-section editorial-section-muted scroll-mt-28">
         <div className="site-container">
           <div className="reveal-on-scroll max-w-2xl">
-            <h2 className="text-[clamp(1.7rem,3.2vw,2.75rem)] font-semibold leading-tight tracking-[-0.03em] text-lmsa-900">
+            <h2 className="font-serif text-[1.75rem] font-bold leading-[1.08] tracking-[-0.02em] text-lmsa-900 md:text-[2.25rem]">
               The four categories, line by line.
             </h2>
-            <p className="mt-4 text-balance text-base leading-7 text-gray-700 md:text-lg">
+            <p className="mt-4 text-pretty text-base leading-7 text-gray-700">
               Prices are annual. Every row lists what the category includes and, where it applies,
               what it does not.
             </p>
@@ -123,32 +123,33 @@ export default function CategoriesPage() {
                   className="reveal-on-scroll"
                   style={{ transitionDelay: `${index * 70}ms` }}
                 >
-                  <div className="flex flex-wrap items-baseline gap-x-3">
-                    <h3 className="font-serif text-2xl font-bold leading-snug tracking-[-0.01em] text-lmsa-900 md:text-[1.75rem]">
-                      {category.name}
-                    </h3>
-                    {/* Phones read the fee on the name line; the grid column takes over at lg. */}
-                    <p className="ml-auto whitespace-nowrap font-serif text-lg font-bold leading-none tracking-[-0.02em] text-lmsa-800 lg:hidden">
-                      {category.price}
-                      {category.period && (
-                        <span className="ml-1 text-sm font-normal tracking-normal text-gray-600">
-                          {category.period}
-                        </span>
-                      )}
-                    </p>
-                  </div>
-                  <p className="mt-1 text-balance text-sm leading-6 text-gray-600">For {category.audience.charAt(0).toLowerCase() + category.audience.slice(1)}</p>
+                  <h3 className="font-serif text-[1.75rem] font-bold leading-[1.1] tracking-[-0.015em] text-lmsa-900">
+                    {category.name}
+                  </h3>
+                  <p className="mt-1 text-pretty text-base leading-7 text-gray-700">{category.audience}</p>
                   {category.note && (
-                    <p className="mt-3 max-w-[30ch] text-balance text-sm leading-6 text-lmsa-800">{category.note}</p>
+                    <p className="mt-3 max-w-[32ch] text-pretty text-base leading-7 text-lmsa-800">{category.note}</p>
                   )}
                 </div>
+                {/* Phones take the fee on its own right-aligned line, as on the dues ledger. */}
                 <p
-                  className="reveal-on-scroll hidden whitespace-nowrap font-serif text-[clamp(1.6rem,2.2vw,1.9rem)] font-bold leading-none tracking-[-0.02em] text-lmsa-800 lg:block"
+                  className="reveal-on-scroll whitespace-nowrap justify-self-end font-serif text-[1.75rem] font-bold leading-none tracking-[-0.02em] text-lmsa-800 lg:hidden"
                   style={{ transitionDelay: `${index * 70 + 60}ms` }}
                 >
                   {category.price}
                   {category.period && (
-                    <span className="mt-1 block text-sm font-normal tracking-normal text-gray-600">
+                    <span className="ml-2 text-base font-normal tracking-normal text-gray-600">
+                      {category.period}
+                    </span>
+                  )}
+                </p>
+                <p
+                  className="reveal-on-scroll hidden whitespace-nowrap font-serif text-[1.75rem] font-bold leading-none tracking-[-0.02em] text-lmsa-800 lg:block"
+                  style={{ transitionDelay: `${index * 70 + 60}ms` }}
+                >
+                  {category.price}
+                  {category.period && (
+                    <span className="ml-2 text-base font-normal tracking-normal text-gray-600">
                       {category.period}
                     </span>
                   )}
@@ -157,11 +158,11 @@ export default function CategoriesPage() {
                   className="reveal-on-scroll"
                   style={{ transitionDelay: `${index * 70 + 120}ms` }}
                 >
-                  <p className="max-w-[48ch] text-balance text-base leading-7 text-gray-800">
+                  <p className="max-w-[48ch] text-pretty text-base leading-7 text-gray-800">
                     {category.included}
                   </p>
                   {category.limits && (
-                    <p className="mt-2 max-w-[48ch] text-balance text-base leading-7 text-gray-600">
+                    <p className="mt-2 max-w-[48ch] text-pretty text-base leading-7 text-gray-600">
                       Limits: {category.limits}.
                     </p>
                   )}
@@ -173,7 +174,7 @@ export default function CategoriesPage() {
                   {category.invite ? (
                     <Link
                       to="/contact"
-                      className="inline-flex min-h-11 items-center gap-1.5 whitespace-nowrap text-sm font-semibold text-lmsa-800 underline decoration-lmsa-400 decoration-2 underline-offset-[6px] transition-colors duration-200 hover:text-lmsa-900 hover:decoration-lmsa-900 group-focus-within:text-lmsa-900 group-focus-within:decoration-lmsa-900 group-hover:text-lmsa-900 group-hover:decoration-lmsa-900"
+                      className="inline-flex min-h-11 items-center gap-1.5 whitespace-nowrap text-base font-semibold text-lmsa-800 underline decoration-lmsa-400 decoration-2 underline-offset-[6px] transition-colors duration-200 hover:text-lmsa-900 hover:decoration-lmsa-900 group-focus-within:text-lmsa-900 group-focus-within:decoration-lmsa-900 group-hover:text-lmsa-900 group-hover:decoration-lmsa-900"
                     >
                       Suggest someone
                       <ArrowRight
@@ -185,7 +186,7 @@ export default function CategoriesPage() {
                   ) : (
                     <Link
                       to="/membership#apply"
-                      className="inline-flex min-h-11 items-center gap-1.5 whitespace-nowrap text-sm font-semibold text-lmsa-800 underline decoration-lmsa-400 decoration-2 underline-offset-[6px] transition-colors duration-200 hover:text-lmsa-900 hover:decoration-lmsa-900 group-focus-within:text-lmsa-900 group-focus-within:decoration-lmsa-900 group-hover:text-lmsa-900 group-hover:decoration-lmsa-900"
+                      className="inline-flex min-h-11 items-center gap-1.5 whitespace-nowrap text-base font-semibold text-lmsa-800 underline decoration-lmsa-400 decoration-2 underline-offset-[6px] transition-colors duration-200 hover:text-lmsa-900 hover:decoration-lmsa-900 group-focus-within:text-lmsa-900 group-focus-within:decoration-lmsa-900 group-hover:text-lmsa-900 group-hover:decoration-lmsa-900"
                     >
                       Apply
                       <ArrowRight
@@ -207,7 +208,7 @@ export default function CategoriesPage() {
         <div className="site-container">
           <div className="grid gap-12 lg:grid-cols-[1fr_0.78fr] lg:items-end lg:gap-16">
             <div className="reveal-on-scroll">
-              <h2 className="max-w-[20ch] font-serif text-[clamp(2rem,4vw,3.25rem)] font-bold leading-[1.06] tracking-[-0.015em] text-lmsa-900">
+              <h2 className="max-w-[22ch] font-serif text-[1.75rem] font-bold leading-[1.08] tracking-[-0.02em] text-lmsa-900 md:text-[2.25rem]">
                 Choose a category, then apply.
               </h2>
               <p className="mt-4 max-w-[48ch] text-base leading-7 text-gray-700">
@@ -224,13 +225,13 @@ export default function CategoriesPage() {
                 </Link>
                 <Link
                   to="/membership/dues"
-                  className="inline-flex min-h-11 items-center text-sm font-semibold text-lmsa-800 underline decoration-lmsa-400 decoration-2 underline-offset-[6px] transition-colors hover:decoration-lmsa-800"
+                  className="inline-flex min-h-11 items-center text-base font-semibold text-lmsa-800 underline decoration-lmsa-400 decoration-2 underline-offset-[6px] transition-colors hover:decoration-lmsa-800"
                 >
                   View dues
                 </Link>
                 <Link
                   to="/contact"
-                  className="inline-flex min-h-11 items-center text-sm font-semibold text-lmsa-800 underline decoration-lmsa-400 decoration-2 underline-offset-[6px] transition-colors hover:decoration-lmsa-800"
+                  className="inline-flex min-h-11 items-center text-base font-semibold text-lmsa-800 underline decoration-lmsa-400 decoration-2 underline-offset-[6px] transition-colors hover:decoration-lmsa-800"
                 >
                   Ask the team
                 </Link>
