@@ -258,12 +258,12 @@ export default function CommitteePageTemplate() {
 
       {/* ── Pinned Announcements Banner ────────────────────────────────── */}
       {pinnedAnnouncements.length > 0 && (
-        <div className="bg-amber-50 border-b border-amber-200">
+        <div className="bg-amber-100">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
             {pinnedAnnouncements.map(a => (
               <div key={a.id} className="flex items-start gap-2">
-                <Bell size={16} className="text-amber-600 mt-0.5 shrink-0" />
-                <p className="text-sm text-amber-800">
+                <Bell size={16} className="text-amber-800 mt-0.5 shrink-0" />
+                <p className="text-sm text-amber-900">
                   <strong>{a.title}:</strong> {a.message}
                 </p>
               </div>
@@ -785,19 +785,20 @@ function DocumentRow({ doc }) {
 }
 
 function AnnouncementCard({ announcement }) {
+  // Same filled surfaces as the shared Alert: the fill carries the state, no outline.
   const STYLES = {
-    info:    { bg: 'bg-blue-50', border: 'border-blue-100', text: 'text-blue-800', icon: <Info size={16} className="text-blue-500 shrink-0 mt-0.5" /> },
-    success: { bg: 'bg-lmsa-50', border: 'border-lmsa-100', text: 'text-lmsa-800', icon: <Check size={16} className="text-lmsa-500 shrink-0 mt-0.5" /> },
-    warning: { bg: 'bg-amber-50', border: 'border-amber-100', text: 'text-amber-800', icon: <AlertCircle size={16} className="text-amber-500 shrink-0 mt-0.5" /> },
-    urgent:  { bg: 'bg-red-50', border: 'border-red-100', text: 'text-red-800', icon: <AlertCircle size={16} className="text-red-500 shrink-0 mt-0.5" /> },
+    info:    { surface: 'bg-blue-100 text-blue-900', icon: <Info size={16} className="shrink-0 mt-0.5" /> },
+    success: { surface: 'bg-lmsa-100 text-lmsa-900', icon: <Check size={16} className="shrink-0 mt-0.5" /> },
+    warning: { surface: 'bg-amber-100 text-amber-900', icon: <AlertCircle size={16} className="shrink-0 mt-0.5" /> },
+    urgent:  { surface: 'bg-red-100 text-red-900', icon: <AlertCircle size={16} className="shrink-0 mt-0.5" /> },
   };
   const style = STYLES[announcement.type] || STYLES.info;
   return (
-    <div className={`flex gap-3 p-4 rounded-xl border ${style.bg} ${style.border}`}>
+    <div className={`flex gap-3 p-4 rounded-xl ${style.surface}`}>
       {style.icon}
       <div>
-        <p className={`text-sm font-semibold ${style.text}`}>{announcement.title}</p>
-        <p className={`text-sm mt-0.5 ${style.text} opacity-80`}>{announcement.message}</p>
+        <p className="text-sm font-semibold">{announcement.title}</p>
+        <p className="text-sm mt-0.5 opacity-80">{announcement.message}</p>
       </div>
     </div>
   );

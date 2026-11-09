@@ -446,12 +446,13 @@
     @apply text-base leading-7 text-gray-700;
   }
 
+  /* Notices are filled surfaces, matching the shared Alert: no outline, one tone off the page. */
   .committee-notice {
-    @apply mb-8 flex items-start gap-3 border border-lmsa-200 bg-white p-5 text-sm leading-6 text-gray-700;
+    @apply mb-8 flex items-start gap-3 bg-lmsa-100 p-5 text-sm leading-6 text-lmsa-900;
   }
 
   .committee-notice svg {
-    @apply mt-0.5 shrink-0 text-lmsa-700;
+    @apply mt-0.5 shrink-0 text-lmsa-800;
   }
 
   /* Deliberately not `editorial-link-card`: these are not links, so they get
@@ -534,11 +535,11 @@
   }
 
   .committee-error {
-    @apply mt-5 flex items-start gap-2 bg-red-50 p-4 text-sm leading-6 text-red-800;
+    @apply mt-5 flex items-start gap-2 bg-red-100 p-4 text-sm leading-6 text-red-900;
   }
 
   .committee-error svg {
-    @apply mt-1 shrink-0 text-red-600;
+    @apply mt-1 shrink-0 text-red-700;
   }
 
   .committee-dialog-actions {
