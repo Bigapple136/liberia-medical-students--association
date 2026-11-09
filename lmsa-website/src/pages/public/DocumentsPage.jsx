@@ -26,6 +26,23 @@ const CATEGORY_BADGES = {
   other: 'bg-gray-100 text-gray-700',
 };
 
+// Mirrors documents.stage (database/009_document_stage.sql). Only study
+// materials are tagged, so these filters appear only when staged documents
+// are actually in the current view — an empty "Clinical" filter over the
+// constitution would be a control that cannot do anything.
+const STAGE_OPTIONS = [
+  { value: '', label: 'All stages' },
+  { value: 'pre_clinical', label: 'Pre-clinical' },
+  { value: 'clinical', label: 'Clinical' },
+  { value: 'exam', label: 'Exam preparation' },
+];
+
+const STAGE_LABELS = {
+  pre_clinical: 'Pre-clinical',
+  clinical: 'Clinical',
+  exam: 'Exam preparation',
+};
+
 const ACCESS_BADGES = {
   public: 'bg-lmsa-50 text-lmsa-700',
   members: 'bg-blue-50 text-blue-700',
@@ -66,6 +83,7 @@ export default function DocumentsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [category, setCategory] = useState('');
+  const [stage, setStage] = useState('');
   const [downloading, setDownloading] = useState(null);
 
   const loadDocuments = useCallback(async (activeCategory) => {
@@ -86,6 +104,22 @@ export default function DocumentsPage() {
   useEffect(() => {
     loadDocuments(category);
   }, [category, loadDocuments]);
+
+  // A stage only exists inside the documents currently loaded. If the category
+  // changes out from under the filter, drop it rather than leaving a filter
+  // applied with no chip on screen to undo it.
+  const activeStage = stage && documents.some((doc) => doc.stage === stage) ? stage : '';
+
+  useEffect(() => {
+    if (stage && !activeStage) setStage('');
+  }, [stage, activeStage]);
+
+  const stageOptions = STAGE_OPTIONS.filter(
+    ({ value }) => !value || documents.some((doc) => doc.stage === value)
+  );
+  const visibleDocuments = activeStage
+    ? documents.filter((doc) => doc.stage === activeStage)
+    : documents;
 
   async function handleDownload(doc) {
     setDownloading(doc.id);
@@ -128,6 +162,30 @@ export default function DocumentsPage() {
               );
             })}
           </div>
+
+          {!loading && !error && stageOptions.length > 1 && (
+            <div className="mt-4 flex flex-wrap items-center gap-2" role="group" aria-label="Filter documents by stage">
+              <span className="mr-1 text-sm font-medium text-gray-600">Stage</span>
+              {stageOptions.map(({ value, label }) => {
+                const active = activeStage === value;
+                return (
+                  <button
+                    key={value || 'all-stages'}
+                    type="button"
+                    aria-pressed={active}
+                    onClick={() => setStage(value)}
+                    className={`px-3.5 py-2 text-[13px] font-semibold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2 ${
+                      active
+                        ? 'bg-lmsa-900 text-white'
+                        : 'border border-gray-300 bg-white text-gray-600 hover:border-lmsa-400 hover:text-lmsa-800'
+                    }`}
+                  >
+                    {label}
+                  </button>
+                );
+              })}
+            </div>
+          )}
         </div>
       </section>
 
@@ -181,7 +239,7 @@ export default function DocumentsPage() {
             </div>
           ) : (
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {documents.map((doc) => (
+              {visibleDocuments.map((doc) => (
                 <article key={doc.id} className="flex flex-col border border-gray-200 bg-white p-6">
                   <div className="flex items-start gap-3">
                     <span className="flex h-10 w-10 shrink-0 items-center justify-center bg-lmsa-50 text-lmsa-600" aria-hidden="true">
@@ -201,6 +259,11 @@ export default function DocumentsPage() {
                     {doc.category && (
                       <span className={`px-2.5 py-1 text-[13px] font-semibold ${CATEGORY_BADGES[doc.category] || 'bg-gray-100 text-gray-700'}`}>
                         {categoryLabel(doc.category)}
+                      </span>
+                    )}
+                    {STAGE_LABELS[doc.stage] && (
+                      <span className="bg-paper-muted px-2.5 py-1 text-[13px] font-semibold text-lmsa-900">
+                        {STAGE_LABELS[doc.stage]}
                       </span>
                     )}
                     {doc.access_level && (
