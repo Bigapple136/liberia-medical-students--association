@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useState } from 'react';
-import { ArrowRight, Download, FileText, Loader } from 'lucide-react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { ArrowRight, Download, FileText, Loader, Search } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import Photo from '@components/common/Photo';
@@ -36,6 +36,11 @@ const STAGES = [
   },
 ];
 
+const SORT_OPTIONS = [
+  { key: 'newest', label: 'Newest' },
+  { key: 'popular', label: 'Most downloaded' },
+];
+
 function formatFileSize(bytes) {
   if (!bytes) return '';
   if (bytes < 1024) return `${bytes} B`;
@@ -53,6 +58,8 @@ export default function ResourcesPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [downloading, setDownloading] = useState(null);
+  const [sort, setSort] = useState('newest');
+  const [query, setQuery] = useState('');
 
   const loadMaterials = useCallback(async () => {
     setLoading(true);
@@ -80,7 +87,28 @@ export default function ResourcesPage() {
     );
     document.querySelectorAll('.reveal-on-scroll').forEach((element) => observer.observe(element));
     return () => observer.disconnect();
-  }, [materials, loading, error]);
+    // Re-observe when the list is re-sorted or filtered: those rows are new nodes.
+  }, [materials, loading, error, query, sort]);
+
+  // Downloads are only worth sorting by once someone has downloaded something.
+  const hasDownloads = useMemo(
+    () => materials.some((doc) => (doc.downloads || 0) > 0),
+    [materials]
+  );
+
+  const visibleMaterials = useMemo(() => {
+    const term = query.trim().toLowerCase();
+    const matched = term
+      ? materials.filter((doc) =>
+          `${doc.title || ''} ${doc.description || ''}`.toLowerCase().includes(term)
+        )
+      : materials;
+
+    return [...matched].sort((a, b) => {
+      if (sort === 'popular') return (b.downloads || 0) - (a.downloads || 0);
+      return new Date(b.created_at || 0) - new Date(a.created_at || 0);
+    });
+  }, [materials, query, sort]);
 
   async function handleDownload(doc) {
     setDownloading(doc.id);
@@ -145,63 +173,131 @@ export default function ResourcesPage() {
 
     return (
       <>
-        <ul className="mt-10">
-          {materials.map((doc, index) => (
-            <li
-              key={doc.id}
-              className="grid gap-y-3 py-6 lg:grid-cols-[1.35fr_1fr_auto] lg:items-baseline lg:gap-x-10 lg:py-7"
-            >
-              <div
-                className="reveal-on-scroll"
-                style={{ transitionDelay: `${Math.min(index, 4) * 60}ms` }}
-              >
-                <h3 className="font-serif text-[1.75rem] font-bold leading-[1.1] tracking-[-0.015em] text-lmsa-900">
-                  {doc.title}
-                </h3>
-                {doc.description && (
-                  <p className="mt-1 max-w-[52ch] text-pretty text-base leading-7 text-gray-700">
-                    {doc.description}
-                  </p>
-                )}
+        <div className="mt-10 flex flex-wrap items-end justify-between gap-x-10 gap-y-5">
+          <p className="text-base leading-7 text-gray-700" role="status">
+            {query.trim()
+              ? `${visibleMaterials.length} of ${materials.length} materials`
+              : `${materials.length} ${materials.length === 1 ? 'material' : 'materials'} in the library`}
+          </p>
+
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-4">
+            {materials.length > 4 && (
+              <label className="relative block">
+                <span className="sr-only">Search the materials</span>
+                <Search
+                  size={16}
+                  aria-hidden="true"
+                  className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-gray-500"
+                />
+                <input
+                  type="search"
+                  value={query}
+                  onChange={(event) => setQuery(event.target.value)}
+                  placeholder="Search titles and notes"
+                  className="min-h-11 w-full bg-white py-2 pl-11 pr-4 text-base text-lmsa-900 placeholder:text-gray-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-900 focus-visible:ring-offset-2 sm:w-72"
+                />
+              </label>
+            )}
+
+            {hasDownloads && (
+              <div role="group" aria-label="Sort materials" className="flex items-center gap-2">
+                {SORT_OPTIONS.map((option) => {
+                  const active = sort === option.key;
+                  return (
+                    <button
+                      key={option.key}
+                      type="button"
+                      onClick={() => setSort(option.key)}
+                      aria-pressed={active}
+                      className={`inline-flex min-h-11 items-center px-4 text-sm font-semibold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-900 focus-visible:ring-offset-2 ${
+                        active
+                          ? 'bg-lmsa-900 text-white'
+                          : 'bg-lmsa-100 text-lmsa-900 hover:bg-lmsa-200'
+                      }`}
+                    >
+                      {option.label}
+                    </button>
+                  );
+                })}
               </div>
+            )}
+          </div>
+        </div>
 
-              <p
-                className="reveal-on-scroll text-base leading-7 text-gray-700"
-                style={{ transitionDelay: `${Math.min(index, 4) * 60 + 60}ms` }}
+        {visibleMaterials.length === 0 ? (
+          <p className="mt-8 max-w-[52ch] text-pretty text-base leading-7 text-gray-700">
+            Nothing in the library matches “{query.trim()}”.{' '}
+            <button
+              type="button"
+              onClick={() => setQuery('')}
+              className="font-semibold text-lmsa-800 underline decoration-lmsa-400 decoration-2 underline-offset-[6px] transition-colors hover:text-lmsa-900 hover:decoration-lmsa-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-900 focus-visible:ring-offset-2"
+            >
+              Show everything
+            </button>
+            .
+          </p>
+        ) : (
+          <ul className="mt-4">
+            {visibleMaterials.map((doc, index) => (
+              <li
+                key={doc.id}
+                className="grid gap-y-2 py-6 lg:grid-cols-[1.45fr_0.9fr_auto] lg:items-center lg:gap-x-10 lg:py-8"
               >
-                {[formatFileSize(doc.file_size), doc.file_type?.replace('.', '').toUpperCase()]
-                  .filter(Boolean)
-                  .join(' · ')}
-                {doc.created_at && <span className="mt-1 block text-gray-600">{formatDate(doc.created_at)}</span>}
-                {doc.downloads > 0 && (
-                  <span className="mt-1 block text-gray-600">
-                    {doc.downloads} download{doc.downloads !== 1 ? 's' : ''}
-                  </span>
-                )}
-              </p>
+                <div
+                  className="reveal-on-scroll"
+                  style={{ transitionDelay: `${Math.min(index, 4) * 50}ms` }}
+                >
+                  <h3 className="font-serif text-[1.375rem] font-bold leading-[1.15] tracking-[-0.015em] text-lmsa-900 md:text-[1.5rem]">
+                    {doc.title}
+                  </h3>
+                  {doc.description && (
+                    <p className="mt-1.5 max-w-[52ch] text-pretty text-base leading-7 text-gray-700">
+                      {doc.description}
+                    </p>
+                  )}
+                </div>
 
-              <button
-                type="button"
-                onClick={() => handleDownload(doc)}
-                disabled={downloading === doc.id}
-                className="reveal-on-scroll inline-flex min-h-11 items-center gap-1.5 justify-self-start whitespace-nowrap text-base font-semibold text-lmsa-800 underline decoration-lmsa-400 decoration-2 underline-offset-[6px] transition-colors hover:text-lmsa-900 hover:decoration-lmsa-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-900 focus-visible:ring-offset-2 disabled:opacity-60 lg:justify-self-end"
-                style={{ transitionDelay: `${Math.min(index, 4) * 60 + 120}ms` }}
-              >
-                {downloading === doc.id ? (
-                  <>
-                    <Loader size={15} className="animate-spin" aria-hidden="true" />
-                    Opening
-                  </>
-                ) : (
-                  <>
-                    <Download size={15} aria-hidden="true" />
-                    Download
-                  </>
-                )}
-              </button>
-            </li>
-          ))}
-        </ul>
+                <p
+                  className="reveal-on-scroll text-base leading-7 text-gray-600"
+                  style={{ transitionDelay: `${Math.min(index, 4) * 50 + 50}ms` }}
+                >
+                  {[
+                    formatFileSize(doc.file_size),
+                    doc.file_type?.replace('.', '').toUpperCase(),
+                    formatDate(doc.created_at),
+                  ]
+                    .filter(Boolean)
+                    .join(' · ')}
+                  {doc.downloads > 0 && (
+                    <span className="mt-1 block">
+                      {doc.downloads} download{doc.downloads !== 1 ? 's' : ''}
+                    </span>
+                  )}
+                </p>
+
+                <button
+                  type="button"
+                  onClick={() => handleDownload(doc)}
+                  disabled={downloading === doc.id}
+                  className="reveal-on-scroll inline-flex min-h-11 items-center justify-center gap-2 justify-self-start whitespace-nowrap bg-lmsa-100 px-5 text-sm font-semibold text-lmsa-900 transition-colors hover:bg-lmsa-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-900 focus-visible:ring-offset-2 disabled:opacity-60 lg:justify-self-end"
+                  style={{ transitionDelay: `${Math.min(index, 4) * 50 + 100}ms` }}
+                >
+                  {downloading === doc.id ? (
+                    <>
+                      <Loader size={15} className="animate-spin" aria-hidden="true" />
+                      Opening
+                    </>
+                  ) : (
+                    <>
+                      <Download size={15} aria-hidden="true" />
+                      Download
+                    </>
+                  )}
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
 
         <p className="mt-8 max-w-[64ch] text-base leading-7 text-gray-700">
           Looking for constitutions, reports, or newsletters?{' '}
@@ -291,30 +387,23 @@ export default function ResourcesPage() {
         </div>
       </section>
 
-      {/* A wide breath of the work itself, between the advice and the list. */}
-      <section className="editorial-section py-0">
-        <div className="site-container">
-          <figure className="reveal-on-scroll">
-            <Photo
-              src={stockPhotos.stories.researchCompetition.src}
-              alt={stockPhotos.stories.researchCompetition.alt}
-              fallbackGradient="bg-lmsa-900"
-              className="aspect-[4/3] w-full sm:aspect-[21/9]"
-            />
-          </figure>
-        </div>
+      {/* One edge-to-edge breath of the work itself, between the advice and the list. */}
+      <section>
+        <figure className="reveal-on-scroll">
+          <Photo
+            src={stockPhotos.stories.researchCompetition.src}
+            alt={stockPhotos.stories.researchCompetition.alt}
+            fallbackGradient="bg-lmsa-900"
+            className="aspect-[4/3] w-full sm:aspect-[21/9]"
+          />
+        </figure>
       </section>
 
       <section id="library" className="editorial-section scroll-mt-28 py-16 md:py-24">
         <div className="site-container">
-          <div className="reveal-on-scroll flex flex-wrap items-end justify-between gap-x-16 gap-y-4">
-            <h2 className="font-serif text-[1.75rem] font-bold leading-[1.08] tracking-[-0.02em] text-lmsa-900 md:text-[2.25rem]">
-              Study materials, ready to use.
-            </h2>
-            <p className="max-w-[40ch] text-pretty text-base leading-7 text-gray-600">
-              Everything below comes from the LMSA document library and opens right here.
-            </p>
-          </div>
+          <h2 className="reveal-on-scroll max-w-2xl font-serif text-[1.75rem] font-bold leading-[1.08] tracking-[-0.02em] text-lmsa-900 md:text-[2.25rem]">
+            Study materials, ready to use.
+          </h2>
 
           {renderLibrary()}
         </div>

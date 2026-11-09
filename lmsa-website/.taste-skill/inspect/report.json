@@ -1,6 +1,6 @@
 {
  "url": "http://localhost:5173/academics/resources",
- "at": "2026-11-09T02:06:45.998Z",
+ "at": "2026-11-09T11:59:14.705Z",
  "allow": [],
  "viewports": [
   {
@@ -11,8 +11,8 @@
    "filled": [
     0.72,
     0.84,
-    0.67,
-    0.7,
+    0.78,
+    0.83,
     0.93
    ],
    "motion": {
@@ -29,9 +29,9 @@
      "h": 900
     },
     "page": {
-     "height": 4304,
-     "screens": 4.8,
-     "words": 419,
+     "height": 4390,
+     "screens": 4.9,
+     "words": 407,
      "img": 5,
      "video": 0,
      "canvas": 0,
@@ -226,8 +226,8 @@
       "mono": false,
       "align": "left",
       "position": "left",
-      "widthRatio": 0.34,
-      "top": 2415,
+      "widthRatio": 0.47,
+      "top": 2501,
       "tag": "h2",
       "kind": "heading"
      },
@@ -248,7 +248,7 @@
       "align": "left",
       "position": "left",
       "widthRatio": 0.34,
-      "top": 2576,
+      "top": 2662,
       "tag": "h3",
       "kind": "heading"
      },
@@ -269,7 +269,7 @@
       "align": "left",
       "position": "left",
       "widthRatio": 0.41,
-      "top": 3026,
+      "top": 3111,
       "tag": "h2",
       "kind": "heading"
      },
@@ -290,7 +290,7 @@
       "align": "left",
       "position": "left",
       "widthRatio": 0.32,
-      "top": 3679,
+      "top": 3765,
       "tag": "h2",
       "kind": "heading"
      }
@@ -396,7 +396,7 @@
       },
       {
        "color": "#111827",
-       "top": 3603,
+       "top": 3689,
        "hsl": {
         "h": 221,
         "s": 0.39,
@@ -407,23 +407,23 @@
      "textColors": [
       {
        "color": "#374151",
-       "share": 0.37
+       "share": 0.38
       },
       {
        "color": "#9ca3af",
-       "share": 0.16
+       "share": 0.17
       },
       {
        "color": "#064629",
        "share": 0.13
       },
       {
-       "color": "#4b5563",
-       "share": 0.12
-      },
-      {
        "color": "#e8f7f0",
        "share": 0.1
+      },
+      {
+       "color": "#4b5563",
+       "share": 0.09
       }
      ],
      "button": {
@@ -504,15 +504,15 @@
    "filled": [
     0.84,
     0.91,
+    0.93,
     0.91,
-    0.91,
-    0.79,
+    0.87,
     1
    ],
    "motion": {
     "elements": 27,
-    "css": 11,
-    "transitions": 16,
+    "css": 12,
+    "transitions": 15,
     "scripted": 0,
     "videos": 0,
     "playingVideos": 0
@@ -523,9 +523,9 @@
      "h": 1024
     },
     "page": {
-     "height": 5688,
-     "screens": 5.6,
-     "words": 408,
+     "height": 5643,
+     "screens": 5.5,
+     "words": 396,
      "img": 5,
      "video": 0,
      "canvas": 0,
@@ -719,9 +719,9 @@
       "italic": false,
       "mono": false,
       "align": "left",
-      "position": "left",
-      "widthRatio": 0.65,
-      "top": 3089,
+      "position": "center",
+      "widthRatio": 0.88,
+      "top": 3116,
       "tag": "h2",
       "kind": "heading"
      },
@@ -742,7 +742,7 @@
       "align": "left",
       "position": "left",
       "widthRatio": 0.64,
-      "top": 3322,
+      "top": 3277,
       "tag": "h3",
       "kind": "heading"
      },
@@ -763,7 +763,7 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.92,
-      "top": 3720,
+      "top": 3676,
       "tag": "h2",
       "kind": "heading"
      },
@@ -784,7 +784,7 @@
       "align": "left",
       "position": "left",
       "widthRatio": 0.55,
-      "top": 4759,
+      "top": 4715,
       "tag": "h2",
       "kind": "heading"
      }
@@ -899,7 +899,7 @@
       },
       {
        "color": "#111827",
-       "top": 3979,
+       "top": 3935,
        "hsl": {
         "h": 221,
         "s": 0.39,
@@ -910,7 +910,7 @@
      "textColors": [
       {
        "color": "#374151",
-       "share": 0.36
+       "share": 0.38
       },
       {
        "color": "#9ca3af",
@@ -918,15 +918,15 @@
       },
       {
        "color": "#064629",
-       "share": 0.13
-      },
-      {
-       "color": "#4b5563",
-       "share": 0.12
+       "share": 0.14
       },
       {
        "color": "#e8f7f0",
        "share": 0.1
+      },
+      {
+       "color": "#4b5563",
+       "share": 0.09
       }
      ],
      "button": {
@@ -1004,16 +1004,16 @@
     0.83,
     0.85,
     0.91,
-    0.75,
+    0.82,
+    0.93,
     0.92,
-    0.87,
     1,
     1
    ],
    "motion": {
-    "elements": 25,
-    "css": 12,
-    "transitions": 13,
+    "elements": 27,
+    "css": 11,
+    "transitions": 16,
     "scripted": 0,
     "videos": 0,
     "playingVideos": 0
@@ -1024,9 +1024,9 @@
      "h": 844
     },
     "page": {
-     "height": 6007,
+     "height": 5965,
      "screens": 7.1,
-     "words": 392,
+     "words": 380,
      "img": 5,
      "video": 0,
      "canvas": 0,
@@ -1222,7 +1222,7 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.9,
-      "top": 3019,
+      "top": 3049,
       "tag": "h2",
       "kind": "heading"
      },
@@ -1243,7 +1243,7 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.75,
-      "top": 3262,
+      "top": 3220,
       "tag": "h3",
       "kind": "heading"
      },
@@ -1264,7 +1264,7 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.9,
-      "top": 3727,
+      "top": 3685,
       "tag": "h2",
       "kind": "heading"
      },
@@ -1285,7 +1285,7 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.9,
-      "top": 4625,
+      "top": 4583,
       "tag": "h2",
       "kind": "heading"
      },
@@ -1306,7 +1306,7 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.9,
-      "top": 4832,
+      "top": 4790,
       "tag": "h3",
       "kind": "heading"
      }
@@ -1324,12 +1324,12 @@
      "families": [
       {
        "family": "Inter",
-       "share": 0.92,
+       "share": 0.91,
        "mono": false
       },
       {
        "family": "Merriweather",
-       "share": 0.08,
+       "share": 0.09,
        "mono": false
       }
      ],
@@ -1413,7 +1413,7 @@
       },
       {
        "color": "#c1e8d6",
-       "top": 3192,
+       "top": 3150,
        "hsl": {
         "h": 152,
         "s": 0.46,
@@ -1422,7 +1422,7 @@
       },
       {
        "color": "#111827",
-       "top": 4565,
+       "top": 4523,
        "hsl": {
         "h": 221,
         "s": 0.39,
@@ -1433,22 +1433,22 @@
      "textColors": [
       {
        "color": "#374151",
-       "share": 0.38
+       "share": 0.39
       },
       {
        "color": "#9ca3af",
-       "share": 0.17
+       "share": 0.18
       },
       {
        "color": "#064629",
        "share": 0.14
       },
       {
-       "color": "#4b5563",
-       "share": 0.11
+       "color": "#e8f7f0",
+       "share": 0.08
       },
       {
-       "color": "#e8f7f0",
+       "color": "#4b5563",
        "share": 0.08
       }
      ],
