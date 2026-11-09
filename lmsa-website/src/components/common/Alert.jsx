@@ -1,20 +1,22 @@
 import { Info, AlertTriangle, CheckCircle, AlertCircle } from 'lucide-react';
 
+// Surfaces are defined by their fill, so each variant steps one tone off the page
+// instead of drawing a 1px outline around itself.
 const VARIANT_STYLES = {
   info: {
-    container: 'bg-blue-50 border-blue-200 text-blue-800',
+    container: 'bg-blue-100 text-blue-900',
     icon: Info,
   },
   warning: {
-    container: 'bg-amber-50 border-amber-200 text-amber-800',
+    container: 'bg-amber-100 text-amber-900',
     icon: AlertTriangle,
   },
   success: {
-    container: 'bg-lmsa-50 border-lmsa-200 text-lmsa-800',
+    container: 'bg-lmsa-100 text-lmsa-900',
     icon: CheckCircle,
   },
   error: {
-    container: 'bg-red-50 border-red-200 text-red-800',
+    container: 'bg-red-100 text-red-900',
     icon: AlertCircle,
   },
 };
@@ -26,7 +28,7 @@ export default function Alert({ variant = 'info', children, className = '' }) {
   return (
     <div
       role="alert"
-      className={`rounded-xl border p-5 ${style.container} ${className}`}
+      className={`rounded-xl p-5 ${style.container} ${className}`}
     >
       <div className="flex gap-3">
         <Icon size={20} className="shrink-0 mt-0.5" />
