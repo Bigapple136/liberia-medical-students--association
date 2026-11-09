@@ -16,15 +16,11 @@ const CATEGORY_OPTIONS = [
   { value: 'other', label: 'Other' },
 ];
 
-const CATEGORY_BADGES = {
-  constitution: 'bg-blue-50 text-blue-700',
-  bylaws: 'bg-purple-50 text-purple-700',
-  report: 'bg-amber-50 text-amber-700',
-  journal: 'bg-indigo-50 text-indigo-700',
-  newsletter: 'bg-cyan-50 text-cyan-700',
-  study_material: 'bg-lmsa-50 text-lmsa-700',
-  other: 'bg-gray-100 text-gray-700',
-};
+// Seven categories cannot be given seven hues without inventing tones the
+// brand does not have, so category stays neutral and colour is left to do the
+// two jobs a reader actually needs: what stage this is for, and who may open
+// it.
+const CATEGORY_BADGE = 'bg-gray-100 text-gray-700';
 
 // Mirrors documents.stage (database/009_document_stage.sql). Only study
 // materials are tagged, so these filters appear only when staged documents
@@ -142,7 +138,7 @@ export default function DocumentsPage() {
             title="The library of record for LMSA’s work."
             description="Browse and download the association’s publications, governing documents, reports, and resources."
           />
-          <div className="flex flex-wrap gap-2 border-t border-lmsa-200 pt-6" role="group" aria-label="Filter documents by category">
+          <div className="mt-2 flex flex-wrap gap-2" role="group" aria-label="Filter documents by category">
             {CATEGORY_OPTIONS.map(({ value, label }) => {
               const active = category === value;
               return (
@@ -257,7 +253,7 @@ export default function DocumentsPage() {
 
                   <div className="mt-auto flex flex-wrap gap-2 pt-4">
                     {doc.category && (
-                      <span className={`px-2.5 py-1 text-[13px] font-semibold ${CATEGORY_BADGES[doc.category] || 'bg-gray-100 text-gray-700'}`}>
+                      <span className={`px-2.5 py-1 text-[13px] font-semibold ${CATEGORY_BADGE}`}>
                         {categoryLabel(doc.category)}
                       </span>
                     )}
