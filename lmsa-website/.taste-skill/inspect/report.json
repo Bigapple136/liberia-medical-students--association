@@ -1,6 +1,6 @@
 {
  "url": "http://localhost:5173/academics/resources",
- "at": "2026-11-09T01:50:37.429Z",
+ "at": "2026-11-09T02:06:45.998Z",
  "allow": [],
  "viewports": [
   {
@@ -336,7 +336,7 @@
       "leading": 1.75,
       "weight": 400,
       "tracking": 0,
-      "contrast": 9.5
+      "contrast": 9
      },
      "measureChars": 80,
      "max": {
@@ -359,11 +359,11 @@
     "eyebrows": [],
     "numbered": [],
     "color": {
-     "bodyBg": "#f7f6f2",
+     "bodyBg": "#f1f0ec",
      "bodyBgHsl": {
       "h": 48,
-      "s": 0.24,
-      "l": 0.96
+      "s": 0.15,
+      "l": 0.94
      },
      "dark": false,
      "sectionBgs": [
@@ -377,21 +377,21 @@
        }
       },
       {
-       "color": "#f7f6f2",
+       "color": "#f1f0ec",
        "top": 506,
        "hsl": {
         "h": 48,
-        "s": 0.24,
-        "l": 0.96
+        "s": 0.15,
+        "l": 0.94
        }
       },
       {
-       "color": "#ebeae4",
+       "color": "#e7e6e1",
        "top": 1126,
        "hsl": {
-        "h": 51,
-        "s": 0.15,
-        "l": 0.91
+        "h": 50,
+        "s": 0.11,
+        "l": 0.89
        }
       },
       {
@@ -511,8 +511,8 @@
    ],
    "motion": {
     "elements": 27,
-    "css": 12,
-    "transitions": 15,
+    "css": 11,
+    "transitions": 16,
     "scripted": 0,
     "videos": 0,
     "playingVideos": 0
@@ -830,7 +830,7 @@
       "leading": 1.75,
       "weight": 400,
       "tracking": 0,
-      "contrast": 9.5
+      "contrast": 9
      },
      "measureChars": 80,
      "max": {
@@ -853,11 +853,11 @@
     "eyebrows": [],
     "numbered": [],
     "color": {
-     "bodyBg": "#f7f6f2",
+     "bodyBg": "#f1f0ec",
      "bodyBgHsl": {
       "h": 48,
-      "s": 0.24,
-      "l": 0.96
+      "s": 0.15,
+      "l": 0.94
      },
      "dark": false,
      "sectionBgs": [
@@ -871,12 +871,12 @@
        }
       },
       {
-       "color": "#f7f6f2",
+       "color": "#f1f0ec",
        "top": 729,
        "hsl": {
         "h": 48,
-        "s": 0.24,
-        "l": 0.96
+        "s": 0.15,
+        "l": 0.94
        }
       },
       {
@@ -889,12 +889,12 @@
        }
       },
       {
-       "color": "#ebeae4",
+       "color": "#e7e6e1",
        "top": 1596,
        "hsl": {
-        "h": 51,
-        "s": 0.15,
-        "l": 0.91
+        "h": 50,
+        "s": 0.11,
+        "l": 0.89
        }
       },
       {
@@ -1353,7 +1353,7 @@
       "leading": 1.75,
       "weight": 400,
       "tracking": 0,
-      "contrast": 9.5
+      "contrast": 9
      },
      "measureChars": 44,
      "max": {
@@ -1376,11 +1376,11 @@
     "eyebrows": [],
     "numbered": [],
     "color": {
-     "bodyBg": "#f7f6f2",
+     "bodyBg": "#f1f0ec",
      "bodyBgHsl": {
       "h": 48,
-      "s": 0.24,
-      "l": 0.96
+      "s": 0.15,
+      "l": 0.94
      },
      "dark": false,
      "sectionBgs": [
@@ -1394,21 +1394,21 @@
        }
       },
       {
-       "color": "#f7f6f2",
+       "color": "#f1f0ec",
        "top": 677,
        "hsl": {
         "h": 48,
-        "s": 0.24,
-        "l": 0.96
+        "s": 0.15,
+        "l": 0.94
        }
       },
       {
-       "color": "#ebeae4",
+       "color": "#e7e6e1",
        "top": 1416,
        "hsl": {
-        "h": 51,
-        "s": 0.15,
-        "l": 0.91
+        "h": 50,
+        "s": 0.11,
+        "l": 0.89
        }
       },
       {
@@ -1519,17 +1519,6 @@
   }
  ],
  "findings": [
-  {
-   "level": "WARN",
-   "id": "palette-cream",
-   "width": 1440,
-   "message": "Yellow-cream background (page background #f7f6f2, section #f7f6f2).",
-   "fix": "Use the drawn palette. If you want warmth, take a low-chroma stone or bone, not a yellow cream.",
-   "alsoAt": [
-    768,
-    390
-   ]
-  },
   {
    "level": "WARN",
    "id": "no-footage",

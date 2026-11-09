@@ -51,7 +51,7 @@ function EventCard({ event, past = false }) {
           <span className={`px-3 py-1 text-xs font-bold uppercase tracking-[0.12em] ${past ? 'bg-gray-200 text-gray-600' : 'bg-lmsa-50 text-lmsa-700'}`}>
             {event.event_type}
           </span>
-          {past && <span className="px-3 py-1 text-xs font-bold uppercase tracking-[0.12em] bg-[#ebeae4] text-gray-500">Concluded</span>}
+          {past && <span className="px-3 py-1 text-xs font-bold uppercase tracking-[0.12em] bg-paper-muted text-gray-500">Concluded</span>}
         </div>
         <h3 className="mt-4 text-xl font-semibold tracking-[-0.02em] text-lmsa-900">{event.title}</h3>
         <p className="mt-2 line-clamp-2 text-sm leading-6 text-gray-600">{event.description}</p>

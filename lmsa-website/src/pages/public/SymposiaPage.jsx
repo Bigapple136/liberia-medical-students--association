@@ -31,7 +31,7 @@ function formatDateRange(startDatetime, endDatetime) {
 
 function SymposiumCard({ event, upcoming }) {
   return (
-    <article className={`border p-6 md:p-8 ${upcoming ? 'border-lmsa-200 bg-white' : 'border-gray-200 bg-[#ebeae4]'}`}>
+    <article className={`border p-6 md:p-8 ${upcoming ? 'border-lmsa-200 bg-white' : 'border-gray-200 bg-paper-muted'}`}>
       <div className="flex flex-wrap items-center gap-3">
         <span className={`px-3 py-1 text-xs font-bold uppercase tracking-[0.12em] ${upcoming ? 'bg-lmsa-50 text-lmsa-700' : 'bg-gray-200 text-gray-600'}`}>
           {upcoming ? 'Upcoming' : 'Completed'}

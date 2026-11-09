@@ -10,7 +10,7 @@
   }
 
   body {
-    @apply bg-[#f7f6f2] text-gray-900 font-sans antialiased;
+    @apply bg-paper text-gray-900 font-sans antialiased;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -149,7 +149,7 @@
   }
 
   .editorial-page {
-    @apply bg-[#f7f6f2];
+    @apply bg-paper;
   }
 
   .editorial-section {
@@ -157,7 +157,7 @@
   }
 
   .editorial-section-muted {
-    @apply bg-[#ebeae4];
+    @apply bg-paper-muted;
   }
 
   .editorial-section-header {
@@ -901,8 +901,7 @@
   }
 
   .home-page {
-    @apply overflow-hidden;
-    background: #f7f6f2;
+    @apply overflow-hidden bg-paper;
   }
 
   .section-shell {
@@ -1146,7 +1145,7 @@
   }
 
   .story-feature {
-    @apply border border-gray-200 bg-[#f7f6f2];
+    @apply border border-gray-200 bg-paper;
   }
 
   .story-art {

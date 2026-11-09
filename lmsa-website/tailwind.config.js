@@ -19,6 +19,12 @@ export default {
           800: '#085C36',
           900: '#064629',
         },
+        // Neutral-warm paper for page and muted section backgrounds.
+        // Low chroma so it reads as stone, not as a yellow cream.
+        paper: {
+          DEFAULT: '#f1f0ec',
+          muted: '#e7e6e1',
+        },
         // Supporting colors
         red: {
           50: '#FEF0F0',

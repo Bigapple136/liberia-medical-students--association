@@ -117,7 +117,7 @@ export default function CategoriesPage() {
             {categories.map((category, index) => (
               <li
                 key={category.name}
-                className="group -mx-2 grid gap-4 px-2 py-7 transition-colors duration-200 focus-within:bg-[#f7f6f2] sm:-mx-3 sm:px-3 md:py-11 lg:-mx-4 lg:grid-cols-[1fr_0.62fr_1.45fr_auto] lg:items-start lg:gap-10 lg:px-4 [@media(hover:hover)]:hover:bg-[#f7f6f2]"
+                className="group -mx-2 grid gap-4 px-2 py-7 transition-colors duration-200 focus-within:bg-paper sm:-mx-3 sm:px-3 md:py-11 lg:-mx-4 lg:grid-cols-[1fr_0.62fr_1.45fr_auto] lg:items-start lg:gap-10 lg:px-4 [@media(hover:hover)]:hover:bg-paper"
               >
                 <div
                   className="reveal-on-scroll"
