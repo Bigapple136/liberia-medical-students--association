@@ -164,12 +164,15 @@ const heroPages = [
     match: (path) => path === '/membership/dues',
     eyebrow: 'Membership / Dues',
     title: 'What dues cost',
+    titleLines: ['What dues', 'cost.'],
+    variant: 'poster',
     description:
       'The annual fee for each category, the deadline, and how to pay it.',
     action: { label: 'Start membership', to: '/register' },
+    secondary: { label: 'Compare categories', to: '/membership/categories' },
     accent: 'green',
     icon: FileText,
-    photoKey: 'membership',
+    photoKey: 'events',
     pattern: 'dots',
   },
   {
@@ -368,7 +371,7 @@ export default function PageHero() {
                 id="page-hero-title"
                 className="text-[clamp(2.9rem,7vw,5.75rem)] font-bold leading-[0.92] tracking-[-0.045em]"
               >
-                {hero.titleLines.map((line) => (
+                {(hero.titleLines || [hero.title]).map((line) => (
                   <span key={line} className="block">{line}</span>
                 ))}
               </h1>
