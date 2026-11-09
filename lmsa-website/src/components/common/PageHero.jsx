@@ -163,9 +163,9 @@ const heroPages = [
   {
     match: (path) => path === '/membership/dues',
     eyebrow: 'Membership / Dues',
-    title: 'A simple path to active membership',
+    title: 'What dues cost',
     description:
-      'See the current fee structure and the next step for activating your LMSA membership.',
+      'The annual fee for each category, the deadline, and how to pay it.',
     action: { label: 'Start membership', to: '/register' },
     accent: 'green',
     icon: FileText,

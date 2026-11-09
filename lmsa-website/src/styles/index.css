@@ -386,6 +386,28 @@
     @apply text-base leading-7 text-gray-700;
   }
 
+  /* ---- Dues page ---- */
+
+  /* One photograph moves on its own: a slow drift inside a fixed crop. */
+  @keyframes photo-drift {
+    from {
+      transform: scale(1);
+    }
+    to {
+      transform: scale(1.06);
+    }
+  }
+
+  .dues-page .photo-drift {
+    animation: photo-drift 26s ease-in-out infinite alternate;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .dues-page .photo-drift {
+      animation: none;
+    }
+  }
+
   /* ---- Join a committee page ---- */
 
   .join-committee-page ::selection {
