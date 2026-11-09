@@ -16,27 +16,34 @@ const MEMBERSHIP_TYPE_OPTIONS = [
   { value: 'veteran', label: 'Veteran Member — alumni & past members' },
 ];
 
+// The same four rows, wording and amounts as the dues ledger, so the two pages read as one document.
 const membershipTypes = [
   {
     name: 'Full Member',
-    description: 'For currently enrolled medical students',
-    featured: true,
+    description: 'Currently enrolled medical students',
+    fee: '$25',
+    period: 'a year',
     benefits: ['Voting rights', 'All events', 'Study resources', 'Member portal'],
   },
   {
     name: 'Associate Member',
-    description: 'For prospective students and affiliates',
+    description: 'Prospective students and affiliates',
+    fee: '$15',
+    period: 'a year',
     benefits: ['Event participation', 'Newsletter', 'Networking'],
   },
   {
     name: 'Honorary Member',
-    description: 'For distinguished supporters',
-    invitationOnly: true,
+    description: 'Faculty and alumni supporters',
+    fee: 'By invitation',
+    period: '',
     benefits: ['Recognition at events', 'Advisory role', 'Network access'],
   },
   {
     name: 'Veteran Member',
-    description: 'For alumni and past members',
+    description: 'Alumni and past members',
+    fee: 'Free',
+    period: '',
     benefits: ['Alumni network', 'Mentorship', 'Reunions'],
   },
 ];
@@ -191,11 +198,11 @@ export default function MembershipPage() {
         <div className="site-container">
           <div className="grid items-start gap-12 lg:grid-cols-[1.2fr_0.8fr] lg:gap-16">
             <div className="reveal-on-scroll">
-              <h2 className="max-w-[22ch] font-serif text-[clamp(2.1rem,4.2vw,3.5rem)] font-bold leading-[1.08] tracking-[-0.015em] text-lmsa-900">
+              <h2 className="max-w-[24ch] font-serif text-[1.75rem] font-bold leading-[1.08] tracking-[-0.02em] text-lmsa-900 md:text-[2.25rem]">
                 Medical school is better together.
               </h2>
               <div className="mt-8 grid gap-6 sm:grid-cols-2 sm:gap-10">
-                <p className="text-lg leading-8 text-gray-700">
+                <p className="text-pretty text-xl leading-8 text-gray-700">
                   LMSA gives students a place to find support, build relationships, and turn their
                   time in training into something shared.
                 </p>
@@ -226,7 +233,7 @@ export default function MembershipPage() {
       <section className="editorial-section editorial-section-muted">
         <div className="site-container">
           <div className="reveal-on-scroll flex flex-wrap items-end justify-between gap-x-16 gap-y-4">
-            <h2 className="text-[clamp(1.7rem,3.2vw,2.75rem)] font-semibold leading-tight tracking-[-0.03em] text-lmsa-900">
+            <h2 className="font-serif text-[1.75rem] font-bold leading-[1.08] tracking-[-0.02em] text-lmsa-900 md:text-[2.25rem]">
               Four ways to belong.
             </h2>
             <p className="max-w-[40ch] text-base leading-7 text-gray-600">
@@ -234,51 +241,60 @@ export default function MembershipPage() {
             </p>
           </div>
 
-          <ul className="mt-10">
+          <ol className="mt-10 lg:mt-12">
             {membershipTypes.map((type) => (
               <li
                 key={type.name}
-                className={`reveal-on-scroll group transition-colors duration-300 ${
-                  type.featured ? 'bg-lmsa-900 text-lmsa-50' : 'hover:bg-white'
-                }`}
+                className="grid gap-y-3 py-7 lg:grid-cols-[1.05fr_1.3fr_auto] lg:items-baseline lg:gap-x-10 lg:py-8"
               >
-                <div className="grid gap-4 px-0 py-7 md:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] md:items-center md:gap-12 md:px-8 md:py-8">
-                  <div>
-                    <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-                      <h3
-                        className={`text-2xl font-semibold tracking-[-0.025em] md:text-[1.75rem] ${
-                          type.featured ? 'text-white' : 'text-lmsa-900'
-                        }`}
-                      >
-                        {type.name}
-                      </h3>
-                      {type.featured && <span className="text-[13px] font-semibold text-lmsa-200">Most common</span>}
-                      {type.invitationOnly && <span className="text-[13px] font-semibold text-gray-600">By invitation</span>}
-                    </div>
-                    <p className={`mt-1 text-base ${type.featured ? 'text-lmsa-100' : 'text-gray-600'}`}>
-                      {type.description}
-                    </p>
-                  </div>
-                  <ul className="flex flex-wrap items-center gap-x-6 gap-y-2">
-                    {type.benefits.map((benefit) => (
-                      <li
-                        key={benefit}
-                        className={`text-base ${type.featured ? 'text-lmsa-50' : 'text-gray-700'}`}
-                      >
-                        <span
-                          className={`mr-2 inline-block h-1.5 w-1.5 -translate-y-0.5 rounded-full ${
-                            type.featured ? 'bg-lmsa-400' : 'bg-lmsa-600'
-                          }`}
-                          aria-hidden="true"
-                        />
-                        {benefit}
-                      </li>
-                    ))}
-                  </ul>
+                <div className="reveal-on-scroll">
+                  <h3 className="font-serif text-[1.75rem] font-bold leading-[1.1] tracking-[-0.015em] text-lmsa-900">
+                    {type.name}
+                  </h3>
+                  <p className="mt-1 text-base leading-7 text-gray-700">{type.description}</p>
                 </div>
+                <ul
+                  className="reveal-on-scroll flex flex-wrap items-baseline gap-x-5 gap-y-2"
+                  style={{ transitionDelay: '60ms' }}
+                >
+                  {type.benefits.map((benefit) => (
+                    <li key={benefit} className="flex items-start gap-2 text-base leading-7 text-gray-700">
+                      <span
+                        className="mt-[0.65rem] h-1.5 w-1.5 shrink-0 rounded-full bg-lmsa-600"
+                        aria-hidden="true"
+                      />
+                      {benefit}
+                    </li>
+                  ))}
+                </ul>
+                {/* Amounts match the dues ledger; phones get them on their own right-aligned line. */}
+                <p
+                  className="reveal-on-scroll justify-self-end whitespace-nowrap font-serif text-[1.75rem] font-bold leading-none tracking-[-0.02em] text-lmsa-800"
+                  style={{ transitionDelay: '120ms' }}
+                >
+                  {type.fee}
+                  {type.period && (
+                    <span className="ml-2 text-base font-normal tracking-normal text-gray-600">
+                      {type.period}
+                    </span>
+                  )}
+                </p>
               </li>
             ))}
-          </ul>
+          </ol>
+
+          <div className="reveal-on-scroll mt-8 flex flex-wrap items-baseline justify-between gap-x-10 gap-y-3">
+            <p className="max-w-[60ch] text-base leading-7 text-gray-700">
+              Fees are annual and due on 31 October.
+            </p>
+            <Link
+              to="/membership/dues"
+              className="inline-flex min-h-11 items-center gap-1.5 text-base font-semibold text-lmsa-800 underline decoration-lmsa-400 decoration-2 underline-offset-[6px] transition-colors hover:text-lmsa-900 hover:decoration-lmsa-900"
+            >
+              Read the payment terms
+              <ArrowRight size={15} aria-hidden="true" />
+            </Link>
+          </div>
         </div>
       </section>
 
@@ -287,7 +303,7 @@ export default function MembershipPage() {
         <div className="site-container">
           <div className="grid gap-3 lg:grid-cols-3">
             <div className="reveal-on-scroll bg-lmsa-900 p-7 text-lmsa-50 sm:p-9 lg:col-span-2 lg:col-start-1 lg:row-start-1">
-              <h2 className="text-[clamp(1.7rem,3.2vw,2.75rem)] font-semibold leading-[1.05] tracking-[-0.03em] text-white">
+              <h2 className="font-serif text-[1.75rem] font-bold leading-[1.08] tracking-[-0.02em] text-white md:text-[2.25rem]">
                 Support you can use.
               </h2>
               <p className="mt-4 max-w-[52ch] text-base leading-7 text-lmsa-100">
@@ -297,8 +313,8 @@ export default function MembershipPage() {
               <div className="mt-10 grid gap-8 sm:grid-cols-2">
                 {benefits.slice(0, 2).map(({ title, description }) => (
                   <div key={title}>
-                    <h3 className="text-xl font-semibold tracking-[-0.02em] text-white">{title}</h3>
-                    <p className="mt-2 text-sm leading-6 text-lmsa-100">{description}</p>
+                    <h3 className="font-serif text-xl font-semibold text-white">{title}</h3>
+                    <p className="mt-2 text-base leading-7 text-lmsa-100">{description}</p>
                   </div>
                 ))}
               </div>
@@ -326,7 +342,7 @@ export default function MembershipPage() {
                 }`}
                 style={{ transitionDelay: `${index * 70}ms` }}
               >
-                <h3 className="text-xl font-semibold tracking-[-0.02em] text-lmsa-900">{title}</h3>
+                <h3 className="font-serif text-xl font-semibold text-lmsa-900">{title}</h3>
                 <p className="mt-2 max-w-[42ch] text-base leading-7 text-gray-600">{description}</p>
               </div>
             ))}
@@ -339,7 +355,7 @@ export default function MembershipPage() {
         <div className="site-container">
           <div className="grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:gap-20">
             <div className="reveal-on-scroll">
-              <h2 className="max-w-[16ch] text-[clamp(1.7rem,3.2vw,2.75rem)] font-semibold leading-[1.05] tracking-[-0.03em] text-white">
+              <h2 className="max-w-[18ch] font-serif text-[1.75rem] font-bold leading-[1.08] tracking-[-0.02em] text-white md:text-[2.25rem]">
                 What it takes to join.
               </h2>
               <p className="mt-4 max-w-[36ch] text-base leading-7 text-lmsa-100">
@@ -367,7 +383,7 @@ export default function MembershipPage() {
         <div className="site-container">
           <div className="grid items-start gap-12 lg:grid-cols-[1fr_0.95fr] lg:gap-16">
             <div className="reveal-on-scroll">
-              <h2 className="max-w-[18ch] text-[clamp(1.7rem,3.2vw,2.75rem)] font-semibold leading-[1.04] tracking-[-0.03em] text-lmsa-900">
+              <h2 className="max-w-[20ch] font-serif text-[1.75rem] font-bold leading-[1.08] tracking-[-0.02em] text-lmsa-900 md:text-[2.25rem]">
                 Ready to become part of LMSA?
               </h2>
               <p className="mt-4 max-w-[40ch] text-base leading-7 text-gray-600">
@@ -399,7 +415,7 @@ export default function MembershipPage() {
         <div className="site-container">
           <div className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr] lg:items-end">
             <div className="reveal-on-scroll">
-              <h2 className="max-w-[20ch] text-[clamp(1.7rem,3.2vw,2.75rem)] font-semibold leading-[1.04] tracking-[-0.03em] text-white">
+              <h2 className="max-w-[22ch] font-serif text-[1.75rem] font-bold leading-[1.08] tracking-[-0.02em] text-white md:text-[2.25rem]">
                 Check the benefits and dues.
               </h2>
               <p className="mt-4 max-w-[46ch] text-base leading-7 text-lmsa-100">
