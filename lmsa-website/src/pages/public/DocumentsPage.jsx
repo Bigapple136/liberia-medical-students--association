@@ -62,18 +62,6 @@ function formatDate(dateString) {
   return new Date(dateString).toLocaleDateString('default', { month: 'long', day: 'numeric', year: 'numeric' });
 }
 
-function DocumentCardSkeleton() {
-  return (
-    <div className="flex flex-col border border-gray-200 bg-white p-6">
-      <div className="h-10 w-10 animate-pulse bg-gray-100" />
-      <div className="mt-4 h-6 w-4/5 animate-pulse bg-gray-100" />
-      <div className="mt-3 h-4 w-full animate-pulse bg-gray-100" />
-      <div className="mt-2 h-4 w-2/3 animate-pulse bg-gray-100" />
-      <div className="mt-6 h-11 w-full animate-pulse bg-gray-100" />
-    </div>
-  );
-}
-
 export default function DocumentsPage() {
   const [documents, setDocuments] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -188,13 +176,9 @@ export default function DocumentsPage() {
       <section className="editorial-section editorial-section-muted">
         <div className="site-container">
           {loading ? (
-            <div role="status" aria-label="Loading documents">
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                {Array.from({ length: 6 }).map((_, index) => (
-                  <DocumentCardSkeleton key={index} />
-                ))}
-              </div>
-              <span className="sr-only">Loading documents…</span>
+            <div role="status" className="border border-gray-200 bg-white p-12 text-center">
+              <Loader size={26} className="mx-auto mb-4 animate-spin text-lmsa-600" aria-hidden="true" />
+              <p className="text-sm font-medium text-gray-600">Loading the library…</p>
             </div>
           ) : error ? (
             <div className="border border-gray-200 bg-white p-12 text-center">
