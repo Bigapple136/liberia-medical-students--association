@@ -398,12 +398,14 @@
     }
   }
 
-  .dues-page .photo-drift {
+  .dues-page .photo-drift,
+  .resources-page .photo-drift {
     animation: photo-drift 26s ease-in-out infinite alternate;
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .dues-page .photo-drift {
+    .dues-page .photo-drift,
+    .resources-page .photo-drift {
       animation: none;
     }
   }

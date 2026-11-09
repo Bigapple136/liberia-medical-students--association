@@ -190,13 +190,16 @@ const heroPages = [
   {
     match: (path) => path === '/academics/resources',
     eyebrow: 'Academics / Resources',
-    title: 'Tools for the next stage of your training',
+    title: 'Study materials, by stage.',
+    titleLines: ['Study materials,', 'by stage.'],
+    variant: 'poster-compact',
     description:
-      'Find study materials, guides, and practical resources designed for the realities of medical school.',
-    action: { label: 'Find a mentor', to: '/academics/mentorship' },
+      'Guides, notes, and references shared by students, faculty, and alumni who took these courses before you.',
+    action: { label: 'Browse the materials', to: '#library' },
+    secondary: { label: 'Find a mentor', to: '/academics/mentorship' },
     accent: 'green',
     icon: BookOpen,
-    photoKey: 'about',
+    photoKey: 'mentorship',
     pattern: 'grid',
   },
   {

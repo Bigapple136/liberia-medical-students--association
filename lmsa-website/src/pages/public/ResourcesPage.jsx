@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useState } from 'react';
+import { ArrowRight, Download, FileText, Loader } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { AlertCircle, Download, FileText, Loader } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { EditorialCallout, EditorialSectionHeader } from '@components/common/EditorialSections';
+import Photo from '@components/common/Photo';
 import { documentService } from '@services/document.service';
+import { stockPhotos } from '@config/images';
 
 const STAGES = [
   {
@@ -47,17 +48,6 @@ function formatDate(dateString) {
   return new Date(dateString).toLocaleDateString('default', { month: 'long', day: 'numeric', year: 'numeric' });
 }
 
-function MaterialCardSkeleton() {
-  return (
-    <div className="flex flex-col border border-gray-200 bg-white p-6">
-      <div className="h-10 w-10 animate-pulse bg-gray-100" />
-      <div className="mt-4 h-6 w-4/5 animate-pulse bg-gray-100" />
-      <div className="mt-3 h-4 w-full animate-pulse bg-gray-100" />
-      <div className="mt-6 h-11 w-full animate-pulse bg-gray-100" />
-    </div>
-  );
-}
-
 export default function ResourcesPage() {
   const [materials, setMaterials] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -81,6 +71,17 @@ export default function ResourcesPage() {
     loadMaterials();
   }, [loadMaterials]);
 
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => entries.forEach((entry) => {
+        if (entry.isIntersecting) entry.target.classList.add('revealed');
+      }),
+      { threshold: 0.12, rootMargin: '0px 0px -50px 0px' }
+    );
+    document.querySelectorAll('.reveal-on-scroll').forEach((element) => observer.observe(element));
+    return () => observer.disconnect();
+  }, [materials, loading, error]);
+
   async function handleDownload(doc) {
     setDownloading(doc.id);
     try {
@@ -93,157 +94,280 @@ export default function ResourcesPage() {
     }
   }
 
-  return (
-    <main className="editorial-page">
-      <section className="editorial-section">
-        <div className="site-container">
-          <EditorialSectionHeader
-            title="The right resource can change how a difficult week feels."
-            description="LMSA curates practical study materials, guides, and shared knowledge for the realities of medical training."
-          />
-          <div className="editorial-note max-w-3xl">
-            <p>These resources are contributed by senior students, faculty, and alumni who remember what it feels like to learn something for the first time.</p>
-            <span>Shared knowledge, made useful</span>
-          </div>
-        </div>
-      </section>
+  const renderLibrary = () => {
+    if (loading) {
+      return (
+        <ul className="mt-10" aria-hidden="true">
+          {[0, 1, 2].map((row) => (
+            <li key={row} className="grid gap-y-3 py-6 lg:grid-cols-[1.35fr_1fr_auto] lg:gap-x-10">
+              <div className="h-7 w-2/3 animate-pulse bg-lmsa-100" />
+              <div className="h-4 w-40 animate-pulse bg-lmsa-100" />
+              <div className="h-4 w-24 animate-pulse bg-lmsa-100" />
+            </li>
+          ))}
+        </ul>
+      );
+    }
 
-      <section className="editorial-section editorial-section-muted">
-        <div className="site-container">
-          <EditorialSectionHeader
-            title="Find support for the stage you are in."
-            description="Each stage of training asks something different of you. Use these focus areas to decide what to look for in the library below."
-          />
-          <div className="grid gap-4 md:grid-cols-3">
-            {STAGES.map(({ stage, note, focus }) => (
-              <article key={stage} className="flex flex-col border border-gray-200 bg-white p-6">
-                <h3 className="text-xl font-semibold tracking-[-0.02em] text-lmsa-900">{stage}</h3>
-                <p className="mt-2 text-sm leading-6 text-gray-600">{note}</p>
-                <ul className="mt-5 space-y-2.5 border-t border-gray-200 pt-5">
-                  {focus.map((item) => (
-                    <li key={item} className="flex gap-2.5 text-sm leading-6 text-gray-700">
-                      <span className="mt-2.5 h-1 w-1 shrink-0 bg-lmsa-600" aria-hidden="true" />
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="editorial-section">
-        <div className="site-container">
-          <EditorialSectionHeader
-            title="Study materials, ready to use."
-            description="Everything below comes from the LMSA document library and is available to download right now."
-          />
-
-          {loading ? (
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3" aria-hidden="true">
-              {Array.from({ length: 3 }).map((_, index) => (
-                <MaterialCardSkeleton key={index} />
-              ))}
-            </div>
-          ) : error ? (
-            <div className="border border-gray-200 bg-white px-6 py-16 text-center">
-              <AlertCircle size={32} className="mx-auto text-gray-400" aria-hidden="true" />
-              <h3 className="mt-4 text-xl font-semibold tracking-[-0.02em] text-lmsa-900">We could not load the study materials</h3>
-              <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-gray-600">Something went wrong on our end. Check your connection and try again.</p>
+    if (error || materials.length === 0) {
+      return (
+        <div className="reveal-on-scroll mt-10 bg-lmsa-100 p-7 md:p-10">
+          <FileText size={26} className="text-lmsa-800" aria-hidden="true" />
+          <h3 className="mt-4 max-w-[26ch] font-serif text-[1.75rem] font-bold leading-[1.1] tracking-[-0.015em] text-lmsa-900">
+            {error ? 'The materials did not load.' : 'Nothing published in this category yet.'}
+          </h3>
+          <p className="mt-3 max-w-[52ch] text-pretty text-base leading-7 text-lmsa-900">
+            {error
+              ? 'Something went wrong on our end, so the list is empty rather than accurate. Try again, or go straight to the document library.'
+              : 'Materials appear here as members and faculty contribute them. The wider document library may already have what you need.'}
+          </p>
+          <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3">
+            {error ? (
               <button
                 type="button"
                 onClick={loadMaterials}
-                className="mt-6 inline-flex items-center gap-2 bg-lmsa-600 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-lmsa-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
+                className="inline-flex min-h-11 items-center justify-center gap-2 bg-lmsa-600 px-6 text-sm font-semibold text-white transition-colors hover:bg-lmsa-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-900 focus-visible:ring-offset-2"
               >
                 Try again
               </button>
-            </div>
-          ) : materials.length === 0 ? (
-            <div className="border border-gray-200 bg-white px-6 py-16 text-center">
-              <FileText size={32} className="mx-auto text-gray-400" aria-hidden="true" />
-              <h3 className="mt-4 text-xl font-semibold tracking-[-0.02em] text-lmsa-900">No study materials published yet</h3>
-              <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-gray-600">
-                Materials appear here as members and faculty contribute them. The wider document library may already have what you need.
-              </p>
-              <Link
-                to="/documents"
-                className="mt-6 inline-flex items-center gap-2 border border-lmsa-200 bg-lmsa-50 px-6 py-3 text-sm font-semibold text-lmsa-700 transition-colors hover:bg-lmsa-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
+            ) : null}
+            <Link
+              to="/documents"
+              className="inline-flex min-h-11 items-center gap-1.5 text-base font-semibold text-lmsa-800 underline decoration-lmsa-400 decoration-2 underline-offset-[6px] transition-colors hover:text-lmsa-900 hover:decoration-lmsa-900"
+            >
+              Browse the document library
+              <ArrowRight size={15} aria-hidden="true" />
+            </Link>
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <>
+        <ul className="mt-10">
+          {materials.map((doc, index) => (
+            <li
+              key={doc.id}
+              className="grid gap-y-3 py-6 lg:grid-cols-[1.35fr_1fr_auto] lg:items-baseline lg:gap-x-10 lg:py-7"
+            >
+              <div
+                className="reveal-on-scroll"
+                style={{ transitionDelay: `${Math.min(index, 4) * 60}ms` }}
               >
-                Browse the document library
-              </Link>
+                <h3 className="font-serif text-[1.75rem] font-bold leading-[1.1] tracking-[-0.015em] text-lmsa-900">
+                  {doc.title}
+                </h3>
+                {doc.description && (
+                  <p className="mt-1 max-w-[52ch] text-pretty text-base leading-7 text-gray-700">
+                    {doc.description}
+                  </p>
+                )}
+              </div>
+
+              <p
+                className="reveal-on-scroll text-base leading-7 text-gray-700"
+                style={{ transitionDelay: `${Math.min(index, 4) * 60 + 60}ms` }}
+              >
+                {[formatFileSize(doc.file_size), doc.file_type?.replace('.', '').toUpperCase()]
+                  .filter(Boolean)
+                  .join(' · ')}
+                {doc.created_at && <span className="mt-1 block text-gray-600">{formatDate(doc.created_at)}</span>}
+                {doc.downloads > 0 && (
+                  <span className="mt-1 block text-gray-600">
+                    {doc.downloads} download{doc.downloads !== 1 ? 's' : ''}
+                  </span>
+                )}
+              </p>
+
+              <button
+                type="button"
+                onClick={() => handleDownload(doc)}
+                disabled={downloading === doc.id}
+                className="reveal-on-scroll inline-flex min-h-11 items-center gap-1.5 justify-self-start whitespace-nowrap text-base font-semibold text-lmsa-800 underline decoration-lmsa-400 decoration-2 underline-offset-[6px] transition-colors hover:text-lmsa-900 hover:decoration-lmsa-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-900 focus-visible:ring-offset-2 disabled:opacity-60 lg:justify-self-end"
+                style={{ transitionDelay: `${Math.min(index, 4) * 60 + 120}ms` }}
+              >
+                {downloading === doc.id ? (
+                  <>
+                    <Loader size={15} className="animate-spin" aria-hidden="true" />
+                    Opening
+                  </>
+                ) : (
+                  <>
+                    <Download size={15} aria-hidden="true" />
+                    Download
+                  </>
+                )}
+              </button>
+            </li>
+          ))}
+        </ul>
+
+        <p className="mt-8 max-w-[64ch] text-base leading-7 text-gray-700">
+          Looking for constitutions, reports, or newsletters?{' '}
+          <Link
+            to="/documents"
+            className="font-semibold text-lmsa-800 underline decoration-lmsa-400 decoration-2 underline-offset-[6px] transition-colors hover:text-lmsa-900 hover:decoration-lmsa-900"
+          >
+            Browse the full document library
+          </Link>
+          .
+        </p>
+      </>
+    );
+  };
+
+  return (
+    <main className="editorial-page resources-page">
+      {/* Who the material comes from, before the list of it. */}
+      <section className="editorial-section py-16 md:py-24">
+        <div className="site-container">
+          <div className="grid items-start gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:gap-16">
+            <div>
+              <h2 className="reveal-on-scroll font-serif text-[1.75rem] font-bold leading-[1.08] tracking-[-0.02em] text-lmsa-900 md:text-[2.25rem]">
+                Shared by the students ahead of you.
+              </h2>
+              <p className="reveal-on-scroll mt-5 max-w-[52ch] text-pretty text-xl leading-8 text-gray-700" style={{ transitionDelay: '60ms' }}>
+                Senior students, faculty, and alumni contribute the guides and notes that carried them
+                through the same courses you are taking now.
+              </p>
+              <p className="reveal-on-scroll mt-4 max-w-[52ch] text-pretty text-base leading-7 text-gray-700" style={{ transitionDelay: '90ms' }}>
+                None of it is a shortcut around the work. It is the work, annotated by someone who has
+                already done it.
+              </p>
             </div>
-          ) : (
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {materials.map((doc) => (
-                <article key={doc.id} className="flex flex-col border border-gray-200 bg-white p-6">
-                  <div className="flex items-start gap-3">
-                    <span className="flex h-10 w-10 shrink-0 items-center justify-center bg-lmsa-50 text-lmsa-600" aria-hidden="true">
-                      <FileText size={20} />
-                    </span>
-                    <div className="min-w-0">
-                      <h3 className="line-clamp-2 text-lg font-semibold tracking-[-0.02em] text-lmsa-900">{doc.title}</h3>
-                      <p className="mt-1 text-xs font-bold uppercase tracking-[0.12em] text-gray-500">
-                        {[doc.file_type?.replace('.', ''), formatFileSize(doc.file_size)].filter(Boolean).join(' · ')}
-                      </p>
-                    </div>
-                  </div>
 
-                  {doc.description && <p className="mt-3 line-clamp-2 text-sm leading-6 text-gray-600">{doc.description}</p>}
-
-                  <div className="mt-auto flex flex-wrap items-center gap-x-4 gap-y-1 pt-4 text-sm text-gray-500">
-                    {doc.created_at && <time dateTime={doc.created_at}>{formatDate(doc.created_at)}</time>}
-                    {doc.downloads > 0 && (
-                      <span className="flex items-center gap-1.5">
-                        <Download size={13} aria-hidden="true" />
-                        {doc.downloads} download{doc.downloads !== 1 ? 's' : ''}
-                      </span>
-                    )}
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={() => handleDownload(doc)}
-                    disabled={downloading === doc.id}
-                    className="mt-5 flex w-full items-center justify-center gap-2 bg-lmsa-600 px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-lmsa-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2 disabled:opacity-60"
-                  >
-                    {downloading === doc.id ? (
-                      <>
-                        <Loader size={14} className="animate-spin" aria-hidden="true" />
-                        Opening…
-                      </>
-                    ) : (
-                      <>
-                        <Download size={15} aria-hidden="true" />
-                        Download
-                      </>
-                    )}
-                  </button>
-                </article>
-              ))}
-            </div>
-          )}
-
-          {!loading && !error && materials.length > 0 && (
-            <p className="mt-8 text-sm text-gray-600">
-              Looking for constitutions, reports, or newsletters?{' '}
-              <Link to="/documents" className="font-semibold text-lmsa-700 underline decoration-lmsa-300 underline-offset-4 hover:text-lmsa-900">
-                Browse the full document library
-              </Link>
-              .
-            </p>
-          )}
+            <figure className="reveal-on-scroll lg:pt-2" style={{ transitionDelay: '120ms' }}>
+              <Photo
+                src={stockPhotos.sections.learn.src}
+                alt={stockPhotos.sections.learn.alt}
+                fallbackGradient="bg-lmsa-800"
+                className="aspect-[4/3] w-full sm:aspect-[16/10] lg:aspect-auto lg:h-[420px]"
+                imgClassName="photo-drift"
+              />
+            </figure>
+          </div>
         </div>
       </section>
 
-      <section className="editorial-section pt-0">
+      {/* Three stages, set as type rather than three boxed cards. */}
+      <section className="editorial-section editorial-section-muted py-16 md:py-24">
         <div className="site-container">
-          <EditorialCallout
-            title="Have a study guide or resource that helped you?"
-            description="Share it with the next student who needs a clearer way in."
-            tone="green"
-            action={{ label: 'Contact LMSA', to: '/contact' }}
-          />
+          <div className="reveal-on-scroll max-w-2xl">
+            <h2 className="font-serif text-[1.75rem] font-bold leading-[1.08] tracking-[-0.02em] text-lmsa-900 md:text-[2.25rem]">
+              Find support for the stage you are in.
+            </h2>
+            <p className="mt-5 max-w-[56ch] text-pretty text-base leading-7 text-gray-700">
+              Each stage of training asks something different of you. Use these focus areas to decide
+              what to look for in the library below.
+            </p>
+          </div>
+
+          <ol className="mt-10 grid gap-10 lg:grid-cols-3 lg:gap-12 lg:mt-12">
+            {STAGES.map(({ stage, note, focus }, index) => (
+              <li
+                key={stage}
+                className="reveal-on-scroll"
+                style={{ transitionDelay: `${index * 70}ms` }}
+              >
+                <h3 className="font-serif text-[1.75rem] font-bold leading-[1.1] tracking-[-0.015em] text-lmsa-900">
+                  {stage}
+                </h3>
+                <p className="mt-2 max-w-[34ch] text-pretty text-base leading-7 text-gray-700">{note}</p>
+                <ul className="mt-5 space-y-3 text-base leading-7 text-gray-700">
+                  {focus.map((item) => (
+                    <li key={item} className="flex gap-3">
+                      <span
+                        className="mt-[0.65rem] h-1.5 w-1.5 shrink-0 rounded-full bg-lmsa-600"
+                        aria-hidden="true"
+                      />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
+
+      {/* A wide breath of the work itself, between the advice and the list. */}
+      <section className="editorial-section py-0">
+        <div className="site-container">
+          <figure className="reveal-on-scroll">
+            <Photo
+              src={stockPhotos.stories.researchCompetition.src}
+              alt={stockPhotos.stories.researchCompetition.alt}
+              fallbackGradient="bg-lmsa-900"
+              className="aspect-[4/3] w-full sm:aspect-[21/9]"
+            />
+          </figure>
+        </div>
+      </section>
+
+      <section id="library" className="editorial-section scroll-mt-28 py-16 md:py-24">
+        <div className="site-container">
+          <div className="reveal-on-scroll flex flex-wrap items-end justify-between gap-x-16 gap-y-4">
+            <h2 className="font-serif text-[1.75rem] font-bold leading-[1.08] tracking-[-0.02em] text-lmsa-900 md:text-[2.25rem]">
+              Study materials, ready to use.
+            </h2>
+            <p className="max-w-[40ch] text-pretty text-base leading-7 text-gray-600">
+              Everything below comes from the LMSA document library and opens right here.
+            </p>
+          </div>
+
+          {renderLibrary()}
+        </div>
+      </section>
+
+      {/* The ask: this library is only as good as what members put in it. */}
+      <section className="bg-lmsa-900 py-16 text-lmsa-50 md:py-24">
+        <div className="site-container">
+          <div className="grid items-center gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16">
+            <div className="reveal-on-scroll">
+              <h2 className="font-serif text-[1.75rem] font-bold leading-[1.08] tracking-[-0.02em] text-white md:text-[2.25rem]">
+                Have a guide that helped you?
+              </h2>
+              <p className="mt-4 max-w-[44ch] text-pretty text-base leading-7 text-lmsa-100">
+                Share it with the next student who needs a clearer way in. Members and faculty can
+                contribute to the library at any time.
+              </p>
+              <div className="mt-8 flex flex-wrap items-center gap-x-8 gap-y-4">
+                <Link
+                  to="/contact"
+                  className="inline-flex min-h-12 items-center justify-center gap-2 bg-lmsa-50 px-6 text-sm font-semibold text-lmsa-900 transition-colors hover:bg-white"
+                >
+                  Contact LMSA
+                  <ArrowRight size={16} aria-hidden="true" />
+                </Link>
+                <Link
+                  to="/documents"
+                  className="inline-flex min-h-11 items-center text-base font-semibold text-lmsa-50 underline decoration-lmsa-400 decoration-2 underline-offset-[6px] transition-colors hover:decoration-white"
+                >
+                  Browse the document library
+                </Link>
+              </div>
+            </div>
+
+            <figure className="reveal-on-scroll h-full" style={{ transitionDelay: '90ms' }}>
+              <Photo
+                src={stockPhotos.sections.connect.src}
+                alt={stockPhotos.sections.connect.alt}
+                fallbackGradient="bg-gray-900"
+                className="aspect-[16/9] w-full lg:aspect-auto lg:h-full lg:min-h-[320px]"
+              />
+            </figure>
+          </div>
+        </div>
+      </section>
+
+      <section className="editorial-section pb-16 pt-8 md:pb-24">
+        <div className="site-container">
+          <p className="max-w-[64ch] text-base leading-7 text-gray-600">
+            Photographs on this page are licensed stock images used while LMSA’s own photography is
+            being collected: Mike McInnerney, Freshh Connection, Dan Meyers, and You X Ventures via
+            Unsplash.
+          </p>
         </div>
       </section>
     </main>
