@@ -165,7 +165,7 @@ const heroPages = [
     eyebrow: 'Membership / Dues',
     title: 'What dues cost',
     titleLines: ['What dues', 'cost.'],
-    variant: 'poster',
+    variant: 'poster-compact',
     description:
       'The annual fee for each category, the deadline, and how to pay it.',
     action: { label: 'Start membership', to: '/register' },
@@ -358,27 +358,46 @@ export default function PageHero() {
   const isHome = pathname === '/';
   const photo = hero.photoKey ? stockPhotos.hero[hero.photoKey] : null;
 
-  if (hero.variant === 'poster') {
+  // 'poster' opens a section; 'poster-compact' keeps the same layout with a shorter
+  // picture and title, so a page whose first screen belongs to its content can start higher.
+  const isPoster = hero.variant === 'poster' || hero.variant === 'poster-compact';
+  const isCompactPoster = hero.variant === 'poster-compact';
+
+  if (isPoster) {
     return (
       <section
         className={`relative overflow-hidden ${styles.surface} ${styles.text}`}
         aria-labelledby="page-hero-title"
       >
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid items-end gap-10 pt-12 md:pt-16 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16 lg:pt-20">
-            <div className="pb-10 lg:pb-16">
+          <div
+            className={`grid gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16 ${
+              isCompactPoster
+                ? 'items-center pt-8 md:pt-10 lg:pt-12'
+                : 'items-end pt-12 md:pt-16 lg:pt-20'
+            }`}
+          >
+            <div className={isCompactPoster ? 'pb-8 lg:pb-10' : 'pb-10 lg:pb-16'}>
               <h1
                 id="page-hero-title"
-                className="text-[clamp(2.9rem,7vw,5.75rem)] font-bold leading-[0.92] tracking-[-0.045em]"
+                className={`font-bold tracking-[-0.045em] ${
+                  isCompactPoster
+                    ? 'text-[clamp(2.5rem,5.2vw,4.5rem)] leading-[0.96]'
+                    : 'text-[clamp(2.9rem,7vw,5.75rem)] leading-[0.92]'
+                }`}
               >
                 {(hero.titleLines || [hero.title]).map((line) => (
                   <span key={line} className="block">{line}</span>
                 ))}
               </h1>
-              <p className="mt-6 max-w-[44ch] text-lg leading-8 opacity-85 md:text-xl md:leading-9">
+              <p
+                className={`${isCompactPoster ? 'mt-5' : 'mt-6'} max-w-[44ch] text-lg leading-8 opacity-85 md:text-xl md:leading-9`}
+              >
                 {hero.description}
               </p>
-              <div className="mt-9 flex flex-wrap items-center gap-x-8 gap-y-4">
+              <div
+                className={`${isCompactPoster ? 'mt-7' : 'mt-9'} flex flex-wrap items-center gap-x-8 gap-y-4`}
+              >
                 <Link
                   to={hero.action.to}
                   className="inline-flex min-h-12 items-center gap-2 rounded-lg bg-lmsa-50 px-6 text-sm font-semibold text-lmsa-900 transition-transform duration-200 hover:-translate-y-0.5"
@@ -396,7 +415,7 @@ export default function PageHero() {
                 )}
               </div>
               {hero.stats && (
-                <dl className="mt-12 flex flex-wrap gap-x-12 gap-y-6">
+                <dl className={`${isCompactPoster ? 'mt-8' : 'mt-12'} flex flex-wrap gap-x-12 gap-y-6`}>
                   {hero.stats.map(([value, label]) => (
                     <div key={label} className="flex items-baseline gap-2.5">
                       <dt className="sr-only">{label}</dt>
@@ -414,7 +433,11 @@ export default function PageHero() {
                   src={photo.src}
                   alt={photo.alt}
                   loading="eager"
-                  className="h-[280px] w-full object-cover sm:h-[380px] lg:h-[540px]"
+                  className={`w-full object-cover ${
+                    isCompactPoster
+                      ? 'h-[200px] sm:h-[260px] lg:h-[340px]'
+                      : 'h-[280px] sm:h-[380px] lg:h-[540px]'
+                  }`}
                 />
               </div>
             )}

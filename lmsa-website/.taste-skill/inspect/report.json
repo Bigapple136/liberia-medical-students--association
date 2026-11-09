@@ -1,6 +1,6 @@
 {
  "url": "http://localhost:5173/membership/dues",
- "at": "2026-11-09T00:57:23.424Z",
+ "at": "2026-11-09T01:04:23.608Z",
  "allow": [],
  "viewports": [
   {
@@ -9,10 +9,10 @@
    "load": "load",
    "screens": 5,
    "filled": [
-    0.84,
-    0.59,
-    0.61,
-    0.65,
+    0.69,
+    0.64,
+    0.67,
+    0.76,
     0.93
    ],
    "motion": {
@@ -29,8 +29,8 @@
      "h": 900
     },
     "page": {
-     "height": 4200,
-     "screens": 4.7,
+     "height": 3974,
+     "screens": 4.4,
      "words": 385,
      "img": 5,
      "video": 0,
@@ -60,19 +60,19 @@
      "words": 3,
      "chars": 15,
      "lines": 2,
-     "size": 92,
-     "vw": 6.4,
+     "size": 72,
+     "vw": 5,
      "font": "Inter",
      "weight": 700,
      "tracking": -0.045,
-     "leading": 0.92,
+     "leading": 0.96,
      "upper": false,
      "italic": false,
      "mono": false,
      "align": "left",
      "position": "left",
      "widthRatio": 0.42,
-     "top": 319,
+     "top": 160,
      "tag": "h1",
      "kind": "heading"
     },
@@ -80,7 +80,7 @@
      "text": "What dues cost.",
      "words": 3,
      "lines": 2,
-     "size": 92,
+     "size": 72,
      "font": "Inter"
     },
     "headings": [
@@ -89,19 +89,19 @@
       "words": 3,
       "chars": 15,
       "lines": 2,
-      "size": 92,
-      "vw": 6.4,
+      "size": 72,
+      "vw": 5,
       "font": "Inter",
       "weight": 700,
       "tracking": -0.045,
-      "leading": 0.92,
+      "leading": 0.96,
       "upper": false,
       "italic": false,
       "mono": false,
       "align": "left",
       "position": "left",
       "widthRatio": 0.42,
-      "top": 319,
+      "top": 160,
       "tag": "h1",
       "kind": "heading"
      },
@@ -122,7 +122,7 @@
       "align": "left",
       "position": "left",
       "widthRatio": 0.5,
-      "top": 828,
+      "top": 602,
       "tag": "h2",
       "kind": "heading"
      },
@@ -143,7 +143,7 @@
       "align": "left",
       "position": "left",
       "widthRatio": 0.41,
-      "top": 1019,
+      "top": 793,
       "tag": "h3",
       "kind": "heading"
      },
@@ -164,7 +164,7 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.07,
-      "top": 1020,
+      "top": 794,
       "tag": "p",
       "kind": "statement"
      },
@@ -185,7 +185,7 @@
       "align": "left",
       "position": "left",
       "widthRatio": 0.41,
-      "top": 1138,
+      "top": 912,
       "tag": "h3",
       "kind": "heading"
      },
@@ -206,7 +206,7 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.07,
-      "top": 1139,
+      "top": 913,
       "tag": "p",
       "kind": "statement"
      },
@@ -227,7 +227,7 @@
       "align": "left",
       "position": "left",
       "widthRatio": 0.36,
-      "top": 1256,
+      "top": 1031,
       "tag": "h3",
       "kind": "heading"
      },
@@ -248,7 +248,7 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.12,
-      "top": 1257,
+      "top": 1032,
       "tag": "p",
       "kind": "statement"
      },
@@ -269,7 +269,7 @@
       "align": "left",
       "position": "left",
       "widthRatio": 0.44,
-      "top": 1375,
+      "top": 1149,
       "tag": "h3",
       "kind": "heading"
      },
@@ -290,7 +290,7 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.04,
-      "top": 1376,
+      "top": 1150,
       "tag": "p",
       "kind": "statement"
      },
@@ -311,7 +311,7 @@
       "align": "left",
       "position": "left",
       "widthRatio": 0.24,
-      "top": 1658,
+      "top": 1432,
       "tag": "h2",
       "kind": "heading"
      },
@@ -332,7 +332,7 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.26,
-      "top": 1694,
+      "top": 1468,
       "tag": "dd",
       "kind": "statement"
      },
@@ -353,7 +353,7 @@
       "align": "left",
       "position": "right",
       "widthRatio": 0.26,
-      "top": 1694,
+      "top": 1468,
       "tag": "dd",
       "kind": "statement"
      },
@@ -374,7 +374,7 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.26,
-      "top": 1790,
+      "top": 1564,
       "tag": "dd",
       "kind": "statement"
      },
@@ -395,7 +395,7 @@
       "align": "left",
       "position": "right",
       "widthRatio": 0.26,
-      "top": 1790,
+      "top": 1564,
       "tag": "dd",
       "kind": "statement"
      },
@@ -416,7 +416,7 @@
       "align": "left",
       "position": "right",
       "widthRatio": 0.45,
-      "top": 2010,
+      "top": 1784,
       "tag": "h2",
       "kind": "heading"
      },
@@ -437,7 +437,7 @@
       "align": "left",
       "position": "left",
       "widthRatio": 0.33,
-      "top": 2621,
+      "top": 2395,
       "tag": "h2",
       "kind": "heading"
      },
@@ -458,7 +458,7 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.21,
-      "top": 2621,
+      "top": 2395,
       "tag": "h3",
       "kind": "heading"
      },
@@ -479,7 +479,7 @@
       "align": "left",
       "position": "right",
       "widthRatio": 0.21,
-      "top": 2621,
+      "top": 2395,
       "tag": "h3",
       "kind": "heading"
      },
@@ -500,7 +500,7 @@
       "align": "left",
       "position": "left",
       "widthRatio": 0.39,
-      "top": 3048,
+      "top": 2822,
       "tag": "h2",
       "kind": "heading"
      },
@@ -521,7 +521,7 @@
       "align": "left",
       "position": "left",
       "widthRatio": 0.32,
-      "top": 3575,
+      "top": 3349,
       "tag": "h2",
       "kind": "heading"
      }
@@ -557,7 +557,7 @@
       24,
       28,
       36,
-      92
+      72
      ],
      "sizeCount": 8,
      "notLoaded": [],
@@ -571,8 +571,8 @@
      },
      "measureChars": 80,
      "max": {
-      "size": 92,
-      "vw": 6.4,
+      "size": 72,
+      "vw": 5,
       "font": "Inter",
       "text": "What dues"
      },
@@ -609,7 +609,7 @@
       },
       {
        "color": "#f7f6f2",
-       "top": 732,
+       "top": 506,
        "hsl": {
         "h": 48,
         "s": 0.24,
@@ -618,7 +618,7 @@
       },
       {
        "color": "#ebeae4",
-       "top": 1562,
+       "top": 1336,
        "hsl": {
         "h": 51,
         "s": 0.15,
@@ -627,7 +627,7 @@
       },
       {
        "color": "#111827",
-       "top": 3499,
+       "top": 3273,
        "hsl": {
         "h": 221,
         "s": 0.39,
@@ -706,7 +706,11 @@
     "heroMedia": [
      {
       "type": "img",
-      "ratio": 0.23
+      "ratio": 0.14
+     },
+     {
+      "type": "img",
+      "ratio": 0.1
      }
     ],
     "nav": {
@@ -727,14 +731,13 @@
    "width": 768,
    "height": 1024,
    "load": "load",
-   "screens": 7,
+   "screens": 6,
    "filled": [
-    0.87,
-    0.55,
-    0.84,
-    0.61,
-    0.79,
-    0.93,
+    0.81,
+    0.59,
+    0.83,
+    0.69,
+    0.67,
     1
    ],
    "motion": {
@@ -751,8 +754,8 @@
      "h": 1024
     },
     "page": {
-     "height": 6300,
-     "screens": 6.2,
+     "height": 6114,
+     "screens": 6,
      "words": 374,
      "img": 5,
      "video": 0,
@@ -782,19 +785,19 @@
      "words": 3,
      "chars": 15,
      "lines": 2,
-     "size": 53.8,
-     "vw": 7,
+     "size": 40,
+     "vw": 5.2,
      "font": "Inter",
      "weight": 700,
      "tracking": -0.045,
-     "leading": 0.92,
+     "leading": 0.96,
      "upper": false,
      "italic": false,
      "mono": false,
      "align": "left",
      "position": "center",
      "widthRatio": 0.94,
-     "top": 176,
+     "top": 152,
      "tag": "h1",
      "kind": "heading"
     },
@@ -802,7 +805,7 @@
      "text": "What dues cost.",
      "words": 3,
      "lines": 2,
-     "size": 53.8,
+     "size": 40,
      "font": "Inter"
     },
     "headings": [
@@ -811,19 +814,19 @@
       "words": 3,
       "chars": 15,
       "lines": 2,
-      "size": 53.8,
-      "vw": 7,
+      "size": 40,
+      "vw": 5.2,
       "font": "Inter",
       "weight": 700,
       "tracking": -0.045,
-      "leading": 0.92,
+      "leading": 0.96,
       "upper": false,
       "italic": false,
       "mono": false,
       "align": "left",
       "position": "center",
       "widthRatio": 0.94,
-      "top": 176,
+      "top": 152,
       "tag": "h1",
       "kind": "heading"
      },
@@ -844,7 +847,7 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.92,
-      "top": 1011,
+      "top": 825,
       "tag": "h2",
       "kind": "heading"
      },
@@ -865,7 +868,7 @@
       "align": "left",
       "position": "left",
       "widthRatio": 0.74,
-      "top": 1202,
+      "top": 1016,
       "tag": "h3",
       "kind": "heading"
      },
@@ -886,7 +889,7 @@
       "align": "left",
       "position": "right",
       "widthRatio": 0.13,
-      "top": 1203,
+      "top": 1017,
       "tag": "p",
       "kind": "statement"
      },
@@ -907,7 +910,7 @@
       "align": "left",
       "position": "left",
       "widthRatio": 0.75,
-      "top": 1321,
+      "top": 1134,
       "tag": "h3",
       "kind": "heading"
      },
@@ -928,7 +931,7 @@
       "align": "left",
       "position": "right",
       "widthRatio": 0.13,
-      "top": 1322,
+      "top": 1135,
       "tag": "p",
       "kind": "statement"
      },
@@ -949,7 +952,7 @@
       "align": "left",
       "position": "left",
       "widthRatio": 0.65,
-      "top": 1439,
+      "top": 1253,
       "tag": "h3",
       "kind": "heading"
      },
@@ -970,7 +973,7 @@
       "align": "left",
       "position": "right",
       "widthRatio": 0.23,
-      "top": 1440,
+      "top": 1254,
       "tag": "p",
       "kind": "statement"
      },
@@ -991,7 +994,7 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.8,
-      "top": 1558,
+      "top": 1372,
       "tag": "h3",
       "kind": "heading"
      },
@@ -1012,7 +1015,7 @@
       "align": "left",
       "position": "right",
       "widthRatio": 0.08,
-      "top": 1559,
+      "top": 1373,
       "tag": "p",
       "kind": "statement"
      },
@@ -1033,7 +1036,7 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.92,
-      "top": 2321,
+      "top": 2135,
       "tag": "h2",
       "kind": "heading"
      },
@@ -1054,7 +1057,7 @@
       "align": "left",
       "position": "left",
       "widthRatio": 0.43,
-      "top": 2508,
+      "top": 2322,
       "tag": "dd",
       "kind": "statement"
      },
@@ -1075,7 +1078,7 @@
       "align": "left",
       "position": "right",
       "widthRatio": 0.43,
-      "top": 2508,
+      "top": 2322,
       "tag": "dd",
       "kind": "statement"
      },
@@ -1096,7 +1099,7 @@
       "align": "left",
       "position": "left",
       "widthRatio": 0.43,
-      "top": 2604,
+      "top": 2418,
       "tag": "dd",
       "kind": "statement"
      },
@@ -1117,7 +1120,7 @@
       "align": "left",
       "position": "right",
       "widthRatio": 0.43,
-      "top": 2604,
+      "top": 2418,
       "tag": "dd",
       "kind": "statement"
      },
@@ -1138,7 +1141,7 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.92,
-      "top": 3392,
+      "top": 3206,
       "tag": "h2",
       "kind": "heading"
      },
@@ -1159,7 +1162,7 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.92,
-      "top": 3975,
+      "top": 3789,
       "tag": "h2",
       "kind": "heading"
      },
@@ -1180,7 +1183,7 @@
       "align": "left",
       "position": "left",
       "widthRatio": 0.44,
-      "top": 4194,
+      "top": 4007,
       "tag": "h3",
       "kind": "heading"
      },
@@ -1201,7 +1204,7 @@
       "align": "left",
       "position": "right",
       "widthRatio": 0.44,
-      "top": 4194,
+      "top": 4007,
       "tag": "h3",
       "kind": "heading"
      },
@@ -1222,7 +1225,7 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.79,
-      "top": 4592,
+      "top": 4406,
       "tag": "h2",
       "kind": "heading"
      },
@@ -1243,7 +1246,7 @@
       "align": "left",
       "position": "left",
       "widthRatio": 0.55,
-      "top": 5371,
+      "top": 5185,
       "tag": "h2",
       "kind": "heading"
      }
@@ -1279,7 +1282,7 @@
       24,
       28,
       36,
-      54
+      40
      ],
      "sizeCount": 8,
      "notLoaded": [],
@@ -1293,8 +1296,8 @@
      },
      "measureChars": 80,
      "max": {
-      "size": 53.8,
-      "vw": 7,
+      "size": 40,
+      "vw": 5.2,
       "font": "Inter",
       "text": "What dues"
      },
@@ -1331,7 +1334,7 @@
       },
       {
        "color": "#f7f6f2",
-       "top": 915,
+       "top": 729,
        "hsl": {
         "h": 48,
         "s": 0.24,
@@ -1340,7 +1343,7 @@
       },
       {
        "color": "#085c36",
-       "top": 1689,
+       "top": 1503,
        "hsl": {
         "h": 153,
         "s": 0.84,
@@ -1349,7 +1352,7 @@
       },
       {
        "color": "#ebeae4",
-       "top": 2225,
+       "top": 2039,
        "hsl": {
         "h": 51,
         "s": 0.15,
@@ -1358,7 +1361,7 @@
       },
       {
        "color": "#111827",
-       "top": 5295,
+       "top": 5109,
        "hsl": {
         "h": 221,
         "s": 0.39,
@@ -1437,7 +1440,7 @@
     "heroMedia": [
      {
       "type": "img",
-      "ratio": 0.35
+      "ratio": 0.24
      }
     ],
     "nav": {
@@ -1460,13 +1463,13 @@
    "load": "load",
    "screens": 8,
    "filled": [
-    1,
-    0.51,
-    0.92,
-    0.57,
-    0.8,
-    0.88,
+    0.87,
+    0.52,
     0.93,
+    0.71,
+    0.79,
+    0.86,
+    1,
     1
    ],
    "motion": {
@@ -1483,8 +1486,8 @@
      "h": 844
     },
     "page": {
-     "height": 6727,
-     "screens": 8,
+     "height": 6602,
+     "screens": 7.8,
      "words": 358,
      "img": 5,
      "video": 0,
@@ -1514,19 +1517,19 @@
      "words": 3,
      "chars": 15,
      "lines": 2,
-     "size": 46.4,
-     "vw": 11.9,
+     "size": 40,
+     "vw": 10.3,
      "font": "Inter",
      "weight": 700,
      "tracking": -0.045,
-     "leading": 0.92,
+     "leading": 0.96,
      "upper": false,
      "italic": false,
      "mono": false,
      "align": "left",
      "position": "center",
      "widthRatio": 0.92,
-     "top": 152,
+     "top": 136,
      "tag": "h1",
      "kind": "heading"
     },
@@ -1534,7 +1537,7 @@
      "text": "What dues cost.",
      "words": 3,
      "lines": 2,
-     "size": 46.4,
+     "size": 40,
      "font": "Inter"
     },
     "headings": [
@@ -1543,19 +1546,19 @@
       "words": 3,
       "chars": 15,
       "lines": 2,
-      "size": 46.4,
-      "vw": 11.9,
+      "size": 40,
+      "vw": 10.3,
       "font": "Inter",
       "weight": 700,
       "tracking": -0.045,
-      "leading": 0.92,
+      "leading": 0.96,
       "upper": false,
       "italic": false,
       "mono": false,
       "align": "left",
       "position": "center",
       "widthRatio": 0.92,
-      "top": 152,
+      "top": 136,
       "tag": "h1",
       "kind": "heading"
      },
@@ -1576,7 +1579,7 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.9,
-      "top": 897,
+      "top": 773,
       "tag": "h2",
       "kind": "heading"
      },
@@ -1597,7 +1600,7 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.9,
-      "top": 1108,
+      "top": 983,
       "tag": "h3",
       "kind": "heading"
      },
@@ -1618,7 +1621,7 @@
       "align": "left",
       "position": "right",
       "widthRatio": 0.26,
-      "top": 1178,
+      "top": 1054,
       "tag": "p",
       "kind": "statement"
      },
@@ -1639,7 +1642,7 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.9,
-      "top": 1256,
+      "top": 1132,
       "tag": "h3",
       "kind": "heading"
      },
@@ -1660,7 +1663,7 @@
       "align": "left",
       "position": "right",
       "widthRatio": 0.25,
-      "top": 1327,
+      "top": 1203,
       "tag": "p",
       "kind": "statement"
      },
@@ -1681,7 +1684,7 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.9,
-      "top": 1405,
+      "top": 1281,
       "tag": "h3",
       "kind": "heading"
      },
@@ -1702,7 +1705,7 @@
       "align": "left",
       "position": "right",
       "widthRatio": 0.45,
-      "top": 1476,
+      "top": 1351,
       "tag": "p",
       "kind": "statement"
      },
@@ -1723,7 +1726,7 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.9,
-      "top": 1552,
+      "top": 1427,
       "tag": "h3",
       "kind": "heading"
      },
@@ -1744,7 +1747,7 @@
       "align": "left",
       "position": "right",
       "widthRatio": 0.15,
-      "top": 1639,
+      "top": 1498,
       "tag": "p",
       "kind": "statement"
      },
@@ -1765,7 +1768,7 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.9,
-      "top": 2105,
+      "top": 1981,
       "tag": "h2",
       "kind": "heading"
      },
@@ -1786,7 +1789,7 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.9,
-      "top": 2284,
+      "top": 2159,
       "tag": "dd",
       "kind": "statement"
      },
@@ -1807,7 +1810,7 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.9,
-      "top": 2380,
+      "top": 2255,
       "tag": "dd",
       "kind": "statement"
      },
@@ -1828,7 +1831,7 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.9,
-      "top": 2476,
+      "top": 2351,
       "tag": "dd",
       "kind": "statement"
      },
@@ -1849,7 +1852,7 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.9,
-      "top": 2572,
+      "top": 2447,
       "tag": "dd",
       "kind": "statement"
      },
@@ -1870,7 +1873,7 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.9,
-      "top": 3030,
+      "top": 2905,
       "tag": "h2",
       "kind": "heading"
      },
@@ -1891,7 +1894,7 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.9,
-      "top": 3792,
+      "top": 3668,
       "tag": "h2",
       "kind": "heading"
      },
@@ -1912,7 +1915,7 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.9,
-      "top": 4003,
+      "top": 3878,
       "tag": "h3",
       "kind": "heading"
      },
@@ -1933,7 +1936,7 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.9,
-      "top": 4201,
+      "top": 4077,
       "tag": "h3",
       "kind": "heading"
      },
@@ -1954,7 +1957,7 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.73,
-      "top": 4520,
+      "top": 4396,
       "tag": "h2",
       "kind": "heading"
      },
@@ -1975,7 +1978,7 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.9,
-      "top": 5345,
+      "top": 5220,
       "tag": "h2",
       "kind": "heading"
      },
@@ -1996,7 +1999,7 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.9,
-      "top": 5552,
+      "top": 5427,
       "tag": "h3",
       "kind": "heading"
      }
@@ -2033,7 +2036,7 @@
       24,
       28,
       30,
-      46
+      40
      ],
      "sizeCount": 9,
      "notLoaded": [],
@@ -2047,8 +2050,8 @@
      },
      "measureChars": 44,
      "max": {
-      "size": 46.4,
-      "vw": 11.9,
+      "size": 40,
+      "vw": 10.3,
       "font": "Inter",
       "text": "What dues"
      },
@@ -2085,7 +2088,7 @@
       },
       {
        "color": "#f7f6f2",
-       "top": 833,
+       "top": 709,
        "hsl": {
         "h": 48,
         "s": 0.24,
@@ -2094,7 +2097,7 @@
       },
       {
        "color": "#ebeae4",
-       "top": 2041,
+       "top": 1917,
        "hsl": {
         "h": 51,
         "s": 0.15,
@@ -2103,7 +2106,7 @@
       },
       {
        "color": "#e8f7f0",
-       "top": 4488,
+       "top": 4364,
        "hsl": {
         "h": 152,
         "s": 0.48,
@@ -2112,7 +2115,7 @@
       },
       {
        "color": "#111827",
-       "top": 5285,
+       "top": 5160,
        "hsl": {
         "h": 221,
         "s": 0.39,
@@ -2190,7 +2193,7 @@
     "heroMedia": [
      {
       "type": "img",
-      "ratio": 0.3
+      "ratio": 0.22
      }
     ],
     "nav": {
@@ -2243,8 +2246,7 @@
    "width": 768,
    "fold": "C:\\Users\\goldw\\Desktop\\freelance\\liberia-medical-students-association\\lmsa-website\\.taste-skill\\inspect\\tablet-fold.jpg",
    "pages": [
-    "C:\\Users\\goldw\\Desktop\\freelance\\liberia-medical-students-association\\lmsa-website\\.taste-skill\\inspect\\tablet-page-01.jpg",
-    "C:\\Users\\goldw\\Desktop\\freelance\\liberia-medical-students-association\\lmsa-website\\.taste-skill\\inspect\\tablet-page-02.jpg"
+    "C:\\Users\\goldw\\Desktop\\freelance\\liberia-medical-students-association\\lmsa-website\\.taste-skill\\inspect\\tablet-page-01.jpg"
    ]
   },
   {
