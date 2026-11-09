@@ -42,8 +42,17 @@ export const documentService = {
     return response.data.documents;
   },
 
+  /**
+   * Set (or clear) the training stage a study material is filed under.
+   * Stage-only, so tagging an old document cannot touch anything else.
+   */
+  async updateStage(id, stage) {
+    const response = await api.patch(`/documents/${id}/stage`, { stage });
+    return response.data.document;
+  },
+
   /** Upload a file to Supabase Storage and record it as a general document */
-  async upload(file, { title, description, category, access_level }) {
+  async upload(file, { title, description, category, access_level, stage }) {
     if (!supabase) {
       throw new Error('File upload is temporarily unavailable. Please try again later.');
     }
@@ -67,6 +76,7 @@ export const documentService = {
       description,
       category,
       access_level,
+      stage: stage || null,
       file_url: publicUrl,
       file_type: file.name.split('.').pop(),
       file_size: file.size,

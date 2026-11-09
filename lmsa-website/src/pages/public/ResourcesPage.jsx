@@ -6,9 +6,13 @@ import Photo from '@components/common/Photo';
 import { documentService } from '@services/document.service';
 import { stockPhotos } from '@config/images';
 
+// `key` matches documents.stage (database/009_document_stage.sql); `label` is
+// the short form used on a row, where it sits beside file size and date.
 const STAGES = [
   {
+    key: 'pre_clinical',
     stage: 'Pre-Clinical Years',
+    label: 'Pre-clinical',
     note: 'Build a reliable foundation for the science behind practice.',
     focus: [
       'Anatomy, physiology, and biochemistry fundamentals',
@@ -17,7 +21,9 @@ const STAGES = [
     ],
   },
   {
+    key: 'clinical',
     stage: 'Clinical Years',
+    label: 'Clinical',
     note: 'Translate knowledge into confidence at the bedside.',
     focus: [
       'History-taking and examination technique',
@@ -26,7 +32,9 @@ const STAGES = [
     ],
   },
   {
+    key: 'exam',
     stage: 'Exam Preparation',
+    label: 'Exam preparation',
     note: 'Study with structure when the stakes feel highest.',
     focus: [
       'Planning revision backwards from the exam date',
@@ -41,6 +49,10 @@ const SORT_OPTIONS = [
   { key: 'popular', label: 'Most downloaded' },
 ];
 
+const UNTAGGED = 'untagged';
+
+const STAGE_LABELS = Object.fromEntries(STAGES.map(({ key, label }) => [key, label]));
+
 function formatFileSize(bytes) {
   if (!bytes) return '';
   if (bytes < 1024) return `${bytes} B`;
@@ -50,7 +62,9 @@ function formatFileSize(bytes) {
 
 function formatDate(dateString) {
   if (!dateString) return '';
-  return new Date(dateString).toLocaleDateString('default', { month: 'long', day: 'numeric', year: 'numeric' });
+  // Short month: this sits in a narrow metadata column beside stage, size and
+  // type, and the long form pushes the year onto a line of its own.
+  return new Date(dateString).toLocaleDateString('default', { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
 export default function ResourcesPage() {
@@ -60,6 +74,7 @@ export default function ResourcesPage() {
   const [downloading, setDownloading] = useState(null);
   const [sort, setSort] = useState('newest');
   const [query, setQuery] = useState('');
+  const [stageFilter, setStageFilter] = useState('all');
 
   const loadMaterials = useCallback(async () => {
     setLoading(true);
@@ -88,7 +103,7 @@ export default function ResourcesPage() {
     document.querySelectorAll('.reveal-on-scroll').forEach((element) => observer.observe(element));
     return () => observer.disconnect();
     // Re-observe when the list is re-sorted or filtered: those rows are new nodes.
-  }, [materials, loading, error, query, sort]);
+  }, [materials, loading, error, query, sort, stageFilter]);
 
   // Downloads are only worth sorting by once someone has downloaded something.
   const hasDownloads = useMemo(
@@ -96,19 +111,28 @@ export default function ResourcesPage() {
     [materials]
   );
 
+  // Only stages that actually hold something get a filter, plus "not tagged"
+  // when the library still contains documents uploaded before tagging.
+  const stageOptions = useMemo(() => {
+    const present = STAGES.filter(({ key }) => materials.some((doc) => doc.stage === key));
+    if (materials.some((doc) => !doc.stage)) present.push({ key: UNTAGGED, label: 'Not tagged' });
+    return present;
+  }, [materials]);
+
   const visibleMaterials = useMemo(() => {
     const term = query.trim().toLowerCase();
-    const matched = term
-      ? materials.filter((doc) =>
-          `${doc.title || ''} ${doc.description || ''}`.toLowerCase().includes(term)
-        )
-      : materials;
+    const matched = materials.filter((doc) => {
+      if (stageFilter === UNTAGGED && doc.stage) return false;
+      if (stageFilter !== 'all' && stageFilter !== UNTAGGED && doc.stage !== stageFilter) return false;
+      if (!term) return true;
+      return `${doc.title || ''} ${doc.description || ''}`.toLowerCase().includes(term);
+    });
 
     return [...matched].sort((a, b) => {
       if (sort === 'popular') return (b.downloads || 0) - (a.downloads || 0);
       return new Date(b.created_at || 0) - new Date(a.created_at || 0);
     });
-  }, [materials, query, sort]);
+  }, [materials, query, sort, stageFilter]);
 
   async function handleDownload(doc) {
     setDownloading(doc.id);
@@ -123,6 +147,9 @@ export default function ResourcesPage() {
   }
 
   const renderLibrary = () => {
+    const isFiltered = Boolean(query.trim()) || stageFilter !== 'all';
+    const activeStageLabel = stageOptions.find(({ key }) => key === stageFilter)?.label;
+
     if (loading) {
       return (
         <ul className="mt-10" aria-hidden="true">
@@ -175,7 +202,7 @@ export default function ResourcesPage() {
       <>
         <div className="mt-10 flex flex-wrap items-end justify-between gap-x-10 gap-y-5">
           <p className="text-base leading-7 text-gray-700" role="status">
-            {query.trim()
+            {isFiltered
               ? `${visibleMaterials.length} of ${materials.length} materials`
               : `${materials.length} ${materials.length === 1 ? 'material' : 'materials'} in the library`}
           </p>
@@ -224,17 +251,60 @@ export default function ResourcesPage() {
           </div>
         </div>
 
+        {stageOptions.length > 1 && (
+          <div
+            role="group"
+            aria-label="Filter materials by stage"
+            className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-1"
+          >
+            {[{ key: 'all', label: 'All materials' }, ...stageOptions].map(({ key, label }) => {
+              const active = stageFilter === key;
+              return (
+                <button
+                  key={key}
+                  type="button"
+                  onClick={() => setStageFilter(key)}
+                  aria-pressed={active}
+                  className={`inline-flex min-h-11 items-center text-base decoration-2 underline-offset-[6px] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-900 focus-visible:ring-offset-2 ${
+                    active
+                      ? 'font-semibold text-lmsa-900 underline decoration-lmsa-400'
+                      : 'text-gray-700 underline decoration-transparent hover:text-lmsa-900 hover:decoration-lmsa-400'
+                  }`}
+                >
+                  {label}
+                </button>
+              );
+            })}
+          </div>
+        )}
+
         {visibleMaterials.length === 0 ? (
           <p className="mt-8 max-w-[52ch] text-pretty text-base leading-7 text-gray-700">
-            Nothing in the library matches “{query.trim()}”.{' '}
-            <button
-              type="button"
-              onClick={() => setQuery('')}
-              className="font-semibold text-lmsa-800 underline decoration-lmsa-400 decoration-2 underline-offset-[6px] transition-colors hover:text-lmsa-900 hover:decoration-lmsa-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-900 focus-visible:ring-offset-2"
-            >
-              Show everything
-            </button>
-            .
+            {query.trim() ? (
+              <>
+                Nothing in the library matches “{query.trim()}”.{' '}
+                <button
+                  type="button"
+                  onClick={() => setQuery('')}
+                  className="font-semibold text-lmsa-800 underline decoration-lmsa-400 decoration-2 underline-offset-[6px] transition-colors hover:text-lmsa-900 hover:decoration-lmsa-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-900 focus-visible:ring-offset-2"
+                >
+                  Show everything
+                </button>
+                .
+              </>
+            ) : (
+              <>
+                No materials are tagged for {activeStageLabel?.toLowerCase()} yet.{' '}
+                <button
+                  type="button"
+                  onClick={() => setStageFilter('all')}
+                  className="font-semibold text-lmsa-800 underline decoration-lmsa-400 decoration-2 underline-offset-[6px] transition-colors hover:text-lmsa-900 hover:decoration-lmsa-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-900 focus-visible:ring-offset-2"
+                >
+                  Show all materials
+                </button>
+                .
+              </>
+            )}
           </p>
         ) : (
           <ul className="mt-4">
@@ -262,6 +332,7 @@ export default function ResourcesPage() {
                   style={{ transitionDelay: `${Math.min(index, 4) * 50 + 50}ms` }}
                 >
                   {[
+                    STAGE_LABELS[doc.stage],
                     formatFileSize(doc.file_size),
                     doc.file_type?.replace('.', '').toUpperCase(),
                     formatDate(doc.created_at),

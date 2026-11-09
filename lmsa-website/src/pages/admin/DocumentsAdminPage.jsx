@@ -15,11 +15,23 @@ import { documentService } from '@services/document.service';
 const CATEGORIES = ['constitution', 'bylaws', 'report', 'journal', 'newsletter', 'study_material', 'other'];
 const ACCESS_LEVELS = ['public', 'members', 'executive', 'admin'];
 
+// Matches the CHECK constraint in database/009_document_stage.sql.
+// '' means untagged, which is what every document uploaded before that
+// migration is — the resources page lists those separately rather than
+// implying a stage nobody set.
+const STAGES = [
+  { value: '', label: 'Not tagged' },
+  { value: 'pre_clinical', label: 'Pre-clinical' },
+  { value: 'clinical', label: 'Clinical' },
+  { value: 'exam', label: 'Exam preparation' },
+];
+
 const EMPTY_META = {
   title: '',
   description: '',
   category: 'report',
   access_level: 'members',
+  stage: '',
 };
 
 const catIcon = (cat) => {
@@ -70,6 +82,7 @@ export default function DocumentsAdminPage() {
         description: meta.description.trim(),
         category: meta.category,
         access_level: meta.access_level,
+        stage: meta.stage,
       });
       toast.success('Document uploaded');
       setMeta(EMPTY_META);
@@ -79,6 +92,18 @@ export default function DocumentsAdminPage() {
       toast.error('Upload failed');
     } finally {
       setUploading(false);
+    }
+  }
+
+  async function changeStage(doc, stage) {
+    const previous = doc.stage || '';
+    setDocs((list) => list.map((item) => (item.id === doc.id ? { ...item, stage: stage || null } : item)));
+    try {
+      await documentService.updateStage(doc.id, stage || null);
+      toast.success(stage ? 'Stage updated' : 'Stage cleared');
+    } catch {
+      setDocs((list) => list.map((item) => (item.id === doc.id ? { ...item, stage: previous || null } : item)));
+      toast.error('Could not update the stage');
     }
   }
 
@@ -129,8 +154,8 @@ export default function DocumentsAdminPage() {
       {/* ── Upload Form ─────────────────────────────────────────────── */}
       <div className="bg-white rounded-xl border border-gray-200 p-6">
         <h3 className="font-semibold text-gray-900 mb-4">Upload New Document</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
-          <div className="sm:col-span-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+          <div>
             <Label>Document Title</Label>
             <input
               className="input"
@@ -158,6 +183,12 @@ export default function DocumentsAdminPage() {
             <Label>Category</Label>
             <select className="input" value={meta.category} onChange={e => setMeta(f => ({ ...f, category: e.target.value }))}>
               {CATEGORIES.map(c => <option key={c} value={c}>{c.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}</option>)}
+            </select>
+          </div>
+          <div>
+            <Label>Stage</Label>
+            <select className="input" value={meta.stage} onChange={e => setMeta(f => ({ ...f, stage: e.target.value }))}>
+              {STAGES.map(s => <option key={s.value || 'none'} value={s.value}>{s.label}</option>)}
             </select>
           </div>
         </div>
@@ -194,6 +225,7 @@ export default function DocumentsAdminPage() {
               <tr>
                 <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase">Document</th>
                 <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase">Category</th>
+                <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase">Stage</th>
                 <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase">Access</th>
                 <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase">Downloads</th>
                 <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase">Uploaded</th>
@@ -217,6 +249,16 @@ export default function DocumentsAdminPage() {
                     </div>
                   </td>
                   <td className="px-4 py-3 text-sm text-gray-600 capitalize">{doc.category?.replace('_', ' ')}</td>
+                  <td className="px-4 py-3">
+                    <select
+                      value={doc.stage || ''}
+                      onChange={(e) => changeStage(doc, e.target.value)}
+                      aria-label={`Stage for ${doc.title}`}
+                      className="rounded-lg border border-gray-200 bg-white px-2 py-1 text-sm text-gray-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600"
+                    >
+                      {STAGES.map(s => <option key={s.value || 'none'} value={s.value}>{s.label}</option>)}
+                    </select>
+                  </td>
                   <td className="px-4 py-3">
                     <span className={`text-xs px-2 py-0.5 rounded-full inline-flex items-center gap-1 ${
                       doc.access_level === 'public' ? 'bg-lmsa-50 text-lmsa-800'

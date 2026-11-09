@@ -16,6 +16,7 @@ const isAdmin = [authenticate, authorize('admin', 'executive', 'super_admin')];
 
 router.get('/admin/all', ...isAdmin, dc.getAllAdmin);
 router.post('/', ...isAdmin, dc.create);
+router.patch('/:id/stage', ...isAdmin, dc.updateStage);
 router.delete('/:id', ...isAdmin, dc.deleteDocument);
 
 export default router;

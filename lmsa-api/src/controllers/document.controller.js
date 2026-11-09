@@ -1,5 +1,12 @@
 import { supabase } from '../config/supabase.js';
 
+// Training stage a study material is filed under. NULL means untagged —
+// everything uploaded before 009_document_stage.sql, and every non-study
+// category — so it is a valid value, not something to default.
+const STAGES = ['pre_clinical', 'clinical', 'exam'];
+
+const isValidStage = (stage) => stage === null || stage === undefined || stage === '' || STAGES.includes(stage);
+
 // ─── Helper: check access level ─────────────────────────────────────────────
 const canAccess = (doc, user) => {
   switch (doc.access_level) {
@@ -137,7 +144,14 @@ export const getAllAdmin = async (req, res) => {
 // ─── POST /api/documents ────────────────────────────────────────────────────
 export const create = async (req, res) => {
   try {
-    const { title, description, category, access_level, file_url, file_type, file_size } = req.body;
+    const { title, description, category, access_level, file_url, file_type, file_size, stage } = req.body;
+
+    if (!isValidStage(stage)) {
+      return res.status(400).json({
+        success: false,
+        message: 'stage must be one of: pre_clinical, clinical, exam, or null',
+      });
+    }
 
     const { data, error } = await supabase
       .from('documents')
@@ -149,6 +163,7 @@ export const create = async (req, res) => {
         file_url,
         file_type,
         file_size,
+        stage: stage || null,
         committee_id: null,
         uploaded_by: req.user.id,
       })
@@ -171,6 +186,51 @@ export const create = async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Failed to create document',
+    });
+  }
+};
+
+// ─── PATCH /api/documents/:id/stage ─────────────────────────────────────────
+// Stage-only on purpose: the tag is the one field that needs fixing after
+// upload (a whole library was filed before tagging existed), and a narrow
+// endpoint cannot be used to rewrite a document's title or access level by
+// accident.
+export const updateStage = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { stage } = req.body || {};
+
+    if (!isValidStage(stage)) {
+      return res.status(400).json({
+        success: false,
+        message: 'stage must be one of: pre_clinical, clinical, exam, or null',
+      });
+    }
+
+    const { data, error } = await supabase
+      .from('documents')
+      .update({ stage: stage || null })
+      .eq('id', id)
+      .is('committee_id', null)
+      .select()
+      .single();
+
+    if (error) {
+      return res.status(400).json({
+        success: false,
+        message: 'Failed to update document stage',
+      });
+    }
+
+    res.json({
+      success: true,
+      document: data,
+    });
+  } catch (error) {
+    console.error('Update document stage error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to update document stage',
     });
   }
 };
