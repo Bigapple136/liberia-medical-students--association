@@ -154,15 +154,20 @@ export default function SymposiaPage() {
       <section className="editorial-section">
         <div className="site-container">
           <EditorialSectionHeader title="Past symposia." description="The conversations may be over, but the questions they raised continue to shape our work." />
-          {!loading && !error && past.length > 0 ? (
+          {loading ? (
+            <div role="status" className="border border-gray-200 bg-white p-10 text-center">
+              <Loader size={26} className="mx-auto mb-4 animate-spin text-lmsa-600" aria-hidden="true" />
+              <p className="text-sm font-medium text-gray-600">Loading past symposia…</p>
+            </div>
+          ) : error ? null : past.length > 0 ? (
             <div className="space-y-4">
               {past.map((event) => (
                 <SymposiumCard key={event.id} event={event} upcoming={false} />
               ))}
             </div>
-          ) : !loading && !error ? (
+          ) : (
             <p className="max-w-2xl text-gray-600">Past symposia will be archived here after they conclude.</p>
-          ) : null}
+          )}
         </div>
       </section>
 
