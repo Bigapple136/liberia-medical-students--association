@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, ArrowRight, Eye, Loader } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Eye, Loader, RefreshCw } from 'lucide-react';
 import { newsService } from '@services/news.service';
 import { categoryBadgeClass, categoryLabel } from '@utils/newsCategories';
 
@@ -13,26 +13,28 @@ export default function NewsDetailPage() {
   const { slug } = useParams();
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [failed, setFailed] = useState(false);
+
+  const loadPost = useCallback(async () => {
+    setLoading(true);
+    setFailed(false);
+    try {
+      setPost(await newsService.getBySlug(slug));
+    } catch (err) {
+      setPost(null);
+      // A 404 means the story is gone, and no amount of retrying will bring
+      // it back. Anything else means the request itself failed, which is
+      // worth offering a retry for.
+      setFailed(err?.response?.status !== 404);
+    } finally {
+      setLoading(false);
+    }
+  }, [slug]);
 
   useEffect(() => {
-    let cancelled = false;
     window.scrollTo(0, 0);
-    setLoading(true);
-    (async () => {
-      try {
-        const data = await newsService.getBySlug(slug);
-        if (!cancelled) setPost(data);
-      } catch {
-        // 404 or other failure — show the not-found state
-        if (!cancelled) setPost(null);
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [slug]);
+    loadPost();
+  }, [loadPost]);
 
   if (loading) {
     return (
@@ -41,6 +43,42 @@ export default function NewsDetailPage() {
           <Loader size={32} className="animate-spin text-lmsa-600" aria-hidden="true" />
           <span className="sr-only">Loading story…</span>
         </div>
+      </main>
+    );
+  }
+
+  if (failed) {
+    return (
+      <main className="editorial-page">
+        <section className="editorial-section">
+          <div className="site-container">
+            <div className="mx-auto max-w-2xl bg-white p-10 text-center md:p-14">
+              <h1 className="text-3xl font-semibold leading-tight tracking-[-0.03em] text-lmsa-900 md:text-4xl">
+                We couldn’t load that story.
+              </h1>
+              <p className="mt-4 text-base leading-7 text-gray-600">
+                Something went wrong on our end or with your connection. The story itself may well still be here.
+              </p>
+              <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+                <button
+                  type="button"
+                  onClick={loadPost}
+                  className="inline-flex items-center gap-2 border border-lmsa-200 bg-lmsa-50 px-6 py-3 text-sm font-semibold text-lmsa-700 transition-colors hover:bg-lmsa-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
+                >
+                  <RefreshCw size={15} aria-hidden="true" />
+                  Try again
+                </button>
+                <Link
+                  to="/news"
+                  className="inline-flex items-center gap-2 px-2 py-3 text-sm font-semibold text-lmsa-700 transition-colors hover:text-lmsa-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
+                >
+                  <ArrowLeft size={15} aria-hidden="true" />
+                  Back to all news
+                </Link>
+              </div>
+            </div>
+          </div>
+        </section>
       </main>
     );
   }
