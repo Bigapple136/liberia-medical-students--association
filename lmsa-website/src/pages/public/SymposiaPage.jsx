@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ArrowRight, Calendar, MapPin, Users } from 'lucide-react';
+import { ArrowRight, Calendar, Loader, MapPin, Users } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { EditorialCallout, EditorialSectionHeader } from '@components/common/EditorialSections';
 import { eventService } from '@services/event.service';
@@ -118,10 +118,9 @@ export default function SymposiaPage() {
         <div className="site-container">
           <EditorialSectionHeader title="Upcoming symposia." description="Plan ahead for the conversations and communities you want to be part of." />
           {loading ? (
-            <div className="space-y-4">
-              {[1, 2].map((i) => (
-                <div key={i} className="h-40 animate-pulse border border-gray-200 bg-gray-50" />
-              ))}
+            <div role="status" className="border border-gray-200 bg-white p-10 text-center">
+              <Loader size={26} className="mx-auto mb-4 animate-spin text-lmsa-600" aria-hidden="true" />
+              <p className="text-sm font-medium text-gray-600">Loading symposia…</p>
             </div>
           ) : error ? (
             <div className="border border-gray-200 bg-white p-10 text-center">
