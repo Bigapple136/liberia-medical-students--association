@@ -2,7 +2,7 @@ import { Users, Building2 } from 'lucide-react';
 
 export default function ExecutiveCouncilPage() {
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-svh bg-gray-50">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Hero */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 mb-8">
