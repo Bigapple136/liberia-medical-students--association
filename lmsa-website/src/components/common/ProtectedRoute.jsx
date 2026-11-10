@@ -16,7 +16,7 @@ export default function ProtectedRoute({ children, requireRole }) {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-svh flex items-center justify-center">
         <Spinner size="lg" label="Checking your session" className="text-lmsa-600" />
       </div>
     );

@@ -153,7 +153,7 @@ export default function CommitteePageTemplate() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-svh flex items-center justify-center bg-gray-50">
         <div className="text-center">
           <Loader size={32} className="animate-spin text-lmsa-600 mx-auto mb-3" />
           <p className="text-gray-500">Loading committee...</p>
@@ -164,7 +164,7 @@ export default function CommitteePageTemplate() {
 
   if (!committee) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-svh flex items-center justify-center bg-gray-50">
         <div className="text-center">
           <p className="text-2xl font-bold text-gray-900 mb-2">Committee Not Found</p>
           <Link to="/leadership/committees" className="text-lmsa-600 hover:underline">
@@ -194,7 +194,7 @@ export default function CommitteePageTemplate() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-svh bg-gray-50">
       {/* ── Hero ──────────────────────────────────────────────────────── */}
       <div className="bg-gradient-to-br from-lmsa-50 to-lmsa-100 border-b border-lmsa-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -820,7 +820,7 @@ export function CommitteesOverviewPage() {
     .filter(([, c]) => c.name.toLowerCase().includes(search.toLowerCase()));
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-svh bg-gray-50">
       {/* Header */}
       <div className="bg-gradient-to-br from-lmsa-50 to-lmsa-100 py-16 border-b border-lmsa-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

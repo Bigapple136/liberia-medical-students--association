@@ -35,7 +35,7 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <div className="min-h-screen flex bg-gray-50">
+    <div className="min-h-svh flex bg-gray-50">
       {/* Left Side - Brand */}
       <div className="hidden lg:flex lg:w-1/2 bg-lmsa-600 items-center justify-center p-12">
         <div className="max-w-md text-white">

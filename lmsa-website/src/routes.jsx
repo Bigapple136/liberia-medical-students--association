@@ -73,7 +73,7 @@ import Spinner from './components/common/Spinner';
 // spinner markup from ProtectedRoute.jsx's loading state.
 function RouteFallback() {
   return (
-    <div className="min-h-screen flex items-center justify-center">
+    <div className="min-h-svh flex items-center justify-center">
       <Spinner size="lg" label="Loading page" className="text-lmsa-600" />
     </div>
   );
