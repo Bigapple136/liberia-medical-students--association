@@ -155,8 +155,11 @@ export default function SymposiaPage() {
         <div className="site-container">
           <EditorialSectionHeader title="Past symposia." description="The conversations may be over, but the questions they raised continue to shape our work." />
           {loading ? (
-            <div role="status" className="border border-gray-200 bg-white p-10 text-center">
-              <Loader size={26} className="mx-auto mb-4 animate-spin text-lmsa-600" aria-hidden="true" />
+            // Visual placeholder only: the upcoming section's status region
+            // already announces that symposia are loading, and two live regions
+            // on one page announce twice.
+            <div aria-hidden="true" className="border border-gray-200 bg-white p-10 text-center">
+              <Loader size={26} className="mx-auto mb-4 animate-spin text-lmsa-600" />
               <p className="text-sm font-medium text-gray-600">Loading past symposia…</p>
             </div>
           ) : error ? null : past.length > 0 ? (
