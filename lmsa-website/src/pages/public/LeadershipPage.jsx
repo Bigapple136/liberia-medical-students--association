@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Loader, User, Link as LinkIcon, Vote, ArrowRight } from 'lucide-react';
+import { Loader, User, Link as LinkIcon, Vote, ArrowRight, RefreshCw } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { EditorialCallout, EditorialSectionHeader, EditorialStat } from '@components/common/EditorialSections';
 import Photo from '@components/common/Photo';
@@ -73,6 +73,7 @@ export default function LeadershipPage() {
 
   async function loadExecutives() {
     setLoading(true);
+    setError(false);
     try {
       const data = await executiveService.getAll();
       if (data && data.length > 0) {
@@ -90,6 +91,7 @@ export default function LeadershipPage() {
 
   async function loadCycle() {
     setCycleLoading(true);
+    setCycleError(false);
     try {
       setCycleState(await nominationService.getCycle());
     } catch {
@@ -177,52 +179,68 @@ export default function LeadershipPage() {
               <Loader className="animate-spin text-lmsa-600" size={28} aria-label="Loading leadership" />
             </div>
           ) : (
-            <div className="max-w-4xl space-y-10">
-              {executives.map((exec, index) => (
-                <article key={exec.id || index} className="flex flex-col gap-5 sm:flex-row sm:gap-8 rise" style={{ animationDelay: `${index * 60}ms` }}>
-                  <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-full bg-lmsa-50 text-lmsa-700">
-                    {exec.holder_photo_url ? (
-                      <img src={exec.holder_photo_url} alt={exec.holder_name || exec.position_name} className="h-full w-full object-cover" />
-                    ) : (
-                      <User size={29} strokeWidth={1.4} />
-                    )}
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-sm font-semibold text-lmsa-700">{exec.position_name}</p>
-                    <h3 className="mt-1 text-xl font-semibold text-lmsa-900">{exec.holder_name || 'Position Available'}</h3>
-                    {exec.bio && <p className="mt-3 max-w-2xl text-sm leading-6 text-gray-600">{exec.bio}</p>}
-                    {exec.holder_year_level && <p className="mt-3 text-[13px] text-gray-600">Year {exec.holder_year_level}</p>}
-                    {error && <p className="mt-3 text-[13px] font-medium text-[#8a5a00]">Placeholder officers shown, live data didn't load.</p>}
-                    <div className="mt-5">
-                    {nominationsOpen ? (
-                      user ? (
-                        <button
-                          type="button"
-                          onClick={() => openDialog(LEADERSHIP_LEVELS[0], exec.position_name)}
-                          className="inline-flex items-center gap-2 text-sm font-semibold text-lmsa-700 hover:text-lmsa-900"
-                        >
-                          <Vote size={15} />
-                          Stand for this role
-                        </button>
+            <>
+              {error && (
+                <div className="mb-8 flex flex-wrap items-center gap-x-5 gap-y-2 border border-lmsa-200 bg-lmsa-50 px-5 py-4">
+                  <p className="text-[13px] font-medium text-[#8a5a00]">
+                    Placeholder officers shown, live data didn&apos;t load.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={loadExecutives}
+                    className="inline-flex items-center gap-2 border border-lmsa-200 bg-white px-4 py-3 text-sm font-semibold text-lmsa-700 transition-colors hover:bg-lmsa-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
+                  >
+                    <RefreshCw size={14} aria-hidden="true" />
+                    Try again
+                  </button>
+                </div>
+              )}
+              <div className="max-w-4xl space-y-10">
+                {executives.map((exec, index) => (
+                  <article key={exec.id || index} className="flex flex-col gap-5 sm:flex-row sm:gap-8 rise" style={{ animationDelay: `${index * 60}ms` }}>
+                    <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-full bg-lmsa-50 text-lmsa-700">
+                      {exec.holder_photo_url ? (
+                        <img src={exec.holder_photo_url} alt={exec.holder_name || exec.position_name} className="h-full w-full object-cover" />
                       ) : (
-                        <Link
-                          to="/login?next=/leadership%23stand"
-                          className="inline-flex items-center gap-2 text-sm font-semibold text-lmsa-700 hover:text-lmsa-900"
-                        >
-                          <Vote size={15} />
-                          Sign in to stand for this role
-                        </Link>
-                      )
-                    ) : (
-                      <p className="text-[13px] text-gray-600">
-                        Elected in the {cycleYear} election. Nominations open with the next cycle.
-                      </p>
-                    )}
+                        <User size={29} strokeWidth={1.4} />
+                      )}
                     </div>
-                  </div>
-                </article>
-              ))}
-            </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-semibold text-lmsa-700">{exec.position_name}</p>
+                      <h3 className="mt-1 text-xl font-semibold text-lmsa-900">{exec.holder_name || 'Position Available'}</h3>
+                      {exec.bio && <p className="mt-3 max-w-2xl text-sm leading-6 text-gray-600">{exec.bio}</p>}
+                      {exec.holder_year_level && <p className="mt-3 text-[13px] text-gray-600">Year {exec.holder_year_level}</p>}
+                      <div className="mt-5">
+                      {nominationsOpen ? (
+                        user ? (
+                          <button
+                            type="button"
+                            onClick={() => openDialog(LEADERSHIP_LEVELS[0], exec.position_name)}
+                            className="inline-flex items-center gap-2 text-sm font-semibold text-lmsa-700 hover:text-lmsa-900"
+                          >
+                            <Vote size={15} />
+                            Stand for this role
+                          </button>
+                        ) : (
+                          <Link
+                            to="/login?next=/leadership%23stand"
+                            className="inline-flex items-center gap-2 text-sm font-semibold text-lmsa-700 hover:text-lmsa-900"
+                          >
+                            <Vote size={15} />
+                            Sign in to stand for this role
+                          </Link>
+                        )
+                      ) : (
+                        <p className="text-[13px] text-gray-600">
+                          Elected in the {cycleYear} election. Nominations open with the next cycle.
+                        </p>
+                      )}
+                      </div>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </>
           )}
         </div>
       </section>
@@ -296,6 +314,16 @@ export default function LeadershipPage() {
                     ? 'Election dates could not be loaded right now - check back shortly.'
                     : cycleMessage(cycleState)}
                 </p>
+                {cycleError && (
+                  <button
+                    type="button"
+                    onClick={loadCycle}
+                    className="mt-4 inline-flex items-center gap-2 border border-current bg-white/60 px-4 py-3 text-sm font-semibold transition-colors hover:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
+                  >
+                    <RefreshCw size={14} aria-hidden="true" />
+                    Try again
+                  </button>
+                )}
               </div>
               <Link
                 to="/about/constitution#elections"

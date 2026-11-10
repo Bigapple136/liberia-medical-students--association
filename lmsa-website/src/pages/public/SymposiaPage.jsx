@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ArrowRight, Calendar, Loader, MapPin, Users } from 'lucide-react';
+import { ArrowRight, Calendar, Loader, MapPin, RefreshCw, Users } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { EditorialCallout, EditorialSectionHeader } from '@components/common/EditorialSections';
 import { eventService } from '@services/event.service';
@@ -80,20 +80,22 @@ export default function SymposiaPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
+  async function loadSymposia() {
+    try {
+      setLoading(true);
+      setError(false);
+      const data = await eventService.getAll({ type: 'symposium' });
+      setEvents(data || []);
+    } catch (err) {
+      console.error('Failed to load symposia:', err);
+      setError(true);
+    } finally {
+      setLoading(false);
+    }
+  }
+
   useEffect(() => {
-    (async () => {
-      try {
-        setLoading(true);
-        setError(false);
-        const data = await eventService.getAll({ type: 'symposium' });
-        setEvents(data || []);
-      } catch (err) {
-        console.error('Failed to load symposia:', err);
-        setError(true);
-      } finally {
-        setLoading(false);
-      }
-    })();
+    loadSymposia();
   }, []);
 
   const upcoming = events.filter(isUpcoming);
@@ -125,6 +127,14 @@ export default function SymposiaPage() {
           ) : error ? (
             <div className="border border-gray-200 bg-white p-10 text-center">
               <p className="text-gray-600">Couldn&apos;t load symposia right now. Please try again shortly.</p>
+              <button
+                type="button"
+                onClick={loadSymposia}
+                className="mt-6 inline-flex items-center gap-2 border border-lmsa-200 bg-lmsa-50 px-6 py-3 text-sm font-semibold text-lmsa-700 transition-colors hover:bg-lmsa-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
+              >
+                <RefreshCw size={15} aria-hidden="true" />
+                Try again
+              </button>
             </div>
           ) : upcoming.length > 0 ? (
             <div className="space-y-4">
