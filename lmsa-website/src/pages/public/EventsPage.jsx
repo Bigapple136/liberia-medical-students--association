@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { ArrowRight, Calendar, Clock, MapPin, RefreshCw } from 'lucide-react';
+import { ArrowRight, Calendar, Clock, Loader, MapPin, RefreshCw } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { EditorialCallout, EditorialSectionHeader } from '@components/common/EditorialSections';
 import { eventService } from '@services/event.service';
@@ -78,20 +78,6 @@ function EventCard({ event, past = false }) {
   );
 }
 
-function EventCardSkeleton() {
-  return (
-    <div className="flex flex-col border border-gray-200 bg-white">
-      <div className="h-48 animate-pulse bg-gray-100" />
-      <div className="flex flex-1 flex-col gap-3 p-6">
-        <div className="h-4 w-24 animate-pulse bg-gray-100" />
-        <div className="h-6 w-4/5 animate-pulse bg-gray-100" />
-        <div className="h-4 w-full animate-pulse bg-gray-100" />
-        <div className="h-4 w-1/2 animate-pulse bg-gray-100" />
-      </div>
-    </div>
-  );
-}
-
 export default function EventsPage() {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -138,13 +124,9 @@ export default function EventsPage() {
         <div className="site-container">
           <EditorialSectionHeader title="Coming up across LMSA." description="Open an event to see the schedule, location, and ways to take part." />
           {loading ? (
-            <div role="status" aria-label="Loading events">
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                {Array.from({ length: 3 }).map((_, index) => (
-                  <EventCardSkeleton key={index} />
-                ))}
-              </div>
-              <span className="sr-only">Loading events…</span>
+            <div role="status" className="border border-gray-200 bg-white p-12 text-center">
+              <Loader size={26} className="mx-auto mb-4 animate-spin text-lmsa-600" aria-hidden="true" />
+              <p className="text-sm font-medium text-gray-600">Loading the calendar…</p>
             </div>
           ) : error ? (
             <div className="border border-gray-200 bg-white p-12 text-center">

@@ -16,6 +16,7 @@ import {
   GraduationCap,
   HeartPulse,
   Lightbulb,
+  Loader,
   Megaphone,
   MessageCircle,
   Network,
@@ -30,29 +31,6 @@ import { PatternBackground } from '@components/common/SvgPatterns';
 import { newsService } from '@services/news.service';
 import { useAuth } from '@context/AuthContext';
 import { ROUTES } from '@utils/constants';
-
-function StorySkeleton() {
-  return (
-    <div className="flex flex-col border border-gray-200 bg-white">
-      <div className="h-48 animate-pulse bg-gray-100" />
-      <div className="flex flex-1 flex-col gap-3 p-6">
-        <div className="h-4 w-24 animate-pulse bg-gray-100" />
-        <div className="h-6 w-4/5 animate-pulse bg-gray-100" />
-        <div className="h-4 w-full animate-pulse bg-gray-100" />
-        <div className="h-4 w-2/3 animate-pulse bg-gray-100" />
-      </div>
-    </div>
-  );
-}
-
-function StoryListSkeleton() {
-  return (
-    <div className="animate-pulse space-y-4">
-      <div className="h-6 w-1/3 bg-gray-100 rounded" />
-      <div className="h-16 w-full bg-gray-100 rounded" />
-    </div>
-  );
-}
 
 export default function HomePage() {
   const { user } = useAuth();
@@ -263,13 +241,10 @@ export default function HomePage() {
 
         <div className="story-grid">
           {loading ? (
-            <>
-              <StorySkeleton />
-              <div className="story-list">
-                <StoryListSkeleton />
-                <StoryListSkeleton />
-              </div>
-            </>
+            <div role="status" className="col-span-full border border-gray-200 bg-white p-8 text-center">
+              <Loader size={26} className="mx-auto mb-3 animate-spin text-lmsa-600" aria-hidden="true" />
+              <p className="text-sm font-medium text-gray-600">Loading the latest stories…</p>
+            </div>
           ) : error ? (
             <div className="col-span-full border border-gray-200 bg-white p-8 text-center">
               <Newspaper size={32} className="mx-auto mb-3 text-gray-300" aria-hidden="true" />
