@@ -152,15 +152,10 @@ export default function ResourcesPage() {
 
     if (loading) {
       return (
-        <ul className="mt-10" aria-hidden="true">
-          {[0, 1, 2].map((row) => (
-            <li key={row} className="grid gap-y-3 py-6 lg:grid-cols-[1.35fr_1fr_auto] lg:gap-x-10">
-              <div className="h-7 w-2/3 animate-pulse bg-lmsa-100" />
-              <div className="h-4 w-40 animate-pulse bg-lmsa-100" />
-              <div className="h-4 w-24 animate-pulse bg-lmsa-100" />
-            </li>
-          ))}
-        </ul>
+        <div role="status" className="mt-10 bg-lmsa-100 p-7 md:p-10">
+          <Loader size={26} className="animate-spin text-lmsa-800" aria-hidden="true" />
+          <p className="mt-4 text-base leading-7 text-lmsa-900">Loading the materials…</p>
+        </div>
       );
     }
 

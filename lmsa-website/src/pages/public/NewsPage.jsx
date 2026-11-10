@@ -22,20 +22,6 @@ function CategoryBadge({ category }) {
   );
 }
 
-function StoryCardSkeleton() {
-  return (
-    <div className="flex flex-col border border-gray-200 bg-white">
-      <div className="h-48 animate-pulse bg-gray-100" />
-      <div className="flex flex-1 flex-col gap-3 p-6">
-        <div className="h-4 w-24 animate-pulse bg-gray-100" />
-        <div className="h-6 w-4/5 animate-pulse bg-gray-100" />
-        <div className="h-4 w-full animate-pulse bg-gray-100" />
-        <div className="h-4 w-2/3 animate-pulse bg-gray-100" />
-      </div>
-    </div>
-  );
-}
-
 function FeatureStory({ post }) {
   return (
     <Link
@@ -191,13 +177,9 @@ export default function NewsPage() {
       <section className="editorial-section editorial-section-muted">
         <div className="site-container">
           {loading ? (
-            <div role="status" aria-label="Loading news stories">
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                {Array.from({ length: 6 }).map((_, index) => (
-                  <StoryCardSkeleton key={index} />
-                ))}
-              </div>
-              <span className="sr-only">Loading news stories…</span>
+            <div role="status" className="border border-gray-200 bg-white p-12 text-center">
+              <Loader size={26} className="mx-auto mb-4 animate-spin text-lmsa-600" aria-hidden="true" />
+              <p className="text-sm font-medium text-gray-600">Loading the stories…</p>
             </div>
           ) : error ? (
             <div className="border border-gray-200 bg-white p-12 text-center">
