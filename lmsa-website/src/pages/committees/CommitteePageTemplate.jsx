@@ -143,9 +143,10 @@ export default function CommitteePageTemplate() {
 
   async function subscribeNewsletter(e) {
     e.preventDefault();
-    if (!newsletterEmail) return;
+    const email = newsletterEmail.trim();
+    if (!email) return;
     try {
-      await committeeService.subscribeNewsletter(committee.id, newsletterEmail);
+      await committeeService.subscribeNewsletter(committee.id, email);
       setNlSent(true);
       toast.success('Subscribed to committee updates!');
     } catch {

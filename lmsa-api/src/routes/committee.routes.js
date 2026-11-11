@@ -24,7 +24,14 @@ router.post(
   ],
   cc.submitContactForm,
 );
-router.post('/:id/subscribe', cc.subscribe);
+router.post(
+  '/:id/subscribe',
+  [
+    body('email').trim().isEmail().withMessage('A valid email is required'),
+    validate,
+  ],
+  cc.subscribe,
+);
 
 // ─── Authenticated: apply to join a committee ────────────────────────────────
 // Note: '/:slug/apply' must stay distinct from the '/:id/...' routes below —

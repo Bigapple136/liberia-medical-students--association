@@ -869,15 +869,21 @@ export const submitContactForm = async (req, res) => {
 };
 
 // ─── POST /api/committees/:id/subscribe ────────────────────────────────────
+// Same shape the site-wide newsletter endpoints accept, so an address that is
+// good for one subscription is good for the other.
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 export const subscribe = async (req, res) => {
   try {
     const { id } = req.params;
-    const { email } = req.body;
+    // Trimmed and re-checked here as well as in the route validators: without
+    // it, "   " was stored as a subscriber and "not-an-email" got this far.
+    const email = String(req.body?.email ?? '').trim();
 
-    if (!email) {
+    if (!email || !EMAIL_PATTERN.test(email)) {
       return res.status(400).json({
         success: false,
-        message: 'Email is required',
+        message: 'A valid email is required',
       });
     }
 
