@@ -477,6 +477,14 @@ function EventForm({ event, committees, onSave, onClose }) {
       toast.error('Start date/time is required');
       return;
     }
+    if (form.end_datetime && new Date(form.end_datetime) < new Date(form.start_datetime)) {
+      toast.error('End date/time cannot be before the start');
+      return;
+    }
+    if (form.registration_deadline && new Date(form.registration_deadline) > new Date(form.start_datetime)) {
+      toast.error('Registration deadline cannot be after the event starts');
+      return;
+    }
 
     setSaving(true);
     try {
@@ -511,7 +519,10 @@ function EventForm({ event, committees, onSave, onClose }) {
       }
       onSave();
     } catch (err) {
-      const message = err?.response?.data?.message || 'Failed to save event';
+      const message =
+        err?.response?.data?.errors?.[0]?.msg ||
+        err?.response?.data?.message ||
+        'Failed to save event';
       toast.error(message);
     } finally {
       setSaving(false);
@@ -622,6 +633,7 @@ function EventForm({ event, committees, onSave, onClose }) {
             <input
               type="datetime-local"
               value={form.end_datetime}
+              min={form.start_datetime || undefined}
               onChange={e => handleChange('end_datetime', e.target.value)}
               className="input"
             />
@@ -630,13 +642,13 @@ function EventForm({ event, committees, onSave, onClose }) {
 
         {/* Registration deadline */}
         <div>
-          <Label>Registration Deadline</Label>
-          <input
-            type="datetime-local"
-            value={form.registration_deadline}
-            onChange={e => handleChange('registration_deadline', e.target.value)}
-            className="input"
-          />
+          <Label>Registration Deadline</Label>            <input
+              type="datetime-local"
+              value={form.registration_deadline}
+              max={form.start_datetime || undefined}
+              onChange={e => handleChange('registration_deadline', e.target.value)}
+              className="input"
+            />
         </div>
 
         {/* Registration required + max attendees + fee */}
