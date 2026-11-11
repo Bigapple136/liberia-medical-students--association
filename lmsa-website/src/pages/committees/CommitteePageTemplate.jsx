@@ -485,8 +485,9 @@ export default function CommitteePageTemplate() {
                 <form onSubmit={sendContact} className="space-y-4">
                   <div className="grid sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1.5">Your Name</label>
+                      <label htmlFor="committee-contact-name" className="block text-sm font-medium text-gray-700 mb-1.5">Your Name</label>
                       <input
+                        id="committee-contact-name"
                         className="input"
                         placeholder="Full name"
                         value={contactForm.name}
@@ -495,8 +496,9 @@ export default function CommitteePageTemplate() {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1.5">Email Address</label>
+                      <label htmlFor="committee-contact-email" className="block text-sm font-medium text-gray-700 mb-1.5">Email Address</label>
                       <input
+                        id="committee-contact-email"
                         className="input"
                         type="email"
                         placeholder="you@example.com"
@@ -507,8 +509,9 @@ export default function CommitteePageTemplate() {
                     </div>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Subject</label>
+                    <label htmlFor="committee-contact-subject" className="block text-sm font-medium text-gray-700 mb-1.5">Subject</label>
                     <select
+                      id="committee-contact-subject"
                       className="input"
                       value={contactForm.subject}
                       onChange={e => setContactForm(f => ({...f, subject: e.target.value}))}
@@ -521,8 +524,9 @@ export default function CommitteePageTemplate() {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Message</label>
+                    <label htmlFor="committee-contact-message" className="block text-sm font-medium text-gray-700 mb-1.5">Message</label>
                     <textarea
+                      id="committee-contact-message"
                       className="input resize-none"
                       rows={5}
                       placeholder="Write your message here..."
@@ -669,7 +673,11 @@ export default function CommitteePageTemplate() {
                 </div>
               ) : (
                 <form onSubmit={subscribeNewsletter} className="flex gap-2">
+                  <label htmlFor="committee-newsletter-email" className="sr-only">
+                    Email address for committee updates
+                  </label>
                   <input
+                    id="committee-newsletter-email"
                     type="email"
                     placeholder="Your email"
                     className="input flex-1 text-sm"
@@ -677,8 +685,12 @@ export default function CommitteePageTemplate() {
                     onChange={e => setNlEmail(e.target.value)}
                     required
                   />
-                  <button type="submit" className="px-3 py-2 bg-lmsa-600 text-white rounded-lg text-sm font-medium hover:bg-lmsa-700">
-                    <Bell size={14} />
+                  <button
+                    type="submit"
+                    aria-label="Subscribe to committee updates"
+                    className="px-3 py-2 bg-lmsa-600 text-white rounded-lg text-sm font-medium hover:bg-lmsa-700"
+                  >
+                    <Bell size={14} aria-hidden="true" />
                   </button>
                 </form>
               )}
