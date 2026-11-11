@@ -1,5 +1,7 @@
 import express from 'express';
+import { body } from 'express-validator';
 import { authenticate, authorize } from '../middleware/auth.middleware.js';
+import { validate } from '../middleware/validate.middleware.js';
 import * as cc from '../controllers/committee.controller.js';
 
 const router = express.Router();
@@ -9,7 +11,19 @@ router.get('/', cc.getAll);
 router.get('/:slug', cc.getBySlug);
 
 // ─── Public interactions ──────────────────────────────────────────────────────
-router.post('/:id/contact', cc.submitContactForm);
+// `.trim()` sanitises before `.notEmpty()` checks, so a submission of spaces
+// only is rejected here rather than mailed out as an empty message.
+router.post(
+  '/:id/contact',
+  [
+    body('name').trim().notEmpty().withMessage('Name is required'),
+    body('email').trim().isEmail().withMessage('Valid email is required'),
+    body('subject').trim().optional({ values: 'falsy' }),
+    body('message').trim().notEmpty().withMessage('Message is required'),
+    validate,
+  ],
+  cc.submitContactForm,
+);
 router.post('/:id/subscribe', cc.subscribe);
 
 // ─── Authenticated: apply to join a committee ────────────────────────────────

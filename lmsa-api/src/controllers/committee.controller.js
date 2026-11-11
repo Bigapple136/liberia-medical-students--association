@@ -1,5 +1,6 @@
 import { supabase } from '../config/supabase.js';
 import { sendEmail } from '../config/email.js';
+import { escapeHtml } from '../utils/helpers.js';
 
 // Approved-application counts keyed by committee id.
 //
@@ -792,7 +793,12 @@ export const deleteAchievement = async (req, res) => {
 export const submitContactForm = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, email, subject, message } = req.body;
+    // Trim defensively even though the route validators already do: the
+    // controller is the last stop before the values reach an inbox.
+    const name = String(req.body?.name ?? '').trim();
+    const email = String(req.body?.email ?? '').trim();
+    const message = String(req.body?.message ?? '').trim();
+    const subject = String(req.body?.subject ?? '').trim() || 'General Inquiry';
 
     if (!name || !email || !message) {
       return res.status(400).json({
@@ -800,6 +806,10 @@ export const submitContactForm = async (req, res) => {
         message: 'name, email, and message are required',
       });
     }
+
+    // A newline in a subject line lets a value start extra mail headers, so
+    // collapse them before the string reaches the transport.
+    const headerSafeSubject = subject.replace(/[\r\n]+/g, ' ').trim();
 
     // Get committee email
     const { data: committee } = await supabase
@@ -811,15 +821,17 @@ export const submitContactForm = async (req, res) => {
     // Send email to committee email (or fallback to default LMSA address)
     const committeeEmail = committee?.email || process.env.DEFAULT_LMSA_EMAIL || 'info@lmsa.org';
 
+    const committeeName = String(committee?.name || 'Committee').replace(/[\r\n]+/g, ' ').trim();
+
     await sendEmail({
       to: committeeEmail,
-      subject: `[LMSA] New message for ${committee?.name || 'Committee'}: ${subject || 'General Inquiry'}`,
+      subject: `[LMSA] New message for ${committeeName}: ${headerSafeSubject}`,
       html: `
         <h2>New Contact Form Submission</h2>
-        <p><strong>From:</strong> ${name} (${email})</p>
-        <p><strong>Subject:</strong> ${subject || 'General Inquiry'}</p>
+        <p><strong>From:</strong> ${escapeHtml(name)} (${escapeHtml(email)})</p>
+        <p><strong>Subject:</strong> ${escapeHtml(headerSafeSubject)}</p>
         <p><strong>Message:</strong></p>
-        <p>${message}</p>
+        <p>${escapeHtml(message)}</p>
         <hr>
         <p style="color:#888">Sent via LMSA Website</p>
       `,
@@ -831,12 +843,12 @@ export const submitContactForm = async (req, res) => {
     try {
       await sendEmail({
         to: email,
-        subject: `Your message to LMSA ${committee?.name || ''} has been received`,
+        subject: `Your message to LMSA ${committeeName === 'Committee' ? '' : committeeName} has been received`,
         html: `
           <h2>We received your message!</h2>
-          <p>Hi ${name},</p>
-          <p>Thank you for reaching out to the LMSA ${committee?.name || 'Committee'}. We'll get back to you as soon as possible.</p>
-          <p><strong>Your message:</strong> ${message}</p>
+          <p>Hi ${escapeHtml(name)},</p>
+          <p>Thank you for reaching out to the LMSA ${escapeHtml(committeeName)}. We'll get back to you as soon as possible.</p>
+          <p><strong>Your message:</strong> ${escapeHtml(message)}</p>
           <p>Best regards,<br>LMSA Team</p>
         `,
       });

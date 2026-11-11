@@ -117,13 +117,21 @@ export default function CommitteePageTemplate() {
 
   async function sendContact(e) {
     e.preventDefault();
-    if (!contactForm.name || !contactForm.email || !contactForm.message) {
-      toast.error('Please fill all fields');
+    // `required` counts whitespace as filled, so trim before deciding there
+    // is something to send — otherwise a spaces-only form mails a blank
+    // message to the committee.
+    const trimmed = {
+      name: contactForm.name.trim(),
+      email: contactForm.email.trim(),
+      message: contactForm.message.trim(),
+    };
+    if (!trimmed.name || !trimmed.email || !trimmed.message) {
+      toast.error('Please fill in every field — spaces alone are not enough.');
       return;
     }
     setSending(true);
     try {
-      await committeeService.submitContactForm(committee.id, contactForm);
+      await committeeService.submitContactForm(committee.id, { ...contactForm, ...trimmed });
       toast.success('Message sent! We\'ll get back to you soon.');
       setContactForm({ name: '', email: '', message: '' });
     } catch {
