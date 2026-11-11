@@ -28,6 +28,7 @@ const Select = forwardRef(({
           id={selectId}
           ref={ref}
           disabled={disabled}
+          required={required}
           aria-invalid={error ? 'true' : 'false'}
           aria-describedby={error ? `${selectId}-error` : helperText ? `${selectId}-helper` : undefined}
           className={`input appearance-none pr-10

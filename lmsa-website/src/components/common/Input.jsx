@@ -34,7 +34,9 @@ const Input = forwardRef(({
           id={inputId}
           ref={ref}
           disabled={disabled}
-          aria-invalid={error ? 'true' : 'false'}aria-describedby={error ? `${inputId}-error` : helperText ? `${inputId}-helper` : undefined}
+          required={required}
+          aria-invalid={error ? 'true' : 'false'}
+          aria-describedby={error ? `${inputId}-error` : helperText ? `${inputId}-helper` : undefined}
           className={`input 
             ${error ? 'border-red-600 focus:ring-red-600 pr-10' : ''} 
             ${success ? 'border-lmsa-600 focus:ring-lmsa-600 pr-10' : ''}
