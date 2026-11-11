@@ -11,9 +11,12 @@ const router = express.Router();
 router.post(
   '/',
   [
-    body('name').notEmpty().withMessage('Name is required'),
-    body('email').isEmail().withMessage('Valid email is required'),
-    body('message').notEmpty().withMessage('Message is required'),
+    // `.trim()` sanitises before `.notEmpty()` checks, so a submission of
+    // spaces only is rejected here rather than mailed out as an empty message.
+    body('name').trim().notEmpty().withMessage('Name is required'),
+    body('email').trim().isEmail().withMessage('Valid email is required'),
+    body('subject').trim().optional({ values: 'falsy' }),
+    body('message').trim().notEmpty().withMessage('Message is required'),
     validate,
   ],
   contactController.submit,

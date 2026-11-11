@@ -34,10 +34,26 @@ export default function ContactPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // `required` treats whitespace as a value, so a form filled with spaces
+    // would otherwise reach the API and mail an empty message. Trim first,
+    // then decide whether anything real is left.
+    const trimmed = {
+      name: formData.name.trim(),
+      email: formData.email.trim(),
+      subject: formData.subject.trim(),
+      message: formData.message.trim()
+    };
+
+    if (!trimmed.name || !trimmed.email || !trimmed.subject || !trimmed.message) {
+      toast.error('Please fill in every field — spaces alone are not enough.');
+      return;
+    }
+
     setLoading(true);
 
     try {
-      await contactService.submit(formData);
+      await contactService.submit(trimmed);
       toast.success('Message sent successfully!');
       setFormData({ name: '', email: '', subject: '', message: '' });
       setFormKey((k) => k + 1);
