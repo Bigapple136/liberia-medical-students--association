@@ -497,7 +497,11 @@ function EventForm({ event, committees, onSave, onClose }) {
         start_datetime: toTimestamp(form.start_datetime),
         end_datetime: toTimestamp(form.end_datetime),
         registration_required: !!form.registration_required,
-        max_attendees: form.max_attendees === '' ? null : Number(form.max_attendees),
+        // 0 and an empty field both mean "no limit".
+        max_attendees:
+          form.max_attendees === '' || Number(form.max_attendees) === 0
+            ? null
+            : Number(form.max_attendees),
         registration_deadline: toTimestamp(form.registration_deadline),
         fee: form.fee === '' ? 0 : Number(form.fee),
         image_url: form.image_url.trim() || null,

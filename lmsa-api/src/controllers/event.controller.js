@@ -1,4 +1,5 @@
 import { supabase } from '../config/supabase.js';
+import { normalizeMaxAttendees } from '../utils/helpers.js';
 
 // ─── GET /api/events ──────────────────────────────────────────────────────────
 export const getAll = async (req, res) => {
@@ -121,6 +122,15 @@ export const create = async (req, res) => {
 
     const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 
+    // 0 (or a blank field) means no limit, so it is stored as null.
+    const capacity = normalizeMaxAttendees(max_attendees);
+    if (capacity === undefined) {
+      return res.status(400).json({
+        success: false,
+        message: 'Max attendees must be a whole number of 0 or more',
+      });
+    }
+
     const { data, error } = await supabase
       .from('events')
       .insert({
@@ -133,7 +143,7 @@ export const create = async (req, res) => {
         start_datetime,
         end_datetime,
         registration_required: registration_required || false,
-        max_attendees: max_attendees || null,
+        max_attendees: capacity,
         registration_deadline: registration_deadline || null,
         fee: fee || 0,
         image_url,
@@ -175,6 +185,19 @@ export const update = async (req, res) => {
       committee_id, status,
     } = req.body;
 
+    // Only touched when the key is sent: the status-only update issued right
+    // after a create must not clear an existing capacity.
+    let capacity;
+    if (max_attendees !== undefined) {
+      capacity = normalizeMaxAttendees(max_attendees);
+      if (capacity === undefined) {
+        return res.status(400).json({
+          success: false,
+          message: 'Max attendees must be a whole number of 0 or more',
+        });
+      }
+    }
+
     const { data, error } = await supabase
       .from('events')
       .update({
@@ -186,7 +209,7 @@ export const update = async (req, res) => {
         start_datetime,
         end_datetime,
         registration_required,
-        max_attendees,
+        max_attendees: capacity,
         registration_deadline,
         fee,
         image_url,

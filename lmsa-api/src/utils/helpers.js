@@ -10,6 +10,21 @@ export const escapeHtml = (value) =>
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
 
+// A capacity of 0 means "no limit", not "nobody may register", so it is stored
+// as null. Both admin forms send the field as a string, and a plain
+// `max_attendees || null` kept '0' but turned a real 0 into null, leaving the
+// column to mean two different things depending on which route wrote it.
+// Returns undefined when the input is not a whole number of 0 or more.
+export const normalizeMaxAttendees = (value) => {
+  if (value === null || value === undefined) return null;
+  if (typeof value === 'string' && value.trim() === '') return null;
+
+  const capacity = Number(value);
+  if (!Number.isInteger(capacity) || capacity < 0) return undefined;
+
+  return capacity === 0 ? null : capacity;
+};
+
 export const generateSlug = (text) => {
   return text
     .toLowerCase()
