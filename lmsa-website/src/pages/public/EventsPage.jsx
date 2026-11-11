@@ -32,7 +32,7 @@ function EventCard({ event, past = false }) {
   return (
     <Link
       to={`/events/${event.slug}`}
-      className="group flex flex-col border border-gray-200 bg-white transition-all duration-200 hover:-translate-y-1 hover:border-lmsa-400 hover:shadow-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
+      className="group flex flex-col border border-gray-200 bg-white transition-[transform,border-color] duration-200 hover:-translate-y-1 hover:border-lmsa-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
     >
       <div className="flex h-48 items-center justify-center overflow-hidden bg-lmsa-50">
         {event.image_url ? (

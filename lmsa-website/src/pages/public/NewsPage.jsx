@@ -26,7 +26,7 @@ function FeatureStory({ post }) {
   return (
     <Link
       to={`/news/${post.slug}`}
-      className="group grid border border-gray-200 bg-white transition-all duration-200 hover:-translate-y-1 hover:border-lmsa-400 hover:shadow-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2 md:grid-cols-[1.15fr_1fr]"
+      className="group grid border border-gray-200 bg-white transition-[transform,border-color] duration-200 hover:-translate-y-1 hover:border-lmsa-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2 md:grid-cols-[1.15fr_1fr]"
     >
       <div className="flex min-h-[220px] items-center justify-center overflow-hidden bg-lmsa-50 md:min-h-[320px]">
         {post.featured_image_url ? (
@@ -62,7 +62,7 @@ function StoryCard({ post }) {
   return (
     <Link
       to={`/news/${post.slug}`}
-      className="group relative flex flex-col border border-gray-200 bg-white transition-all duration-200 hover:-translate-y-1 hover:border-lmsa-400 hover:shadow-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
+      className="group relative flex flex-col border border-gray-200 bg-white transition-[transform,border-color] duration-200 hover:-translate-y-1 hover:border-lmsa-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
     >
       <div className="flex h-48 items-center justify-center overflow-hidden bg-lmsa-50">
         {post.featured_image_url ? (
