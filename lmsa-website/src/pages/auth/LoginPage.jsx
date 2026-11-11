@@ -36,6 +36,7 @@ export default function LoginPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
     try {
       await login(email, password);
@@ -43,6 +44,8 @@ export default function LoginPage() {
       setWelcoming(true);
     } catch (error) {
       toast.error(error.message || 'Invalid email or password');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -105,7 +108,7 @@ export default function LoginPage() {
 
     // No timeout needed — we navigate immediately once the user profile
     // is settled. The effect will re-run if user changes later.
-  }, [welcoming, user, navigate, explicitDestination, ADMIN_ROLES, membership_status]);
+  }, [welcoming, user, navigate, explicitDestination]);
 
   const firstName = user?.full_name?.trim().split(/\s+/)[0];
 
@@ -119,7 +122,8 @@ export default function LoginPage() {
             Liberia Medical Students&apos; Association
           </p>
           <blockquote className="text-lg text-lmsa-100 italic mb-4 text-balance">
-            "Uniting future physicians to promote excellence, advocate for student welfare, and advance healthcare in Liberia."
+            &ldquo;Uniting future physicians to promote excellence, advocate for student
+            welfare, and advance healthcare in Liberia.&rdquo;
           </blockquote>
           <div className="mt-12 pt-8 border-t border-lmsa-500">
             <p className="text-sm text-lmsa-200">
