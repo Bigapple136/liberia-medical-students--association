@@ -39,7 +39,7 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      await login(email, password);
+      await login(email, password, rememberMe);
       toast.success('Login successful!');
       setWelcoming(true);
     } catch (error) {

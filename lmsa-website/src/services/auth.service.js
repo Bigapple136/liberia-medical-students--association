@@ -1,5 +1,6 @@
 import api from './api';
 import { supabase } from './supabase';
+import { setRememberSession } from './authStorage';
 
 export const authService = {
   // Register new user
@@ -9,10 +10,15 @@ export const authService = {
   },
 
   // Login user
-  async login(email, password) {
+  //
+  // `rememberMe` decides where the session is kept: recorded before the
+  // request because Supabase writes the session during signInWithPassword.
+  async login(email, password, rememberMe = false) {
     if (!supabase) {
       throw new Error('Member login is temporarily unavailable. Please try again later.');
     }
+
+    setRememberSession(rememberMe);
 
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
@@ -22,9 +28,9 @@ export const authService = {
     if (error) throw error;
 
     // No manual token storage needed — Supabase's client already persists
-    // the session itself, and api.js now reads the current token directly
-    // from that session on every request (see api.js for why the old
-    // separately-tracked localStorage copy caused a reload loop).
+    // the session to the storage chosen above, and api.js reads the current
+    // token directly from that session on every request (see api.js for why
+    // the old separately-tracked localStorage copy caused a reload loop).
     return data;
   },
 
