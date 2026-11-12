@@ -170,6 +170,7 @@ export default function ContactPage() {
                     name="name"
                     value={formData.name}
                     onChange={handleChange}
+                    maxLength={80}
                     required
                   />
                   <Input
@@ -178,6 +179,7 @@ export default function ContactPage() {
                     type="email"
                     value={formData.email}
                     onChange={handleChange}
+                    maxLength={254}
                     required
                   />
                   <Input
@@ -185,17 +187,23 @@ export default function ContactPage() {
                     name="subject"
                     value={formData.subject}
                     onChange={handleChange}
+                    maxLength={150}
                     required
                   />
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                    <label
+                      htmlFor="contact-message"
+                      className="block text-sm font-medium text-gray-700 mb-1.5"
+                    >
                       Message
                     </label>
                     <textarea
+                      id="contact-message"
                       name="message"
                       value={formData.message}
                       onChange={handleChange}
                       rows="5"
+                      maxLength={2000}
                       className="input w-full"
                       required
                     />
