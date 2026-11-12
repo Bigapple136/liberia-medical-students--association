@@ -202,6 +202,7 @@ export default function ProfilePage() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [changingPassword, setChangingPassword] = useState(false);
   const [changePasswordError, setChangePasswordError] = useState(null);
+  const [passwordErrors, setPasswordErrors] = useState({});
 
   // Re-seed the form if the session user changes (e.g. profile re-fetched
   // after reconnect) — but never while the member is mid-edit with a save
@@ -272,17 +273,20 @@ export default function ProfilePage() {
 
     if (changingPassword) return;
 
-    if (newPassword !== confirmPassword) {
-      setChangePasswordError('Passwords do not match');
-      return;
-    }
+    // Field problems are reported next to the field; the banner is kept for
+    // failures that belong to the request as a whole (e.g. a rejected password).
+    const nextErrors = {};
+    if (!newPassword) nextErrors.new_password = 'Enter a new password.';
+    else if (newPassword.length < 8)
+      nextErrors.new_password = 'Password must be at least 8 characters.';
+    if (!confirmPassword) nextErrors.confirm_password = 'Re-enter your new password.';
+    else if (confirmPassword !== newPassword)
+      nextErrors.confirm_password = 'Passwords do not match.';
 
-    if (newPassword.length < 8) {
-      setChangePasswordError('Password must be at least 8 characters');
-      return;
-    }
-
+    setPasswordErrors(nextErrors);
     setChangePasswordError(null);
+    if (Object.keys(nextErrors).length > 0) return;
+
     setChangingPassword(true);
 
     try {
@@ -294,6 +298,7 @@ export default function ProfilePage() {
       toast.success('Password updated successfully! You can now log in with your new password.');
       setNewPassword('');
       setConfirmPassword('');
+      setPasswordErrors({});
     } catch (error) {
       setChangePasswordError(
         error?.response?.data?.message || 'Could not change password. Please try again.'
@@ -439,7 +444,7 @@ export default function ProfilePage() {
                 Update your password without requesting a recovery link. The change
                 takes effect immediately and you&apos;ll be signed out of other sessions.
               </p>
-              <p className="mt-2 text-sm text-gray-600 max-w-prose">
+              <p className="mt-2 mb-4 text-sm text-gray-600 max-w-prose">
                 Forgotten your current password?{' '}
                 <Link
                   to="/forgot-password"
@@ -466,37 +471,31 @@ export default function ProfilePage() {
                     name="new_password"
                     type="password"
                     value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
-                    error={fieldErrors.new_password}
+                    onChange={(e) => {
+                      setNewPassword(e.target.value);
+                      setPasswordErrors((prev) => ({ ...prev, new_password: undefined }));
+                    }}
+                    error={passwordErrors.new_password}
                     placeholder="Min 8 characters"
                     required
                   />
 
-                  <div>
-                    <label
-                      htmlFor="confirm-new-password"
-                      className="block text-sm font-medium text-gray-700 mb-1.5"
-                    >
-                      Confirm New Password
-                    </label>
-                    <Input
-                      label="Confirm"
-                      name="confirm_password"
-                      type="password"
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                      error={fieldErrors.confirm_password}
-                      placeholder="Re-enter your password"
-                      required
-                    />
-                  </div>
+                  <Input
+                    label="Confirm New Password"
+                    name="confirm_password"
+                    type="password"
+                    value={confirmPassword}
+                    onChange={(e) => {
+                      setConfirmPassword(e.target.value);
+                      setPasswordErrors((prev) => ({ ...prev, confirm_password: undefined }));
+                    }}
+                    error={passwordErrors.confirm_password}
+                    placeholder="Re-enter your password"
+                    required
+                  />
 
                   <div className="flex items-center gap-3">
-                    <Button
-                      type="submit"
-                      loading={changingPassword}
-                      disabled={!newPassword || newPassword !== confirmPassword}
-                    >
+                    <Button type="submit" loading={changingPassword}>
                       {changingPassword ? 'Updating…' : 'Change Password'}
                     </Button>
                   </div>
