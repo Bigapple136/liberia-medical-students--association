@@ -1305,8 +1305,11 @@
     @apply min-w-0 flex-1 border border-gray-700 bg-gray-800 px-3 py-2.5 text-sm text-white placeholder-gray-400 focus:border-lmsa-400 focus:outline-none focus:ring-1 focus:ring-lmsa-400;
   }
 
+  /* min-h-11 keeps the target at 44px (the row's 2.5 padding alone gives 42px),
+     matching the minimum every other button on the site meets. inline-flex
+     centres the label in the taller box. */
   .footer-newsletter-button {
-    @apply shrink-0 bg-lmsa-600 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-lmsa-500 disabled:cursor-not-allowed disabled:opacity-60;
+    @apply inline-flex min-h-11 shrink-0 items-center justify-center bg-lmsa-600 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-lmsa-500 disabled:cursor-not-allowed disabled:opacity-60;
   }
 
   .footer-column-title {
