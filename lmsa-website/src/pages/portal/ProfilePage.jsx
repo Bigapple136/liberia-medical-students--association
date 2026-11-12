@@ -184,8 +184,11 @@ function DuesCard() {
  * explainer per status, with the "what happens next" list for pending.
  * 4.4.3 — Dues: the API carries no dues data today, so this links to the
  * public dues page rather than inventing a state.
- * 4.4.4 — Password: honest placeholder — the endpoint doesn't exist yet,
- * so no dead form ships.
+ * 4.4.4 — Password: changed in-session via supabase.auth.updateUser, so no
+ * recovery email is needed and the stored session is replaced in place.
+ * Empty, short and mismatched entries are reported on the field itself;
+ * the card's alert banner is kept for a request the backend rejects. The
+ * plaintext password is never merged into the AuthContext user.
  */
 export default function ProfilePage() {
   const { user, updateUserProfile } = useAuth();
