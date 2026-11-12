@@ -164,12 +164,13 @@ export default function ContactPage() {
                 Writing about advising, pathways, or an alumni introduction? Mention the Career Center in your subject and tell us where you are in training—the more you share, the more useful the first reply.
               </p>
               <Card>
-                <form onSubmit={handleSubmit} className="space-y-6" autoComplete="off" key={formKey}>
+                <form onSubmit={handleSubmit} className="space-y-6" key={formKey}>
                   <Input
                     label="Your Name"
                     name="name"
                     value={formData.name}
                     onChange={handleChange}
+                    autoComplete="name"
                     maxLength={80}
                     required
                   />
@@ -179,6 +180,7 @@ export default function ContactPage() {
                     type="email"
                     value={formData.email}
                     onChange={handleChange}
+                    autoComplete="email"
                     maxLength={254}
                     required
                   />
