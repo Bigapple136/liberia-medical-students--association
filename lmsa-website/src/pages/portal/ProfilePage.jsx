@@ -182,8 +182,10 @@ function DuesCard() {
  * the source; a failed save never clears the form.
  * 4.4.2 — Membership status card: shared StatusBadge + plain-language
  * explainer per status, with the "what happens next" list for pending.
- * 4.4.3 — Dues: the API carries no dues data today, so this links to the
- * public dues page rather than inventing a state.
+ * 4.4.3 — Dues: live from GET /membership/dues/me, coloured by status
+ * (pending amber, overdue red, settled green), with a retry when the fetch
+ * fails and an honest "none yet" state. Payment instructions still live on
+ * the public dues page, which the card links to.
  * 4.4.4 — Password: changed in-session via supabase.auth.updateUser, so no
  * recovery email is needed and the stored session is replaced in place.
  * Empty, short and mismatched entries are reported on the field itself;
