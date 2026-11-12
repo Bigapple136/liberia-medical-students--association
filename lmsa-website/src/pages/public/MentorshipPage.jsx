@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Check } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { stockPhotos } from '@config/images';
 
@@ -59,18 +59,24 @@ const paths = [
     label: 'I want a mentor',
     answer:
       'Send one message through the contact form and say what you are working on. The team will follow up to understand your goals before introducing anyone.',
+    tips: ['What you are working on', 'Which year you are in', 'What kind of support would help'],
+    action: 'Send your goals to the team',
   },
   {
     id: 'mentor',
     label: 'I want to mentor',
     answer:
       'Write through the same form and say which year you are in and what you can offer students behind you. The team will follow up on a match.',
+    tips: ['Which year you are in', 'What you can offer students behind you', 'How much time you can give'],
+    action: 'Offer to mentor',
   },
   {
     id: 'unsure',
     label: 'Not sure yet',
     answer:
       'Start with a question. The team answers every message and can explain what a match involves before you commit to anything.',
+    tips: ['Ask what a match involves', 'Ask about timing and expectations', 'Nothing is committed by asking'],
+    action: 'Ask a question first',
   },
 ];
 
@@ -89,7 +95,7 @@ export default function MentorshipPage() {
   }, []);
 
   const photo = stockPhotos.hero.mentorship;
-  const answer = paths.find((p) => p.id === choice)?.answer;
+  const picked = paths.find((p) => p.id === choice);
 
   return (
     <div className="w-full overflow-x-hidden">
@@ -150,25 +156,37 @@ export default function MentorshipPage() {
       </section>
 
       {/* ---------- How it works ---------- */}
-      <section id="process" className="bg-white" aria-labelledby="process-title">
-        <div className="mx-auto grid max-w-7xl gap-12 px-4 py-20 sm:px-6 md:py-28 lg:grid-cols-[0.9fr_1.1fr] lg:gap-20 lg:px-8">
-          <div className="reveal-on-scroll lg:sticky lg:top-24 lg:self-start">
+      <section id="process" className="scroll-mt-24 bg-white" aria-labelledby="process-title">
+        <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 md:py-28 lg:px-8">
+          <div className="reveal-on-scroll grid gap-6 md:grid-cols-[1fr_0.9fr] md:items-start md:gap-16">
             <h2
               id="process-title"
-              className="text-[clamp(2rem,3.6vw,3.25rem)] font-bold leading-[1.02] tracking-[-0.04em] text-lmsa-900"
+              className="max-w-[16ch] text-[clamp(2rem,3.6vw,3.25rem)] font-bold leading-[1.02] tracking-[-0.04em] text-lmsa-900"
             >
               How a match works.
             </h2>
-            <p className="mt-5 max-w-[40ch] text-[20px] leading-8 text-gray-700">
+            <p className="max-w-[44ch] text-[20px] leading-8 text-gray-700 md:mt-2">
               Structured enough to help you begin, flexible enough to grow with the people involved.
             </p>
           </div>
 
-          <ol className="space-y-12">
-            {steps.map((step) => (
-              <li key={step.title} className="reveal-on-scroll">
-                <h3 className="text-2xl font-semibold tracking-[-0.02em] text-lmsa-900">{step.title}</h3>
-                <p className="mt-2 max-w-[48ch] text-[17px] leading-7 text-gray-700">{step.desc}</p>
+          {/* The four steps are a sequence, so they are laid out in reading order
+              with an arrow pointing to the next one — on a phone the arrow points
+              down. No digits and no rules; the direction does the work. */}
+          <ol className="mt-12 grid gap-10 lg:mt-16 lg:grid-cols-4 lg:gap-6">
+            {steps.map((step, index) => (
+              <li key={step.title} className="reveal-on-scroll relative lg:pr-10">
+                <h3 className="text-xl font-semibold tracking-[-0.02em] text-lmsa-900 md:text-2xl">
+                  {step.title}
+                </h3>
+                <p className="mt-2 max-w-[34ch] text-[17px] leading-7 text-gray-700">{step.desc}</p>
+                {index < steps.length - 1 && (
+                  <ArrowRight
+                    aria-hidden="true"
+                    size={18}
+                    className="absolute -bottom-7 left-0 rotate-90 text-lmsa-500 lg:bottom-auto lg:left-auto lg:right-1 lg:top-1 lg:rotate-0"
+                  />
+                )}
               </li>
             ))}
           </ol>
@@ -242,42 +260,68 @@ export default function MentorshipPage() {
           </div>
 
           <div className="mt-12 grid gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-center lg:gap-16">
-            <fieldset className="reveal-on-scroll">
-              <legend className="text-lg font-semibold text-lmsa-900">Where would you start?</legend>
-              <div className="mt-4 grid gap-3 sm:grid-cols-3">
-                {paths.map((path) => {
-                  const selected = choice === path.id;
-                  return (
-                    <label
-                      key={path.id}
-                      className={`flex min-h-12 cursor-pointer items-center gap-3 rounded-lg px-4 py-3 text-[15px] font-medium transition-colors focus-within:ring-2 focus-within:ring-lmsa-600 focus-within:ring-offset-2 ${
-                        selected
-                          ? 'bg-lmsa-900 text-white'
-                          : 'bg-paper text-lmsa-900 hover:bg-paper-muted'
-                      }`}
+            <div className="reveal-on-scroll rounded-2xl bg-paper p-6 md:p-8">
+              <fieldset>
+                <legend className="text-lg font-semibold text-lmsa-900">Where would you start?</legend>
+                <div className="mt-4 grid gap-3 sm:grid-cols-3">
+                  {paths.map((path) => {
+                    const selected = choice === path.id;
+                    return (
+                      <label
+                        key={path.id}
+                        className={`flex min-h-12 cursor-pointer items-center gap-3 rounded-lg px-4 py-3 text-[15px] font-medium transition-colors focus-within:outline focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-lmsa-600 ${
+                          selected
+                            ? 'bg-lmsa-900 text-white'
+                            : 'bg-white text-lmsa-900 hover:bg-paper-muted'
+                        }`}
+                      >
+                        <input
+                          type="radio"
+                          name="mentorship-start"
+                          value={path.id}
+                          checked={selected}
+                          onChange={() => setChoice(path.id)}
+                          className="h-4 w-4 shrink-0 accent-lmsa-600"
+                        />
+                        {path.label}
+                      </label>
+                    );
+                  })}
+                </div>
+              </fieldset>
+
+              {/* One live region holds the whole answer, including the action, so
+                  the change is announced once instead of piece by piece. */}
+              <div aria-live="polite" className="mt-6 min-h-[9.5rem]">
+                {picked ? (
+                  <div>
+                    <p className="max-w-[52ch] text-[17px] leading-7 text-gray-800">{picked.answer}</p>
+                    <p className="mt-5 text-[13px] font-semibold uppercase tracking-[0.08em] text-gray-600">
+                      What to include
+                    </p>
+                    <ul className="mt-2 space-y-1.5">
+                      {picked.tips.map((tip) => (
+                        <li key={tip} className="flex items-center gap-2.5 text-[15px] leading-6 text-gray-800">
+                          <Check size={15} className="shrink-0 text-lmsa-600" aria-hidden="true" />
+                          {tip}
+                        </li>
+                      ))}
+                    </ul>
+                    <Link
+                      to="/contact"
+                      className="mt-6 inline-flex min-h-11 items-center gap-2 rounded-lg bg-lmsa-600 px-5 text-[15px] font-semibold text-white transition-colors hover:bg-lmsa-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
                     >
-                      <input
-                        type="radio"
-                        name="mentorship-start"
-                        value={path.id}
-                        checked={selected}
-                        onChange={() => setChoice(path.id)}
-                        className="h-4 w-4 shrink-0 accent-lmsa-600"
-                      />
-                      {path.label}
-                    </label>
-                  );
-                })}
+                      {picked.action}
+                      <ArrowRight size={17} aria-hidden="true" />
+                    </Link>
+                  </div>
+                ) : (
+                  <p className="max-w-[46ch] text-[17px] leading-7 text-gray-600">
+                    Choose one and the next step appears here.
+                  </p>
+                )}
               </div>
-              <p
-                aria-live="polite"
-                className={`mt-6 max-w-[56ch] text-[17px] leading-7 ${
-                  answer ? 'text-gray-800' : 'text-gray-600'
-                }`}
-              >
-                {answer ?? 'Choose one and the next step appears here.'}
-              </p>
-            </fieldset>
+            </div>
 
             <figure className="reveal-on-scroll">
               <img
