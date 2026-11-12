@@ -486,7 +486,10 @@ export default function CommitteePageTemplate() {
                 <form onSubmit={sendContact} className="space-y-4">
                   <div className="grid sm:grid-cols-2 gap-4">
                     <div>
-                      <label htmlFor="committee-contact-name" className="block text-sm font-medium text-gray-700 mb-1.5">Your Name</label>
+                      <label htmlFor="committee-contact-name" className="block text-sm font-medium text-gray-700 mb-1.5">
+                        Your Name
+                        <span className="text-red-600 ml-1" aria-hidden="true">*</span>
+                      </label>
                       <input
                         id="committee-contact-name"
                         className="input"
@@ -499,7 +502,10 @@ export default function CommitteePageTemplate() {
                       />
                     </div>
                     <div>
-                      <label htmlFor="committee-contact-email" className="block text-sm font-medium text-gray-700 mb-1.5">Email Address</label>
+                      <label htmlFor="committee-contact-email" className="block text-sm font-medium text-gray-700 mb-1.5">
+                        Email Address
+                        <span className="text-red-600 ml-1" aria-hidden="true">*</span>
+                      </label>
                       <input
                         id="committee-contact-email"
                         className="input"
@@ -529,7 +535,10 @@ export default function CommitteePageTemplate() {
                     </select>
                   </div>
                   <div>
-                    <label htmlFor="committee-contact-message" className="block text-sm font-medium text-gray-700 mb-1.5">Message</label>
+                    <label htmlFor="committee-contact-message" className="block text-sm font-medium text-gray-700 mb-1.5">
+                      Message
+                      <span className="text-red-600 ml-1" aria-hidden="true">*</span>
+                    </label>
                     <textarea
                       id="committee-contact-message"
                       className="input resize-none"
