@@ -1,28 +1,26 @@
 {
- "url": "http://localhost:5173/academics/career-center",
- "at": "2026-11-12T18:37:21.050Z",
+ "url": "http://localhost:5173/academics/mentorship",
+ "at": "2026-11-12T18:52:47.689Z",
  "allow": [],
  "viewports": [
   {
    "width": 1440,
    "height": 900,
    "load": "load",
-   "screens": 9,
+   "screens": 7,
    "filled": [
     0.82,
-    0.61,
-    1,
-    0.57,
     0.87,
-    0.59,
-    0.86,
+    0.69,
+    0.92,
+    0.45,
     1,
     1
    ],
    "motion": {
-    "elements": 33,
+    "elements": 25,
     "css": 1,
-    "transitions": 32,
+    "transitions": 24,
     "scripted": 0,
     "videos": 0,
     "playingVideos": 0
@@ -33,14 +31,14 @@
      "h": 900
     },
     "page": {
-     "height": 7367,
-     "screens": 8.2,
-     "words": 584,
+     "height": 5833,
+     "screens": 6.5,
+     "words": 559,
      "img": 5,
      "video": 0,
      "canvas": 0,
-     "svg": 22,
-     "sections": 8,
+     "svg": 23,
+     "sections": 7,
      "horizontalOverflow": 0,
      "overflowCulprits": [],
      "uiFragments": 0,
@@ -49,10 +47,10 @@
      "videoCount": 0,
      "uiPictures": 0,
      "pictureSamples": [
-      "photo-1552664730-d307ca884978?w=600&q=80",
-      "photo-1576091160399-112ba8d25d1d?w=800&q=80",
+      "photo-1516321318423-f06f85e504b3?w=1200&q=80",
+      "photo-1456513080510-7bf3a84b82f8?w=600&q=80",
       "photo-1521737711867-e3b97375f902?w=600&q=80",
-      "photo-1576765608535-5f04d1e3f289?w=800&q=80"
+      "photo-1576091160399-112ba8d25d1d?w=800&q=80"
      ],
      "blendText": 0,
      "sideScrollers": 0,
@@ -60,9 +58,9 @@
      "emoji": []
     },
     "hero": {
-     "text": "You don’t pick a specialty alone.",
-     "words": 6,
-     "chars": 33,
+     "text": "Medical school, in pairs.",
+     "words": 4,
+     "chars": 25,
      "lines": 2,
      "size": 76,
      "vw": 5.3,
@@ -76,22 +74,22 @@
      "align": "left",
      "position": "left",
      "widthRatio": 0.43,
-     "top": 249,
+     "top": 233,
      "tag": "h1",
      "kind": "heading"
     },
     "h1": {
-     "text": "You don’t pick a specialty alone.",
-     "words": 6,
+     "text": "Medical school, in pairs.",
+     "words": 4,
      "lines": 2,
      "size": 76,
      "font": "Inter"
     },
     "headings": [
      {
-      "text": "You don’t pick a specialty alone.",
-      "words": 6,
-      "chars": 33,
+      "text": "Medical school, in pairs.",
+      "words": 4,
+      "chars": 25,
       "lines": 2,
       "size": 76,
       "vw": 5.3,
@@ -105,15 +103,15 @@
       "align": "left",
       "position": "left",
       "widthRatio": 0.43,
-      "top": 249,
+      "top": 233,
       "tag": "h1",
       "kind": "heading"
      },
      {
-      "text": "Choosing a specialty is consequential.",
-      "words": 5,
-      "chars": 38,
-      "lines": 1,
+      "text": "Mentors are matched on academic interests, career goals, and personal preferences.",
+      "words": 11,
+      "chars": 82,
+      "lines": 2,
       "size": 36,
       "vw": 2.5,
       "font": "Merriweather",
@@ -131,70 +129,7 @@
       "kind": "statement"
      },
      {
-      "text": "Paths students are exploring now.",
-      "words": 5,
-      "chars": 33,
-      "lines": 2,
-      "size": 51.8,
-      "vw": 3.6,
-      "font": "Inter",
-      "weight": 700,
-      "tracking": -0.04,
-      "leading": 1.02,
-      "upper": false,
-      "italic": false,
-      "mono": false,
-      "align": "left",
-      "position": "left",
-      "widthRatio": 0.39,
-      "top": 1170,
-      "tag": "h2",
-      "kind": "heading"
-     },
-     {
-      "text": "How advising works.",
-      "words": 3,
-      "chars": 19,
-      "lines": 1,
-      "size": 51.8,
-      "vw": 3.6,
-      "font": "Inter",
-      "weight": 700,
-      "tracking": -0.04,
-      "leading": 1.02,
-      "upper": false,
-      "italic": false,
-      "mono": false,
-      "align": "left",
-      "position": "left",
-      "widthRatio": 0.53,
-      "top": 2825,
-      "tag": "h2",
-      "kind": "heading"
-     },
-     {
-      "text": "Practical support for hard choices.",
-      "words": 5,
-      "chars": 35,
-      "lines": 2,
-      "size": 51.8,
-      "vw": 3.6,
-      "font": "Inter",
-      "weight": 700,
-      "tracking": -0.04,
-      "leading": 1.02,
-      "upper": false,
-      "italic": false,
-      "mono": false,
-      "align": "left",
-      "position": "left",
-      "widthRatio": 0.53,
-      "top": 4039,
-      "tag": "h2",
-      "kind": "heading"
-     },
-     {
-      "text": "Where are you now?",
+      "text": "How a match works.",
       "words": 4,
       "chars": 18,
       "lines": 1,
@@ -209,16 +144,16 @@
       "mono": false,
       "align": "left",
       "position": "left",
-      "widthRatio": 0.53,
-      "top": 4693,
+      "widthRatio": 0.39,
+      "top": 1247,
       "tag": "h2",
       "kind": "heading"
      },
      {
-      "text": "Questions students ask.",
+      "text": "Practical, personal, mutual.",
       "words": 3,
-      "chars": 23,
-      "lines": 2,
+      "chars": 28,
+      "lines": 1,
       "size": 51.8,
       "vw": 3.6,
       "font": "Inter",
@@ -230,16 +165,58 @@
       "mono": false,
       "align": "left",
       "position": "left",
-      "widthRatio": 0.34,
-      "top": 5450,
+      "widthRatio": 0.53,
+      "top": 2396,
       "tag": "h2",
       "kind": "heading"
      },
      {
-      "text": "Ready when you are.",
-      "words": 4,
-      "chars": 19,
+      "text": "What a match is actually for.",
+      "words": 6,
+      "chars": 29,
       "lines": 1,
+      "size": 51.8,
+      "vw": 3.6,
+      "font": "Inter",
+      "weight": 700,
+      "tracking": -0.04,
+      "leading": 1.02,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "left",
+      "widthRatio": 0.53,
+      "top": 3077,
+      "tag": "h2",
+      "kind": "heading"
+     },
+     {
+      "text": "Two ways in.",
+      "words": 3,
+      "chars": 12,
+      "lines": 1,
+      "size": 51.8,
+      "vw": 3.6,
+      "font": "Inter",
+      "weight": 700,
+      "tracking": -0.04,
+      "leading": 1.02,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "left",
+      "widthRatio": 0.53,
+      "top": 3794,
+      "tag": "h2",
+      "kind": "heading"
+     },
+     {
+      "text": "One message starts the match.",
+      "words": 5,
+      "chars": 29,
+      "lines": 2,
       "size": 60,
       "vw": 4.2,
       "font": "Inter",
@@ -252,7 +229,7 @@
       "align": "left",
       "position": "left",
       "widthRatio": 0.44,
-      "top": 6214,
+      "top": 4667,
       "tag": "h2",
       "kind": "heading"
      },
@@ -273,13 +250,13 @@
       "align": "left",
       "position": "left",
       "widthRatio": 0.32,
-      "top": 6739,
+      "top": 5206,
       "tag": "h2",
       "kind": "heading"
      }
     ],
     "headingSummary": {
-     "count": 9,
+     "count": 8,
      "maxLines": 2,
      "over2Lines": 0,
      "statements": 1,
@@ -291,12 +268,12 @@
      "families": [
       {
        "family": "Inter",
-       "share": 0.99,
+       "share": 0.98,
        "mono": false
       },
       {
        "family": "Merriweather",
-       "share": 0.01,
+       "share": 0.02,
        "mono": false
       }
      ],
@@ -324,12 +301,12 @@
       "tracking": 0,
       "contrast": 9
      },
-     "measureChars": 80,
+     "measureChars": 57,
      "max": {
       "size": 76,
       "vw": 5.3,
       "font": "Inter",
-      "text": "You don’t pick a specialty alone."
+      "text": "Medical school, in pairs."
      },
      "monoShare": 0,
      "monoProseShare": 0,
@@ -339,7 +316,7 @@
      "microLabelShare": 0,
      "microSamples": [],
      "upperShare": 0,
-     "centerShare": 0.01,
+     "centerShare": 0.02,
      "smallText": 0
     },
     "eyebrows": [],
@@ -373,7 +350,7 @@
       },
       {
        "color": "#ffffff",
-       "top": 1058,
+       "top": 1135,
        "hsl": {
         "h": 0,
         "s": 0,
@@ -382,7 +359,7 @@
       },
       {
        "color": "#111827",
-       "top": 6663,
+       "top": 5130,
        "hsl": {
         "h": 221,
         "s": 0.39,
@@ -393,23 +370,23 @@
      "textColors": [
       {
        "color": "#374151",
-       "share": 0.55
+       "share": 0.43
       },
       {
        "color": "#064629",
-       "share": 0.17
-      },
-      {
-       "color": "#e8f7f0",
-       "share": 0.1
+       "share": 0.13
       },
       {
        "color": "#9ca3af",
-       "share": 0.09
+       "share": 0.12
       },
       {
-       "color": "#ffffff",
-       "share": 0.04
+       "color": "#e8f7f0",
+       "share": 0.11
+      },
+      {
+       "color": "#1f2937",
+       "share": 0.08
       }
      ],
      "button": {
@@ -434,7 +411,7 @@
      "upper": 0,
      "heroLabels": [
       "Join LMSA",
-      "Start a conversation"
+      "Ask about mentorship"
      ]
     },
     "surfaces": {
@@ -450,7 +427,7 @@
      "outlinedBoxes": 0,
      "dashed": 0,
      "blurred": 0,
-     "roundedBoxes": 7,
+     "roundedBoxes": 4,
      "boxRadius": 12,
      "squareMedia": 0,
      "roundedMedia": 4,
@@ -458,10 +435,10 @@
      "textShadow": 0,
      "cardRows": [
       {
-       "count": 6,
+       "count": 3,
        "iconTopped": false,
        "rounded": true,
-       "top": 1340
+       "top": 2581
       }
      ]
     },
@@ -489,22 +466,21 @@
    "width": 768,
    "height": 1024,
    "load": "load",
-   "screens": 9,
+   "screens": 8,
    "filled": [
     1,
-    0.64,
-    0.82,
-    0.48,
-    0.77,
+    0.73,
     0.89,
-    1,
+    0.9,
+    0.77,
+    0.86,
     1,
     1
    ],
    "motion": {
-    "elements": 33,
+    "elements": 25,
     "css": 1,
-    "transitions": 32,
+    "transitions": 24,
     "scripted": 0,
     "videos": 0,
     "playingVideos": 0
@@ -515,14 +491,14 @@
      "h": 1024
     },
     "page": {
-     "height": 8373,
-     "screens": 8.2,
-     "words": 573,
+     "height": 7789,
+     "screens": 7.6,
+     "words": 548,
      "img": 5,
      "video": 0,
      "canvas": 0,
-     "svg": 22,
-     "sections": 8,
+     "svg": 23,
+     "sections": 7,
      "horizontalOverflow": 0,
      "overflowCulprits": [],
      "uiFragments": 0,
@@ -531,10 +507,10 @@
      "videoCount": 0,
      "uiPictures": 0,
      "pictureSamples": [
-      "photo-1552664730-d307ca884978?w=600&q=80",
-      "photo-1576091160399-112ba8d25d1d?w=800&q=80",
+      "photo-1516321318423-f06f85e504b3?w=1200&q=80",
+      "photo-1456513080510-7bf3a84b82f8?w=600&q=80",
       "photo-1521737711867-e3b97375f902?w=600&q=80",
-      "photo-1576765608535-5f04d1e3f289?w=800&q=80"
+      "photo-1576091160399-112ba8d25d1d?w=800&q=80"
      ],
      "blendText": 0,
      "sideScrollers": 0,
@@ -542,9 +518,9 @@
      "emoji": []
     },
     "hero": {
-     "text": "You don’t pick a specialty alone.",
-     "words": 6,
-     "chars": 33,
+     "text": "Medical school, in pairs.",
+     "words": 4,
+     "chars": 25,
      "lines": 1,
      "size": 41.5,
      "vw": 5.4,
@@ -563,17 +539,17 @@
      "kind": "heading"
     },
     "h1": {
-     "text": "You don’t pick a specialty alone.",
-     "words": 6,
+     "text": "Medical school, in pairs.",
+     "words": 4,
      "lines": 1,
      "size": 41.5,
      "font": "Inter"
     },
     "headings": [
      {
-      "text": "You don’t pick a specialty alone.",
-      "words": 6,
-      "chars": 33,
+      "text": "Medical school, in pairs.",
+      "words": 4,
+      "chars": 25,
       "lines": 1,
       "size": 41.5,
       "vw": 5.4,
@@ -592,70 +568,7 @@
       "kind": "heading"
      },
      {
-      "text": "Paths students are exploring now.",
-      "words": 5,
-      "chars": 33,
-      "lines": 2,
-      "size": 32,
-      "vw": 4.2,
-      "font": "Inter",
-      "weight": 700,
-      "tracking": -0.04,
-      "leading": 1.02,
-      "upper": false,
-      "italic": false,
-      "mono": false,
-      "align": "left",
-      "position": "left",
-      "widthRatio": 0.45,
-      "top": 1548,
-      "tag": "h2",
-      "kind": "heading"
-     },
-     {
-      "text": "How advising works.",
-      "words": 3,
-      "chars": 19,
-      "lines": 1,
-      "size": 32,
-      "vw": 4.2,
-      "font": "Inter",
-      "weight": 700,
-      "tracking": -0.04,
-      "leading": 1.02,
-      "upper": false,
-      "italic": false,
-      "mono": false,
-      "align": "left",
-      "position": "center",
-      "widthRatio": 0.94,
-      "top": 3144,
-      "tag": "h2",
-      "kind": "heading"
-     },
-     {
-      "text": "Practical support for hard choices.",
-      "words": 5,
-      "chars": 35,
-      "lines": 1,
-      "size": 32,
-      "vw": 4.2,
-      "font": "Inter",
-      "weight": 700,
-      "tracking": -0.04,
-      "leading": 1.02,
-      "upper": false,
-      "italic": false,
-      "mono": false,
-      "align": "left",
-      "position": "center",
-      "widthRatio": 0.94,
-      "top": 4382,
-      "tag": "h2",
-      "kind": "heading"
-     },
-     {
-      "text": "Where are you now?",
+      "text": "How a match works.",
       "words": 4,
       "chars": 18,
       "lines": 1,
@@ -669,17 +582,17 @@
       "italic": false,
       "mono": false,
       "align": "left",
-      "position": "center",
-      "widthRatio": 0.94,
-      "top": 4990,
+      "position": "left",
+      "widthRatio": 0.45,
+      "top": 1640,
       "tag": "h2",
       "kind": "heading"
      },
      {
-      "text": "Questions students ask.",
+      "text": "Practical, personal, mutual.",
       "words": 3,
-      "chars": 23,
-      "lines": 2,
+      "chars": 28,
+      "lines": 1,
       "size": 32,
       "vw": 4.2,
       "font": "Inter",
@@ -690,16 +603,58 @@
       "italic": false,
       "mono": false,
       "align": "left",
-      "position": "left",
-      "widthRatio": 0.4,
-      "top": 5727,
+      "position": "center",
+      "widthRatio": 0.94,
+      "top": 2973,
       "tag": "h2",
       "kind": "heading"
      },
      {
-      "text": "Ready when you are.",
-      "words": 4,
-      "chars": 19,
+      "text": "What a match is actually for.",
+      "words": 6,
+      "chars": 29,
+      "lines": 1,
+      "size": 32,
+      "vw": 4.2,
+      "font": "Inter",
+      "weight": 700,
+      "tracking": -0.04,
+      "leading": 1.02,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.94,
+      "top": 3745,
+      "tag": "h2",
+      "kind": "heading"
+     },
+     {
+      "text": "Two ways in.",
+      "words": 3,
+      "chars": 12,
+      "lines": 1,
+      "size": 32,
+      "vw": 4.2,
+      "font": "Inter",
+      "weight": 700,
+      "tracking": -0.04,
+      "leading": 1.02,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.94,
+      "top": 4526,
+      "tag": "h2",
+      "kind": "heading"
+     },
+     {
+      "text": "One message starts the match.",
+      "words": 5,
+      "chars": 29,
       "lines": 1,
       "size": 32.3,
       "vw": 4.2,
@@ -713,7 +668,7 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.94,
-      "top": 6411,
+      "top": 5859,
       "tag": "h2",
       "kind": "heading"
      },
@@ -734,13 +689,13 @@
       "align": "left",
       "position": "left",
       "widthRatio": 0.55,
-      "top": 7442,
+      "top": 6858,
       "tag": "h2",
       "kind": "heading"
      }
     ],
     "headingSummary": {
-     "count": 8,
+     "count": 7,
      "maxLines": 2,
      "over2Lines": 0,
      "statements": 0,
@@ -752,12 +707,12 @@
      "families": [
       {
        "family": "Inter",
-       "share": 0.99,
+       "share": 0.98,
        "mono": false
       },
       {
        "family": "Merriweather",
-       "share": 0.01,
+       "share": 0.02,
        "mono": false
       }
      ],
@@ -784,12 +739,12 @@
       "tracking": 0,
       "contrast": 9
      },
-     "measureChars": 80,
+     "measureChars": 39,
      "max": {
       "size": 41.5,
       "vw": 5.4,
       "font": "Inter",
-      "text": "You don’t pick a specialty alone."
+      "text": "Medical school, in pairs."
      },
      "monoShare": 0,
      "monoProseShare": 0,
@@ -824,7 +779,7 @@
       },
       {
        "color": "#f1f0ec",
-       "top": 1127,
+       "top": 1159,
        "hsl": {
         "h": 48,
         "s": 0.15,
@@ -833,7 +788,7 @@
       },
       {
        "color": "#ffffff",
-       "top": 1436,
+       "top": 1528,
        "hsl": {
         "h": 0,
         "s": 0,
@@ -842,7 +797,7 @@
       },
       {
        "color": "#111827",
-       "top": 7366,
+       "top": 6782,
        "hsl": {
         "h": 221,
         "s": 0.39,
@@ -853,23 +808,23 @@
      "textColors": [
       {
        "color": "#374151",
-       "share": 0.55
+       "share": 0.43
       },
       {
        "color": "#064629",
-       "share": 0.18
-      },
-      {
-       "color": "#e8f7f0",
-       "share": 0.1
+       "share": 0.14
       },
       {
        "color": "#9ca3af",
-       "share": 0.1
+       "share": 0.12
       },
       {
-       "color": "#ffffff",
-       "share": 0.04
+       "color": "#e8f7f0",
+       "share": 0.12
+      },
+      {
+       "color": "#1f2937",
+       "share": 0.08
       }
      ],
      "button": {
@@ -894,7 +849,7 @@
      "upper": 0,
      "heroLabels": [
       "Join LMSA",
-      "Start a conversation"
+      "Ask about mentorship"
      ]
     },
     "surfaces": {
@@ -910,7 +865,7 @@
      "outlinedBoxes": 0,
      "dashed": 0,
      "blurred": 0,
-     "roundedBoxes": 7,
+     "roundedBoxes": 4,
      "boxRadius": 12,
      "squareMedia": 0,
      "roundedMedia": 4,
@@ -918,17 +873,17 @@
      "textShadow": 0,
      "cardRows": [
       {
-       "count": 6,
+       "count": 3,
        "iconTopped": false,
        "rounded": true,
-       "top": 1732
+       "top": 3137
       }
      ]
     },
     "heroMedia": [
      {
       "type": "img",
-      "ratio": 0.49
+      "ratio": 0.47
      }
     ],
     "nav": {
@@ -949,24 +904,23 @@
    "width": 390,
    "height": 844,
    "load": "load",
-   "screens": 11,
+   "screens": 10,
    "filled": [
     1,
-    0.76,
-    0.55,
-    0.85,
-    0.55,
+    0.77,
     1,
-    0.63,
-    0.94,
+    0.85,
+    0.92,
+    0.89,
+    0.72,
     1,
     1,
     1
    ],
    "motion": {
-    "elements": 33,
+    "elements": 25,
     "css": 1,
-    "transitions": 32,
+    "transitions": 24,
     "scripted": 0,
     "videos": 0,
     "playingVideos": 0
@@ -977,14 +931,14 @@
      "h": 844
     },
     "page": {
-     "height": 9053,
-     "screens": 10.7,
-     "words": 557,
+     "height": 8279,
+     "screens": 9.8,
+     "words": 532,
      "img": 5,
      "video": 0,
      "canvas": 0,
-     "svg": 22,
-     "sections": 8,
+     "svg": 23,
+     "sections": 7,
      "horizontalOverflow": 0,
      "overflowCulprits": [],
      "uiFragments": 0,
@@ -993,10 +947,10 @@
      "videoCount": 0,
      "uiPictures": 0,
      "pictureSamples": [
-      "photo-1552664730-d307ca884978?w=600&q=80",
-      "photo-1576091160399-112ba8d25d1d?w=800&q=80",
+      "photo-1516321318423-f06f85e504b3?w=1200&q=80",
+      "photo-1456513080510-7bf3a84b82f8?w=600&q=80",
       "photo-1521737711867-e3b97375f902?w=600&q=80",
-      "photo-1576765608535-5f04d1e3f289?w=800&q=80"
+      "photo-1576091160399-112ba8d25d1d?w=800&q=80"
      ],
      "blendText": 0,
      "sideScrollers": 0,
@@ -1004,9 +958,9 @@
      "emoji": []
     },
     "hero": {
-     "text": "You don’t pick a specialty alone.",
-     "words": 6,
-     "chars": 33,
+     "text": "Medical school, in pairs.",
+     "words": 4,
+     "chars": 25,
      "lines": 2,
      "size": 36,
      "vw": 9.2,
@@ -1025,17 +979,17 @@
      "kind": "heading"
     },
     "h1": {
-     "text": "You don’t pick a specialty alone.",
-     "words": 6,
+     "text": "Medical school, in pairs.",
+     "words": 4,
      "lines": 2,
      "size": 36,
      "font": "Inter"
     },
     "headings": [
      {
-      "text": "You don’t pick a specialty alone.",
-      "words": 6,
-      "chars": 33,
+      "text": "Medical school, in pairs.",
+      "words": 4,
+      "chars": 25,
       "lines": 2,
       "size": 36,
       "vw": 9.2,
@@ -1054,10 +1008,10 @@
       "kind": "heading"
      },
      {
-      "text": "Choosing a specialty is consequential.",
-      "words": 5,
-      "chars": 38,
-      "lines": 2,
+      "text": "Mentors are matched on academic interests, career goals, and personal preferences.",
+      "words": 11,
+      "chars": 82,
+      "lines": 3,
       "size": 24,
       "vw": 6.2,
       "font": "Merriweather",
@@ -1075,70 +1029,7 @@
       "kind": "statement"
      },
      {
-      "text": "Paths students are exploring now.",
-      "words": 5,
-      "chars": 33,
-      "lines": 2,
-      "size": 32,
-      "vw": 8.2,
-      "font": "Inter",
-      "weight": 700,
-      "tracking": -0.04,
-      "leading": 1.02,
-      "upper": false,
-      "italic": false,
-      "mono": false,
-      "align": "left",
-      "position": "center",
-      "widthRatio": 0.9,
-      "top": 1390,
-      "tag": "h2",
-      "kind": "heading"
-     },
-     {
-      "text": "How advising works.",
-      "words": 3,
-      "chars": 19,
-      "lines": 1,
-      "size": 32,
-      "vw": 8.2,
-      "font": "Inter",
-      "weight": 700,
-      "tracking": -0.04,
-      "leading": 1.02,
-      "upper": false,
-      "italic": false,
-      "mono": false,
-      "align": "left",
-      "position": "center",
-      "widthRatio": 0.92,
-      "top": 3284,
-      "tag": "h2",
-      "kind": "heading"
-     },
-     {
-      "text": "Practical support for hard choices.",
-      "words": 5,
-      "chars": 35,
-      "lines": 2,
-      "size": 32,
-      "vw": 8.2,
-      "font": "Inter",
-      "weight": 700,
-      "tracking": -0.04,
-      "leading": 1.02,
-      "upper": false,
-      "italic": false,
-      "mono": false,
-      "align": "left",
-      "position": "center",
-      "widthRatio": 0.92,
-      "top": 4366,
-      "tag": "h2",
-      "kind": "heading"
-     },
-     {
-      "text": "Where are you now?",
+      "text": "How a match works.",
       "words": 4,
       "chars": 18,
       "lines": 1,
@@ -1153,15 +1044,15 @@
       "mono": false,
       "align": "left",
       "position": "center",
-      "widthRatio": 0.92,
-      "top": 5240,
+      "widthRatio": 0.9,
+      "top": 1422,
       "tag": "h2",
       "kind": "heading"
      },
      {
-      "text": "Questions students ask.",
+      "text": "Practical, personal, mutual.",
       "words": 3,
-      "chars": 23,
+      "chars": 28,
       "lines": 2,
       "size": 32,
       "vw": 8.2,
@@ -1174,16 +1065,58 @@
       "mono": false,
       "align": "left",
       "position": "center",
-      "widthRatio": 0.79,
-      "top": 6048,
+      "widthRatio": 0.92,
+      "top": 2612,
       "tag": "h2",
       "kind": "heading"
      },
      {
-      "text": "Ready when you are.",
-      "words": 4,
-      "chars": 19,
+      "text": "What a match is actually for.",
+      "words": 6,
+      "chars": 29,
+      "lines": 2,
+      "size": 32,
+      "vw": 8.2,
+      "font": "Inter",
+      "weight": 700,
+      "tracking": -0.04,
+      "leading": 1.02,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.92,
+      "top": 3765,
+      "tag": "h2",
+      "kind": "heading"
+     },
+     {
+      "text": "Two ways in.",
+      "words": 3,
+      "chars": 12,
       "lines": 1,
+      "size": 32,
+      "vw": 8.2,
+      "font": "Inter",
+      "weight": 700,
+      "tracking": -0.04,
+      "leading": 1.02,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.92,
+      "top": 4923,
+      "tag": "h2",
+      "kind": "heading"
+     },
+     {
+      "text": "One message starts the match.",
+      "words": 5,
+      "chars": 29,
+      "lines": 2,
       "size": 32,
       "vw": 8.2,
       "font": "Inter",
@@ -1196,7 +1129,7 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.92,
-      "top": 6829,
+      "top": 6088,
       "tag": "h2",
       "kind": "heading"
      },
@@ -1217,7 +1150,7 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.9,
-      "top": 7669,
+      "top": 6895,
       "tag": "h2",
       "kind": "heading"
      },
@@ -1238,14 +1171,14 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.9,
-      "top": 7876,
+      "top": 7102,
       "tag": "h3",
       "kind": "heading"
      }
     ],
     "headingSummary": {
-     "count": 10,
-     "maxLines": 2,
+     "count": 9,
+     "maxLines": 3,
      "over2Lines": 0,
      "statements": 1,
      "centered": 0,
@@ -1256,12 +1189,12 @@
      "families": [
       {
        "family": "Inter",
-       "share": 0.99,
+       "share": 0.98,
        "mono": false
       },
       {
        "family": "Merriweather",
-       "share": 0.01,
+       "share": 0.02,
        "mono": false
       }
      ],
@@ -1293,7 +1226,7 @@
       "size": 36,
       "vw": 9.2,
       "font": "Inter",
-      "text": "You don’t pick a specialty alone."
+      "text": "Medical school, in pairs."
      },
      "monoShare": 0,
      "monoProseShare": 0,
@@ -1337,7 +1270,7 @@
       },
       {
        "color": "#ffffff",
-       "top": 1310,
+       "top": 1342,
        "hsl": {
         "h": 0,
         "s": 0,
@@ -1346,7 +1279,7 @@
       },
       {
        "color": "#111827",
-       "top": 7609,
+       "top": 6835,
        "hsl": {
         "h": 221,
         "s": 0.39,
@@ -1357,23 +1290,23 @@
      "textColors": [
       {
        "color": "#374151",
-       "share": 0.56
+       "share": 0.44
       },
       {
        "color": "#064629",
-       "share": 0.18
+       "share": 0.14
       },
       {
        "color": "#9ca3af",
-       "share": 0.1
+       "share": 0.13
       },
       {
        "color": "#e8f7f0",
-       "share": 0.08
+       "share": 0.1
       },
       {
-       "color": "#ffffff",
-       "share": 0.04
+       "color": "#1f2937",
+       "share": 0.08
       }
      ],
      "button": {
@@ -1397,7 +1330,7 @@
      "mono": 0,
      "upper": 0,
      "heroLabels": [
-      "Start a conversation"
+      "Ask about mentorship"
      ]
     },
     "surfaces": {
@@ -1413,7 +1346,7 @@
      "outlinedBoxes": 0,
      "dashed": 0,
      "blurred": 0,
-     "roundedBoxes": 11,
+     "roundedBoxes": 4,
      "boxRadius": 12,
      "squareMedia": 0,
      "roundedMedia": 4,
@@ -1469,8 +1402,7 @@
    "fold": "C:\\Users\\goldw\\Desktop\\freelance\\liberia-medical-students-association\\lmsa-website\\.taste-skill\\inspect\\desktop-fold.jpg",
    "pages": [
     "C:\\Users\\goldw\\Desktop\\freelance\\liberia-medical-students-association\\lmsa-website\\.taste-skill\\inspect\\desktop-page-01.jpg",
-    "C:\\Users\\goldw\\Desktop\\freelance\\liberia-medical-students-association\\lmsa-website\\.taste-skill\\inspect\\desktop-page-02.jpg",
-    "C:\\Users\\goldw\\Desktop\\freelance\\liberia-medical-students-association\\lmsa-website\\.taste-skill\\inspect\\desktop-page-03.jpg"
+    "C:\\Users\\goldw\\Desktop\\freelance\\liberia-medical-students-association\\lmsa-website\\.taste-skill\\inspect\\desktop-page-02.jpg"
    ]
   },
   {

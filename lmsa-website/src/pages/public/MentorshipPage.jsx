@@ -53,6 +53,33 @@ const support = [
   },
 ];
 
+/* Each entry below restates something the page already establishes — mentor
+   seniority, the basis for matching, the support areas, and the fact that a
+   first message commits you to nothing. Nothing here is a claim about how
+   often pairs meet, how many students are enrolled, or what anyone said. */
+const cycle = [
+  {
+    title: 'Someone further along',
+    desc:
+      'Mentors are senior students. The years you are heading into are years they have already been through, so the questions you have now are ones they recognise.',
+  },
+  {
+    title: 'A match on shared ground',
+    desc:
+      'Pairing considers academic interests, career goals, and personal preferences — so the first conversation starts from something you have in common.',
+  },
+  {
+    title: 'Help with the thing on your desk',
+    desc:
+      'Exam preparation, study strategy, the move between clinical years, specialty exploration, research, or a difficult stretch. Say which one it is and the pairing can be aimed at it.',
+  },
+  {
+    title: 'A pace you can set',
+    desc:
+      'The relationship is structured enough to begin and flexible enough to fit around rotations and exams. You start with a message, not an application, and asking commits you to nothing.',
+  },
+];
+
 const paths = [
   {
     id: 'mentee',
@@ -243,8 +270,41 @@ export default function MentorshipPage() {
         </div>
       </section>
 
+      {/* ---------- What a cycle gives you ---------- */}
+      <section className="bg-white" aria-labelledby="cycle-title">
+        <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 md:py-28 lg:px-8">
+          <div className="reveal-on-scroll max-w-3xl">
+            <h2
+              id="cycle-title"
+              className="text-[clamp(2rem,3.6vw,3.25rem)] font-bold leading-[1.02] tracking-[-0.04em] text-lmsa-900"
+            >
+              What a match is actually for.
+            </h2>
+            <p className="mt-5 max-w-[52ch] text-[20px] leading-8 text-gray-700">
+              Not a mailing list and not a course. A standing conversation about the things you are
+              working on now.
+            </p>
+          </div>
+
+          {/* A plain typographic list, so this section does not repeat the card
+              grid above it or the panel below it. */}
+          <dl className="mt-12 grid gap-x-16 gap-y-10 md:grid-cols-2">
+            {cycle.map((item, index) => (
+              <div
+                key={item.title}
+                className="reveal-on-scroll"
+                style={{ transitionDelay: `${(index % 2) * 70}ms` }}
+              >
+                <dt className="text-xl font-semibold tracking-[-0.02em] text-lmsa-900">{item.title}</dt>
+                <dd className="mt-2 max-w-[44ch] text-[17px] leading-7 text-gray-700">{item.desc}</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+      </section>
+
       {/* ---------- Two ways in, with the chooser ---------- */}
-      <section className="bg-white" aria-labelledby="paths-title">
+      <section className="bg-paper" aria-labelledby="paths-title">
         <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 md:py-28 lg:px-8">
           <div className="reveal-on-scroll max-w-3xl">
             <h2
@@ -260,7 +320,7 @@ export default function MentorshipPage() {
           </div>
 
           <div className="mt-12 grid gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-center lg:gap-16">
-            <div className="reveal-on-scroll rounded-2xl bg-paper p-6 md:p-8">
+            <div className="reveal-on-scroll rounded-2xl bg-white p-6 md:p-8">
               <fieldset>
                 <legend className="text-lg font-semibold text-lmsa-900">Where would you start?</legend>
                 <div className="mt-4 grid gap-3 sm:grid-cols-3">
@@ -272,7 +332,7 @@ export default function MentorshipPage() {
                         className={`flex min-h-12 cursor-pointer items-center gap-3 rounded-lg px-4 py-3 text-[15px] font-medium transition-colors focus-within:outline focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-lmsa-600 ${
                           selected
                             ? 'bg-lmsa-900 text-white'
-                            : 'bg-white text-lmsa-900 hover:bg-paper-muted'
+                            : 'bg-paper text-lmsa-900 hover:bg-paper-muted'
                         }`}
                       >
                         <input
