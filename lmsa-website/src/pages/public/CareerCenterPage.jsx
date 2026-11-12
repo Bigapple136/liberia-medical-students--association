@@ -339,6 +339,22 @@ export default function CareerCenterPage() {
               </div>
             ))}
           </dl>
+
+          {/* The hand-off to the page that answers the neighbouring question:
+              advice from a student who is a year or two ahead. */}
+          <div className="reveal-on-scroll mt-12 max-w-[62ch]">
+            <p className="text-[17px] leading-7 text-gray-700">
+              Some questions are better answered by someone a year or two ahead of you than by an
+              advisor. The Mentorship Program pairs junior students with senior ones.
+            </p>
+            <Link
+              to="/academics/mentorship"
+              className="mt-1 inline-flex min-h-12 items-center gap-2 rounded text-[15px] font-semibold text-lmsa-700 underline decoration-lmsa-500 decoration-2 underline-offset-4 transition-colors hover:decoration-lmsa-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
+            >
+              Go to the Mentorship Program
+              <ArrowRight size={16} aria-hidden="true" />
+            </Link>
+          </div>
         </div>
       </section>
 

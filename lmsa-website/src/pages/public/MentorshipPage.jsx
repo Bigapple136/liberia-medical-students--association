@@ -267,6 +267,23 @@ export default function MentorshipPage() {
               </div>
             ))}
           </div>
+
+          {/* The one question this page cannot answer. Specialty decisions and
+              applications belong to the Career Center, so the hand-off is
+              written where a reader would otherwise expect it here. */}
+          <div className="reveal-on-scroll mt-12 max-w-[62ch]">
+            <p className="text-[17px] leading-7 text-gray-700">
+              Weighing a specialty, or preparing an application? The Career Center handles advising,
+              specialty exploration, and feedback on CVs and personal statements.
+            </p>
+            <Link
+              to="/academics/career-center"
+              className="mt-1 inline-flex min-h-12 items-center gap-2 rounded text-[15px] font-semibold text-lmsa-700 underline decoration-lmsa-500 decoration-2 underline-offset-4 transition-colors hover:decoration-lmsa-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
+            >
+              Go to the Career Center
+              <ArrowRight size={16} aria-hidden="true" />
+            </Link>
+          </div>
         </div>
       </section>
 
