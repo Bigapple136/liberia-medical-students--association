@@ -198,7 +198,6 @@ export default function ProfilePage() {
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState(null);
   // Change password form state
-  const [changePasswordModalOpen, setChangePasswordModalOpen] = useState(false);
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [changingPassword, setChangingPassword] = useState(false);
@@ -293,7 +292,6 @@ export default function ProfilePage() {
       // consumer of AuthContext, so the plaintext password must never be merged
       // into it.
       toast.success('Password updated successfully! You can now log in with your new password.');
-      setChangePasswordModalOpen(false);
       setNewPassword('');
       setConfirmPassword('');
     } catch (error) {
@@ -441,6 +439,16 @@ export default function ProfilePage() {
                 Update your password without requesting a recovery link. The change
                 takes effect immediately and you&apos;ll be signed out of other sessions.
               </p>
+              <p className="mt-2 text-sm text-gray-600 max-w-prose">
+                Forgotten your current password?{' '}
+                <Link
+                  to="/forgot-password"
+                  className="font-semibold text-lmsa-600 underline underline-offset-2 hover:no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600"
+                >
+                  Reset it via email
+                </Link>{' '}
+                instead.
+              </p>
 
               {changePasswordError && (
                 <p
@@ -491,15 +499,6 @@ export default function ProfilePage() {
                     >
                       {changingPassword ? 'Updating…' : 'Change Password'}
                     </Button>
-
-                    <button
-                      type="button"
-                      onClick={() => setChangePasswordModalOpen(false)}
-                      className="text-sm text-gray-500 hover:text-lmsa-600 transition-colors duration-200"
-                      aria-label="Close password change"
-                    >
-                      Cancel
-                    </button>
                   </div>
                 </form>
               )}
@@ -514,16 +513,6 @@ export default function ProfilePage() {
           </div>
         </Card>
 
-        {changePasswordModalOpen && (
-          <Card className="p-4 sm:p-6">
-            <p className="text-sm text-gray-600">
-              Use the form above to change your password. If you&apos;ve forgotten your
-              current password, use the <a href="/forgot-password" className="font-semibold text-lmsa-600 hover:underline">
-                forgot password link
-              </a> to reset it via email.
-            </p>
-          </Card>
-        )}
         <Card className="p-4 sm:p-6">
           <h2 className="text-lg font-semibold mb-3">Account</h2>
           <dl className="space-y-3 text-sm">
