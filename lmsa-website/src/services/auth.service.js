@@ -70,9 +70,9 @@ export const authService = {
 
     if (error) throw error;
 
-    // Also update the local AuthContext user so the change is reflected
-    // immediately without a page reload. Consumers (e.g. ProfilePage)
-    // should call updateUserProfile on the returned data.
+    // The returned Supabase user carries no password field, and the session
+    // itself has already been replaced — callers need no local state update,
+    // and must not copy the password into AuthContext.
     return data;
   },
 };

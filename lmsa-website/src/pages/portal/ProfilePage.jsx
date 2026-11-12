@@ -6,6 +6,7 @@ import { z } from 'zod';
 import Button from '@components/common/Button';
 import Card from '@components/common/Card';
 import Input from '@components/common/Input';
+import Spinner from '@components/common/Spinner';
 import StatusBadge from '@components/common/StatusBadge';
 import { useAuth } from '@context/AuthContext';
 import { userService } from '@services/user.service';
@@ -287,7 +288,10 @@ export default function ProfilePage() {
 
     try {
       await authService.changePassword(newPassword);
-      updateUserProfile({ password: newPassword }); // refresh local session
+      // No local session update needed: supabase.auth.updateUser has already
+      // replaced the stored session, and this user object is readable by every
+      // consumer of AuthContext, so the plaintext password must never be merged
+      // into it.
       toast.success('Password updated successfully! You can now log in with your new password.');
       setChangePasswordModalOpen(false);
       setNewPassword('');
@@ -435,7 +439,7 @@ export default function ProfilePage() {
               <h2 className="text-lg font-semibold">Change Password</h2>
               <p className="mt-1 text-sm text-gray-600 max-w-prose">
                 Update your password without requesting a recovery link. The change
-                takes effect immediately and you'll be signed out of other sessions.
+                takes effect immediately and you&apos;ll be signed out of other sessions.
               </p>
 
               {changePasswordError && (
@@ -452,7 +456,7 @@ export default function ProfilePage() {
                   <Input
                     label="New Password"
                     name="new_password"
-                    type={showNewPassword ? 'text' : 'password'}
+                    type="password"
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
                     error={fieldErrors.new_password}
@@ -470,7 +474,7 @@ export default function ProfilePage() {
                     <Input
                       label="Confirm"
                       name="confirm_password"
-                      type={showConfirmPassword ? 'text' : 'password'}
+                      type="password"
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
                       error={fieldErrors.confirm_password}
@@ -513,7 +517,7 @@ export default function ProfilePage() {
         {changePasswordModalOpen && (
           <Card className="p-4 sm:p-6">
             <p className="text-sm text-gray-600">
-              Use the form above to change your password. If you've forgotten your
+              Use the form above to change your password. If you&apos;ve forgotten your
               current password, use the <a href="/forgot-password" className="font-semibold text-lmsa-600 hover:underline">
                 forgot password link
               </a> to reset it via email.
