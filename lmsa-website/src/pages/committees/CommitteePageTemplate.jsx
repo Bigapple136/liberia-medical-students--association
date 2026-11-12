@@ -703,7 +703,7 @@ export default function CommitteePageTemplate() {
                   <button
                     type="submit"
                     aria-label="Subscribe to committee updates"
-                    className="px-3 py-2 bg-lmsa-600 text-white rounded-lg text-sm font-medium hover:bg-lmsa-700"
+                    className="inline-flex min-h-11 min-w-11 items-center justify-center px-3 bg-lmsa-600 text-white rounded-lg text-sm font-medium hover:bg-lmsa-700"
                   >
                     <Bell size={14} aria-hidden="true" />
                   </button>
