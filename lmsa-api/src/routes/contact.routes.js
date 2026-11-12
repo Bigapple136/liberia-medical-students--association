@@ -13,10 +13,31 @@ router.post(
   [
     // `.trim()` sanitises before `.notEmpty()` checks, so a submission of
     // spaces only is rejected here rather than mailed out as an empty message.
-    body('name').trim().notEmpty().withMessage('Name is required'),
-    body('email').trim().isEmail().withMessage('Valid email is required'),
-    body('subject').trim().optional({ values: 'falsy' }),
-    body('message').trim().notEmpty().withMessage('Message is required'),
+    // The length caps match the form's maxLength attributes (80 / 254 / 150 /
+    // 2000), so a direct POST can't put an unbounded body into an inbox.
+    body('name')
+      .trim()
+      .notEmpty()
+      .withMessage('Name is required')
+      .isLength({ max: 80 })
+      .withMessage('Name is limited to 80 characters'),
+    body('email')
+      .trim()
+      .isEmail()
+      .withMessage('Valid email is required')
+      .isLength({ max: 254 })
+      .withMessage('Email is limited to 254 characters'),
+    body('subject')
+      .trim()
+      .optional({ values: 'falsy' })
+      .isLength({ max: 150 })
+      .withMessage('Subject is limited to 150 characters'),
+    body('message')
+      .trim()
+      .notEmpty()
+      .withMessage('Message is required')
+      .isLength({ max: 2000 })
+      .withMessage('Message is limited to 2000 characters'),
     validate,
   ],
   contactController.submit,
