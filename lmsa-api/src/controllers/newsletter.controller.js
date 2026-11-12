@@ -1,11 +1,20 @@
 import { supabase } from '../config/supabase.js';
 
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+// Trimmed here as well as in the route validators: this public endpoint used
+// to reject ' member@example.com ' as an invalid address instead of
+// normalising it, and the same value is what gets stored.
+function readEmail(req) {
+  return String(req.body?.email ?? '').trim();
+}
+
 // ─── POST /api/newsletter/subscribe ──────────────────────────────────────────
 export const subscribe = async (req, res) => {
   try {
-    const { email } = req.body;
+    const email = readEmail(req);
 
-    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    if (!EMAIL_PATTERN.test(email)) {
       return res.status(400).json({
         success: false,
         message: 'A valid email is required',
@@ -44,9 +53,9 @@ export const subscribe = async (req, res) => {
 // ─── POST /api/newsletter/unsubscribe ──────────────────────────────────────
 export const unsubscribe = async (req, res) => {
   try {
-    const { email } = req.body;
+    const email = readEmail(req);
 
-    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    if (!EMAIL_PATTERN.test(email)) {
       return res.status(400).json({
         success: false,
         message: 'A valid email is required',
