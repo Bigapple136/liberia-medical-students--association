@@ -493,6 +493,8 @@ export default function CommitteePageTemplate() {
                         placeholder="Full name"
                         value={contactForm.name}
                         onChange={e => setContactForm(f => ({...f, name: e.target.value}))}
+                        autoComplete="name"
+                        maxLength={80}
                         required
                       />
                     </div>
@@ -505,6 +507,8 @@ export default function CommitteePageTemplate() {
                         placeholder="you@example.com"
                         value={contactForm.email}
                         onChange={e => setContactForm(f => ({...f, email: e.target.value}))}
+                        autoComplete="email"
+                        maxLength={254}
                         required
                       />
                     </div>
@@ -533,6 +537,7 @@ export default function CommitteePageTemplate() {
                       placeholder="Write your message here..."
                       value={contactForm.message}
                       onChange={e => setContactForm(f => ({...f, message: e.target.value}))}
+                      maxLength={2000}
                       required
                     />
                   </div>
