@@ -122,6 +122,11 @@ const paths = [
       'Name the options and what appeals about each. A conversation is usually enough to hear which reasons are strong and which are borrowed from someone else.',
     tips: ['The two or three options', 'What appeals about each', 'What you would need to know to choose'],
     action: 'Compare options with the team',
+    // Only the two undecided answers carry this: a student still choosing is the
+    // one who benefits from a near-peer's account, and the link appears only
+    // after they pick, so it is an answer rather than a standing advert.
+    peer:
+      'If you would rather hear how someone a year ahead weighed the same options, the Mentorship Program pairs junior students with senior ones.',
   },
   {
     id: 'unsure',
@@ -130,6 +135,8 @@ const paths = [
       'That is the most common place to start. Say what you have enjoyed so far in your coursework and rotations, and advising works outward from there.',
     tips: ['What parts of medicine you enjoy', 'Which rotation felt right, if any', 'What you want from a career'],
     action: 'Start from the beginning',
+    peer:
+      'If a peer’s account would help more than an advisor’s, the Mentorship Program pairs junior students with senior ones.',
   },
 ];
 
@@ -403,7 +410,7 @@ export default function CareerCenterPage() {
 
             {/* One live region holds the whole answer, including the action, so
                 the change is announced once instead of piece by piece. */}
-            <div aria-live="polite" className="mt-6 min-h-[10.5rem]">
+            <div aria-live="polite" className="mt-6 min-h-[13rem]">
               {picked ? (
                 <div>
                   <p className="max-w-[52ch] text-[17px] leading-7 text-gray-800">{picked.answer}</p>
@@ -425,6 +432,19 @@ export default function CareerCenterPage() {
                     {picked.action}
                     <ArrowRight size={17} aria-hidden="true" />
                   </Link>
+
+                  {picked.peer && (
+                    <div className="mt-5">
+                      <p className="max-w-[52ch] text-[15px] leading-6 text-gray-700">{picked.peer}</p>
+                      <Link
+                        to="/academics/mentorship"
+                        className="mt-1 inline-flex min-h-11 items-center gap-2 rounded text-[15px] font-semibold text-lmsa-700 underline decoration-lmsa-500 decoration-2 underline-offset-4 transition-colors hover:decoration-lmsa-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
+                      >
+                        Go to the Mentorship Program
+                        <ArrowRight size={16} aria-hidden="true" />
+                      </Link>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <p className="max-w-[46ch] text-[17px] leading-7 text-gray-600">

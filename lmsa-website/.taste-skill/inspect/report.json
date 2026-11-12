@@ -1,6 +1,6 @@
 {
  "url": "http://localhost:5173/academics/career-center",
- "at": "2026-11-12T18:59:35.949Z",
+ "at": "2026-11-12T19:11:52.626Z",
  "allow": [],
  "viewports": [
   {
@@ -15,7 +15,7 @@
     0.57,
     0.87,
     0.66,
-    0.76,
+    0.8,
     1,
     1
    ],
@@ -33,7 +33,7 @@
      "h": 900
     },
     "page": {
-     "height": 7551,
+     "height": 7591,
      "screens": 8.4,
      "words": 616,
      "img": 5,
@@ -231,7 +231,7 @@
       "align": "left",
       "position": "left",
       "widthRatio": 0.34,
-      "top": 5634,
+      "top": 5674,
       "tag": "h2",
       "kind": "heading"
      },
@@ -252,7 +252,7 @@
       "align": "left",
       "position": "left",
       "widthRatio": 0.44,
-      "top": 6398,
+      "top": 6438,
       "tag": "h2",
       "kind": "heading"
      },
@@ -273,7 +273,7 @@
       "align": "left",
       "position": "left",
       "widthRatio": 0.32,
-      "top": 6923,
+      "top": 6963,
       "tag": "h2",
       "kind": "heading"
      }
@@ -382,7 +382,7 @@
       },
       {
        "color": "#111827",
-       "top": 6847,
+       "top": 6887,
        "hsl": {
         "h": 221,
         "s": 0.39,
@@ -496,7 +496,7 @@
     0.82,
     0.48,
     0.93,
-    0.74,
+    0.82,
     0.99,
     1,
     1
@@ -515,7 +515,7 @@
      "h": 1024
     },
     "page": {
-     "height": 8557,
+     "height": 8597,
      "screens": 8.4,
      "words": 605,
      "img": 5,
@@ -692,7 +692,7 @@
       "align": "left",
       "position": "left",
       "widthRatio": 0.4,
-      "top": 5911,
+      "top": 5951,
       "tag": "h2",
       "kind": "heading"
      },
@@ -713,7 +713,7 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.94,
-      "top": 6595,
+      "top": 6635,
       "tag": "h2",
       "kind": "heading"
      },
@@ -734,7 +734,7 @@
       "align": "left",
       "position": "left",
       "widthRatio": 0.55,
-      "top": 7626,
+      "top": 7666,
       "tag": "h2",
       "kind": "heading"
      }
@@ -842,7 +842,7 @@
       },
       {
        "color": "#111827",
-       "top": 7550,
+       "top": 7590,
        "hsl": {
         "h": 221,
         "s": 0.39,
@@ -949,7 +949,7 @@
    "width": 390,
    "height": 844,
    "load": "load",
-   "screens": 11,
+   "screens": 12,
    "filled": [
     1,
     0.76,
@@ -958,7 +958,8 @@
     0.55,
     1,
     0.7,
-    0.75,
+    0.84,
+    0.99,
     1,
     1,
     1
@@ -977,7 +978,7 @@
      "h": 844
     },
     "page": {
-     "height": 9265,
+     "height": 9305,
      "screens": 11,
      "words": 589,
      "img": 5,
@@ -1175,7 +1176,7 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.79,
-      "top": 6260,
+      "top": 6300,
       "tag": "h2",
       "kind": "heading"
      },
@@ -1196,7 +1197,7 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.92,
-      "top": 7041,
+      "top": 7081,
       "tag": "h2",
       "kind": "heading"
      },
@@ -1217,7 +1218,7 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.9,
-      "top": 7881,
+      "top": 7921,
       "tag": "h2",
       "kind": "heading"
      },
@@ -1238,7 +1239,7 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.9,
-      "top": 8088,
+      "top": 8128,
       "tag": "h3",
       "kind": "heading"
      }
@@ -1346,7 +1347,7 @@
       },
       {
        "color": "#111827",
-       "top": 7821,
+       "top": 7861,
        "hsl": {
         "h": 221,
         "s": 0.39,
