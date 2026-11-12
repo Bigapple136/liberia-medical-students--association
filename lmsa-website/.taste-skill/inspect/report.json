@@ -1,28 +1,25 @@
 {
- "url": "http://localhost:5173/academics/career-center",
- "at": "2026-11-12T19:11:52.626Z",
+ "url": "http://localhost:5173/academics/research",
+ "at": "2026-11-12T23:28:17.846Z",
  "allow": [],
  "viewports": [
   {
    "width": 1440,
    "height": 900,
    "load": "load",
-   "screens": 9,
+   "screens": 6,
    "filled": [
-    0.82,
-    0.61,
+    0.74,
+    0.88,
     1,
-    0.57,
-    0.87,
-    0.66,
-    0.8,
+    1,
     1,
     1
    ],
    "motion": {
-    "elements": 34,
-    "css": 1,
-    "transitions": 33,
+    "elements": 19,
+    "css": 2,
+    "transitions": 17,
     "scripted": 0,
     "videos": 0,
     "playingVideos": 0
@@ -33,14 +30,14 @@
      "h": 900
     },
     "page": {
-     "height": 7591,
-     "screens": 8.4,
-     "words": 616,
+     "height": 4872,
+     "screens": 5.4,
+     "words": 428,
      "img": 5,
      "video": 0,
      "canvas": 0,
-     "svg": 23,
-     "sections": 8,
+     "svg": 25,
+     "sections": 6,
      "horizontalOverflow": 0,
      "overflowCulprits": [],
      "uiFragments": 0,
@@ -49,9 +46,9 @@
      "videoCount": 0,
      "uiPictures": 0,
      "pictureSamples": [
-      "photo-1552664730-d307ca884978?w=600&q=80",
-      "photo-1576091160399-112ba8d25d1d?w=800&q=80",
-      "photo-1521737711867-e3b97375f902?w=600&q=80",
+      "photo-1532187863486-abf9dbad1b69?w=1200&q=80",
+      "photo-1532094349884-543bc11b234d?w=800&q=80",
+      "photo-1456513080510-7bf3a84b82f8?w=600&q=80",
       "photo-1576765608535-5f04d1e3f289?w=800&q=80"
      ],
      "blendText": 0,
@@ -60,165 +57,102 @@
      "emoji": []
     },
     "hero": {
-     "text": "You don’t pick a specialty alone.",
-     "words": 6,
-     "chars": 33,
+     "text": "Ask better questions.",
+     "words": 3,
+     "chars": 21,
      "lines": 2,
-     "size": 76,
-     "vw": 5.3,
+     "size": 72,
+     "vw": 5,
      "font": "Inter",
      "weight": 700,
      "tracking": -0.045,
-     "leading": 0.95,
+     "leading": 0.96,
      "upper": false,
      "italic": false,
      "mono": false,
      "align": "left",
      "position": "left",
-     "widthRatio": 0.43,
-     "top": 249,
+     "widthRatio": 0.42,
+     "top": 160,
      "tag": "h1",
      "kind": "heading"
     },
     "h1": {
-     "text": "You don’t pick a specialty alone.",
-     "words": 6,
+     "text": "Ask better questions.",
+     "words": 3,
      "lines": 2,
-     "size": 76,
+     "size": 72,
      "font": "Inter"
     },
     "headings": [
      {
-      "text": "You don’t pick a specialty alone.",
-      "words": 6,
-      "chars": 33,
+      "text": "Ask better questions.",
+      "words": 3,
+      "chars": 21,
       "lines": 2,
-      "size": 76,
-      "vw": 5.3,
+      "size": 72,
+      "vw": 5,
       "font": "Inter",
       "weight": 700,
       "tracking": -0.045,
-      "leading": 0.95,
+      "leading": 0.96,
       "upper": false,
       "italic": false,
       "mono": false,
       "align": "left",
       "position": "left",
-      "widthRatio": 0.43,
-      "top": 249,
+      "widthRatio": 0.42,
+      "top": 160,
       "tag": "h1",
       "kind": "heading"
      },
      {
-      "text": "Choosing a specialty is consequential.",
-      "words": 5,
-      "chars": 38,
-      "lines": 1,
-      "size": 36,
-      "vw": 2.5,
+      "text": "Research is part of the work.",
+      "words": 6,
+      "chars": 29,
+      "lines": 2,
+      "size": 51.8,
+      "vw": 3.6,
+      "font": "Inter",
+      "weight": 700,
+      "tracking": -0.04,
+      "leading": 1.02,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "left",
+      "widthRatio": 0.42,
+      "top": 637,
+      "tag": "h2",
+      "kind": "heading"
+     },
+     {
+      "text": "Curiosity is not a distraction from practice. It is one of the ways practice improves.",
+      "words": 15,
+      "chars": 86,
+      "lines": 3,
+      "size": 33.6,
+      "vw": 2.3,
       "font": "Merriweather",
       "weight": 400,
       "tracking": 0,
-      "leading": 1.35,
+      "leading": 1.3,
       "upper": false,
       "italic": true,
       "mono": false,
       "align": "left",
-      "position": "center",
-      "widthRatio": 0.73,
-      "top": 845,
+      "position": "left",
+      "widthRatio": 0.42,
+      "top": 771,
       "tag": "p",
       "kind": "statement"
      },
      {
-      "text": "Paths students are exploring now.",
-      "words": 5,
-      "chars": 33,
-      "lines": 2,
-      "size": 51.8,
-      "vw": 3.6,
-      "font": "Inter",
-      "weight": 700,
-      "tracking": -0.04,
-      "leading": 1.02,
-      "upper": false,
-      "italic": false,
-      "mono": false,
-      "align": "left",
-      "position": "left",
-      "widthRatio": 0.39,
-      "top": 1170,
-      "tag": "h2",
-      "kind": "heading"
-     },
-     {
-      "text": "How advising works.",
+      "text": "Four ways in.",
       "words": 3,
-      "chars": 19,
+      "chars": 13,
       "lines": 1,
-      "size": 51.8,
-      "vw": 3.6,
-      "font": "Inter",
-      "weight": 700,
-      "tracking": -0.04,
-      "leading": 1.02,
-      "upper": false,
-      "italic": false,
-      "mono": false,
-      "align": "left",
-      "position": "left",
-      "widthRatio": 0.53,
-      "top": 2825,
-      "tag": "h2",
-      "kind": "heading"
-     },
-     {
-      "text": "Practical support for hard choices.",
-      "words": 5,
-      "chars": 35,
-      "lines": 2,
-      "size": 51.8,
-      "vw": 3.6,
-      "font": "Inter",
-      "weight": 700,
-      "tracking": -0.04,
-      "leading": 1.02,
-      "upper": false,
-      "italic": false,
-      "mono": false,
-      "align": "left",
-      "position": "left",
-      "widthRatio": 0.53,
-      "top": 4039,
-      "tag": "h2",
-      "kind": "heading"
-     },
-     {
-      "text": "Where are you now?",
-      "words": 4,
-      "chars": 18,
-      "lines": 1,
-      "size": 51.8,
-      "vw": 3.6,
-      "font": "Inter",
-      "weight": 700,
-      "tracking": -0.04,
-      "leading": 1.02,
-      "upper": false,
-      "italic": false,
-      "mono": false,
-      "align": "left",
-      "position": "left",
-      "widthRatio": 0.53,
-      "top": 4877,
-      "tag": "h2",
-      "kind": "heading"
-     },
-     {
-      "text": "Questions students ask.",
-      "words": 3,
-      "chars": 23,
-      "lines": 2,
       "size": 51.8,
       "vw": 3.6,
       "font": "Inter",
@@ -231,14 +165,182 @@
       "align": "left",
       "position": "left",
       "widthRatio": 0.34,
-      "top": 5674,
+      "top": 1285,
       "tag": "h2",
       "kind": "heading"
      },
      {
-      "text": "Ready when you are.",
+      "text": "Where the questions are.",
       "words": 4,
-      "chars": 19,
+      "chars": 24,
+      "lines": 1,
+      "size": 51.8,
+      "vw": 3.6,
+      "font": "Inter",
+      "weight": 700,
+      "tracking": -0.045,
+      "leading": 1.02,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "left",
+      "widthRatio": 0.53,
+      "top": 2309,
+      "tag": "h2",
+      "kind": "heading"
+     },
+     {
+      "text": "Infectious Diseases (Malaria, TB, HIV)",
+      "words": 5,
+      "chars": 38,
+      "lines": 2,
+      "size": 36,
+      "vw": 2.5,
+      "font": "Inter",
+      "weight": 600,
+      "tracking": -0.035,
+      "leading": 1.12,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "left",
+      "widthRatio": 0.4,
+      "top": 2525,
+      "tag": "li",
+      "kind": "statement"
+     },
+     {
+      "text": "Maternal and Child Health",
+      "words": 4,
+      "chars": 25,
+      "lines": 1,
+      "size": 36,
+      "vw": 2.5,
+      "font": "Inter",
+      "weight": 600,
+      "tracking": -0.035,
+      "leading": 1.12,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "right",
+      "widthRatio": 0.4,
+      "top": 2525,
+      "tag": "li",
+      "kind": "statement"
+     },
+     {
+      "text": "Health Systems Strengthening",
+      "words": 3,
+      "chars": 28,
+      "lines": 1,
+      "size": 36,
+      "vw": 2.5,
+      "font": "Inter",
+      "weight": 600,
+      "tracking": -0.035,
+      "leading": 1.12,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "left",
+      "widthRatio": 0.4,
+      "top": 2662,
+      "tag": "li",
+      "kind": "statement"
+     },
+     {
+      "text": "Non-Communicable Diseases",
+      "words": 2,
+      "chars": 25,
+      "lines": 1,
+      "size": 36,
+      "vw": 2.5,
+      "font": "Inter",
+      "weight": 600,
+      "tracking": -0.035,
+      "leading": 1.12,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "right",
+      "widthRatio": 0.4,
+      "top": 2662,
+      "tag": "li",
+      "kind": "statement"
+     },
+     {
+      "text": "Mental Health",
+      "words": 2,
+      "chars": 13,
+      "lines": 1,
+      "size": 36,
+      "vw": 2.5,
+      "font": "Inter",
+      "weight": 600,
+      "tracking": -0.035,
+      "leading": 1.12,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "left",
+      "widthRatio": 0.4,
+      "top": 2726,
+      "tag": "li",
+      "kind": "statement"
+     },
+     {
+      "text": "Traditional Medicine Integration",
+      "words": 3,
+      "chars": 32,
+      "lines": 1,
+      "size": 36,
+      "vw": 2.5,
+      "font": "Inter",
+      "weight": 600,
+      "tracking": -0.035,
+      "leading": 1.12,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "right",
+      "widthRatio": 0.4,
+      "top": 2726,
+      "tag": "li",
+      "kind": "statement"
+     },
+     {
+      "text": "The LMSA Medical Journal.",
+      "words": 4,
+      "chars": 25,
+      "lines": 2,
+      "size": 51.8,
+      "vw": 3.6,
+      "font": "Inter",
+      "weight": 700,
+      "tracking": -0.04,
+      "leading": 1.02,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "left",
+      "widthRatio": 0.43,
+      "top": 2991,
+      "tag": "h2",
+      "kind": "heading"
+     },
+     {
+      "text": "Bring your question.",
+      "words": 3,
+      "chars": 20,
       "lines": 1,
       "size": 60,
       "vw": 4.2,
@@ -250,9 +352,9 @@
       "italic": false,
       "mono": false,
       "align": "left",
-      "position": "left",
+      "position": "right",
       "widthRatio": 0.44,
-      "top": 6438,
+      "top": 3736,
       "tag": "h2",
       "kind": "heading"
      },
@@ -273,16 +375,16 @@
       "align": "left",
       "position": "left",
       "widthRatio": 0.32,
-      "top": 6963,
+      "top": 4245,
       "tag": "h2",
       "kind": "heading"
      }
     ],
     "headingSummary": {
-     "count": 9,
-     "maxLines": 2,
+     "count": 14,
+     "maxLines": 3,
      "over2Lines": 0,
-     "statements": 1,
+     "statements": 7,
      "centered": 0,
      "medianWords": 4,
      "mixedFontHeadings": 0
@@ -291,12 +393,12 @@
      "families": [
       {
        "family": "Inter",
-       "share": 0.99,
+       "share": 0.94,
        "mono": false
       },
       {
        "family": "Merriweather",
-       "share": 0.01,
+       "share": 0.06,
        "mono": false
       }
      ],
@@ -306,15 +408,16 @@
       14,
       15,
       17,
-      18,
       20,
       24,
+      26,
+      34,
       36,
       52,
       60,
-      76
+      72
      ],
-     "sizeCount": 11,
+     "sizeCount": 12,
      "notLoaded": [],
      "body": {
       "font": "Inter",
@@ -322,14 +425,14 @@
       "leading": 1.65,
       "weight": 400,
       "tracking": 0,
-      "contrast": 9
+      "contrast": 12.9
      },
-     "measureChars": 80,
+     "measureChars": 70,
      "max": {
-      "size": 76,
-      "vw": 5.3,
+      "size": 72,
+      "vw": 5,
       "font": "Inter",
-      "text": "You don’t pick a specialty alone."
+      "text": "Ask better questions."
      },
      "monoShare": 0,
      "monoProseShare": 0,
@@ -339,7 +442,7 @@
      "microLabelShare": 0,
      "microSamples": [],
      "upperShare": 0,
-     "centerShare": 0.01,
+     "centerShare": 0.02,
      "smallText": 0
     },
     "eyebrows": [],
@@ -364,7 +467,7 @@
       },
       {
        "color": "#f1f0ec",
-       "top": 733,
+       "top": 506,
        "hsl": {
         "h": 48,
         "s": 0.15,
@@ -373,7 +476,7 @@
       },
       {
        "color": "#ffffff",
-       "top": 1058,
+       "top": 1173,
        "hsl": {
         "h": 0,
         "s": 0,
@@ -382,7 +485,7 @@
       },
       {
        "color": "#111827",
-       "top": 6887,
+       "top": 4169,
        "hsl": {
         "h": 221,
         "s": 0.39,
@@ -393,23 +496,23 @@
      "textColors": [
       {
        "color": "#374151",
-       "share": 0.56
-      },
-      {
-       "color": "#064629",
-       "share": 0.17
-      },
-      {
-       "color": "#e8f7f0",
-       "share": 0.09
+       "share": 0.24
       },
       {
        "color": "#9ca3af",
-       "share": 0.09
+       "share": 0.15
+      },
+      {
+       "color": "#e8f7f0",
+       "share": 0.15
       },
       {
        "color": "#ffffff",
-       "share": 0.04
+       "share": 0.13
+      },
+      {
+       "color": "#064629",
+       "share": 0.12
       }
      ],
      "button": {
@@ -424,7 +527,7 @@
      "lowContrast": []
     },
     "buttons": {
-     "count": 5,
+     "count": 6,
      "inHero": 2,
      "radius": 0,
      "height": 44,
@@ -434,7 +537,7 @@
      "upper": 0,
      "heroLabels": [
       "Join LMSA",
-      "Start a conversation"
+      "View academic resources"
      ]
     },
     "surfaces": {
@@ -450,25 +553,22 @@
      "outlinedBoxes": 0,
      "dashed": 0,
      "blurred": 0,
-     "roundedBoxes": 7,
-     "boxRadius": 12,
-     "squareMedia": 0,
-     "roundedMedia": 4,
+     "roundedBoxes": 0,
+     "boxRadius": 0,
+     "squareMedia": 1,
+     "roundedMedia": 3,
      "mediaRadius": 8,
      "textShadow": 0,
-     "cardRows": [
-      {
-       "count": 6,
-       "iconTopped": false,
-       "rounded": true,
-       "top": 1340
-      }
-     ]
+     "cardRows": []
     },
     "heroMedia": [
      {
       "type": "img",
-      "ratio": 0.16
+      "ratio": 0.14
+     },
+     {
+      "type": "img",
+      "ratio": 0.12
      }
     ],
     "nav": {
@@ -489,22 +589,20 @@
    "width": 768,
    "height": 1024,
    "load": "load",
-   "screens": 9,
+   "screens": 7,
    "filled": [
+    0.79,
+    0.76,
     1,
-    0.64,
-    0.82,
-    0.48,
-    0.93,
-    0.82,
-    0.99,
+    1,
+    1,
     1,
     1
    ],
    "motion": {
-    "elements": 34,
-    "css": 1,
-    "transitions": 33,
+    "elements": 21,
+    "css": 2,
+    "transitions": 19,
     "scripted": 0,
     "videos": 0,
     "playingVideos": 0
@@ -515,25 +613,24 @@
      "h": 1024
     },
     "page": {
-     "height": 8597,
-     "screens": 8.4,
-     "words": 605,
+     "height": 6279,
+     "screens": 6.1,
+     "words": 412,
      "img": 5,
      "video": 0,
      "canvas": 0,
-     "svg": 23,
-     "sections": 8,
+     "svg": 25,
+     "sections": 6,
      "horizontalOverflow": 0,
      "overflowCulprits": [],
      "uiFragments": 0,
      "uiAbuse": false,
-     "realPictures": 4,
+     "realPictures": 3,
      "videoCount": 0,
      "uiPictures": 0,
      "pictureSamples": [
-      "photo-1552664730-d307ca884978?w=600&q=80",
-      "photo-1576091160399-112ba8d25d1d?w=800&q=80",
-      "photo-1521737711867-e3b97375f902?w=600&q=80",
+      "photo-1532187863486-abf9dbad1b69?w=1200&q=80",
+      "photo-1532094349884-543bc11b234d?w=800&q=80",
       "photo-1576765608535-5f04d1e3f289?w=800&q=80"
      ],
      "blendText": 0,
@@ -542,59 +639,59 @@
      "emoji": []
     },
     "hero": {
-     "text": "You don’t pick a specialty alone.",
-     "words": 6,
-     "chars": 33,
+     "text": "Ask better questions.",
+     "words": 3,
+     "chars": 21,
      "lines": 1,
-     "size": 41.5,
-     "vw": 5.4,
+     "size": 40,
+     "vw": 5.2,
      "font": "Inter",
      "weight": 700,
      "tracking": -0.045,
-     "leading": 0.95,
+     "leading": 0.96,
      "upper": false,
      "italic": false,
      "mono": false,
      "align": "left",
      "position": "center",
      "widthRatio": 0.94,
-     "top": 192,
+     "top": 152,
      "tag": "h1",
      "kind": "heading"
     },
     "h1": {
-     "text": "You don’t pick a specialty alone.",
-     "words": 6,
+     "text": "Ask better questions.",
+     "words": 3,
      "lines": 1,
-     "size": 41.5,
+     "size": 40,
      "font": "Inter"
     },
     "headings": [
      {
-      "text": "You don’t pick a specialty alone.",
-      "words": 6,
-      "chars": 33,
+      "text": "Ask better questions.",
+      "words": 3,
+      "chars": 21,
       "lines": 1,
-      "size": 41.5,
-      "vw": 5.4,
+      "size": 40,
+      "vw": 5.2,
       "font": "Inter",
       "weight": 700,
       "tracking": -0.045,
-      "leading": 0.95,
+      "leading": 0.96,
       "upper": false,
       "italic": false,
       "mono": false,
       "align": "left",
       "position": "center",
       "widthRatio": 0.94,
-      "top": 192,
+      "top": 152,
       "tag": "h1",
       "kind": "heading"
      },
      {
-      "text": "Paths students are exploring now.",
-      "words": 5,
-      "chars": 33,
+      "text": "Research is part of the work.",
+      "words": 6,
+      "chars": 29,
       "lines": 2,
       "size": 32,
       "vw": 4.2,
@@ -607,15 +704,15 @@
       "mono": false,
       "align": "left",
       "position": "left",
-      "widthRatio": 0.45,
-      "top": 1548,
+      "widthRatio": 0.52,
+      "top": 802,
       "tag": "h2",
       "kind": "heading"
      },
      {
-      "text": "How advising works.",
+      "text": "Four ways in.",
       "words": 3,
-      "chars": 19,
+      "chars": 13,
       "lines": 1,
       "size": 32,
       "vw": 4.2,
@@ -629,41 +726,20 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.94,
-      "top": 3144,
+      "top": 1930,
       "tag": "h2",
       "kind": "heading"
      },
      {
-      "text": "Practical support for hard choices.",
-      "words": 5,
-      "chars": 35,
-      "lines": 1,
-      "size": 32,
-      "vw": 4.2,
-      "font": "Inter",
-      "weight": 700,
-      "tracking": -0.04,
-      "leading": 1.02,
-      "upper": false,
-      "italic": false,
-      "mono": false,
-      "align": "left",
-      "position": "center",
-      "widthRatio": 0.94,
-      "top": 4382,
-      "tag": "h2",
-      "kind": "heading"
-     },
-     {
-      "text": "Where are you now?",
+      "text": "Where the questions are.",
       "words": 4,
-      "chars": 18,
+      "chars": 24,
       "lines": 1,
       "size": 32,
       "vw": 4.2,
       "font": "Inter",
       "weight": 700,
-      "tracking": -0.04,
+      "tracking": -0.045,
       "leading": 1.02,
       "upper": false,
       "italic": false,
@@ -671,14 +747,14 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.94,
-      "top": 5174,
+      "top": 3119,
       "tag": "h2",
       "kind": "heading"
      },
      {
-      "text": "Questions students ask.",
-      "words": 3,
-      "chars": 23,
+      "text": "The LMSA Medical Journal.",
+      "words": 4,
+      "chars": 25,
       "lines": 2,
       "size": 32,
       "vw": 4.2,
@@ -691,15 +767,15 @@
       "mono": false,
       "align": "left",
       "position": "left",
-      "widthRatio": 0.4,
-      "top": 5951,
+      "widthRatio": 0.46,
+      "top": 3730,
       "tag": "h2",
       "kind": "heading"
      },
      {
-      "text": "Ready when you are.",
-      "words": 4,
-      "chars": 19,
+      "text": "Bring your question.",
+      "words": 3,
+      "chars": 20,
       "lines": 1,
       "size": 32.3,
       "vw": 4.2,
@@ -713,7 +789,7 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.94,
-      "top": 6635,
+      "top": 4349,
       "tag": "h2",
       "kind": "heading"
      },
@@ -734,13 +810,13 @@
       "align": "left",
       "position": "left",
       "widthRatio": 0.55,
-      "top": 7666,
+      "top": 5349,
       "tag": "h2",
       "kind": "heading"
      }
     ],
     "headingSummary": {
-     "count": 8,
+     "count": 7,
      "maxLines": 2,
      "over2Lines": 0,
      "statements": 0,
@@ -752,12 +828,12 @@
      "families": [
       {
        "family": "Inter",
-       "share": 0.99,
+       "share": 0.94,
        "mono": false
       },
       {
        "family": "Merriweather",
-       "share": 0.01,
+       "share": 0.06,
        "mono": false
       }
      ],
@@ -767,12 +843,12 @@
       14,
       15,
       17,
-      18,
       20,
+      22,
       24,
       32,
       36,
-      42
+      40
      ],
      "sizeCount": 10,
      "notLoaded": [],
@@ -782,14 +858,14 @@
       "leading": 1.65,
       "weight": 400,
       "tracking": 0,
-      "contrast": 9
+      "contrast": 12.9
      },
-     "measureChars": 80,
+     "measureChars": 70,
      "max": {
-      "size": 41.5,
-      "vw": 5.4,
+      "size": 40,
+      "vw": 5.2,
       "font": "Inter",
-      "text": "You don’t pick a specialty alone."
+      "text": "Ask better questions."
      },
      "monoShare": 0,
      "monoProseShare": 0,
@@ -824,7 +900,7 @@
       },
       {
        "color": "#f1f0ec",
-       "top": 1127,
+       "top": 690,
        "hsl": {
         "h": 48,
         "s": 0.15,
@@ -833,7 +909,7 @@
       },
       {
        "color": "#ffffff",
-       "top": 1436,
+       "top": 1818,
        "hsl": {
         "h": 0,
         "s": 0,
@@ -842,7 +918,7 @@
       },
       {
        "color": "#111827",
-       "top": 7590,
+       "top": 5273,
        "hsl": {
         "h": 221,
         "s": 0.39,
@@ -853,23 +929,23 @@
      "textColors": [
       {
        "color": "#374151",
-       "share": 0.56
-      },
-      {
-       "color": "#064629",
-       "share": 0.17
-      },
-      {
-       "color": "#e8f7f0",
-       "share": 0.09
+       "share": 0.24
       },
       {
        "color": "#9ca3af",
-       "share": 0.09
+       "share": 0.16
+      },
+      {
+       "color": "#e8f7f0",
+       "share": 0.15
       },
       {
        "color": "#ffffff",
-       "share": 0.04
+       "share": 0.13
+      },
+      {
+       "color": "#064629",
+       "share": 0.13
       }
      ],
      "button": {
@@ -884,7 +960,7 @@
      "lowContrast": []
     },
     "buttons": {
-     "count": 5,
+     "count": 6,
      "inHero": 2,
      "radius": 0,
      "height": 44,
@@ -894,7 +970,7 @@
      "upper": 0,
      "heroLabels": [
       "Join LMSA",
-      "Start a conversation"
+      "View academic resources"
      ]
     },
     "surfaces": {
@@ -910,25 +986,18 @@
      "outlinedBoxes": 0,
      "dashed": 0,
      "blurred": 0,
-     "roundedBoxes": 7,
-     "boxRadius": 12,
-     "squareMedia": 0,
-     "roundedMedia": 4,
+     "roundedBoxes": 0,
+     "boxRadius": 0,
+     "squareMedia": 1,
+     "roundedMedia": 2,
      "mediaRadius": 8,
      "textShadow": 0,
-     "cardRows": [
-      {
-       "count": 6,
-       "iconTopped": false,
-       "rounded": true,
-       "top": 1732
-      }
-     ]
+     "cardRows": []
     },
     "heroMedia": [
      {
       "type": "img",
-      "ratio": 0.49
+      "ratio": 0.24
      }
     ],
     "nav": {
@@ -949,25 +1018,21 @@
    "width": 390,
    "height": 844,
    "load": "load",
-   "screens": 12,
+   "screens": 8,
    "filled": [
+    0.83,
+    0.74,
     1,
-    0.76,
-    0.55,
-    0.85,
-    0.55,
     1,
-    0.7,
-    0.84,
-    0.99,
+    1,
     1,
     1,
     1
    ],
    "motion": {
-    "elements": 34,
-    "css": 1,
-    "transitions": 33,
+    "elements": 21,
+    "css": 2,
+    "transitions": 19,
     "scripted": 0,
     "videos": 0,
     "playingVideos": 0
@@ -978,25 +1043,24 @@
      "h": 844
     },
     "page": {
-     "height": 9305,
-     "screens": 11,
-     "words": 589,
+     "height": 6610,
+     "screens": 7.8,
+     "words": 396,
      "img": 5,
      "video": 0,
      "canvas": 0,
-     "svg": 23,
-     "sections": 8,
+     "svg": 25,
+     "sections": 6,
      "horizontalOverflow": 0,
      "overflowCulprits": [],
      "uiFragments": 0,
      "uiAbuse": false,
-     "realPictures": 4,
+     "realPictures": 3,
      "videoCount": 0,
      "uiPictures": 0,
      "pictureSamples": [
-      "photo-1552664730-d307ca884978?w=600&q=80",
-      "photo-1576091160399-112ba8d25d1d?w=800&q=80",
-      "photo-1521737711867-e3b97375f902?w=600&q=80",
+      "photo-1532187863486-abf9dbad1b69?w=1200&q=80",
+      "photo-1532094349884-543bc11b234d?w=800&q=80",
       "photo-1576765608535-5f04d1e3f289?w=800&q=80"
      ],
      "blendText": 0,
@@ -1005,101 +1069,101 @@
      "emoji": []
     },
     "hero": {
-     "text": "You don’t pick a specialty alone.",
-     "words": 6,
-     "chars": 33,
+     "text": "Ask better questions.",
+     "words": 3,
+     "chars": 21,
      "lines": 2,
-     "size": 36,
-     "vw": 9.2,
+     "size": 40,
+     "vw": 10.3,
      "font": "Inter",
      "weight": 700,
      "tracking": -0.045,
-     "leading": 0.95,
+     "leading": 0.96,
      "upper": false,
      "italic": false,
      "mono": false,
      "align": "left",
      "position": "center",
      "widthRatio": 0.92,
-     "top": 168,
+     "top": 136,
      "tag": "h1",
      "kind": "heading"
     },
     "h1": {
-     "text": "You don’t pick a specialty alone.",
-     "words": 6,
+     "text": "Ask better questions.",
+     "words": 3,
      "lines": 2,
-     "size": 36,
+     "size": 40,
      "font": "Inter"
     },
     "headings": [
      {
-      "text": "You don’t pick a specialty alone.",
-      "words": 6,
-      "chars": 33,
+      "text": "Ask better questions.",
+      "words": 3,
+      "chars": 21,
       "lines": 2,
-      "size": 36,
-      "vw": 9.2,
+      "size": 40,
+      "vw": 10.3,
       "font": "Inter",
       "weight": 700,
       "tracking": -0.045,
-      "leading": 0.95,
+      "leading": 0.96,
       "upper": false,
       "italic": false,
       "mono": false,
       "align": "left",
       "position": "center",
       "widthRatio": 0.92,
-      "top": 168,
+      "top": 136,
       "tag": "h1",
       "kind": "heading"
      },
      {
-      "text": "Choosing a specialty is consequential.",
-      "words": 5,
-      "chars": 38,
+      "text": "Research is part of the work.",
+      "words": 6,
+      "chars": 29,
       "lines": 2,
-      "size": 24,
-      "vw": 6.2,
+      "size": 32,
+      "vw": 8.2,
+      "font": "Inter",
+      "weight": 700,
+      "tracking": -0.04,
+      "leading": 1.02,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.92,
+      "top": 757,
+      "tag": "h2",
+      "kind": "heading"
+     },
+     {
+      "text": "Curiosity is not a distraction from practice. It is one of the ways practice improves.",
+      "words": 15,
+      "chars": 86,
+      "lines": 3,
+      "size": 22.4,
+      "vw": 5.7,
       "font": "Merriweather",
       "weight": 400,
       "tracking": 0,
-      "leading": 1.35,
+      "leading": 1.3,
       "upper": false,
       "italic": true,
       "mono": false,
       "align": "left",
       "position": "center",
       "widthRatio": 0.92,
-      "top": 1085,
+      "top": 850,
       "tag": "p",
       "kind": "statement"
      },
      {
-      "text": "Paths students are exploring now.",
-      "words": 5,
-      "chars": 33,
-      "lines": 2,
-      "size": 32,
-      "vw": 8.2,
-      "font": "Inter",
-      "weight": 700,
-      "tracking": -0.04,
-      "leading": 1.02,
-      "upper": false,
-      "italic": false,
-      "mono": false,
-      "align": "left",
-      "position": "center",
-      "widthRatio": 0.9,
-      "top": 1390,
-      "tag": "h2",
-      "kind": "heading"
-     },
-     {
-      "text": "How advising works.",
+      "text": "Four ways in.",
       "words": 3,
-      "chars": 19,
+      "chars": 13,
       "lines": 1,
       "size": 32,
       "vw": 8.2,
@@ -1113,41 +1177,104 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.92,
-      "top": 3284,
+      "top": 1634,
       "tag": "h2",
       "kind": "heading"
      },
      {
-      "text": "Practical support for hard choices.",
-      "words": 5,
-      "chars": 35,
-      "lines": 2,
-      "size": 32,
-      "vw": 8.2,
-      "font": "Inter",
-      "weight": 700,
-      "tracking": -0.04,
-      "leading": 1.02,
-      "upper": false,
-      "italic": false,
-      "mono": false,
-      "align": "left",
-      "position": "center",
-      "widthRatio": 0.92,
-      "top": 4366,
-      "tag": "h2",
-      "kind": "heading"
-     },
-     {
-      "text": "Where are you now?",
-      "words": 4,
-      "chars": 18,
+      "text": "Research grants",
+      "words": 2,
+      "chars": 15,
       "lines": 1,
+      "size": 24,
+      "vw": 6.2,
+      "font": "Inter",
+      "weight": 600,
+      "tracking": -0.03,
+      "leading": 1.33,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.92,
+      "top": 1831,
+      "tag": "h3",
+      "kind": "heading"
+     },
+     {
+      "text": "Collaborative projects",
+      "words": 2,
+      "chars": 22,
+      "lines": 1,
+      "size": 24,
+      "vw": 6.2,
+      "font": "Inter",
+      "weight": 600,
+      "tracking": -0.03,
+      "leading": 1.33,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.92,
+      "top": 2067,
+      "tag": "h3",
+      "kind": "heading"
+     },
+     {
+      "text": "LMSA Medical Journal",
+      "words": 3,
+      "chars": 20,
+      "lines": 1,
+      "size": 24,
+      "vw": 6.2,
+      "font": "Inter",
+      "weight": 600,
+      "tracking": -0.03,
+      "leading": 1.33,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.92,
+      "top": 2303,
+      "tag": "h3",
+      "kind": "heading"
+     },
+     {
+      "text": "Research training",
+      "words": 2,
+      "chars": 17,
+      "lines": 1,
+      "size": 24,
+      "vw": 6.2,
+      "font": "Inter",
+      "weight": 600,
+      "tracking": -0.03,
+      "leading": 1.33,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.92,
+      "top": 2539,
+      "tag": "h3",
+      "kind": "heading"
+     },
+     {
+      "text": "Where the questions are.",
+      "words": 4,
+      "chars": 24,
+      "lines": 2,
       "size": 32,
       "vw": 8.2,
       "font": "Inter",
       "weight": 700,
-      "tracking": -0.04,
+      "tracking": -0.045,
       "leading": 1.02,
       "upper": false,
       "italic": false,
@@ -1155,14 +1282,140 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.92,
-      "top": 5452,
+      "top": 2879,
       "tag": "h2",
       "kind": "heading"
      },
      {
-      "text": "Questions students ask.",
+      "text": "Infectious Diseases (Malaria, TB, HIV)",
+      "words": 5,
+      "chars": 38,
+      "lines": 2,
+      "size": 24,
+      "vw": 6.2,
+      "font": "Inter",
+      "weight": 600,
+      "tracking": -0.035,
+      "leading": 1.12,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.92,
+      "top": 3116,
+      "tag": "li",
+      "kind": "statement"
+     },
+     {
+      "text": "Maternal and Child Health",
+      "words": 4,
+      "chars": 25,
+      "lines": 1,
+      "size": 24,
+      "vw": 6.2,
+      "font": "Inter",
+      "weight": 600,
+      "tracking": -0.035,
+      "leading": 1.12,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.92,
+      "top": 3210,
+      "tag": "li",
+      "kind": "statement"
+     },
+     {
+      "text": "Health Systems Strengthening",
       "words": 3,
-      "chars": 23,
+      "chars": 28,
+      "lines": 1,
+      "size": 24,
+      "vw": 6.2,
+      "font": "Inter",
+      "weight": 600,
+      "tracking": -0.035,
+      "leading": 1.12,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.92,
+      "top": 3276,
+      "tag": "li",
+      "kind": "statement"
+     },
+     {
+      "text": "Non-Communicable Diseases",
+      "words": 2,
+      "chars": 25,
+      "lines": 1,
+      "size": 24,
+      "vw": 6.2,
+      "font": "Inter",
+      "weight": 600,
+      "tracking": -0.035,
+      "leading": 1.12,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.92,
+      "top": 3343,
+      "tag": "li",
+      "kind": "statement"
+     },
+     {
+      "text": "Mental Health",
+      "words": 2,
+      "chars": 13,
+      "lines": 1,
+      "size": 24,
+      "vw": 6.2,
+      "font": "Inter",
+      "weight": 600,
+      "tracking": -0.035,
+      "leading": 1.12,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.92,
+      "top": 3410,
+      "tag": "li",
+      "kind": "statement"
+     },
+     {
+      "text": "Traditional Medicine Integration",
+      "words": 3,
+      "chars": 32,
+      "lines": 1,
+      "size": 24,
+      "vw": 6.2,
+      "font": "Inter",
+      "weight": 600,
+      "tracking": -0.035,
+      "leading": 1.12,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.92,
+      "top": 3477,
+      "tag": "li",
+      "kind": "statement"
+     },
+     {
+      "text": "The LMSA Medical Journal.",
+      "words": 4,
+      "chars": 25,
       "lines": 2,
       "size": 32,
       "vw": 8.2,
@@ -1175,15 +1428,15 @@
       "mono": false,
       "align": "left",
       "position": "center",
-      "widthRatio": 0.79,
-      "top": 6300,
+      "widthRatio": 0.92,
+      "top": 3664,
       "tag": "h2",
       "kind": "heading"
      },
      {
-      "text": "Ready when you are.",
-      "words": 4,
-      "chars": 19,
+      "text": "Bring your question.",
+      "words": 3,
+      "chars": 20,
       "lines": 1,
       "size": 32,
       "vw": 8.2,
@@ -1197,7 +1450,7 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.92,
-      "top": 7081,
+      "top": 4450,
       "tag": "h2",
       "kind": "heading"
      },
@@ -1218,7 +1471,7 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.9,
-      "top": 7921,
+      "top": 5226,
       "tag": "h2",
       "kind": "heading"
      },
@@ -1239,30 +1492,30 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.9,
-      "top": 8128,
+      "top": 5433,
       "tag": "h3",
       "kind": "heading"
      }
     ],
     "headingSummary": {
-     "count": 10,
-     "maxLines": 2,
+     "count": 19,
+     "maxLines": 3,
      "over2Lines": 0,
-     "statements": 1,
+     "statements": 7,
      "centered": 0,
-     "medianWords": 4,
+     "medianWords": 3,
      "mixedFontHeadings": 0
     },
     "type": {
      "families": [
       {
        "family": "Inter",
-       "share": 0.99,
+       "share": 0.94,
        "mono": false
       },
       {
        "family": "Merriweather",
-       "share": 0.01,
+       "share": 0.06,
        "mono": false
       }
      ],
@@ -1274,12 +1527,13 @@
       17,
       18,
       20,
+      22,
       24,
       30,
       32,
-      36
+      40
      ],
-     "sizeCount": 10,
+     "sizeCount": 11,
      "notLoaded": [],
      "body": {
       "font": "Inter",
@@ -1287,14 +1541,14 @@
       "leading": 1.65,
       "weight": 400,
       "tracking": 0,
-      "contrast": 9
+      "contrast": 12.9
      },
      "measureChars": 42,
      "max": {
-      "size": 36,
-      "vw": 9.2,
+      "size": 40,
+      "vw": 10.3,
       "font": "Inter",
-      "text": "You don’t pick a specialty alone."
+      "text": "Ask better questions."
      },
      "monoShare": 0,
      "monoProseShare": 0,
@@ -1329,7 +1583,7 @@
       },
       {
        "color": "#f1f0ec",
-       "top": 1005,
+       "top": 677,
        "hsl": {
         "h": 48,
         "s": 0.15,
@@ -1338,7 +1592,7 @@
       },
       {
        "color": "#ffffff",
-       "top": 1310,
+       "top": 1554,
        "hsl": {
         "h": 0,
         "s": 0,
@@ -1347,7 +1601,7 @@
       },
       {
        "color": "#111827",
-       "top": 7861,
+       "top": 5166,
        "hsl": {
         "h": 221,
         "s": 0.39,
@@ -1358,38 +1612,38 @@
      "textColors": [
       {
        "color": "#374151",
-       "share": 0.57
-      },
-      {
-       "color": "#064629",
-       "share": 0.17
+       "share": 0.25
       },
       {
        "color": "#9ca3af",
-       "share": 0.09
+       "share": 0.16
+      },
+      {
+       "color": "#064629",
+       "share": 0.13
       },
       {
        "color": "#e8f7f0",
-       "share": 0.08
+       "share": 0.13
       },
       {
        "color": "#ffffff",
-       "share": 0.04
+       "share": 0.13
       }
      ],
      "button": {
-      "bg": "#e8f7f0",
+      "bg": "#0c8950",
       "hsl": {
-       "h": 152,
-       "s": 0.48,
-       "l": 0.94
+       "h": 153,
+       "s": 0.84,
+       "l": 0.29
       },
-      "fg": "#064629"
+      "fg": "#ffffff"
      },
      "lowContrast": []
     },
     "buttons": {
-     "count": 4,
+     "count": 5,
      "inHero": 1,
      "radius": 8,
      "height": 48,
@@ -1398,7 +1652,7 @@
      "mono": 0,
      "upper": 0,
      "heroLabels": [
-      "Start a conversation"
+      "View academic resources"
      ]
     },
     "surfaces": {
@@ -1414,10 +1668,10 @@
      "outlinedBoxes": 0,
      "dashed": 0,
      "blurred": 0,
-     "roundedBoxes": 11,
-     "boxRadius": 12,
-     "squareMedia": 0,
-     "roundedMedia": 4,
+     "roundedBoxes": 0,
+     "boxRadius": 0,
+     "squareMedia": 1,
+     "roundedMedia": 2,
      "mediaRadius": 8,
      "textShadow": 0,
      "cardRows": []
@@ -1448,7 +1702,7 @@
    "level": "WARN",
    "id": "size-count",
    "width": 1440,
-   "message": "11 different font sizes (13, 14, 15, 17, 18, 20, 24, 36, 52, 60, 76).",
+   "message": "12 different font sizes (13, 14, 15, 17, 20, 24, 26, 34, 36, 52, 60, 72).",
    "fix": "A page needs about five: display, heading, lead, body, small.",
    "alsoAt": [
     768,
@@ -1470,8 +1724,7 @@
    "fold": "C:\\Users\\goldw\\Desktop\\freelance\\liberia-medical-students-association\\lmsa-website\\.taste-skill\\inspect\\desktop-fold.jpg",
    "pages": [
     "C:\\Users\\goldw\\Desktop\\freelance\\liberia-medical-students-association\\lmsa-website\\.taste-skill\\inspect\\desktop-page-01.jpg",
-    "C:\\Users\\goldw\\Desktop\\freelance\\liberia-medical-students-association\\lmsa-website\\.taste-skill\\inspect\\desktop-page-02.jpg",
-    "C:\\Users\\goldw\\Desktop\\freelance\\liberia-medical-students-association\\lmsa-website\\.taste-skill\\inspect\\desktop-page-03.jpg"
+    "C:\\Users\\goldw\\Desktop\\freelance\\liberia-medical-students-association\\lmsa-website\\.taste-skill\\inspect\\desktop-page-02.jpg"
    ]
   },
   {
@@ -1488,8 +1741,7 @@
    "width": 390,
    "fold": "C:\\Users\\goldw\\Desktop\\freelance\\liberia-medical-students-association\\lmsa-website\\.taste-skill\\inspect\\mobile-fold.jpg",
    "pages": [
-    "C:\\Users\\goldw\\Desktop\\freelance\\liberia-medical-students-association\\lmsa-website\\.taste-skill\\inspect\\mobile-page-01.jpg",
-    "C:\\Users\\goldw\\Desktop\\freelance\\liberia-medical-students-association\\lmsa-website\\.taste-skill\\inspect\\mobile-page-02.jpg"
+    "C:\\Users\\goldw\\Desktop\\freelance\\liberia-medical-students-association\\lmsa-website\\.taste-skill\\inspect\\mobile-page-01.jpg"
    ]
   }
  ]

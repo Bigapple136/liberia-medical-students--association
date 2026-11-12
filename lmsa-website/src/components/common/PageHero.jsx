@@ -205,14 +205,18 @@ const heroPages = [
   {
     match: (path) => path === '/academics/research',
     eyebrow: 'Academics / Research',
-    title: 'Ask better questions. Improve healthcare.',
+    title: 'Ask better questions.',
     description:
       'LMSA helps students turn curiosity into research that can make a meaningful difference in Liberia.',
     action: { label: 'View academic resources', to: '/academics/resources' },
-    accent: 'blue',
+    accent: 'green',
     icon: Lightbulb,
     photoKey: 'research',
     pattern: 'hexagons',
+    // The legacy hero split its 400px copy column at tablet width, which broke
+    // this headline over four lines at 768px. The poster variant gives the same
+    // copy the full grid width and the site's academic green.
+    variant: 'poster-compact',
   },
   {
     match: (path) => path === '/events',
