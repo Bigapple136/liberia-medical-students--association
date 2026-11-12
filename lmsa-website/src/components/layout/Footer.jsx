@@ -12,13 +12,17 @@ export default function Footer() {
 
   const handleSubscribe = async (e) => {
     e.preventDefault();
-    if (!email) {
+    // The field is type="email", so the browser strips surrounding whitespace
+    // on its own and blocks a spaces-only value — but this guard keeps a padded
+    // or blank value from reaching the API when that isn't the case.
+    const address = email.trim();
+    if (!address) {
       toast.error('Please enter your email');
       return;
     }
     setSubmitting(true);
     try {
-      const result = await newsletterService.subscribe(email);
+      const result = await newsletterService.subscribe(address);
       if (result.success) {
         toast.success('Subscribed! Welcome to the LMSA newsletter.');
         setEmail('');
