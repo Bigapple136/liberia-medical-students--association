@@ -151,7 +151,7 @@ export default function NewsPage() {
             title="Stories from the people making medical education matter."
             description="News, announcements, achievements, and opportunities from the LMSA community - the ideas and moments moving healthcare forward in Liberia."
           />
-          <div className="flex flex-wrap gap-2 border-t border-lmsa-200 pt-6" role="group" aria-label="Filter stories by category">
+          <div className="mt-2 flex flex-wrap gap-2" role="group" aria-label="Filter stories by category">
             {[{ value: 'all', label: 'All stories' }, ...NEWS_CATEGORIES].map(({ value, label }) => {
               const active = category === value;
               return (
