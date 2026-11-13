@@ -110,15 +110,18 @@ const heroPages = [
   },
   {
     match: (path) => path === '/leadership/committees',
-    eyebrow: 'Leadership / Committees',
     title: 'Where ideas become action',
     description:
       'Find the committee working on the issues, opportunities, and services that matter to medical students.',
     action: { label: 'Join a committee', to: '/get-involved/committees' },
-    accent: 'blue',
+    secondary: { label: 'See the register', to: '#register' },
+    accent: 'green',
     icon: Network,
-    photoKey: 'mentorship',
+    photoKey: 'leadership',
     pattern: 'diamonds',
+    // Left the legacy hero for the same reason as /leadership and the council
+    // page: its overlay hid the photograph behind an icon.
+    variant: 'poster-compact',
   },
   {
     match: (path) => path === '/leadership/past-presidents',
