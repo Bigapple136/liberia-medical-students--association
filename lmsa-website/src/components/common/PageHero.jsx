@@ -347,18 +347,10 @@ function getHero(pathname) {
     };
   }
 
-  if (pathname.startsWith('/leadership/committees/')) {
-    return {
-      eyebrow: 'Leadership / Committee',
-      title: readableSlug,
-      description: 'Discover the people, priorities, and work behind this LMSA committee.',
-      action: { label: 'Browse committees', to: '/leadership/committees' },
-      accent: 'blue',
-      icon: Network,
-      photoKey: 'mentorship',
-      pattern: 'crosses',
-    };
-  }
+  // No hero for /leadership/committees/:slug. That page owns its header, because
+  // the name, the description and the recruitment state all come from the
+  // committee the URL resolves to; a hero here could only print the slug as a
+  // title("Research Journal") above the page's own header.
 
   return null;
 }

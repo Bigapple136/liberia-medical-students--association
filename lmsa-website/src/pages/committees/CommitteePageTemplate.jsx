@@ -1,125 +1,228 @@
-import { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import {
-  BookOpen, Heart, FileText, Users, Utensils, Scale,
-  Trophy, DollarSign, Globe, UserPlus, Megaphone, HeartHandshake,
-  Calendar, Download, Mail, Bell, Share2,
-  Clock, MapPin, Loader,
-  Check, AlertCircle, Info
-} from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
+import { Link, useParams } from 'react-router-dom';
+import { ArrowLeft, ArrowRight, Download, Loader, Mail, MapPin } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { committeeService } from '@services/committee.service';
 import { getRecruitmentStatus } from '@config/committees';
-
-// ─── Static data for all 12 committees (fallback / seed) ─────────────────────
-// Extracted to a shared module so the public committees index uses the
-// same constitutional registry (single source of truth).
 import { ALL_COMMITTEES_DATA } from '@utils/committeesData';
+import { stockPhotos } from '@config/images';
+
 export { ALL_COMMITTEES_DATA };
 
-// Recruitment copy for a single committee, from config's getRecruitmentStatus.
-// Wording matches the Join and listing pages ("N openings", "Closes <date>",
-// "All positions filled") so the same committee never reads two ways.
-function recruitmentDetail(r) {
-  if (r.state !== 'open') return null;
-  const seats =
-    r.remaining === null ? 'Open recruitment' : `${r.remaining} ${r.remaining === 1 ? 'opening' : 'openings'}`;
-  return `${seats} · ${r.deadline ? `Closes ${r.deadline}` : 'No closing date'}`;
-}
+/* One committee's page.
 
-function recruitmentNotice(r) {
-  switch (r.state) {
-    case 'open':
-      return `Now recruiting · ${recruitmentDetail(r)}`;
+   Rebuilt on the same language as /leadership/committees and /leadership:
+
+   - PublicLayout already renders the header, the footer and the skip link, so
+     this page renders none of those. It also no longer sits under the layout's
+     generic /leadership/committees/:slug PageHero: that hero drew its title from
+     the URL ("Research Journal") above the page's own gradient banner, so every
+     committee opened with two headers and a heading that was not its name. This
+     page owns its header, because the name, description, photograph and
+     recruitment state all come from the committee itself.
+   - The five tabs are gone. Tabs hid the mandate, the roster and the paperwork
+     behind clicks, and most of the tabs are empty for a committee that has not
+     published members, events or documents yet. Sections now appear when they
+     have something in them, in the order a visitor wants them: what the
+     committee is for, the work, who does it, then its records and how to reach
+     it.
+   - Cards, icons, badges and gradient banners are replaced by type and space,
+     the same register the committees list uses.
+   - Counts are printed only when they are known: the old header showed three
+     tiles (members, events, docs) that read "0 / 0 / 0" whenever the API was
+     unreachable, which said the committee had no members and no events. Offline
+     fallback data is marked `unavailable`, so this page states that the
+     recruitment details are unavailable instead of guessing "not recruiting".
+
+   No committee, chair, member, event or document on this page is invented: every
+   name comes from the API, and the sections that have no data are not printed. */
+
+/** Where the committee stands this round, or null when that is not known. */
+function statusLine(recruitment) {
+  switch (recruitment.state) {
+    case 'open': {
+      const seats =
+        recruitment.remaining === null
+          ? 'Accepting applications'
+          : `${recruitment.remaining} ${recruitment.remaining === 1 ? 'seat' : 'seats'} open`;
+      return {
+        open: true,
+        text: `${seats}${recruitment.deadline ? ` · closes ${recruitment.deadline}` : ''}`,
+      };
+    }
     case 'full':
-      return 'All positions filled';
+      return { open: false, text: 'All seats are filled this round.' };
     case 'closed':
-      return `Applications closed ${r.deadline}`;
+      return {
+        open: false,
+        text: `Applications closed${recruitment.deadline ? ` on ${recruitment.deadline}` : ''}.`,
+      };
     case 'not-recruiting':
-      return 'Not recruiting right now';
+      return { open: false, text: 'Not taking applications this round.' };
     default:
-      return null; // 'unknown': offline fallback data, so say nothing rather than guess
+      return null;
   }
 }
 
-const ICON_MAP = {
-  BookOpen, Heart, FileText, Users, Utensils, Scale,
-  Trophy, DollarSign, Globe, UserPlus, Megaphone, HeartHandshake,
-};
+function initialsOf(name) {
+  return (name || '')
+    .split(' ')
+    .filter(Boolean)
+    .map((part) => part[0])
+    .join('')
+    .slice(0, 2)
+    .toUpperCase();
+}
 
-// ─── Dynamic Committee Page ───────────────────────────────────────────────────
+function formatDate(value, options = { year: 'numeric', month: 'long', day: 'numeric' }) {
+  if (!value) return null;
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return null;
+  return date.toLocaleDateString('en-GB', options);
+}
+
 export default function CommitteePageTemplate() {
   const { slug } = useParams();
-  const [committee, setCommittee] = useState(null);
-  const [members, setMembers]     = useState([]);
-  const [events, setEvents]       = useState([]);
-  const [docs, setDocs]           = useState([]);
+
+  // The constitutional registry is bundled, so the page can paint the committee
+  // straight away instead of holding a spinner over the API. It starts marked
+  // `unavailable`, which is what keeps the page from claiming anything about
+  // recruitment it has not been told yet; the request replaces it with the live
+  // record, or with null when the API says there is no such committee.
+  const [committee, setCommittee] = useState(() => {
+    const bundled = ALL_COMMITTEES_DATA[slug];
+    return bundled ? { ...bundled, slug, id: slug, unavailable: true } : null;
+  });
+  const [answered, setAnswered] = useState(false);
+  const [members, setMembers] = useState([]);
+  const [events, setEvents] = useState([]);
+  const [docs, setDocs] = useState([]);
   const [announcements, setAnnouncements] = useState([]);
-  const [achievements, setAchievements]   = useState([]);
-  const [loading, setLoading]     = useState(true);
-  const [activeTab, setActiveTab] = useState('about');
-  const [contactForm, setContactForm] = useState({ name: '', email: '', message: '' });
-  const [contactSending, setSending]  = useState(false);
+  const [achievements, setAchievements] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [contactForm, setContactForm] = useState({ name: '', email: '', subject: '', message: '' });
+  const [contactSending, setSending] = useState(false);
   const [newsletterEmail, setNlEmail] = useState('');
-  const [nlSent, setNlSent]          = useState(false);
+  const [nlSent, setNlSent] = useState(false);
 
   useEffect(() => {
-    loadAll();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    let active = true;
+
+    async function load() {
+      const bundled = ALL_COMMITTEES_DATA[slug];
+      setCommittee(bundled ? { ...bundled, slug, id: slug, unavailable: true } : null);
+      setAnswered(false);
+      setLoading(true);
+      setMembers([]);
+      setEvents([]);
+      setDocs([]);
+      setAnnouncements([]);
+      setAchievements([]);
+
+      try {
+        let data;
+        try {
+          data = await committeeService.getBySlug(slug);
+        } catch (err) {
+          // A 404 is the API's authoritative answer that no active committee has
+          // this slug, so yield null and let the not-found state render. Falling
+          // back to the bundled data here would resurrect a deactivated
+          // committee's page; the bundled copy stays only for other failures
+          // (API unreachable / offline setup mode).
+          data = err?.response?.status === 404 ? null : bundled ? { ...bundled, slug, id: slug, unavailable: true } : null;
+        }
+        if (!active) return;
+        setCommittee(data);
+        setAnswered(true);
+        if (!data) {
+          setLoading(false);
+          return;
+        }
+
+        // When the committee is the bundled copy (the API never answered), its
+        // related endpoints cannot answer either, and the page would sit on a
+        // "loading the roster" spinner forever. Those sections simply stay
+        // empty, which is the honest state offline.
+        if (data.unavailable) {
+          setLoading(false);
+          return;
+        }
+
+        const [m, ev, d, ann, ach] = await Promise.allSettled([
+          committeeService.getMembers(data.id),
+          committeeService.getEvents(data.id),
+          committeeService.getDocuments(data.id),
+          committeeService.getAnnouncements(data.id),
+          committeeService.getAchievements(data.id),
+        ]);
+        if (!active) return;
+        setMembers(m.status === 'fulfilled' && Array.isArray(m.value) ? m.value : []);
+        setEvents(ev.status === 'fulfilled' && Array.isArray(ev.value) ? ev.value : []);
+        setDocs(d.status === 'fulfilled' && Array.isArray(d.value) ? d.value : []);
+        setAnnouncements(ann.status === 'fulfilled' && Array.isArray(ann.value) ? ann.value : []);
+        setAchievements(ach.status === 'fulfilled' && Array.isArray(ach.value) ? ach.value : []);
+      } catch {
+        // Only the request itself failed; the committee is simply unreadable.
+        if (active) toast.error('Committee not found');
+      } finally {
+        if (active) setLoading(false);
+      }
+    }
+
+    load();
+    return () => {
+      active = false;
+    };
   }, [slug]);
 
-  async function loadAll() {
-    setLoading(true);
-    try {
-      // Try API first, fall back to static data
-      let data;
-      try {
-        data = await committeeService.getBySlug(slug);
-      } catch (err) {
-        // A 404 is the API's authoritative answer that no *active* committee
-        // has this slug — an unknown slug, or one an admin deactivated (T39).
-        // Yield null so the Not Found state renders: falling back to the
-        // bundled static data here would resurrect a deactivated committee's
-        // page from stale content. The static fallback stays only for other
-        // failures (API unreachable / offline setup mode).
-        if (err?.response?.status === 404) {
-          data = null;
-        } else {
-          // Use static fallback data while DB is being set up. An unknown
-          // slug must yield null so the Not Found state renders — spreading
-          // undefined would fabricate a blank but "truthy" committee.
-          const fallback = ALL_COMMITTEES_DATA[slug];
-          data = fallback ? { ...fallback, slug, id: slug, status: 'active', unavailable: true } : null;
-        }
-      }
-      setCommittee(data);
-      if (!data) return;
+  useEffect(() => {
+    // Matches the shared .reveal-on-scroll styles in index.css, which already
+    // collapse to a static state under prefers-reduced-motion.
+    const observer = new IntersectionObserver(
+      (entries) => entries.forEach((e) => { if (e.isIntersecting) e.target.classList.add('revealed'); }),
+      { threshold: 0.12, rootMargin: '0px 0px -50px 0px' }
+    );
+    document.querySelectorAll('.reveal-on-scroll').forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
+  }, [loading, slug]);
 
-      // Load related data in parallel
-      const [m, ev, d, ann, ach] = await Promise.allSettled([
-        committeeService.getMembers(data.id),
-        committeeService.getEvents(data.id),
-        committeeService.getDocuments(data.id),
-        committeeService.getAnnouncements(data.id),
-        committeeService.getAchievements(data.id),
-      ]);
-      setMembers(m.status === 'fulfilled' ? m.value : []);
-      setEvents(ev.status === 'fulfilled' ? ev.value : []);
-      setDocs(d.status === 'fulfilled' ? d.value : []);
-      setAnnouncements(ann.status === 'fulfilled' ? ann.value : []);
-      setAchievements(ach.status === 'fulfilled' ? ach.value : []);
-    } catch (e) {
-      toast.error('Committee not found');
-    } finally {
-      setLoading(false);
-    }
-  }
+  const chair = useMemo(
+    () => members.find((m) => /^chair(person)?$/i.test((m.position || '').trim())),
+    [members]
+  );
+  const viceChair = useMemo(
+    () => members.find((m) => /vice[\s-]?chair/i.test(m.position || '')),
+    [members]
+  );
+  const others = useMemo(
+    () => members.filter((m) => m !== chair && m !== viceChair),
+    [members, chair, viceChair]
+  );
+  const board = useMemo(
+    () => [chair, viceChair].filter(Boolean),
+    [chair, viceChair]
+  );
 
-  async function sendContact(e) {
-    e.preventDefault();
-    // `required` counts whitespace as filled, so trim before deciding there
-    // is something to send — otherwise a spaces-only form mails a blank
-    // message to the committee.
+  const upcomingEvents = useMemo(
+    () => events.filter((ev) => ev.status !== 'completed' && ev.status !== 'cancelled'),
+    [events]
+  );
+  const pastEvents = useMemo(
+    () => events.filter((ev) => ev.status === 'completed'),
+    [events]
+  );
+  const pinned = useMemo(() => announcements.filter((a) => a.pinned), [announcements]);
+  const notices = useMemo(() => announcements.filter((a) => !a.pinned), [announcements]);
+
+  const fallback = ALL_COMMITTEES_DATA[slug];
+  const mandate = (committee?.mandate?.length ? committee.mandate : fallback?.mandate) || [];
+  const activities =
+    (committee?.key_activities?.length ? committee.key_activities : fallback?.key_activities) || [];
+
+  async function sendContact(event) {
+    event.preventDefault();
+    // `required` counts whitespace as filled, so trim before deciding there is
+    // something to send — otherwise a spaces-only form mails a blank message.
     const trimmed = {
       name: contactForm.name.trim(),
       email: contactForm.email.trim(),
@@ -132,785 +235,708 @@ export default function CommitteePageTemplate() {
     setSending(true);
     try {
       await committeeService.submitContactForm(committee.id, { ...contactForm, ...trimmed });
-      toast.success('Message sent! We\'ll get back to you soon.');
-      setContactForm({ name: '', email: '', message: '' });
+      toast.success('Message sent. The committee will get back to you.');
+      setContactForm({ name: '', email: '', subject: '', message: '' });
     } catch {
-      toast.error('Failed to send message');
+      toast.error('Your message did not send. Please try again.');
     } finally {
       setSending(false);
     }
   }
 
-  async function subscribeNewsletter(e) {
-    e.preventDefault();
+  async function subscribeNewsletter(event) {
+    event.preventDefault();
     const email = newsletterEmail.trim();
     if (!email) return;
     try {
       await committeeService.subscribeNewsletter(committee.id, email);
       setNlSent(true);
-      toast.success('Subscribed to committee updates!');
+      toast.success('You are subscribed to updates from this committee.');
     } catch {
-      toast.error('Subscription failed');
+      toast.error('That subscription did not go through. Please try again.');
     }
   }
 
-  function shareEvent(ev) {
-    const url = `${window.location.origin}/events/${ev.slug}`;
-    navigator.clipboard.writeText(url);
-    toast.success('Event link copied!');
-  }
-
-  if (loading) {
+  if (!committee && !answered) {
     return (
-      <div className="min-h-svh flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <Loader size={32} className="animate-spin text-lmsa-600 mx-auto mb-3" />
-          <p className="text-gray-500">Loading committee...</p>
+      <section className="bg-lmsa-900 text-white" aria-busy="true">
+        <div className="mx-auto max-w-7xl px-4 py-28 sm:px-6 lg:px-8">
+          <p className="flex items-center gap-3 text-[17px] text-lmsa-50" aria-live="polite">
+            <Loader className="animate-spin text-lmsa-200" size={18} aria-hidden="true" />
+            Loading this committee…
+          </p>
         </div>
-      </div>
+      </section>
     );
   }
 
   if (!committee) {
     return (
-      <div className="min-h-svh flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <p className="text-2xl font-bold text-gray-900 mb-2">Committee Not Found</p>
-          <Link to="/leadership/committees" className="text-lmsa-600 hover:underline">
-            View all committees →
+      <section className="bg-paper" aria-labelledby="committee-missing-title">
+        <div className="mx-auto max-w-7xl px-4 py-24 sm:px-6 md:py-32 lg:px-8">
+          <h1
+            id="committee-missing-title"
+            className="max-w-[16ch] text-[clamp(2rem,4vw,3.25rem)] font-bold leading-[1.02] tracking-[-0.04em] text-lmsa-900"
+          >
+            No committee at this address.
+          </h1>
+          <p className="mt-6 max-w-[52ch] text-[19px] leading-8 text-gray-800">
+            The committee may have been renamed or is no longer standing. The register lists every
+            committee that is.
+          </p>
+          <Link
+            to="/leadership/committees"
+            className="mt-8 inline-flex min-h-12 items-center gap-2 rounded-lg bg-lmsa-600 px-6 text-[15px] font-semibold text-white transition-colors hover:bg-lmsa-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
+          >
+            See the register
+            <ArrowRight size={17} aria-hidden="true" />
           </Link>
         </div>
-      </div>
+      </section>
     );
   }
 
-  const Icon = ICON_MAP[committee.icon] || BookOpen;
   const recruitment = getRecruitmentStatus(committee);
-  const chair = members.find(m => m.position === 'Chair');
-  const viceChair = members.find(m => m.position === 'Vice Chair');
-  const regularMembers = members.filter(m => m.position !== 'Chair' && m.position !== 'Vice Chair');
-  const upcomingEvents = events.filter(e => e.status === 'upcoming');
-  const pastEvents = events.filter(e => e.status === 'completed');
-  const pinnedAnnouncements = announcements.filter(a => a.pinned);
-  const otherAnnouncements = announcements.filter(a => !a.pinned);
-
-  const TABS = [
-    { id: 'about', label: 'About' },
-    { id: 'members', label: `Members (${members.length})` },
-    { id: 'events', label: `Events (${events.length})` },
-    { id: 'resources', label: `Resources (${docs.length})` },
-    { id: 'contact', label: 'Contact' },
-  ];
+  const status = statusLine(recruitment);
+  const photos = stockPhotos;
+  const opening = photos.sections.connect;
+  const planning = photos.sections.lead;
+  const practising = photos.stories.symposium;
+  const closing = photos.hero.membership;
 
   return (
-    <div className="min-h-svh bg-gray-50">
-      {/* ── Hero ──────────────────────────────────────────────────────── */}
-      <div className="bg-gradient-to-br from-lmsa-50 to-lmsa-100 border-b border-lmsa-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="flex items-start gap-5">
-            <div className="w-16 h-16 bg-lmsa-600 rounded-2xl flex items-center justify-center shrink-0 shadow-lg">
-              <Icon size={32} className="text-white" />
-            </div>
-            <div className="flex-1">
-              <p className="text-lmsa-600 font-semibold text-sm mb-1">LMSA Standing Committee</p>
-              <h1 className="text-3xl md:text-4xl font-bold text-gray-900">{committee.name}</h1>
-              <p className="text-gray-600 mt-2 max-w-2xl">{committee.description}</p>
-              <div className="flex flex-wrap gap-3 mt-4">
-                {recruitment.state === 'open' || recruitment.state === 'unknown' ? (
-                  <Link
-                    to="/get-involved/committees"
-                    className="inline-flex items-center gap-2 px-5 py-2 bg-lmsa-600 text-white rounded-lg text-sm font-medium hover:bg-lmsa-700 transition-colors"
-                  >
-                    <UserPlus size={15} /> {recruitment.state === 'open' ? 'Apply to Join' : 'Join This Committee'}
-                  </Link>
-                ) : (
-                  <Link
-                    to="/get-involved/committees"
-                    className="inline-flex items-center gap-2 px-5 py-2 bg-white text-lmsa-600 border border-lmsa-200 rounded-lg text-sm font-medium hover:bg-lmsa-50 transition-colors"
-                  >
-                    <UserPlus size={15} /> See Committees Recruiting
-                  </Link>
-                )}
-                {committee.email && (
-                  <a
-                    href={`mailto:${committee.email}`}
-                    className="inline-flex items-center gap-2 px-5 py-2 bg-white text-lmsa-600 border border-lmsa-200 rounded-lg text-sm font-medium hover:bg-lmsa-50 transition-colors"
-                  >
-                    <Mail size={15} /> Contact Us
-                  </a>
-                )}
-              </div>
-              {recruitmentNotice(recruitment) && (
-                <p className="mt-3 text-sm font-medium text-gray-700">{recruitmentNotice(recruitment)}</p>
-              )}
-            </div>
-            {/* Quick Stats */}
-            <div className="hidden lg:flex gap-4">
-              {[
-                { label: 'Members', value: members.length, icon: Users },
-                { label: 'Events', value: events.length, icon: Calendar },
-                { label: 'Docs', value: docs.length, icon: FileText },
-              ].map((s, i) => {
-                const SI = s.icon;
-                return (
-                  <div key={i} className="bg-white rounded-xl p-4 text-center min-w-[80px] shadow-sm">
-                    <SI size={18} className="text-lmsa-600 mx-auto mb-1" />
-                    <p className="text-xl font-bold text-gray-900">{s.value}</p>
-                    <p className="text-xs text-gray-500">{s.label}</p>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-      </div>
+    <div className="w-full overflow-x-hidden">
+      {/* ---------- Header ---------- */}
+      <section className="bg-lmsa-900 text-white" aria-labelledby="committee-title">
+        <div className="mx-auto grid max-w-7xl gap-10 px-4 pt-10 pb-16 sm:px-6 md:pb-20 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:gap-16 lg:px-8">
+          <div className="reveal-on-scroll">
+            <h1
+              id="committee-title"
+              className="max-w-[20ch] text-[clamp(2.25rem,5vw,4.5rem)] font-bold leading-[1.0] tracking-[-0.045em]"
+            >
+              {committee.name}
+            </h1>
 
-      {/* ── Pinned Announcements Banner ────────────────────────────────── */}
-      {pinnedAnnouncements.length > 0 && (
-        <div className="bg-amber-100">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
-            {pinnedAnnouncements.map(a => (
-              <div key={a.id} className="flex items-start gap-2">
-                <Bell size={16} className="text-amber-800 mt-0.5 shrink-0" />
-                <p className="text-sm text-amber-900">
-                  <strong>{a.title}:</strong> {a.message}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+            {committee.description && (
+              <p className="mt-6 max-w-[52ch] text-[19px] leading-8 text-lmsa-50">
+                {committee.description}
+              </p>
+            )}
 
-      {/* ── Tabs ──────────────────────────────────────────────────────── */}
-      <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex overflow-x-auto gap-1">
-            {TABS.map(tab => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`px-5 py-3.5 text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${
-                  activeTab === tab.id
-                    ? 'border-lmsa-600 text-lmsa-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-800'
+            {status && (
+              <p
+                className={`mt-6 text-[15px] leading-6 ${
+                  status.open ? 'font-semibold text-lmsa-100' : 'text-lmsa-100'
                 }`}
               >
-                {tab.label}
-              </button>
+                {status.text}
+              </p>
+            )}
+            {!status && committee.unavailable && answered && (
+              <p className="mt-6 text-[15px] leading-6 text-lmsa-100">
+                Recruitment details could not be loaded.
+              </p>
+            )}
+
+            <div className="mt-9 flex flex-wrap items-center gap-x-8 gap-y-4">
+              <Link
+                to="/get-involved/committees"
+                className="inline-flex min-h-12 items-center gap-2 rounded-lg bg-lmsa-50 px-6 text-[15px] font-semibold text-lmsa-900 transition-transform duration-200 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-400 focus-visible:ring-offset-2 focus-visible:ring-offset-lmsa-900"
+              >
+                {status?.open ? 'Apply to join' : 'See committees recruiting'}
+                <ArrowRight size={17} aria-hidden="true" />
+              </Link>
+              {committee.email && (
+                <a
+                  href={`mailto:${committee.email}`}
+                  className="inline-flex min-h-12 items-center gap-2 text-[15px] font-semibold text-lmsa-50 underline decoration-lmsa-400 decoration-2 underline-offset-[6px] transition-colors hover:decoration-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-400 focus-visible:ring-offset-2 focus-visible:ring-offset-lmsa-900"
+                >
+                  <Mail size={16} aria-hidden="true" />
+                  Email the committee
+                </a>
+              )}
+            </div>
+
+            <Link
+              to="/leadership/committees"
+              className="mt-8 inline-flex min-h-12 items-center gap-2 text-[15px] font-semibold text-lmsa-200 underline decoration-lmsa-400 decoration-2 underline-offset-[6px] transition-colors hover:text-white hover:decoration-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-400 focus-visible:ring-offset-2 focus-visible:ring-offset-lmsa-900"
+            >
+              <ArrowLeft size={16} aria-hidden="true" />
+              Back to all committees
+            </Link>
+          </div>
+
+          <figure className="reveal-on-scroll">
+            <img
+              src={opening.src}
+              alt="Students working together around a table with laptops"
+              className="aspect-[4/3] w-full rounded-lg object-cover"
+              loading="eager"
+            />
+            <figcaption className="mt-3 text-[13px] leading-5 text-lmsa-100">
+              Photo: {opening.credit}
+            </figcaption>
+          </figure>
+        </div>
+      </section>
+
+      {/* ---------- Notices pinned by the committee ---------- */}
+      {pinned.length > 0 && (
+        <section className="bg-lmsa-50" aria-label="Pinned notices">
+          <ul className="mx-auto max-w-7xl space-y-4 px-4 py-8 sm:px-6 lg:px-8">
+            {pinned.map((notice) => (
+              <li key={notice.id} className="max-w-[62ch]">
+                <p className="text-[17px] font-semibold leading-7 text-lmsa-900">{notice.title}</p>
+                {notice.message && (
+                  <p className="mt-1 text-[17px] leading-7 text-gray-800">{notice.message}</p>
+                )}
+              </li>
             ))}
+          </ul>
+        </section>
+      )}
+
+      {/* ---------- What the committee is for ---------- */}
+      <section className="bg-paper" aria-labelledby="committee-mandate-title">
+        <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 md:py-28 lg:px-8">
+          <div className="reveal-on-scroll max-w-3xl">
+            <h2
+              id="committee-mandate-title"
+              className="max-w-[18ch] text-[clamp(2rem,3.6vw,3.25rem)] font-bold leading-[1.02] tracking-[-0.04em] text-lmsa-900"
+            >
+              What it is for.
+            </h2>
+            <p className="mt-5 max-w-[48ch] text-[19px] leading-8 text-gray-800">
+              {mandate.length > 0
+                ? 'The mandate the constitution gives this committee.'
+                : 'The constitution sets this committee up; its written mandate is not published yet.'}
+            </p>
+          </div>
+
+          <div className="mt-14 grid gap-10 md:grid-cols-[0.9fr_1.1fr] md:items-start md:gap-16">
+            <figure className="reveal-on-scroll">
+              <img
+                src={planning.src}
+                alt="A woman arranging notes on a wall covered in sticky notes"
+                className="aspect-[4/3] w-full rounded-lg object-cover"
+                loading="lazy"
+              />
+              <figcaption className="mt-3 text-[13px] leading-5 text-gray-600">
+                Photo: {planning.credit}
+              </figcaption>
+            </figure>
+
+            <div className="reveal-on-scroll">
+              {mandate.length > 0 && (
+                <ul className="space-y-5">
+                  {mandate.map((item) => (
+                    <li key={item} className="max-w-[46ch] text-[19px] leading-8 text-lmsa-900">
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              )}
+              <Link
+                to="/about/constitution#elections"
+                className="mt-8 inline-flex min-h-12 items-center text-[15px] font-semibold text-lmsa-700 underline decoration-2 underline-offset-[6px] transition-colors hover:decoration-lmsa-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
+              >
+                Read the constitution
+              </Link>
+            </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* ── Tab Content ───────────────────────────────────────────────── */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        <div className="grid lg:grid-cols-3 gap-8">
-          {/* ── Main Column ─────────────────────────────────────────── */}
-          <div className="lg:col-span-2 space-y-8">
+      {/* ---------- The work ---------- */}
+      {activities.length > 0 && (
+        <section className="bg-white" aria-labelledby="committee-work-title">
+          <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 md:py-28 lg:px-8">
+            <div className="reveal-on-scroll max-w-3xl">
+              <h2
+                id="committee-work-title"
+                className="max-w-[16ch] text-[clamp(2rem,3.6vw,3.25rem)] font-bold leading-[1.02] tracking-[-0.04em] text-lmsa-900"
+              >
+                The work it takes on.
+              </h2>
+              <p className="mt-5 max-w-[52ch] text-[20px] leading-8 text-gray-700">
+                What members of this committee actually put their time into across the year.
+              </p>
+            </div>
 
-            {/* ── ABOUT TAB ─────────────────────────────────────────── */}
-            {activeTab === 'about' && (
-              <>
-                {/* Mandate */}
-                <section className="bg-white rounded-2xl border border-gray-200 p-6">
-                  <h2 className="text-xl font-bold text-gray-900 mb-4">Committee Mandate</h2>
-                  <ul className="space-y-3">
-                    {(committee.mandate || ALL_COMMITTEES_DATA[slug]?.mandate || []).map((item, i) => (
-                      <li key={i} className="flex items-start gap-3">
-                        <div className="w-6 h-6 rounded-full bg-lmsa-100 flex items-center justify-center shrink-0 mt-0.5">
-                          <div className="w-2 h-2 bg-lmsa-600 rounded-full" />
+            <ul className="mt-12 grid gap-x-16 gap-y-6 md:grid-cols-2">
+              {activities.map((activity) => (
+                <li
+                  key={activity}
+                  className="reveal-on-scroll max-w-[42ch] text-[19px] leading-8 text-gray-800"
+                >
+                  {activity}
+                </li>
+              ))}
+            </ul>
+
+            <figure className="reveal-on-scroll mt-16">
+              <img
+                src={practising.src}
+                alt="A clinician in a white coat with a stethoscope, looking at a phone"
+                className="aspect-[16/9] w-full rounded-lg object-cover"
+                loading="lazy"
+              />
+              <figcaption className="mt-3 text-[13px] leading-5 text-gray-600">
+                Photo: {practising.credit}
+              </figcaption>
+            </figure>
+          </div>
+        </section>
+      )}
+
+      {/* ---------- Who does the work ---------- */}
+      <section className="bg-paper" aria-labelledby="committee-people-title">
+        <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 md:py-28 lg:px-8">
+          <div className="reveal-on-scroll max-w-3xl">
+            <h2
+              id="committee-people-title"
+              className="max-w-[16ch] text-[clamp(2rem,3.6vw,3.25rem)] font-bold leading-[1.02] tracking-[-0.04em] text-lmsa-900"
+            >
+              Who does the work.
+            </h2>
+            <p className="mt-5 max-w-[52ch] text-[20px] leading-8 text-gray-700">
+              Seats on a standing committee are appointed for the year rather than elected.
+            </p>
+          </div>
+
+          {members.length > 0 ? (
+            <>
+              {board.length > 0 && (
+                <ul className="mt-14 space-y-10">
+                  {board.map((member) => (
+                    <li
+                      key={member.id || member.full_name}
+                      className="reveal-on-scroll grid gap-4 md:grid-cols-[0.38fr_1fr] md:gap-12"
+                    >
+                      <div className="flex items-center gap-4">
+                        {member.profile_photo_url ? (
+                          <img
+                            src={member.profile_photo_url}
+                            alt={member.full_name}
+                            className="h-16 w-16 shrink-0 rounded-full object-cover"
+                          />
+                        ) : (
+                          <span
+                            aria-hidden="true"
+                            className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-lmsa-100 text-lg font-bold text-lmsa-800"
+                          >
+                            {initialsOf(member.full_name)}
+                          </span>
+                        )}
+                        <div>
+                          <p className="text-3xl font-semibold leading-tight tracking-[-0.03em] text-lmsa-900">
+                            {member.full_name}
+                          </p>
+                          <p className="mt-1 text-[15px] leading-6 text-gray-700">
+                            {member.position}
+                            {member.year_level ? ` · Year ${member.year_level}` : ''}
+                          </p>
                         </div>
-                        <span className="text-gray-700">{item}</span>
+                      </div>
+                      {member.bio && (
+                        <p className="max-w-[56ch] text-[17px] leading-7 text-gray-800">
+                          {member.bio}
+                        </p>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              )}
+
+              {others.length > 0 && (
+                <div className="mt-16">
+                  <h3 className="text-[20px] font-semibold text-lmsa-900">
+                    {others.length} {others.length === 1 ? 'member' : 'members'}
+                  </h3>
+                  <ul className="mt-6 grid gap-x-16 gap-y-4 md:grid-cols-2">
+                    {others.map((member) => (
+                      <li
+                        key={member.id || member.full_name}
+                        className="reveal-on-scroll flex flex-wrap items-baseline gap-x-3 text-[17px] leading-7"
+                      >
+                        <span className="font-semibold text-lmsa-900">{member.full_name}</span>
+                        {member.position && <span className="text-gray-700">{member.position}</span>}
+                        {member.year_level && (
+                          <span className="text-gray-700">Year {member.year_level}</span>
+                        )}
                       </li>
                     ))}
                   </ul>
-                </section>
+                </div>
+              )}
+            </>
+          ) : loading ? (
+            <p className="reveal-on-scroll mt-12 flex items-center gap-3 text-[17px] text-gray-700" aria-live="polite">
+              <Loader className="animate-spin text-lmsa-600" size={18} aria-hidden="true" />
+              Loading the roster…
+            </p>
+          ) : (
+            <p className="reveal-on-scroll mt-12 max-w-[54ch] text-[17px] leading-7 text-gray-800">
+              The roster for this committee has not been published yet. Appointments are made by
+              the Executive Committee at the start of the year.
+            </p>
+          )}
+        </div>
+      </section>
 
-                {/* Key Activities */}
-                <section className="bg-white rounded-2xl border border-gray-200 p-6">
-                  <h2 className="text-xl font-bold text-gray-900 mb-4">Key Activities</h2>
-                  <div className="grid sm:grid-cols-2 gap-3">
-                    {(committee.key_activities || ALL_COMMITTEES_DATA[slug]?.key_activities || []).map((act, i) => (
-                      <div key={i} className="flex items-center gap-3 px-4 py-3 bg-lmsa-50 rounded-xl border border-lmsa-100">
-                        <Check size={15} className="text-lmsa-600 shrink-0" />
-                        <span className="text-sm font-medium text-gray-800">{act}</span>
-                      </div>
-                    ))}
-                  </div>
-                </section>
+      {/* ---------- Records: notices, events, documents, milestones ---------- */}
+      {(notices.length > 0 ||
+        upcomingEvents.length > 0 ||
+        pastEvents.length > 0 ||
+        docs.length > 0 ||
+        achievements.length > 0) && (
+        <section className="bg-white" aria-labelledby="committee-records-title">
+          <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 md:py-28 lg:px-8">
+            <div className="reveal-on-scroll max-w-3xl">
+              <h2
+                id="committee-records-title"
+                className="max-w-[16ch] text-[clamp(2rem,3.6vw,3.25rem)] font-bold leading-[1.02] tracking-[-0.04em] text-lmsa-900"
+              >
+                What the committee has published.
+              </h2>
+            </div>
 
-                {/* Achievements */}
-                {achievements.length > 0 && (
-                  <section className="bg-white rounded-2xl border border-gray-200 p-6">
-                    <h2 className="text-xl font-bold text-gray-900 mb-4">Achievements & Milestones</h2>
-                    <div className="grid sm:grid-cols-2 gap-4">
-                      {achievements.map((a, i) => (
-                        <div key={i} className="p-4 bg-amber-50 rounded-xl border border-amber-100">
-                          <div className="text-2xl mb-2">{a.badge_emoji || '🏆'}</div>
-                          <h3 className="font-semibold text-gray-900 text-sm">{a.title}</h3>
-                          {a.description && <p className="text-xs text-gray-500 mt-1">{a.description}</p>}
-                          {a.date && <p className="text-xs text-amber-600 mt-2 font-medium">{new Date(a.date).toLocaleDateString('default',{year:'numeric',month:'long'})}</p>}
-                        </div>
-                      ))}
-                    </div>
-                  </section>
-                )}
-
-                {/* Upcoming Events Preview */}
-                {upcomingEvents.length > 0 && (
-                  <section className="bg-white rounded-2xl border border-gray-200 p-6">
-                    <div className="flex items-center justify-between mb-4">
-                      <h2 className="text-xl font-bold text-gray-900">Upcoming Events</h2>
-                      <button onClick={() => setActiveTab('events')} className="text-sm text-lmsa-600 hover:underline">View all →</button>
-                    </div>
-                    <div className="space-y-3">
-                      {upcomingEvents.slice(0, 3).map((ev, i) => (
-                        <EventCard key={i} event={ev} onShare={() => shareEvent(ev)} />
-                      ))}
-                    </div>
-                  </section>
-                )}
-
-                {/* Other Announcements */}
-                {otherAnnouncements.length > 0 && (
-                  <section className="bg-white rounded-2xl border border-gray-200 p-6">
-                    <h2 className="text-xl font-bold text-gray-900 mb-4">Announcements</h2>
-                    <div className="space-y-3">
-                      {otherAnnouncements.map((a, i) => (
-                        <AnnouncementCard key={i} announcement={a} />
-                      ))}
-                    </div>
-                  </section>
-                )}
-              </>
+            {notices.length > 0 && (
+              <div className="mt-14">
+                <h3 className="text-[20px] font-semibold text-lmsa-900">Notices</h3>
+                <ul className="mt-6 space-y-5">
+                  {notices.map((notice) => (
+                    <li key={notice.id} className="reveal-on-scroll max-w-[62ch]">
+                      <p className="text-[17px] font-semibold leading-7 text-lmsa-900">
+                        {notice.title}
+                      </p>
+                      {notice.message && (
+                        <p className="mt-1 text-[17px] leading-7 text-gray-800">{notice.message}</p>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </div>
             )}
 
-            {/* ── MEMBERS TAB ───────────────────────────────────────── */}
-            {activeTab === 'members' && (
-              <>
-                {members.length === 0 ? (
-                  <EmptySection icon={Users} message="Member directory coming soon" />
-                ) : (
-                  <>
-                    {/* Leadership */}
-                    {(chair || viceChair) && (
-                      <section className="bg-white rounded-2xl border border-gray-200 p-6">
-                        <h2 className="text-xl font-bold text-gray-900 mb-4">Committee Leadership</h2>
-                        <div className="grid sm:grid-cols-2 gap-4">
-                          {[chair, viceChair].filter(Boolean).map((m, i) => (
-                            <MemberProfileCard key={i} member={m} featured />
-                          ))}
-                        </div>
-                      </section>
-                    )}
-
-                    {/* All Members */}
-                    {regularMembers.length > 0 && (
-                      <section className="bg-white rounded-2xl border border-gray-200 p-6">
-                        <h2 className="text-xl font-bold text-gray-900 mb-4">Members ({regularMembers.length})</h2>
-                        <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
-                          {regularMembers.map((m, i) => (
-                            <MemberProfileCard key={i} member={m} />
-                          ))}
-                        </div>
-                      </section>
-                    )}
-                  </>
-                )}
-              </>
+            {upcomingEvents.length > 0 && (
+              <div className="mt-16">
+                <h3 className="text-[20px] font-semibold text-lmsa-900">Coming up</h3>
+                <ul className="mt-6 space-y-8">
+                  {upcomingEvents.map((event) => (
+                    <EventRow key={event.id || event.slug} event={event} />
+                  ))}
+                </ul>
+              </div>
             )}
 
-            {/* ── EVENTS TAB ────────────────────────────────────────── */}
-            {activeTab === 'events' && (
-              <>
-                {events.length === 0 ? (
-                  <EmptySection icon={Calendar} message="No events scheduled yet. Check back soon!" />
-                ) : (
-                  <>
-                    {/* Upcoming */}
-                    {upcomingEvents.length > 0 && (
-                      <section className="bg-white rounded-2xl border border-gray-200 p-6">
-                        <h2 className="text-xl font-bold text-gray-900 mb-4">Upcoming Events</h2>
-                        <div className="space-y-4">
-                          {upcomingEvents.map((ev, i) => (
-                            <EventCard key={i} event={ev} detailed onShare={() => shareEvent(ev)} />
-                          ))}
-                        </div>
-                      </section>
-                    )}
-
-                    {/* Past Events */}
-                    {pastEvents.length > 0 && (
-                      <section className="bg-white rounded-2xl border border-gray-200 p-6">
-                        <h2 className="text-xl font-bold text-gray-900 mb-4">Past Events</h2>
-                        <div className="space-y-3">
-                          {pastEvents.map((ev, i) => (
-                            <EventCard key={i} event={ev} past onShare={() => shareEvent(ev)} />
-                          ))}
-                        </div>
-                      </section>
-                    )}
-                  </>
-                )}
-              </>
+            {pastEvents.length > 0 && (
+              <div className="mt-16">
+                <h3 className="text-[20px] font-semibold text-lmsa-900">Already held</h3>
+                <ul className="mt-6 space-y-6">
+                  {pastEvents.map((event) => (
+                    <EventRow key={event.id || event.slug} event={event} past />
+                  ))}
+                </ul>
+              </div>
             )}
 
-            {/* ── RESOURCES TAB ─────────────────────────────────────── */}
-            {activeTab === 'resources' && (
-              <>
-                {docs.length === 0 ? (
-                  <EmptySection icon={FileText} message="No documents uploaded yet." />
-                ) : (
-                  <section className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
-                    <div className="p-6 border-b border-gray-100">
-                      <h2 className="text-xl font-bold text-gray-900">Documents & Resources</h2>
-                      <p className="text-sm text-gray-500 mt-1">Official documents from the {committee.name}</p>
-                    </div>
-                    <div className="divide-y divide-gray-100">
-                      {docs.map((doc, i) => (
-                        <DocumentRow key={i} doc={doc} />
-                      ))}
-                    </div>
-                  </section>
-                )}
-              </>
+            {docs.length > 0 && (
+              <div className="mt-16">
+                <h3 className="text-[20px] font-semibold text-lmsa-900">Documents</h3>
+                <ul className="mt-6 max-w-[68ch] space-y-6">
+                  {docs.map((doc) => (
+                    <DocumentRow key={doc.id || doc.file_url} doc={doc} />
+                  ))}
+                </ul>
+              </div>
             )}
 
-            {/* ── CONTACT TAB ───────────────────────────────────────── */}
-            {activeTab === 'contact' && (
-              <section className="bg-white rounded-2xl border border-gray-200 p-6">
-                <h2 className="text-xl font-bold text-gray-900 mb-2">Contact {committee.name}</h2>
-                <p className="text-gray-500 text-sm mb-6">
-                  Have a question or want to get involved? Send us a message and we&apos;ll get back to you.
-                </p>
-                <form onSubmit={sendContact} className="space-y-4">
-                  <div className="grid sm:grid-cols-2 gap-4">
-                    <div>
-                      <label htmlFor="committee-contact-name" className="block text-sm font-medium text-gray-700 mb-1.5">
-                        Your Name
-                        <span className="text-red-600 ml-1" aria-hidden="true">*</span>
-                      </label>
-                      <input
-                        id="committee-contact-name"
-                        className="input"
-                        placeholder="Full name"
-                        value={contactForm.name}
-                        onChange={e => setContactForm(f => ({...f, name: e.target.value}))}
-                        autoComplete="name"
-                        maxLength={80}
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label htmlFor="committee-contact-email" className="block text-sm font-medium text-gray-700 mb-1.5">
-                        Email Address
-                        <span className="text-red-600 ml-1" aria-hidden="true">*</span>
-                      </label>
-                      <input
-                        id="committee-contact-email"
-                        className="input"
-                        type="email"
-                        placeholder="you@example.com"
-                        value={contactForm.email}
-                        onChange={e => setContactForm(f => ({...f, email: e.target.value}))}
-                        autoComplete="email"
-                        maxLength={254}
-                        required
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <label htmlFor="committee-contact-subject" className="block text-sm font-medium text-gray-700 mb-1.5">Subject</label>
-                    <select
-                      id="committee-contact-subject"
-                      className="input"
-                      value={contactForm.subject}
-                      onChange={e => setContactForm(f => ({...f, subject: e.target.value}))}
+            {achievements.length > 0 && (
+              <div className="mt-16">
+                <h3 className="text-[20px] font-semibold text-lmsa-900">Milestones</h3>
+                <ul className="mt-6 space-y-6">
+                  {achievements.map((achievement, index) => (
+                    <li
+                      key={achievement.id || index}
+                      className="reveal-on-scroll max-w-[58ch]"
                     >
-                      <option value="">General Inquiry</option>
-                      <option value="join">I want to join this committee</option>
-                      <option value="event">Question about an event</option>
-                      <option value="resource">Request a resource</option>
-                      <option value="other">Other</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label htmlFor="committee-contact-message" className="block text-sm font-medium text-gray-700 mb-1.5">
-                      Message
-                      <span className="text-red-600 ml-1" aria-hidden="true">*</span>
-                    </label>
-                    <textarea
-                      id="committee-contact-message"
-                      className="input resize-none"
-                      rows={5}
-                      placeholder="Write your message here..."
-                      value={contactForm.message}
-                      onChange={e => setContactForm(f => ({...f, message: e.target.value}))}
-                      maxLength={2000}
-                      required
-                    />
-                  </div>
-                  <button
-                    type="submit"
-                    disabled={contactSending}
-                    className="btn btn-primary flex items-center gap-2"
-                  >
-                    {contactSending ? (
-                      <><Loader size={15} className="animate-spin" /> Sending...</>
-                    ) : (
-                      <><Mail size={15} /> Send Message</>
-                    )}
-                  </button>
-                </form>
-
-                {committee.email && (
-                  <div className="mt-6 pt-6 border-t border-gray-100 flex items-center gap-3 text-sm text-gray-600">
-                    <Mail size={16} className="text-lmsa-600" />
-                    You can also reach us directly at{' '}
-                    <a href={`mailto:${committee.email}`} className="text-lmsa-600 hover:underline">
-                      {committee.email}
-                    </a>
-                  </div>
-                )}
-              </section>
+                      <p className="text-[17px] font-semibold leading-7 text-lmsa-900">
+                        {achievement.title}
+                      </p>
+                      {achievement.description && (
+                        <p className="mt-1 text-[17px] leading-7 text-gray-800">
+                          {achievement.description}
+                        </p>
+                      )}
+                      {formatDate(achievement.date, { year: 'numeric', month: 'long' }) && (
+                        <p className="mt-1 text-[15px] leading-6 text-gray-700">
+                          {formatDate(achievement.date, { year: 'numeric', month: 'long' })}
+                        </p>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </div>
             )}
           </div>
+        </section>
+      )}
 
-          {/* ── Sidebar ───────────────────────────────────────────────── */}
-          <aside className="space-y-6">
-            {/* Committee Chair Card */}
-            {chair ? (
-              <div className="bg-white rounded-2xl border border-gray-200 p-5">
-                <h3 className="font-bold text-gray-900 mb-4">Committee Chair</h3>
-                <div className="flex items-center gap-3 mb-4">
-                  {chair.profile_photo_url ? (
-                    <img src={chair.profile_photo_url} alt={chair.full_name} className="w-14 h-14 rounded-full object-cover" />
-                  ) : (
-                    <div className="w-14 h-14 rounded-full bg-lmsa-100 flex items-center justify-center text-lmsa-700 font-bold text-lg">
-                      {chair.full_name?.split(' ').map(n=>n[0]).join('').slice(0,2)}
-                    </div>
-                  )}
-                  <div>
-                    <p className="font-semibold text-gray-900">{chair.full_name}</p>
-                    <p className="text-sm text-gray-500">Year {chair.year_level} • Chair</p>
-                  </div>
-                </div>
-                <button
-                  onClick={() => setActiveTab('contact')}
-                  className="w-full px-4 py-2 bg-lmsa-600 text-white rounded-xl text-sm font-medium hover:bg-lmsa-700 transition-colors"
+      {/* ---------- Contact ---------- */}
+      <section className="bg-paper" aria-labelledby="committee-contact-title">
+        <div className="mx-auto grid max-w-7xl gap-10 px-4 py-20 sm:px-6 md:py-28 lg:grid-cols-[1.05fr_0.95fr] lg:items-start lg:gap-16 lg:px-8">
+          <div className="reveal-on-scroll">
+            <h2
+              id="committee-contact-title"
+              className="max-w-[18ch] text-[clamp(2rem,3.6vw,3.25rem)] font-bold leading-[1.02] tracking-[-0.04em] text-lmsa-900"
+            >
+              Ask the committee.
+            </h2>
+            <p className="mt-5 max-w-[48ch] text-[19px] leading-8 text-gray-800">
+              A question about the work, a request for a document, or an idea for the year ahead —
+              this reaches the people on the committee.
+            </p>
+
+            {committee.email && (
+              <p className="mt-6 max-w-[46ch] text-[17px] leading-7 text-gray-800">
+                Or write directly to{' '}
+                <a
+                  href={`mailto:${committee.email}`}
+                  className="font-semibold text-lmsa-700 underline decoration-2 underline-offset-[6px] transition-colors hover:decoration-lmsa-900"
                 >
-                  Contact Chair
-                </button>
-              </div>
-            ) : (
-              <div className="bg-white rounded-2xl border border-gray-200 p-5">
-                <h3 className="font-bold text-gray-900 mb-3">Committee Chair</h3>
-                <p className="text-sm text-gray-400">Chair information will be listed here once assigned.</p>
-              </div>
+                  {committee.email}
+                </a>
+                .
+              </p>
             )}
 
-            {/* Join CTA: reflects the committee's actual recruitment state */}
-            {recruitment.state === 'open' || recruitment.state === 'unknown' ? (
-              <div className="bg-lmsa-600 rounded-2xl p-5 text-white">
-                <h3 className="font-bold mb-1">{recruitment.state === 'open' ? 'Now Recruiting' : 'Join This Committee'}</h3>
-                <p className="text-sm text-lmsa-100 mb-4">
-                  {recruitment.state === 'open'
-                    ? recruitmentDetail(recruitment)
-                    : 'Get involved and make an impact in this area of student life.'}
-                </p>
-                <Link
-                  to="/get-involved/committees"
-                  className="block w-full px-4 py-2 bg-white text-lmsa-600 text-center rounded-xl text-sm font-semibold hover:bg-lmsa-50 transition-colors"
-                >
-                  {recruitment.state === 'open' ? 'Apply Now' : 'Express Interest'}
-                </Link>
-              </div>
-            ) : (
-              <div className="bg-white rounded-2xl border border-gray-200 p-5">
-                <h3 className="font-bold text-gray-900 mb-1">{recruitmentNotice(recruitment)}</h3>
-                <p className="text-sm text-gray-600 mb-4">
-                  This committee isn&apos;t taking applications at the moment. See which committees are.
-                </p>
-                <Link
-                  to="/get-involved/committees"
-                  className="block w-full px-4 py-2 bg-white text-lmsa-600 text-center border border-lmsa-200 rounded-xl text-sm font-semibold hover:bg-lmsa-50 transition-colors"
-                >
-                  See Open Committees
-                </Link>
-              </div>
-            )}
-
-            {/* Meeting Schedule (if available) */}
-            {committee.meeting_schedule && (
-              <div className="bg-white rounded-2xl border border-gray-200 p-5">
-                <h3 className="font-bold text-gray-900 mb-3 flex items-center gap-2">
-                  <Clock size={16} className="text-lmsa-600" /> Meeting Schedule
-                </h3>
-                <p className="text-sm text-gray-600">{committee.meeting_schedule}</p>
-              </div>
-            )}
-
-            {/* Documents Quick Access */}
-            {docs.length > 0 && (
-              <div className="bg-white rounded-2xl border border-gray-200 p-5">
-                <h3 className="font-bold text-gray-900 mb-3">Quick Downloads</h3>
-                <div className="space-y-2">
-                  {docs.slice(0, 4).map((doc, i) => (
-                    <a
-                      key={i}
-                      href={doc.file_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-2 text-sm text-lmsa-600 hover:text-lmsa-700 hover:underline"
-                    >
-                      <Download size={13} />
-                      {doc.title}
-                    </a>
-                  ))}
-                  {docs.length > 4 && (
-                    <button onClick={() => setActiveTab('resources')} className="text-xs text-gray-400 hover:text-gray-600">
-                      +{docs.length - 4} more documents
-                    </button>
-                  )}
-                </div>
-              </div>
-            )}
-
-            {/* Newsletter Signup */}
-            <div className="bg-gray-50 rounded-2xl border border-gray-200 p-5">
-              <h3 className="font-bold text-gray-900 mb-1 flex items-center gap-2">
-                <Bell size={16} className="text-lmsa-600" /> Stay Updated
-              </h3>
-              <p className="text-sm text-gray-500 mb-3">Get notified about this committee&apos;s events and news.</p>
+            <div className="mt-12 max-w-[46ch]">
+              <h3 className="text-[20px] font-semibold text-lmsa-900">Updates from this committee</h3>
               {nlSent ? (
-                <div className="flex items-center gap-2 text-lmsa-600 text-sm">
-                  <Check size={16} /> Subscribed successfully!
-                </div>
+                <p className="mt-3 text-[17px] leading-7 text-lmsa-700" role="status">
+                  You are on the list. Updates will arrive at {newsletterEmail}.
+                </p>
               ) : (
-                <form onSubmit={subscribeNewsletter} className="flex gap-2">
+                <form onSubmit={subscribeNewsletter} className="mt-4 flex flex-wrap gap-3">
                   <label htmlFor="committee-newsletter-email" className="sr-only">
                     Email address for committee updates
                   </label>
                   <input
                     id="committee-newsletter-email"
                     type="email"
-                    placeholder="Your email"
-                    className="input flex-1 text-sm"
+                    placeholder="you@example.com"
+                    className="input min-h-12 flex-1 sm:min-w-[16rem]"
                     value={newsletterEmail}
-                    onChange={e => setNlEmail(e.target.value)}
+                    onChange={(e) => setNlEmail(e.target.value)}
                     required
                   />
                   <button
                     type="submit"
-                    aria-label="Subscribe to committee updates"
-                    className="inline-flex min-h-11 min-w-11 items-center justify-center px-3 bg-lmsa-600 text-white rounded-lg text-sm font-medium hover:bg-lmsa-700"
+                    className="inline-flex min-h-12 items-center rounded-lg bg-lmsa-600 px-6 text-[15px] font-semibold text-white transition-colors hover:bg-lmsa-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
                   >
-                    <Bell size={14} aria-hidden="true" />
+                    Subscribe
                   </button>
                 </form>
               )}
             </div>
+          </div>
 
-            {/* Back to Committees */}
-            <Link
-              to="/leadership/committees"
-              className="flex items-center justify-center gap-2 w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm text-gray-600 hover:bg-gray-50 transition-colors"
+          <form onSubmit={sendContact} className="reveal-on-scroll space-y-5">
+            <div>
+              <label htmlFor="committee-contact-name" className="block text-[15px] font-semibold text-lmsa-900">
+                Your name
+              </label>
+              <input
+                id="committee-contact-name"
+                className="input mt-2 min-h-12"
+                value={contactForm.name}
+                onChange={(e) => setContactForm((f) => ({ ...f, name: e.target.value }))}
+                autoComplete="name"
+                maxLength={80}
+                required
+              />
+            </div>
+            <div>
+              <label htmlFor="committee-contact-email" className="block text-[15px] font-semibold text-lmsa-900">
+                Your email
+              </label>
+              <input
+                id="committee-contact-email"
+                className="input mt-2 min-h-12"
+                type="email"
+                value={contactForm.email}
+                onChange={(e) => setContactForm((f) => ({ ...f, email: e.target.value }))}
+                autoComplete="email"
+                maxLength={254}
+                required
+              />
+            </div>
+            <div>
+              <label htmlFor="committee-contact-subject" className="block text-[15px] font-semibold text-lmsa-900">
+                What is this about?
+              </label>
+              <select
+                id="committee-contact-subject"
+                className="input mt-2 min-h-12"
+                value={contactForm.subject}
+                onChange={(e) => setContactForm((f) => ({ ...f, subject: e.target.value }))}
+              >
+                <option value="">General inquiry</option>
+                <option value="join">Joining this committee</option>
+                <option value="event">An event</option>
+                <option value="resource">A document or resource</option>
+                <option value="other">Something else</option>
+              </select>
+            </div>
+            <div>
+              <label htmlFor="committee-contact-message" className="block text-[15px] font-semibold text-lmsa-900">
+                Your message
+              </label>
+              <textarea
+                id="committee-contact-message"
+                className="input mt-2 resize-none"
+                rows={5}
+                value={contactForm.message}
+                onChange={(e) => setContactForm((f) => ({ ...f, message: e.target.value }))}
+                maxLength={2000}
+                required
+              />
+            </div>
+            <button
+              type="submit"
+              disabled={contactSending}
+              className="inline-flex min-h-12 items-center gap-2 rounded-lg bg-lmsa-600 px-6 text-[15px] font-semibold text-white transition-colors hover:bg-lmsa-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2 disabled:opacity-60"
             >
-              ← All Committees
-            </Link>
-          </aside>
+              {contactSending ? (
+                <>
+                  <Loader size={16} className="animate-spin" aria-hidden="true" />
+                  Sending…
+                </>
+              ) : (
+                <>
+                  <Mail size={16} aria-hidden="true" />
+                  Send message
+                </>
+              )}
+            </button>
+          </form>
         </div>
-      </div>
+      </section>
+
+      {/* ---------- Closing ---------- */}
+      <section className="bg-lmsa-900 text-white" aria-labelledby="committee-next-title">
+        <div className="mx-auto grid max-w-7xl gap-10 px-4 py-20 sm:px-6 md:py-28 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:gap-16 lg:px-8">
+          <div className="reveal-on-scroll">
+            <h2
+              id="committee-next-title"
+              className="max-w-[16ch] text-[clamp(2rem,4.2vw,3.75rem)] font-bold leading-[0.98] tracking-[-0.045em]"
+            >
+              The work is open to students.
+            </h2>
+            <p className="mt-5 max-w-[50ch] text-[20px] leading-8 text-lmsa-50">
+              Committee seats are appointed, which makes the work itself the application. See which
+              committees are taking names this round.
+            </p>
+            <div className="mt-9 flex flex-wrap items-center gap-x-8 gap-y-4">
+              <Link
+                to="/get-involved/committees"
+                className="inline-flex min-h-12 items-center gap-2 rounded-lg bg-lmsa-50 px-6 text-[15px] font-semibold text-lmsa-900 transition-transform duration-200 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-400 focus-visible:ring-offset-2 focus-visible:ring-offset-lmsa-900"
+              >
+                Join a committee
+                <ArrowRight size={17} aria-hidden="true" />
+              </Link>
+              <Link
+                to="/leadership/committees"
+                className="inline-flex min-h-12 items-center text-[15px] font-semibold text-lmsa-50 underline decoration-lmsa-400 decoration-2 underline-offset-[6px] transition-colors hover:decoration-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-400 focus-visible:ring-offset-2 focus-visible:ring-offset-lmsa-900"
+              >
+                Back to the register
+              </Link>
+            </div>
+          </div>
+
+          <figure className="reveal-on-scroll">
+            <img
+              src={closing.src}
+              alt="Students studying together at a library table"
+              className="aspect-[4/3] w-full rounded-lg object-cover"
+              loading="lazy"
+            />
+            <figcaption className="mt-3 text-[13px] leading-5 text-lmsa-100">
+              Photo: {closing.credit}
+            </figcaption>
+          </figure>
+        </div>
+      </section>
     </div>
   );
 }
 
-// ─── Sub-Components ───────────────────────────────────────────────────────────
+/* ---------- Rows ---------- */
 
-function MemberProfileCard({ member, featured }) {
-  return (
-    <div className={`p-4 rounded-xl border ${featured ? 'border-lmsa-200 bg-lmsa-50' : 'border-gray-200 bg-white'}`}>
-      <div className="flex items-center gap-3 mb-2">
-        {member.profile_photo_url ? (
-          <img src={member.profile_photo_url} alt={member.full_name} className={`rounded-full object-cover ${featured ? 'w-14 h-14' : 'w-10 h-10'}`} />
-        ) : (
-          <div className={`rounded-full flex items-center justify-center font-bold ${featured ? 'w-14 h-14 text-lg bg-lmsa-200 text-lmsa-800' : 'w-10 h-10 text-sm bg-gray-100 text-gray-600'}`}>
-            {member.full_name?.split(' ').map(n=>n[0]).join('').slice(0,2)}
-          </div>
-        )}
-        <div>
-          <p className={`font-semibold ${featured ? 'text-lmsa-900' : 'text-gray-900'} text-sm`}>{member.full_name}</p>
-          <p className={`text-xs ${featured ? 'text-lmsa-600 font-medium' : 'text-gray-500'}`}>{member.position}</p>
-        </div>
-      </div>
-      {member.bio && <p className="text-xs text-gray-500 mt-1 line-clamp-2">{member.bio}</p>}
-      <p className="text-xs text-gray-400 mt-1">Year {member.year_level}</p>
-    </div>
-  );
-}
+function EventRow({ event, past }) {
+  const start = formatDate(event.start_datetime);
+  const time = event.start_datetime
+    ? new Date(event.start_datetime).toLocaleTimeString('en-GB', {
+        hour: 'numeric',
+        minute: '2-digit',
+      })
+    : null;
 
-function EventCard({ event, detailed, past, onShare }) {
-  const start = new Date(event.start_datetime);
   return (
-    <div className={`p-4 rounded-xl border transition-colors ${past ? 'border-gray-100 bg-gray-50 opacity-75' : 'border-gray-200 bg-white hover:border-lmsa-200'}`}>
-      <div className="flex gap-4">
-        <div className={`text-center rounded-xl px-3 py-2 min-w-[52px] shrink-0 ${past ? 'bg-gray-200' : 'bg-lmsa-50'}`}>
-          <p className={`text-xs font-semibold ${past ? 'text-gray-500' : 'text-lmsa-600'}`}>
-            {start.toLocaleString('default',{month:'short'})}
-          </p>
-          <p className={`text-xl font-bold ${past ? 'text-gray-500' : 'text-lmsa-700'}`}>{start.getDate()}</p>
-        </div>
-        <div className="flex-1 min-w-0">
-          <h3 className="font-semibold text-gray-900 text-sm">{event.title}</h3>
-          {detailed && event.description && (
-            <p className="text-xs text-gray-500 mt-1 line-clamp-2">{event.description}</p>
-          )}
-          <div className="flex flex-wrap gap-2 mt-2">
-            {event.location && (
-              <span className="flex items-center gap-1 text-xs text-gray-400">
-                <MapPin size={11} /> {event.location}
-              </span>
-            )}
-            {event.registration_required && (
-              <span className="text-xs px-2 py-0.5 rounded-full bg-blue-50 text-blue-700">Registration required</span>
-            )}
-            {event.fee > 0 && (
-              <span className="text-xs px-2 py-0.5 rounded-full bg-amber-50 text-amber-700">${event.fee}</span>
-            )}
-          </div>
-        </div>
-        <div className="flex flex-col gap-2 shrink-0">
-          {!past && event.registration_required && (
-            <Link to={`/events/${event.slug}`} className="text-xs px-3 py-1.5 bg-lmsa-600 text-white rounded-lg hover:bg-lmsa-700 whitespace-nowrap">
-              Register
-            </Link>
-          )}
-          <button onClick={onShare} className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-700">
-            <Share2 size={14} />
-          </button>
-        </div>
-      </div>
-    </div>
+    <li className={`reveal-on-scroll max-w-[64ch] ${past ? 'text-gray-700' : ''}`}>
+      <p className={`text-[19px] font-semibold leading-7 ${past ? 'text-gray-800' : 'text-lmsa-900'}`}>
+        {event.title}
+      </p>
+      <p className="mt-1 text-[15px] leading-6 text-gray-700">
+        {[start, time].filter(Boolean).join(' · ')}
+        {event.location ? (
+          <>
+            <span aria-hidden="true"> · </span>
+            <MapPin size={13} className="inline align-[-1px]" aria-hidden="true" /> {event.location}
+          </>
+        ) : null}
+      </p>
+      {event.description && (
+        <p className="mt-2 text-[17px] leading-7 text-gray-800">{event.description}</p>
+      )}
+      {!past && event.slug && (
+        <Link
+          to={`/events/${event.slug}`}
+          className="mt-2 inline-flex min-h-12 items-center gap-2 text-[15px] font-semibold text-lmsa-700 underline decoration-2 underline-offset-[6px] transition-colors hover:decoration-lmsa-900"
+        >
+          Event details
+          <ArrowRight size={15} aria-hidden="true" />
+        </Link>
+      )}
+    </li>
   );
 }
 
 function DocumentRow({ doc }) {
-  const catEmoji = { charter:'📜', bylaws:'⚖️', report:'📊', minutes:'📝', newsletter:'📰', study_material:'📚', other:'📄' };
+  const category = doc.category ? doc.category.replace(/_/g, ' ') : null;
+  const size = doc.file_size ? `${Math.round(doc.file_size / 1024)} KB` : null;
+  const added = formatDate(doc.created_at);
+
   return (
-    <div className="flex items-center gap-4 px-6 py-4 hover:bg-gray-50 transition-colors">
-      <span className="text-xl shrink-0">{catEmoji[doc.category] || '📄'}</span>
-      <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-gray-900">{doc.title}</p>
-        <p className="text-xs text-gray-400 mt-0.5">
-          {doc.category?.replace('_',' ')} •{' '}
-          {doc.created_at ? new Date(doc.created_at).toLocaleDateString() : ''}
-          {doc.file_size ? ` • ${Math.round(doc.file_size/1024)}KB` : ''}
+    <li className="reveal-on-scroll grid gap-2 md:grid-cols-[1fr_auto] md:items-center md:gap-8">
+      <div>
+        <p className="text-[17px] font-semibold leading-7 text-lmsa-900">{doc.title}</p>
+        <p className="mt-1 text-[15px] leading-6 text-gray-700">
+          {[category, added, size].filter(Boolean).join(' · ')}
         </p>
       </div>
-      <a
-        href={doc.file_url}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="flex items-center gap-1.5 text-xs px-3 py-1.5 bg-lmsa-50 text-lmsa-600 rounded-lg hover:bg-lmsa-100 font-medium shrink-0"
-      >
-        <Download size={12} /> Download
-      </a>
-    </div>
-  );
-}
-
-function AnnouncementCard({ announcement }) {
-  // Same filled surfaces as the shared Alert: the fill carries the state, no outline.
-  const STYLES = {
-    info:    { surface: 'bg-blue-100 text-blue-900', icon: <Info size={16} className="shrink-0 mt-0.5" /> },
-    success: { surface: 'bg-lmsa-100 text-lmsa-900', icon: <Check size={16} className="shrink-0 mt-0.5" /> },
-    warning: { surface: 'bg-amber-100 text-amber-900', icon: <AlertCircle size={16} className="shrink-0 mt-0.5" /> },
-    urgent:  { surface: 'bg-red-100 text-red-900', icon: <AlertCircle size={16} className="shrink-0 mt-0.5" /> },
-  };
-  const style = STYLES[announcement.type] || STYLES.info;
-  return (
-    <div className={`flex gap-3 p-4 rounded-xl ${style.surface}`}>
-      {style.icon}
-      <div>
-        <p className="text-sm font-semibold">{announcement.title}</p>
-        <p className="text-sm mt-0.5 opacity-80">{announcement.message}</p>
-      </div>
-    </div>
-  );
-}
-
-function EmptySection({ icon: Icon, message }) {
-  return (
-    <div className="bg-white rounded-2xl border border-gray-200 p-12 text-center">
-      <Icon size={40} className="mx-auto mb-3 text-gray-200" />
-      <p className="text-gray-400">{message}</p>
-    </div>
-  );
-}
-
-// ─── Updated CommitteesPage (overview) with membership CTA + stats ────────────
-export function CommitteesOverviewPage() {
-  const [search, setSearch] = useState('');
-  const filtered = Object.entries(ALL_COMMITTEES_DATA)
-    .filter(([, c]) => c.name.toLowerCase().includes(search.toLowerCase()));
-
-  return (
-    <div className="min-h-svh bg-gray-50">
-      {/* Header */}
-      <div className="bg-gradient-to-br from-lmsa-50 to-lmsa-100 py-16 border-b border-lmsa-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Standing Committees</h1>
-          <p className="text-xl text-gray-600 max-w-3xl mb-6">
-            Our 12 standing committees drive LMSA&apos;s mission, each focused on a specific area of student life, academics, and community.
-          </p>
-          <input
-            className="input max-w-md bg-white"
-            placeholder="Search committees..."
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-          />
-        </div>
-      </div>
-
-      {/* Grid */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {filtered.map(([slug, c]) => {
-            const Icon = ICON_MAP[c.icon] || BookOpen;
-            return (
-              <Link
-                key={slug}
-                to={`/leadership/committees/${slug}`}
-                className="bg-white rounded-2xl border border-gray-200 p-6 hover:shadow-lg hover:border-lmsa-300 transition-all group"
-              >
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-lmsa-50 rounded-xl flex items-center justify-center shrink-0 group-hover:bg-lmsa-600 transition-colors">
-                    <Icon size={22} className="text-lmsa-600 group-hover:text-white transition-colors" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="text-base font-bold text-gray-900 mb-1 group-hover:text-lmsa-600 transition-colors">{c.name}</h3>
-                    <p className="text-sm text-gray-500 line-clamp-2">{c.description || c.mandate?.[0]}</p>
-                    <p className="text-xs text-lmsa-600 font-medium mt-3">Learn more →</p>
-                  </div>
-                </div>
-              </Link>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* CTA */}
-      <div className="bg-lmsa-600 py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-bold text-white mb-4">Want to Join a Committee?</h2>
-          <p className="text-lmsa-100 mb-8 max-w-2xl mx-auto">
-            Get involved in LMSA&apos;s work by joining one of our committees. Develop leadership skills and make a real difference.
-          </p>
-          <Link to="/get-involved/committees" className="inline-block px-8 py-3 bg-white text-lmsa-600 font-semibold rounded-xl hover:bg-gray-100 transition-colors">
-            Join a Committee
-          </Link>
-        </div>
-      </div>
-    </div>
+      {doc.file_url && (
+        <a
+          href={doc.file_url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex min-h-12 items-center gap-2 text-[15px] font-semibold text-lmsa-700 underline decoration-2 underline-offset-[6px] transition-colors hover:decoration-lmsa-900"
+        >
+          <Download size={15} aria-hidden="true" />
+          Open
+        </a>
+      )}
+    </li>
   );
 }
