@@ -1,26 +1,24 @@
 {
- "url": "http://localhost:5173/leadership",
- "at": "2026-11-13T00:15:22.379Z",
+ "url": "http://localhost:5173/leadership/executive-council",
+ "at": "2026-11-13T00:32:58.182Z",
  "allow": [],
  "viewports": [
   {
    "width": 1440,
    "height": 900,
    "load": "load",
-   "screens": 7,
+   "screens": 5,
    "filled": [
+    0.74,
+    0.88,
     1,
-    0.96,
-    0.99,
-    0.64,
-    0.64,
-    0.93,
+    1,
     1
    ],
    "motion": {
-    "elements": 23,
-    "css": 3,
-    "transitions": 20,
+    "elements": 17,
+    "css": 2,
+    "transitions": 15,
     "scripted": 0,
     "videos": 0,
     "playingVideos": 0
@@ -31,14 +29,14 @@
      "h": 900
     },
     "page": {
-     "height": 6029,
-     "screens": 6.7,
-     "words": 547,
+     "height": 4466,
+     "screens": 5,
+     "words": 391,
      "img": 5,
      "video": 0,
      "canvas": 0,
-     "svg": 32,
-     "sections": 6,
+     "svg": 22,
+     "sections": 5,
      "horizontalOverflow": 0,
      "overflowCulprits": [],
      "uiFragments": 0,
@@ -47,10 +45,10 @@
      "videoCount": 0,
      "uiPictures": 0,
      "pictureSamples": [
-      "photo-1579684385127-1ef15d508118?w=1200&q=80",
-      "photo-1552664730-d307ca884978?w=600&q=80",
+      "photo-1523240795612-9a054b0db644?w=1200&q=80",
       "photo-1521737711867-e3b97375f902?w=600&q=80",
-      "photo-1576091160399-112ba8d25d1d?w=800&q=80"
+      "photo-1557804506-669a67965ba0?w=1200&q=80",
+      "photo-1552664730-d307ca884978?w=600&q=80"
      ],
      "blendText": 0,
      "sideScrollers": 0,
@@ -58,60 +56,60 @@
      "emoji": []
     },
     "hero": {
-     "text": "Name on the ballot.",
+     "text": "Meet the executive council",
      "words": 4,
-     "chars": 19,
+     "chars": 26,
      "lines": 2,
-     "size": 92,
-     "vw": 6.4,
+     "size": 72,
+     "vw": 5,
      "font": "Inter",
      "weight": 700,
      "tracking": -0.045,
-     "leading": 0.92,
+     "leading": 0.96,
      "upper": false,
      "italic": false,
      "mono": false,
      "align": "left",
      "position": "left",
      "widthRatio": 0.42,
-     "top": 319,
+     "top": 160,
      "tag": "h1",
      "kind": "heading"
     },
     "h1": {
-     "text": "Name on the ballot.",
+     "text": "Meet the executive council",
      "words": 4,
      "lines": 2,
-     "size": 92,
+     "size": 72,
      "font": "Inter"
     },
     "headings": [
      {
-      "text": "Name on the ballot.",
+      "text": "Meet the executive council",
       "words": 4,
-      "chars": 19,
+      "chars": 26,
       "lines": 2,
-      "size": 92,
-      "vw": 6.4,
+      "size": 72,
+      "vw": 5,
       "font": "Inter",
       "weight": 700,
       "tracking": -0.045,
-      "leading": 0.92,
+      "leading": 0.96,
       "upper": false,
       "italic": false,
       "mono": false,
       "align": "left",
       "position": "left",
       "widthRatio": 0.42,
-      "top": 319,
+      "top": 160,
       "tag": "h1",
       "kind": "heading"
      },
      {
-      "text": "The officers serving this year.",
+      "text": "Every class has a seat.",
       "words": 5,
-      "chars": 31,
-      "lines": 2,
+      "chars": 23,
+      "lines": 1,
       "size": 51.8,
       "vw": 3.6,
       "font": "Inter",
@@ -124,36 +122,36 @@
       "align": "left",
       "position": "left",
       "widthRatio": 0.39,
-      "top": 844,
+      "top": 679,
       "tag": "h2",
       "kind": "heading"
      },
      {
-      "text": "2025-2026",
-      "words": 1,
-      "chars": 9,
+      "text": "Who sits on it.",
+      "words": 4,
+      "chars": 15,
       "lines": 1,
-      "size": 30,
-      "vw": 2.1,
-      "font": "Merriweather",
-      "weight": 400,
-      "tracking": 0,
-      "leading": 1,
+      "size": 51.8,
+      "vw": 3.6,
+      "font": "Inter",
+      "weight": 700,
+      "tracking": -0.04,
+      "leading": 1.02,
       "upper": false,
       "italic": false,
       "mono": false,
-      "align": "right",
-      "position": "right",
-      "widthRatio": 0.1,
-      "top": 868,
-      "tag": "p",
-      "kind": "statement"
+      "align": "left",
+      "position": "left",
+      "widthRatio": 0.39,
+      "top": 1285,
+      "tag": "h2",
+      "kind": "heading"
      },
      {
-      "text": "Where the ballot stands.",
+      "text": "What the council does.",
       "words": 4,
-      "chars": 24,
-      "lines": 2,
+      "chars": 22,
+      "lines": 1,
       "size": 51.8,
       "vw": 3.6,
       "font": "Inter",
@@ -165,141 +163,15 @@
       "mono": false,
       "align": "left",
       "position": "left",
-      "widthRatio": 0.32,
-      "top": 1797,
+      "widthRatio": 0.53,
+      "top": 2532,
       "tag": "h2",
       "kind": "heading"
      },
      {
-      "text": "Election dates could not be loaded right now — check back shortly.",
-      "words": 12,
-      "chars": 66,
-      "lines": 2,
-      "size": 30,
-      "vw": 2.1,
-      "font": "Merriweather",
-      "weight": 400,
-      "tracking": 0,
-      "leading": 1.2,
-      "upper": false,
-      "italic": false,
-      "mono": false,
-      "align": "left",
-      "position": "left",
-      "widthRatio": 0.37,
-      "top": 1927,
-      "tag": "p",
-      "kind": "statement"
-     },
-     {
-      "text": "Three ways to serve.",
+      "text": "Stand for your class.",
       "words": 4,
-      "chars": 20,
-      "lines": 2,
-      "size": 51.8,
-      "vw": 3.6,
-      "font": "Inter",
-      "weight": 700,
-      "tracking": -0.04,
-      "leading": 1.02,
-      "upper": false,
-      "italic": false,
-      "mono": false,
-      "align": "left",
-      "position": "left",
-      "widthRatio": 0.34,
-      "top": 2299,
-      "tag": "h2",
-      "kind": "heading"
-     },
-     {
-      "text": "Executive Committee",
-      "words": 2,
-      "chars": 19,
-      "lines": 1,
-      "size": 30,
-      "vw": 2.1,
-      "font": "Inter",
-      "weight": 600,
-      "tracking": -0.035,
-      "leading": 1.25,
-      "upper": false,
-      "italic": false,
-      "mono": false,
-      "align": "left",
-      "position": "right",
-      "widthRatio": 0.45,
-      "top": 2299,
-      "tag": "h3",
-      "kind": "heading"
-     },
-     {
-      "text": "Class Representatives",
-      "words": 2,
       "chars": 21,
-      "lines": 1,
-      "size": 30,
-      "vw": 2.1,
-      "font": "Inter",
-      "weight": 600,
-      "tracking": -0.035,
-      "leading": 1.25,
-      "upper": false,
-      "italic": false,
-      "mono": false,
-      "align": "left",
-      "position": "right",
-      "widthRatio": 0.45,
-      "top": 2643,
-      "tag": "h3",
-      "kind": "heading"
-     },
-     {
-      "text": "Committee Chairs",
-      "words": 2,
-      "chars": 16,
-      "lines": 1,
-      "size": 30,
-      "vw": 2.1,
-      "font": "Inter",
-      "weight": 600,
-      "tracking": -0.035,
-      "leading": 1.25,
-      "upper": false,
-      "italic": false,
-      "mono": false,
-      "align": "left",
-      "position": "right",
-      "widthRatio": 0.4,
-      "top": 3027,
-      "tag": "h3",
-      "kind": "heading"
-     },
-     {
-      "text": "Three bodies, one membership.",
-      "words": 4,
-      "chars": 29,
-      "lines": 2,
-      "size": 51.8,
-      "vw": 3.6,
-      "font": "Inter",
-      "weight": 700,
-      "tracking": -0.04,
-      "leading": 1.02,
-      "upper": false,
-      "italic": false,
-      "mono": false,
-      "align": "left",
-      "position": "left",
-      "widthRatio": 0.44,
-      "top": 3615,
-      "tag": "h2",
-      "kind": "heading"
-     },
-     {
-      "text": "Put your name forward.",
-      "words": 4,
-      "chars": 22,
       "lines": 2,
       "size": 60,
       "vw": 4.2,
@@ -311,9 +183,9 @@
       "italic": false,
       "mono": false,
       "align": "left",
-      "position": "right",
-      "widthRatio": 0.43,
-      "top": 4797,
+      "position": "left",
+      "widthRatio": 0.38,
+      "top": 3249,
       "tag": "h2",
       "kind": "heading"
      },
@@ -334,16 +206,16 @@
       "align": "left",
       "position": "left",
       "widthRatio": 0.32,
-      "top": 5402,
+      "top": 3838,
       "tag": "h2",
       "kind": "heading"
      }
     ],
     "headingSummary": {
-     "count": 12,
+     "count": 6,
      "maxLines": 2,
      "over2Lines": 0,
-     "statements": 2,
+     "statements": 0,
      "centered": 0,
      "medianWords": 4,
      "mixedFontHeadings": 0
@@ -352,12 +224,12 @@
      "families": [
       {
        "family": "Inter",
-       "share": 0.95,
+       "share": 0.98,
        "mono": false
       },
       {
        "family": "Merriweather",
-       "share": 0.05,
+       "share": 0.02,
        "mono": false
       }
      ],
@@ -369,547 +241,10 @@
       17,
       20,
       24,
-      30,
       36,
       52,
       60,
-      92
-     ],
-     "sizeCount": 11,
-     "notLoaded": [],
-     "body": {
-      "font": "Inter",
-      "size": 17,
-      "leading": 1.65,
-      "weight": 400,
-      "tracking": 0,
-      "contrast": 8.2
-     },
-     "measureChars": 67,
-     "max": {
-      "size": 92,
-      "vw": 6.4,
-      "font": "Inter",
-      "text": "Name on the ballot."
-     },
-     "monoShare": 0,
-     "monoProseShare": 0,
-     "monoFamilies": [],
-     "monoSamples": [],
-     "microLabels": 0,
-     "microLabelShare": 0,
-     "microSamples": [],
-     "upperShare": 0,
-     "centerShare": 0.02,
-     "smallText": 0
-    },
-    "eyebrows": [],
-    "numbered": [],
-    "color": {
-     "bodyBg": "#f1f0ec",
-     "bodyBgHsl": {
-      "h": 48,
-      "s": 0.15,
-      "l": 0.94
-     },
-     "dark": false,
-     "sectionBgs": [
-      {
-       "color": "#064629",
-       "top": 112,
-       "hsl": {
-        "h": 153,
-        "s": 0.84,
-        "l": 0.15
-       }
-      },
-      {
-       "color": "#ffffff",
-       "top": 732,
-       "hsl": {
-        "h": 0,
-        "s": 0,
-        "l": 1
-       }
-      },
-      {
-       "color": "#f1f0ec",
-       "top": 3503,
-       "hsl": {
-        "h": 48,
-        "s": 0.15,
-        "l": 0.94
-       }
-      },
-      {
-       "color": "#111827",
-       "top": 5326,
-       "hsl": {
-        "h": 221,
-        "s": 0.39,
-        "l": 0.11
-       }
-      }
-     ],
-     "textColors": [
-      {
-       "color": "#1f2937",
-       "share": 0.23
-      },
-      {
-       "color": "#e8f7f0",
-       "share": 0.14
-      },
-      {
-       "color": "#064629",
-       "share": 0.14
-      },
-      {
-       "color": "#9ca3af",
-       "share": 0.12
-      },
-      {
-       "color": "#374151",
-       "share": 0.11
-      }
-     ],
-     "button": {
-      "bg": "#0c8950",
-      "hsl": {
-       "h": 153,
-       "s": 0.84,
-       "l": 0.29
-      },
-      "fg": "#ffffff"
-     },
-     "lowContrast": []
-    },
-    "buttons": {
-     "count": 5,
-     "inHero": 2,
-     "radius": 0,
-     "height": 44,
-     "withShadow": 0,
-     "withGradient": 0,
-     "mono": 0,
-     "upper": 0,
-     "heroLabels": [
-      "Join LMSA",
-      "See how to stand"
-     ]
-    },
-    "surfaces": {
-     "shadowStatic": 0,
-     "shadowOverlay": 1,
-     "shadowSamples": [],
-     "gradients": 0,
-     "scrims": 0,
-     "gradientSamples": [],
-     "gradientText": 0,
-     "hairlines": 0,
-     "hairlineSamples": [],
-     "outlinedBoxes": 0,
-     "dashed": 0,
-     "blurred": 0,
-     "roundedBoxes": 0,
-     "boxRadius": 0,
-     "squareMedia": 1,
-     "roundedMedia": 3,
-     "mediaRadius": 8,
-     "textShadow": 0,
-     "cardRows": []
-    },
-    "heroMedia": [
-     {
-      "type": "img",
-      "ratio": 0.23
-     }
-    ],
-    "nav": {
-     "links": 6,
-     "fixed": true,
-     "height": 112,
-     "floatingPill": false,
-     "blur": false
-    },
-    "fontsLoaded": [
-     "inter",
-     "merriweather"
-    ]
-   },
-   "consoleErrors": []
-  },
-  {
-   "width": 768,
-   "height": 1024,
-   "load": "load",
-   "screens": 8,
-   "filled": [
-    1,
-    0.88,
-    1,
-    1,
-    0.34,
-    0.84,
-    1,
-    1
-   ],
-   "motion": {
-    "elements": 24,
-    "css": 3,
-    "transitions": 21,
-    "scripted": 0,
-    "videos": 0,
-    "playingVideos": 0
-   },
-   "metrics": {
-    "viewport": {
-     "w": 768,
-     "h": 1024
-    },
-    "page": {
-     "height": 7870,
-     "screens": 7.7,
-     "words": 536,
-     "img": 5,
-     "video": 0,
-     "canvas": 0,
-     "svg": 32,
-     "sections": 6,
-     "horizontalOverflow": 0,
-     "overflowCulprits": [],
-     "uiFragments": 0,
-     "uiAbuse": false,
-     "realPictures": 4,
-     "videoCount": 0,
-     "uiPictures": 0,
-     "pictureSamples": [
-      "photo-1579684385127-1ef15d508118?w=1200&q=80",
-      "photo-1552664730-d307ca884978?w=600&q=80",
-      "photo-1521737711867-e3b97375f902?w=600&q=80",
-      "photo-1576091160399-112ba8d25d1d?w=800&q=80"
-     ],
-     "blendText": 0,
-     "sideScrollers": 0,
-     "brokenImages": [],
-     "emoji": []
-    },
-    "hero": {
-     "text": "Name on the ballot.",
-     "words": 4,
-     "chars": 19,
-     "lines": 1,
-     "size": 53.8,
-     "vw": 7,
-     "font": "Inter",
-     "weight": 700,
-     "tracking": -0.045,
-     "leading": 0.92,
-     "upper": false,
-     "italic": false,
-     "mono": false,
-     "align": "left",
-     "position": "center",
-     "widthRatio": 0.94,
-     "top": 176,
-     "tag": "h1",
-     "kind": "heading"
-    },
-    "h1": {
-     "text": "Name on the ballot.",
-     "words": 4,
-     "lines": 1,
-     "size": 53.8,
-     "font": "Inter"
-    },
-    "headings": [
-     {
-      "text": "Name on the ballot.",
-      "words": 4,
-      "chars": 19,
-      "lines": 1,
-      "size": 53.8,
-      "vw": 7,
-      "font": "Inter",
-      "weight": 700,
-      "tracking": -0.045,
-      "leading": 0.92,
-      "upper": false,
-      "italic": false,
-      "mono": false,
-      "align": "left",
-      "position": "center",
-      "widthRatio": 0.94,
-      "top": 176,
-      "tag": "h1",
-      "kind": "heading"
-     },
-     {
-      "text": "The officers serving this year.",
-      "words": 5,
-      "chars": 31,
-      "lines": 2,
-      "size": 32,
-      "vw": 4.2,
-      "font": "Inter",
-      "weight": 700,
-      "tracking": -0.04,
-      "leading": 1.02,
-      "upper": false,
-      "italic": false,
-      "mono": false,
-      "align": "left",
-      "position": "left",
-      "widthRatio": 0.46,
-      "top": 977,
-      "tag": "h2",
-      "kind": "heading"
-     },
-     {
-      "text": "2025-2026",
-      "words": 1,
-      "chars": 9,
-      "lines": 1,
-      "size": 30,
-      "vw": 3.9,
-      "font": "Merriweather",
-      "weight": 400,
-      "tracking": 0,
-      "leading": 1,
-      "upper": false,
-      "italic": false,
-      "mono": false,
-      "align": "left",
-      "position": "center",
-      "widthRatio": 0.94,
-      "top": 1183,
-      "tag": "p",
-      "kind": "statement"
-     },
-     {
-      "text": "Where the ballot stands.",
-      "words": 4,
-      "chars": 24,
-      "lines": 2,
-      "size": 32,
-      "vw": 4.2,
-      "font": "Inter",
-      "weight": 700,
-      "tracking": -0.045,
-      "leading": 1.02,
-      "upper": false,
-      "italic": false,
-      "mono": false,
-      "align": "left",
-      "position": "left",
-      "widthRatio": 0.37,
-      "top": 1944,
-      "tag": "h2",
-      "kind": "heading"
-     },
-     {
-      "text": "Election dates could not be loaded right now — check back shortly.",
-      "words": 12,
-      "chars": 66,
-      "lines": 2,
-      "size": 30,
-      "vw": 3.9,
-      "font": "Merriweather",
-      "weight": 400,
-      "tracking": 0,
-      "leading": 1.2,
-      "upper": false,
-      "italic": false,
-      "mono": false,
-      "align": "left",
-      "position": "center",
-      "widthRatio": 0.84,
-      "top": 2033,
-      "tag": "p",
-      "kind": "statement"
-     },
-     {
-      "text": "Three ways to serve.",
-      "words": 4,
-      "chars": 20,
-      "lines": 1,
-      "size": 32,
-      "vw": 4.2,
-      "font": "Inter",
-      "weight": 700,
-      "tracking": -0.04,
-      "leading": 1.02,
-      "upper": false,
-      "italic": false,
-      "mono": false,
-      "align": "left",
-      "position": "left",
-      "widthRatio": 0.43,
-      "top": 2705,
-      "tag": "h2",
-      "kind": "heading"
-     },
-     {
-      "text": "Executive Committee",
-      "words": 2,
-      "chars": 19,
-      "lines": 1,
-      "size": 30,
-      "vw": 3.9,
-      "font": "Inter",
-      "weight": 600,
-      "tracking": -0.035,
-      "leading": 1.25,
-      "upper": false,
-      "italic": false,
-      "mono": false,
-      "align": "left",
-      "position": "center",
-      "widthRatio": 0.94,
-      "top": 3530,
-      "tag": "h3",
-      "kind": "heading"
-     },
-     {
-      "text": "Class Representatives",
-      "words": 2,
-      "chars": 21,
-      "lines": 1,
-      "size": 30,
-      "vw": 3.9,
-      "font": "Inter",
-      "weight": 600,
-      "tracking": -0.035,
-      "leading": 1.25,
-      "upper": false,
-      "italic": false,
-      "mono": false,
-      "align": "left",
-      "position": "center",
-      "widthRatio": 0.94,
-      "top": 3874,
-      "tag": "h3",
-      "kind": "heading"
-     },
-     {
-      "text": "Committee Chairs",
-      "words": 2,
-      "chars": 16,
-      "lines": 1,
-      "size": 30,
-      "vw": 3.9,
-      "font": "Inter",
-      "weight": 600,
-      "tracking": -0.035,
-      "leading": 1.25,
-      "upper": false,
-      "italic": false,
-      "mono": false,
-      "align": "left",
-      "position": "center",
-      "widthRatio": 0.83,
-      "top": 4258,
-      "tag": "h3",
-      "kind": "heading"
-     },
-     {
-      "text": "Three bodies, one membership.",
-      "words": 4,
-      "chars": 29,
-      "lines": 2,
-      "size": 32,
-      "vw": 4.2,
-      "font": "Inter",
-      "weight": 700,
-      "tracking": -0.04,
-      "leading": 1.02,
-      "upper": false,
-      "italic": false,
-      "mono": false,
-      "align": "left",
-      "position": "left",
-      "widthRatio": 0.52,
-      "top": 4846,
-      "tag": "h2",
-      "kind": "heading"
-     },
-     {
-      "text": "Put your name forward.",
-      "words": 4,
-      "chars": 22,
-      "lines": 1,
-      "size": 32.3,
-      "vw": 4.2,
-      "font": "Inter",
-      "weight": 700,
-      "tracking": -0.045,
-      "leading": 0.98,
-      "upper": false,
-      "italic": false,
-      "mono": false,
-      "align": "left",
-      "position": "center",
-      "widthRatio": 0.94,
-      "top": 5852,
-      "tag": "h2",
-      "kind": "heading"
-     },
-     {
-      "text": "Keep learning. Keep leading.",
-      "words": 4,
-      "chars": 28,
-      "lines": 2,
-      "size": 36,
-      "vw": 4.7,
-      "font": "Inter",
-      "weight": 600,
-      "tracking": -0.03,
-      "leading": 1.11,
-      "upper": false,
-      "italic": false,
-      "mono": false,
-      "align": "left",
-      "position": "left",
-      "widthRatio": 0.55,
-      "top": 6939,
-      "tag": "h2",
-      "kind": "heading"
-     }
-    ],
-    "headingSummary": {
-     "count": 12,
-     "maxLines": 2,
-     "over2Lines": 0,
-     "statements": 2,
-     "centered": 0,
-     "medianWords": 4,
-     "mixedFontHeadings": 0
-    },
-    "type": {
-     "families": [
-      {
-       "family": "Inter",
-       "share": 0.95,
-       "mono": false
-      },
-      {
-       "family": "Merriweather",
-       "share": 0.05,
-       "mono": false
-      }
-     ],
-     "familyCount": 2,
-     "sizes": [
-      13,
-      14,
-      15,
-      17,
-      20,
-      24,
-      30,
-      32,
-      36,
-      54
+      72
      ],
      "sizeCount": 10,
      "notLoaded": [],
@@ -919,14 +254,14 @@
       "leading": 1.65,
       "weight": 400,
       "tracking": 0,
-      "contrast": 8.2
+      "contrast": 12.9
      },
-     "measureChars": 67,
+     "measureChars": 70,
      "max": {
-      "size": 53.8,
-      "vw": 7,
+      "size": 72,
+      "vw": 5,
       "font": "Inter",
-      "text": "Name on the ballot."
+      "text": "Meet the executive council"
      },
      "monoShare": 0,
      "monoProseShare": 0,
@@ -936,7 +271,7 @@
      "microLabelShare": 0,
      "microSamples": [],
      "upperShare": 0,
-     "centerShare": 0.01,
+     "centerShare": 0.03,
      "smallText": 0
     },
     "eyebrows": [],
@@ -960,17 +295,8 @@
        }
       },
       {
-       "color": "#ffffff",
-       "top": 865,
-       "hsl": {
-        "h": 0,
-        "s": 0,
-        "l": 1
-       }
-      },
-      {
        "color": "#f1f0ec",
-       "top": 4218,
+       "top": 506,
        "hsl": {
         "h": 48,
         "s": 0.15,
@@ -978,8 +304,17 @@
        }
       },
       {
+       "color": "#ffffff",
+       "top": 1173,
+       "hsl": {
+        "h": 0,
+        "s": 0,
+        "l": 1
+       }
+      },
+      {
        "color": "#111827",
-       "top": 6863,
+       "top": 3762,
        "hsl": {
         "h": 221,
         "s": 0.39,
@@ -990,19 +325,19 @@
      "textColors": [
       {
        "color": "#1f2937",
-       "share": 0.23
-      },
-      {
-       "color": "#e8f7f0",
-       "share": 0.14
-      },
-      {
-       "color": "#064629",
-       "share": 0.14
+       "share": 0.3
       },
       {
        "color": "#9ca3af",
-       "share": 0.13
+       "share": 0.17
+      },
+      {
+       "color": "#ffffff",
+       "share": 0.17
+      },
+      {
+       "color": "#e8f7f0",
+       "share": 0.12
       },
       {
        "color": "#374151",
@@ -1031,7 +366,7 @@
      "upper": 0,
      "heroLabels": [
       "Join LMSA",
-      "See how to stand"
+      "See all leadership"
      ]
     },
     "surfaces": {
@@ -1058,7 +393,418 @@
     "heroMedia": [
      {
       "type": "img",
-      "ratio": 0.35
+      "ratio": 0.14
+     },
+     {
+      "type": "img",
+      "ratio": 0.12
+     }
+    ],
+    "nav": {
+     "links": 6,
+     "fixed": true,
+     "height": 112,
+     "floatingPill": false,
+     "blur": false
+    },
+    "fontsLoaded": [
+     "inter",
+     "merriweather"
+    ]
+   },
+   "consoleErrors": []
+  },
+  {
+   "width": 768,
+   "height": 1024,
+   "load": "load",
+   "screens": 6,
+   "filled": [
+    0.73,
+    0.82,
+    1,
+    1,
+    1,
+    1
+   ],
+   "motion": {
+    "elements": 17,
+    "css": 2,
+    "transitions": 15,
+    "scripted": 0,
+    "videos": 0,
+    "playingVideos": 0
+   },
+   "metrics": {
+    "viewport": {
+     "w": 768,
+     "h": 1024
+    },
+    "page": {
+     "height": 5596,
+     "screens": 5.5,
+     "words": 380,
+     "img": 5,
+     "video": 0,
+     "canvas": 0,
+     "svg": 22,
+     "sections": 5,
+     "horizontalOverflow": 0,
+     "overflowCulprits": [],
+     "uiFragments": 0,
+     "uiAbuse": false,
+     "realPictures": 4,
+     "videoCount": 0,
+     "uiPictures": 0,
+     "pictureSamples": [
+      "photo-1523240795612-9a054b0db644?w=1200&q=80",
+      "photo-1521737711867-e3b97375f902?w=600&q=80",
+      "photo-1557804506-669a67965ba0?w=1200&q=80",
+      "photo-1552664730-d307ca884978?w=600&q=80"
+     ],
+     "blendText": 0,
+     "sideScrollers": 0,
+     "brokenImages": [],
+     "emoji": []
+    },
+    "hero": {
+     "text": "Meet the executive council",
+     "words": 4,
+     "chars": 26,
+     "lines": 1,
+     "size": 40,
+     "vw": 5.2,
+     "font": "Inter",
+     "weight": 700,
+     "tracking": -0.045,
+     "leading": 0.96,
+     "upper": false,
+     "italic": false,
+     "mono": false,
+     "align": "left",
+     "position": "center",
+     "widthRatio": 0.94,
+     "top": 152,
+     "tag": "h1",
+     "kind": "heading"
+    },
+    "h1": {
+     "text": "Meet the executive council",
+     "words": 4,
+     "lines": 1,
+     "size": 40,
+     "font": "Inter"
+    },
+    "headings": [
+     {
+      "text": "Meet the executive council",
+      "words": 4,
+      "chars": 26,
+      "lines": 1,
+      "size": 40,
+      "vw": 5.2,
+      "font": "Inter",
+      "weight": 700,
+      "tracking": -0.045,
+      "leading": 0.96,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.94,
+      "top": 152,
+      "tag": "h1",
+      "kind": "heading"
+     },
+     {
+      "text": "Every class has a seat.",
+      "words": 5,
+      "chars": 23,
+      "lines": 1,
+      "size": 32,
+      "vw": 4.2,
+      "font": "Inter",
+      "weight": 700,
+      "tracking": -0.04,
+      "leading": 1.02,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "left",
+      "widthRatio": 0.46,
+      "top": 802,
+      "tag": "h2",
+      "kind": "heading"
+     },
+     {
+      "text": "Who sits on it.",
+      "words": 4,
+      "chars": 15,
+      "lines": 1,
+      "size": 32,
+      "vw": 4.2,
+      "font": "Inter",
+      "weight": 700,
+      "tracking": -0.04,
+      "leading": 1.02,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "left",
+      "widthRatio": 0.46,
+      "top": 1939,
+      "tag": "h2",
+      "kind": "heading"
+     },
+     {
+      "text": "What the council does.",
+      "words": 4,
+      "chars": 22,
+      "lines": 1,
+      "size": 32,
+      "vw": 4.2,
+      "font": "Inter",
+      "weight": 700,
+      "tracking": -0.045,
+      "leading": 1.02,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.94,
+      "top": 2981,
+      "tag": "h2",
+      "kind": "heading"
+     },
+     {
+      "text": "Stand for your class.",
+      "words": 4,
+      "chars": 21,
+      "lines": 1,
+      "size": 32.3,
+      "vw": 4.2,
+      "font": "Inter",
+      "weight": 700,
+      "tracking": -0.045,
+      "leading": 0.98,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.94,
+      "top": 3634,
+      "tag": "h2",
+      "kind": "heading"
+     },
+     {
+      "text": "Keep learning. Keep leading.",
+      "words": 4,
+      "chars": 28,
+      "lines": 2,
+      "size": 36,
+      "vw": 4.7,
+      "font": "Inter",
+      "weight": 600,
+      "tracking": -0.03,
+      "leading": 1.11,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "left",
+      "widthRatio": 0.55,
+      "top": 4665,
+      "tag": "h2",
+      "kind": "heading"
+     }
+    ],
+    "headingSummary": {
+     "count": 6,
+     "maxLines": 2,
+     "over2Lines": 0,
+     "statements": 0,
+     "centered": 0,
+     "medianWords": 4,
+     "mixedFontHeadings": 0
+    },
+    "type": {
+     "families": [
+      {
+       "family": "Inter",
+       "share": 0.98,
+       "mono": false
+      },
+      {
+       "family": "Merriweather",
+       "share": 0.02,
+       "mono": false
+      }
+     ],
+     "familyCount": 2,
+     "sizes": [
+      13,
+      14,
+      15,
+      17,
+      20,
+      24,
+      32,
+      36,
+      40
+     ],
+     "sizeCount": 9,
+     "notLoaded": [],
+     "body": {
+      "font": "Inter",
+      "size": 17,
+      "leading": 1.65,
+      "weight": 400,
+      "tracking": 0,
+      "contrast": 12.9
+     },
+     "measureChars": 70,
+     "max": {
+      "size": 40,
+      "vw": 5.2,
+      "font": "Inter",
+      "text": "Meet the executive council"
+     },
+     "monoShare": 0,
+     "monoProseShare": 0,
+     "monoFamilies": [],
+     "monoSamples": [],
+     "microLabels": 0,
+     "microLabelShare": 0,
+     "microSamples": [],
+     "upperShare": 0,
+     "centerShare": 0,
+     "smallText": 0
+    },
+    "eyebrows": [],
+    "numbered": [],
+    "color": {
+     "bodyBg": "#f1f0ec",
+     "bodyBgHsl": {
+      "h": 48,
+      "s": 0.15,
+      "l": 0.94
+     },
+     "dark": false,
+     "sectionBgs": [
+      {
+       "color": "#064629",
+       "top": 112,
+       "hsl": {
+        "h": 153,
+        "s": 0.84,
+        "l": 0.15
+       }
+      },
+      {
+       "color": "#f1f0ec",
+       "top": 690,
+       "hsl": {
+        "h": 48,
+        "s": 0.15,
+        "l": 0.94
+       }
+      },
+      {
+       "color": "#ffffff",
+       "top": 1827,
+       "hsl": {
+        "h": 0,
+        "s": 0,
+        "l": 1
+       }
+      },
+      {
+       "color": "#111827",
+       "top": 4589,
+       "hsl": {
+        "h": 221,
+        "s": 0.39,
+        "l": 0.11
+       }
+      }
+     ],
+     "textColors": [
+      {
+       "color": "#1f2937",
+       "share": 0.31
+      },
+      {
+       "color": "#9ca3af",
+       "share": 0.17
+      },
+      {
+       "color": "#ffffff",
+       "share": 0.17
+      },
+      {
+       "color": "#e8f7f0",
+       "share": 0.13
+      },
+      {
+       "color": "#374151",
+       "share": 0.08
+      }
+     ],
+     "button": {
+      "bg": "#0c8950",
+      "hsl": {
+       "h": 153,
+       "s": 0.84,
+       "l": 0.29
+      },
+      "fg": "#ffffff"
+     },
+     "lowContrast": []
+    },
+    "buttons": {
+     "count": 5,
+     "inHero": 2,
+     "radius": 0,
+     "height": 44,
+     "withShadow": 0,
+     "withGradient": 0,
+     "mono": 0,
+     "upper": 0,
+     "heroLabels": [
+      "Join LMSA",
+      "See all leadership"
+     ]
+    },
+    "surfaces": {
+     "shadowStatic": 0,
+     "shadowOverlay": 1,
+     "shadowSamples": [],
+     "gradients": 0,
+     "scrims": 0,
+     "gradientSamples": [],
+     "gradientText": 0,
+     "hairlines": 0,
+     "hairlineSamples": [],
+     "outlinedBoxes": 0,
+     "dashed": 0,
+     "blurred": 0,
+     "roundedBoxes": 0,
+     "boxRadius": 0,
+     "squareMedia": 1,
+     "roundedMedia": 3,
+     "mediaRadius": 8,
+     "textShadow": 0,
+     "cardRows": []
+    },
+    "heroMedia": [
+     {
+      "type": "img",
+      "ratio": 0.24
      }
     ],
     "nav": {
@@ -1079,24 +825,21 @@
    "width": 390,
    "height": 844,
    "load": "load",
-   "screens": 11,
+   "screens": 8,
    "filled": [
-    1,
-    0.91,
-    1,
-    1,
-    1,
-    0.69,
-    0.38,
-    0.74,
+    0.8,
+    0.78,
     1,
     1,
+    1,
+    1,
+    0.99,
     1
    ],
    "motion": {
-    "elements": 24,
-    "css": 3,
-    "transitions": 21,
+    "elements": 17,
+    "css": 2,
+    "transitions": 15,
     "scripted": 0,
     "videos": 0,
     "playingVideos": 0
@@ -1107,14 +850,14 @@
      "h": 844
     },
     "page": {
-     "height": 8826,
-     "screens": 10.5,
-     "words": 520,
+     "height": 6030,
+     "screens": 7.1,
+     "words": 364,
      "img": 5,
      "video": 0,
      "canvas": 0,
-     "svg": 32,
-     "sections": 6,
+     "svg": 22,
+     "sections": 5,
      "horizontalOverflow": 0,
      "overflowCulprits": [],
      "uiFragments": 0,
@@ -1123,10 +866,10 @@
      "videoCount": 0,
      "uiPictures": 0,
      "pictureSamples": [
-      "photo-1579684385127-1ef15d508118?w=1200&q=80",
-      "photo-1552664730-d307ca884978?w=600&q=80",
+      "photo-1523240795612-9a054b0db644?w=1200&q=80",
       "photo-1521737711867-e3b97375f902?w=600&q=80",
-      "photo-1576091160399-112ba8d25d1d?w=800&q=80"
+      "photo-1557804506-669a67965ba0?w=1200&q=80",
+      "photo-1552664730-d307ca884978?w=600&q=80"
      ],
      "blendText": 0,
      "sideScrollers": 0,
@@ -1134,60 +877,60 @@
      "emoji": []
     },
     "hero": {
-     "text": "Name on the ballot.",
+     "text": "Meet the executive council",
      "words": 4,
-     "chars": 19,
+     "chars": 26,
      "lines": 2,
-     "size": 46.4,
-     "vw": 11.9,
+     "size": 40,
+     "vw": 10.3,
      "font": "Inter",
      "weight": 700,
      "tracking": -0.045,
-     "leading": 0.92,
+     "leading": 0.96,
      "upper": false,
      "italic": false,
      "mono": false,
      "align": "left",
      "position": "center",
      "widthRatio": 0.92,
-     "top": 152,
+     "top": 136,
      "tag": "h1",
      "kind": "heading"
     },
     "h1": {
-     "text": "Name on the ballot.",
+     "text": "Meet the executive council",
      "words": 4,
      "lines": 2,
-     "size": 46.4,
+     "size": 40,
      "font": "Inter"
     },
     "headings": [
      {
-      "text": "Name on the ballot.",
+      "text": "Meet the executive council",
       "words": 4,
-      "chars": 19,
+      "chars": 26,
       "lines": 2,
-      "size": 46.4,
-      "vw": 11.9,
+      "size": 40,
+      "vw": 10.3,
       "font": "Inter",
       "weight": 700,
       "tracking": -0.045,
-      "leading": 0.92,
+      "leading": 0.96,
       "upper": false,
       "italic": false,
       "mono": false,
       "align": "left",
       "position": "center",
       "widthRatio": 0.92,
-      "top": 152,
+      "top": 136,
       "tag": "h1",
       "kind": "heading"
      },
      {
-      "text": "The officers serving this year.",
+      "text": "Every class has a seat.",
       "words": 5,
-      "chars": 31,
-      "lines": 2,
+      "chars": 23,
+      "lines": 1,
       "size": 32,
       "vw": 8.2,
       "font": "Inter",
@@ -1200,35 +943,56 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.9,
-      "top": 945,
+      "top": 757,
       "tag": "h2",
       "kind": "heading"
      },
      {
-      "text": "2025-2026",
-      "words": 1,
-      "chars": 9,
+      "text": "Who sits on it.",
+      "words": 4,
+      "chars": 15,
       "lines": 1,
-      "size": 30,
-      "vw": 7.7,
+      "size": 32,
+      "vw": 8.2,
+      "font": "Inter",
+      "weight": 700,
+      "tracking": -0.04,
+      "leading": 1.02,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.9,
+      "top": 1670,
+      "tag": "h2",
+      "kind": "heading"
+     },
+     {
+      "text": "Elected by each class",
+      "words": 4,
+      "chars": 21,
+      "lines": 1,
+      "size": 24,
+      "vw": 6.2,
       "font": "Merriweather",
       "weight": 400,
       "tracking": 0,
-      "leading": 1,
+      "leading": 1.38,
       "upper": false,
       "italic": false,
       "mono": false,
       "align": "left",
       "position": "center",
       "widthRatio": 0.92,
-      "top": 1215,
+      "top": 1883,
       "tag": "p",
       "kind": "statement"
      },
      {
-      "text": "To be confirmed",
+      "text": "Appointed where needed",
       "words": 3,
-      "chars": 15,
+      "chars": 22,
       "lines": 1,
       "size": 24,
       "vw": 6.2,
@@ -1237,125 +1001,20 @@
       "tracking": 0,
       "leading": 1.38,
       "upper": false,
-      "italic": true,
+      "italic": false,
       "mono": false,
       "align": "left",
       "position": "center",
-      "widthRatio": 0.45,
-      "top": 1561,
+      "widthRatio": 0.92,
+      "top": 2204,
       "tag": "p",
       "kind": "statement"
      },
      {
-      "text": "To be confirmed",
-      "words": 3,
-      "chars": 15,
-      "lines": 1,
-      "size": 24,
-      "vw": 6.2,
-      "font": "Merriweather",
-      "weight": 400,
-      "tracking": 0,
-      "leading": 1.38,
-      "upper": false,
-      "italic": true,
-      "mono": false,
-      "align": "left",
-      "position": "center",
-      "widthRatio": 0.45,
-      "top": 1682,
-      "tag": "p",
-      "kind": "statement"
-     },
-     {
-      "text": "To be confirmed",
-      "words": 3,
-      "chars": 15,
-      "lines": 1,
-      "size": 24,
-      "vw": 6.2,
-      "font": "Merriweather",
-      "weight": 400,
-      "tracking": 0,
-      "leading": 1.38,
-      "upper": false,
-      "italic": true,
-      "mono": false,
-      "align": "left",
-      "position": "center",
-      "widthRatio": 0.45,
-      "top": 1803,
-      "tag": "p",
-      "kind": "statement"
-     },
-     {
-      "text": "To be confirmed",
-      "words": 3,
-      "chars": 15,
-      "lines": 1,
-      "size": 24,
-      "vw": 6.2,
-      "font": "Merriweather",
-      "weight": 400,
-      "tracking": 0,
-      "leading": 1.38,
-      "upper": false,
-      "italic": true,
-      "mono": false,
-      "align": "left",
-      "position": "center",
-      "widthRatio": 0.45,
-      "top": 1924,
-      "tag": "p",
-      "kind": "statement"
-     },
-     {
-      "text": "To be confirmed",
-      "words": 3,
-      "chars": 15,
-      "lines": 1,
-      "size": 24,
-      "vw": 6.2,
-      "font": "Merriweather",
-      "weight": 400,
-      "tracking": 0,
-      "leading": 1.38,
-      "upper": false,
-      "italic": true,
-      "mono": false,
-      "align": "left",
-      "position": "center",
-      "widthRatio": 0.47,
-      "top": 2045,
-      "tag": "p",
-      "kind": "statement"
-     },
-     {
-      "text": "To be confirmed",
-      "words": 3,
-      "chars": 15,
-      "lines": 1,
-      "size": 24,
-      "vw": 6.2,
-      "font": "Merriweather",
-      "weight": 400,
-      "tracking": 0,
-      "leading": 1.38,
-      "upper": false,
-      "italic": true,
-      "mono": false,
-      "align": "left",
-      "position": "center",
-      "widthRatio": 0.45,
-      "top": 2166,
-      "tag": "p",
-      "kind": "statement"
-     },
-     {
-      "text": "Where the ballot stands.",
+      "text": "What the council does.",
       "words": 4,
-      "chars": 24,
-      "lines": 2,
+      "chars": 22,
+      "lines": 1,
       "size": 32,
       "vw": 8.2,
       "font": "Inter",
@@ -1366,205 +1025,16 @@
       "italic": false,
       "mono": false,
       "align": "left",
-      "position": "left",
-      "widthRatio": 0.73,
-      "top": 2359,
+      "position": "center",
+      "widthRatio": 0.92,
+      "top": 2866,
       "tag": "h2",
       "kind": "heading"
      },
      {
-      "text": "Election dates could not be loaded right now — check back shortly.",
-      "words": 12,
-      "chars": 66,
-      "lines": 3,
-      "size": 24,
-      "vw": 6.2,
-      "font": "Merriweather",
-      "weight": 400,
-      "tracking": 0,
-      "leading": 1.35,
-      "upper": false,
-      "italic": false,
-      "mono": false,
-      "align": "left",
-      "position": "center",
-      "widthRatio": 0.92,
-      "top": 2448,
-      "tag": "p",
-      "kind": "statement"
-     },
-     {
-      "text": "Three ways to serve.",
+      "text": "Stand for your class.",
       "words": 4,
-      "chars": 20,
-      "lines": 1,
-      "size": 32,
-      "vw": 8.2,
-      "font": "Inter",
-      "weight": 700,
-      "tracking": -0.04,
-      "leading": 1.02,
-      "upper": false,
-      "italic": false,
-      "mono": false,
-      "align": "left",
-      "position": "center",
-      "widthRatio": 0.85,
-      "top": 3277,
-      "tag": "h2",
-      "kind": "heading"
-     },
-     {
-      "text": "Executive Committee",
-      "words": 2,
-      "chars": 19,
-      "lines": 1,
-      "size": 30,
-      "vw": 7.7,
-      "font": "Inter",
-      "weight": 600,
-      "tracking": -0.035,
-      "leading": 1.25,
-      "upper": false,
-      "italic": false,
-      "mono": false,
-      "align": "left",
-      "position": "center",
-      "widthRatio": 0.92,
-      "top": 3862,
-      "tag": "h3",
-      "kind": "heading"
-     },
-     {
-      "text": "Class Representatives",
-      "words": 2,
       "chars": 21,
-      "lines": 1,
-      "size": 30,
-      "vw": 7.7,
-      "font": "Inter",
-      "weight": 600,
-      "tracking": -0.035,
-      "leading": 1.25,
-      "upper": false,
-      "italic": false,
-      "mono": false,
-      "align": "left",
-      "position": "center",
-      "widthRatio": 0.92,
-      "top": 4262,
-      "tag": "h3",
-      "kind": "heading"
-     },
-     {
-      "text": "Committee Chairs",
-      "words": 2,
-      "chars": 16,
-      "lines": 1,
-      "size": 30,
-      "vw": 7.7,
-      "font": "Inter",
-      "weight": 600,
-      "tracking": -0.035,
-      "leading": 1.25,
-      "upper": false,
-      "italic": false,
-      "mono": false,
-      "align": "left",
-      "position": "center",
-      "widthRatio": 0.79,
-      "top": 4666,
-      "tag": "h3",
-      "kind": "heading"
-     },
-     {
-      "text": "Three bodies, one membership.",
-      "words": 4,
-      "chars": 29,
-      "lines": 2,
-      "size": 32,
-      "vw": 8.2,
-      "font": "Inter",
-      "weight": 700,
-      "tracking": -0.04,
-      "leading": 1.02,
-      "upper": false,
-      "italic": false,
-      "mono": false,
-      "align": "left",
-      "position": "center",
-      "widthRatio": 0.92,
-      "top": 5357,
-      "tag": "h2",
-      "kind": "heading"
-     },
-     {
-      "text": "The members decide.",
-      "words": 3,
-      "chars": 19,
-      "lines": 1,
-      "size": 24,
-      "vw": 6.2,
-      "font": "Inter",
-      "weight": 600,
-      "tracking": -0.03,
-      "leading": 1.38,
-      "upper": false,
-      "italic": false,
-      "mono": false,
-      "align": "left",
-      "position": "center",
-      "widthRatio": 0.82,
-      "top": 5478,
-      "tag": "h3",
-      "kind": "heading"
-     },
-     {
-      "text": "The officers deliver.",
-      "words": 3,
-      "chars": 21,
-      "lines": 1,
-      "size": 24,
-      "vw": 6.2,
-      "font": "Inter",
-      "weight": 600,
-      "tracking": -0.03,
-      "leading": 1.38,
-      "upper": false,
-      "italic": false,
-      "mono": false,
-      "align": "left",
-      "position": "center",
-      "widthRatio": 0.82,
-      "top": 5685,
-      "tag": "h3",
-      "kind": "heading"
-     },
-     {
-      "text": "The teams deepen the work.",
-      "words": 5,
-      "chars": 26,
-      "lines": 1,
-      "size": 24,
-      "vw": 6.2,
-      "font": "Inter",
-      "weight": 600,
-      "tracking": -0.03,
-      "leading": 1.38,
-      "upper": false,
-      "italic": false,
-      "mono": false,
-      "align": "left",
-      "position": "center",
-      "widthRatio": 0.82,
-      "top": 5893,
-      "tag": "h3",
-      "kind": "heading"
-     },
-     {
-      "text": "Put your name forward.",
-      "words": 4,
-      "chars": 22,
       "lines": 1,
       "size": 32,
       "vw": 8.2,
@@ -1578,7 +1048,7 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.92,
-      "top": 6518,
+      "top": 3807,
       "tag": "h2",
       "kind": "heading"
      },
@@ -1599,7 +1069,7 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.9,
-      "top": 7442,
+      "top": 4646,
       "tag": "h2",
       "kind": "heading"
      },
@@ -1620,30 +1090,30 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.9,
-      "top": 7649,
+      "top": 4853,
       "tag": "h3",
       "kind": "heading"
      }
     ],
     "headingSummary": {
-     "count": 22,
-     "maxLines": 3,
+     "count": 9,
+     "maxLines": 2,
      "over2Lines": 0,
-     "statements": 8,
+     "statements": 2,
      "centered": 0,
-     "medianWords": 3,
+     "medianWords": 4,
      "mixedFontHeadings": 0
     },
     "type": {
      "families": [
       {
        "family": "Inter",
-       "share": 0.95,
+       "share": 0.98,
        "mono": false
       },
       {
        "family": "Merriweather",
-       "share": 0.05,
+       "share": 0.02,
        "mono": false
       }
      ],
@@ -1658,7 +1128,7 @@
       24,
       30,
       32,
-      46
+      40
      ],
      "sizeCount": 10,
      "notLoaded": [],
@@ -1668,14 +1138,14 @@
       "leading": 1.65,
       "weight": 400,
       "tracking": 0,
-      "contrast": 8.2
+      "contrast": 12.9
      },
      "measureChars": 42,
      "max": {
-      "size": 46.4,
-      "vw": 11.9,
+      "size": 40,
+      "vw": 10.3,
       "font": "Inter",
-      "text": "Name on the ballot."
+      "text": "Meet the executive council"
      },
      "monoShare": 0,
      "monoProseShare": 0,
@@ -1685,7 +1155,7 @@
      "microLabelShare": 0,
      "microSamples": [],
      "upperShare": 0,
-     "centerShare": 0.01,
+     "centerShare": 0,
      "smallText": 0
     },
     "eyebrows": [],
@@ -1709,17 +1179,8 @@
        }
       },
       {
-       "color": "#ffffff",
-       "top": 865,
-       "hsl": {
-        "h": 0,
-        "s": 0,
-        "l": 1
-       }
-      },
-      {
        "color": "#f1f0ec",
-       "top": 4634,
+       "top": 677,
        "hsl": {
         "h": 48,
         "s": 0.15,
@@ -1727,8 +1188,17 @@
        }
       },
       {
+       "color": "#ffffff",
+       "top": 1590,
+       "hsl": {
+        "h": 0,
+        "s": 0,
+        "l": 1
+       }
+      },
+      {
        "color": "#111827",
-       "top": 7382,
+       "top": 4586,
        "hsl": {
         "h": 221,
         "s": 0.39,
@@ -1739,33 +1209,33 @@
      "textColors": [
       {
        "color": "#1f2937",
-       "share": 0.24
-      },
-      {
-       "color": "#064629",
-       "share": 0.15
+       "share": 0.32
       },
       {
        "color": "#9ca3af",
-       "share": 0.13
+       "share": 0.18
+      },
+      {
+       "color": "#ffffff",
+       "share": 0.17
       },
       {
        "color": "#e8f7f0",
-       "share": 0.13
+       "share": 0.11
       },
       {
        "color": "#374151",
-       "share": 0.11
+       "share": 0.08
       }
      ],
      "button": {
-      "bg": "#e8f7f0",
+      "bg": "#0c8950",
       "hsl": {
-       "h": 152,
-       "s": 0.48,
-       "l": 0.94
+       "h": 153,
+       "s": 0.84,
+       "l": 0.29
       },
-      "fg": "#064629"
+      "fg": "#ffffff"
      },
      "lowContrast": []
     },
@@ -1779,7 +1249,7 @@
      "mono": 0,
      "upper": 0,
      "heroLabels": [
-      "See how to stand"
+      "See all leadership"
      ]
     },
     "surfaces": {
@@ -1806,7 +1276,7 @@
     "heroMedia": [
      {
       "type": "img",
-      "ratio": 0.28
+      "ratio": 0.22
      }
     ],
     "nav": {
@@ -1829,10 +1299,9 @@
    "level": "WARN",
    "id": "size-count",
    "width": 1440,
-   "message": "11 different font sizes (13, 14, 15, 17, 20, 24, 30, 36, 52, 60, 92).",
+   "message": "10 different font sizes (13, 14, 15, 17, 20, 24, 36, 52, 60, 72).",
    "fix": "A page needs about five: display, heading, lead, body, small.",
    "alsoAt": [
-    768,
     390
    ]
   },
@@ -1859,8 +1328,7 @@
    "width": 768,
    "fold": "C:\\Users\\goldw\\Desktop\\freelance\\liberia-medical-students-association\\lmsa-website\\.taste-skill\\inspect\\tablet-fold.jpg",
    "pages": [
-    "C:\\Users\\goldw\\Desktop\\freelance\\liberia-medical-students-association\\lmsa-website\\.taste-skill\\inspect\\tablet-page-01.jpg",
-    "C:\\Users\\goldw\\Desktop\\freelance\\liberia-medical-students-association\\lmsa-website\\.taste-skill\\inspect\\tablet-page-02.jpg"
+    "C:\\Users\\goldw\\Desktop\\freelance\\liberia-medical-students-association\\lmsa-website\\.taste-skill\\inspect\\tablet-page-01.jpg"
    ]
   },
   {
@@ -1868,8 +1336,7 @@
    "width": 390,
    "fold": "C:\\Users\\goldw\\Desktop\\freelance\\liberia-medical-students-association\\lmsa-website\\.taste-skill\\inspect\\mobile-fold.jpg",
    "pages": [
-    "C:\\Users\\goldw\\Desktop\\freelance\\liberia-medical-students-association\\lmsa-website\\.taste-skill\\inspect\\mobile-page-01.jpg",
-    "C:\\Users\\goldw\\Desktop\\freelance\\liberia-medical-students-association\\lmsa-website\\.taste-skill\\inspect\\mobile-page-02.jpg"
+    "C:\\Users\\goldw\\Desktop\\freelance\\liberia-medical-students-association\\lmsa-website\\.taste-skill\\inspect\\mobile-page-01.jpg"
    ]
   }
  ]

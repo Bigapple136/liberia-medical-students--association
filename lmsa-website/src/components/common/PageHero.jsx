@@ -134,15 +134,17 @@ const heroPages = [
   },
   {
     match: (path) => path === '/leadership/executive-council',
-    eyebrow: 'Leadership / Council',
     title: 'Meet the executive council',
     description:
       'Class presidents and student representatives bring the priorities of their peers to the work of LMSA.',
     action: { label: 'See all leadership', to: '/leadership' },
     accent: 'green',
     icon: ShieldCheck,
-    photoKey: 'leadership',
+    photoKey: 'membership',
     pattern: 'crosses',
+    // Same reason as /leadership: the legacy hero covered the photograph with an
+    // overlay and floated an icon where the picture belongs.
+    variant: 'poster-compact',
   },
   {
     match: (path) => path === '/membership',
