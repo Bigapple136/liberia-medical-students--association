@@ -94,15 +94,19 @@ const heroPages = [
   },
   {
     match: (path) => path === '/leadership',
-    eyebrow: 'Leadership',
     title: 'Name on the ballot.',
     description:
-      'Meet the students and officers serving the association, and how to put your own name forward.',
-    action: { label: 'Explore committees', to: '/leadership/committees' },
+      'The students serving this year, the offices they hold, and how to put your own name forward.',
+    action: { label: 'See how to stand', to: '#stand' },
+    secondary: { label: 'Browse committees', to: '/leadership/committees' },
     accent: 'green',
     icon: Users,
-    photoKey: 'leadership',
+    photoKey: 'about',
     pattern: 'crosses',
+    // The legacy hero hid the photograph under an almost-opaque overlay and put
+    // a 64px Users icon where the picture should be, which read as a placeholder.
+    // The poster variant shows the photograph and gives the headline full width.
+    variant: 'poster',
   },
   {
     match: (path) => path === '/leadership/committees',

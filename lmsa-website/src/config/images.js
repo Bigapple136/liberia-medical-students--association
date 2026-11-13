@@ -29,7 +29,7 @@ export const stockPhotos = {
     },
     about: {
       src: `${UNSPLASH_BASE}/photo-1579684385127-1ef15d508118?w=1200&q=80`,
-      alt: 'Medical professionals collaborating',
+      alt: 'A surgical team gathered under the operating light',
       credit: 'Google for Startups / Unsplash',
       gradient: 'from-lmsa-900/90 to-lmsa-700/70',
     },
