@@ -778,12 +778,12 @@ thread, since that decision is explicitly still pending on Stone's end.
 | T35 | Fix login redirect: root-cause AuthContext race + role-based destination (student → Homepage, admin → Admin Dashboard) + personalized welcome | none | **done** |
 | T36 | Wire `PastPresidentsPage.jsx` to real `executive_positions` data (`status: completed`), remove fabricated names | none | **done** |
 | T37 | Consolidate every contact email onto `dev.lmsa@gmail.com` (one source of truth) | none | **done** |
-| T38 | Add Veteran membership (free, no dues) to the Categories and Dues pages | none | **done: merged 2026-10-11** |
+| T38 | Add Veteran membership (free, no dues) to the Categories and Dues pages | none | **done: merged 2026-10-16** |
 | T39 | Committee Status (active/inactive) — build it properly: admin-only full list endpoint, `getBySlug` stops resolving inactive committees publicly, Status field actually persists | none | **done** |
 | T40 | Portal app shell (pushed directly by Stone, stale base `ac0bf59`) | none | **closed: superseded (Stone confirmed 2026-10-10). Branch retained, not merged.** |
 | T41 | Portal dashboard hierarchy (stacked on T40, stale base) | T40 | **closed: superseded (Stone confirmed 2026-10-10). Branch retained, not merged.** |
-| T42 | Admin UI/UX: shell parity, contrast, device matrix (pushed directly, stale base, 8 code conflicts) | none | **done: rework merged 2026-10-11** |
-| T43 | Compare dashboard concepts: T41 lead status panel vs `main` "this month" priority card (decision support, no merge) | none | **done: report merged 2026-10-11 (decision support, no code)** |
+| T42 | Admin UI/UX: shell parity, contrast, device matrix (pushed directly, stale base, 8 code conflicts) | none | **done: rework merged 2026-10-13** |
+| T43 | Compare dashboard concepts: T41 lead status panel vs `main` "this month" priority card (decision support, no merge) | none | **done: report merged 2026-10-25 (decision support, no code)** |
 | T44 | Admin follow-up: icon-button contrast (gray-300) and drawer focus parity across the portal and admin shells | none | **unassigned** |
 | T45 | Priority-card loading announcement for screen readers (the one piece of T41's dashboard worth keeping; narrowed from T43's proposal) | none | **unassigned** |
 
