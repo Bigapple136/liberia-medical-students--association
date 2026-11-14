@@ -1,6 +1,6 @@
 {
  "url": "http://localhost:5173/leadership/committees/health",
- "at": "2026-11-13T01:39:21.085Z",
+ "at": "2026-11-13T10:49:45.279Z",
  "allow": [],
  "viewports": [
   {
@@ -9,17 +9,17 @@
    "load": "load",
    "screens": 6,
    "filled": [
-    0.77,
+    0.76,
     0.65,
     1,
-    0.26,
-    0.72,
+    0.42,
+    1,
     1
    ],
    "motion": {
-    "elements": 21,
+    "elements": 18,
     "css": 2,
-    "transitions": 19,
+    "transitions": 16,
     "scripted": 0,
     "videos": 0,
     "playingVideos": 0
@@ -30,14 +30,14 @@
      "h": 900
     },
     "page": {
-     "height": 5414,
-     "screens": 6,
-     "words": 394,
+     "height": 4918,
+     "screens": 5.5,
+     "words": 346,
      "img": 5,
      "video": 0,
      "canvas": 0,
      "svg": 22,
-     "sections": 6,
+     "sections": 5,
      "horizontalOverflow": 0,
      "overflowCulprits": [],
      "uiFragments": 0,
@@ -49,7 +49,7 @@
       "photo-1521737711867-e3b97375f902?w=600&q=80",
       "photo-1552664730-d307ca884978?w=600&q=80",
       "photo-1576091160399-112ba8d25d1d?w=800&q=80",
-      "photo-1523240795612-9a054b0db644?w=1200&q=80"
+      "photo-1523240795612-9a054b0db644?w=800&q=80"
      ],
      "blendText": 0,
      "sideScrollers": 0,
@@ -107,10 +107,10 @@
       "kind": "heading"
      },
      {
-      "text": "What it is for.",
+      "text": "Written into the constitution.",
       "words": 4,
-      "chars": 15,
-      "lines": 1,
+      "chars": 30,
+      "lines": 2,
       "size": 51.8,
       "vw": 3.6,
       "font": "Inter",
@@ -128,8 +128,8 @@
       "kind": "heading"
      },
      {
-      "text": "The work it takes on.",
-      "words": 5,
+      "text": "What members take on.",
+      "words": 4,
       "chars": 21,
       "lines": 1,
       "size": 51.8,
@@ -144,35 +144,14 @@
       "align": "left",
       "position": "left",
       "widthRatio": 0.39,
-      "top": 1592,
+      "top": 1593,
       "tag": "h2",
       "kind": "heading"
      },
      {
-      "text": "Who does the work.",
+      "text": "Write to the committee.",
       "words": 4,
-      "chars": 18,
-      "lines": 1,
-      "size": 51.8,
-      "vw": 3.6,
-      "font": "Inter",
-      "weight": 700,
-      "tracking": -0.04,
-      "leading": 1.02,
-      "upper": false,
-      "italic": false,
-      "mono": false,
-      "align": "left",
-      "position": "left",
-      "widthRatio": 0.39,
-      "top": 2925,
-      "tag": "h2",
-      "kind": "heading"
-     },
-     {
-      "text": "Ask the committee.",
-      "words": 3,
-      "chars": 18,
+      "chars": 23,
       "lines": 1,
       "size": 51.8,
       "vw": 3.6,
@@ -186,14 +165,14 @@
       "align": "left",
       "position": "left",
       "widthRatio": 0.42,
-      "top": 3390,
+      "top": 2894,
       "tag": "h2",
       "kind": "heading"
      },
      {
-      "text": "The work is open to students.",
-      "words": 6,
-      "chars": 29,
+      "text": "One of 12 standing committees.",
+      "words": 5,
+      "chars": 30,
       "lines": 2,
       "size": 60,
       "vw": 4.2,
@@ -207,7 +186,7 @@
       "align": "left",
       "position": "left",
       "widthRatio": 0.42,
-      "top": 4218,
+      "top": 3722,
       "tag": "h2",
       "kind": "heading"
      },
@@ -228,13 +207,13 @@
       "align": "left",
       "position": "left",
       "widthRatio": 0.32,
-      "top": 4786,
+      "top": 4290,
       "tag": "h2",
       "kind": "heading"
      }
     ],
     "headingSummary": {
-     "count": 7,
+     "count": 6,
      "maxLines": 2,
      "over2Lines": 0,
      "statements": 0,
@@ -289,7 +268,7 @@
      "microLabelShare": 0,
      "microSamples": [],
      "upperShare": 0,
-     "centerShare": 0.03,
+     "centerShare": 0.04,
      "smallText": 0
     },
     "eyebrows": [],
@@ -323,7 +302,7 @@
       },
       {
        "color": "#ffffff",
-       "top": 1480,
+       "top": 1481,
        "hsl": {
         "h": 0,
         "s": 0,
@@ -332,7 +311,7 @@
       },
       {
        "color": "#111827",
-       "top": 4710,
+       "top": 4214,
        "hsl": {
         "h": 221,
         "s": 0.39,
@@ -343,23 +322,23 @@
      "textColors": [
       {
        "color": "#064629",
-       "share": 0.21
-      },
-      {
-       "color": "#1f2937",
-       "share": 0.18
+       "share": 0.24
       },
       {
        "color": "#9ca3af",
-       "share": 0.17
+       "share": 0.2
       },
       {
        "color": "#e8f7f0",
-       "share": 0.16
+       "share": 0.19
       },
       {
-       "color": "#374151",
-       "share": 0.08
+       "color": "#1f2937",
+       "share": 0.12
+      },
+      {
+       "color": "#ffffff",
+       "share": 0.09
       }
      ],
      "button": {
@@ -384,7 +363,7 @@
      "upper": 0,
      "heroLabels": [
       "Join LMSA",
-      "See committees recruiting"
+      "Ask the committee"
      ]
     },
     "surfaces": {
@@ -434,17 +413,17 @@
    "screens": 7,
    "filled": [
     1,
-    0.37,
+    0.39,
     1,
-    0.28,
-    0.74,
+    0.34,
+    0.73,
     1,
     1
    ],
    "motion": {
-    "elements": 21,
+    "elements": 22,
     "css": 2,
-    "transitions": 19,
+    "transitions": 20,
     "scripted": 0,
     "videos": 0,
     "playingVideos": 0
@@ -455,26 +434,25 @@
      "h": 1024
     },
     "page": {
-     "height": 6766,
-     "screens": 6.6,
-     "words": 383,
+     "height": 6608,
+     "screens": 6.5,
+     "words": 330,
      "img": 5,
      "video": 0,
      "canvas": 0,
-     "svg": 22,
+     "svg": 23,
      "sections": 6,
      "horizontalOverflow": 0,
      "overflowCulprits": [],
      "uiFragments": 0,
      "uiAbuse": false,
-     "realPictures": 4,
+     "realPictures": 3,
      "videoCount": 0,
      "uiPictures": 0,
      "pictureSamples": [
       "photo-1521737711867-e3b97375f902?w=600&q=80",
       "photo-1552664730-d307ca884978?w=600&q=80",
-      "photo-1576091160399-112ba8d25d1d?w=800&q=80",
-      "photo-1523240795612-9a054b0db644?w=1200&q=80"
+      "photo-1576091160399-112ba8d25d1d?w=800&q=80"
      ],
      "blendText": 0,
      "sideScrollers": 0,
@@ -532,10 +510,10 @@
       "kind": "heading"
      },
      {
-      "text": "What it is for.",
+      "text": "Written into the constitution.",
       "words": 4,
-      "chars": 15,
-      "lines": 1,
+      "chars": 30,
+      "lines": 2,
       "size": 32,
       "vw": 4.2,
       "font": "Inter",
@@ -548,13 +526,13 @@
       "align": "left",
       "position": "left",
       "widthRatio": 0.52,
-      "top": 1326,
+      "top": 1294,
       "tag": "h2",
       "kind": "heading"
      },
      {
-      "text": "The work it takes on.",
-      "words": 5,
+      "text": "What members take on.",
+      "words": 4,
       "chars": 21,
       "lines": 1,
       "size": 32,
@@ -569,15 +547,15 @@
       "align": "left",
       "position": "left",
       "widthRatio": 0.46,
-      "top": 2255,
+      "top": 2204,
       "tag": "h2",
       "kind": "heading"
      },
      {
-      "text": "Who does the work.",
-      "words": 4,
-      "chars": 18,
-      "lines": 1,
+      "text": "Who is serving this year.",
+      "words": 5,
+      "chars": 25,
+      "lines": 2,
       "size": 32,
       "vw": 4.2,
       "font": "Inter",
@@ -590,14 +568,14 @@
       "align": "left",
       "position": "left",
       "widthRatio": 0.46,
-      "top": 3289,
+      "top": 3205,
       "tag": "h2",
       "kind": "heading"
      },
      {
-      "text": "Ask the committee.",
-      "words": 3,
-      "chars": 18,
+      "text": "Write to the committee.",
+      "words": 4,
+      "chars": 23,
       "lines": 1,
       "size": 32,
       "vw": 4.2,
@@ -611,14 +589,14 @@
       "align": "left",
       "position": "left",
       "widthRatio": 0.52,
-      "top": 3733,
+      "top": 3568,
       "tag": "h2",
       "kind": "heading"
      },
      {
-      "text": "The work is open to students.",
-      "words": 6,
-      "chars": 29,
+      "text": "One of 12 standing committees.",
+      "words": 5,
+      "chars": 30,
       "lines": 2,
       "size": 32.3,
       "vw": 4.2,
@@ -632,7 +610,7 @@
       "align": "left",
       "position": "left",
       "widthRatio": 0.46,
-      "top": 4804,
+      "top": 4631,
       "tag": "h2",
       "kind": "heading"
      },
@@ -653,7 +631,7 @@
       "align": "left",
       "position": "left",
       "widthRatio": 0.55,
-      "top": 5835,
+      "top": 5678,
       "tag": "h2",
       "kind": "heading"
      }
@@ -738,7 +716,7 @@
       },
       {
        "color": "#f1f0ec",
-       "top": 1214,
+       "top": 1166,
        "hsl": {
         "h": 48,
         "s": 0.15,
@@ -747,7 +725,7 @@
       },
       {
        "color": "#ffffff",
-       "top": 2143,
+       "top": 2076,
        "hsl": {
         "h": 0,
         "s": 0,
@@ -756,7 +734,7 @@
       },
       {
        "color": "#111827",
-       "top": 5759,
+       "top": 5602,
        "hsl": {
         "h": 221,
         "s": 0.39,
@@ -767,23 +745,23 @@
      "textColors": [
       {
        "color": "#064629",
-       "share": 0.22
-      },
-      {
-       "color": "#1f2937",
-       "share": 0.19
+       "share": 0.26
       },
       {
        "color": "#9ca3af",
-       "share": 0.18
+       "share": 0.21
       },
       {
        "color": "#e8f7f0",
-       "share": 0.17
+       "share": 0.2
+      },
+      {
+       "color": "#1f2937",
+       "share": 0.11
       },
       {
        "color": "#ffffff",
-       "share": 0.08
+       "share": 0.09
       }
      ],
      "button": {
@@ -808,7 +786,7 @@
      "upper": 0,
      "heroLabels": [
       "Join LMSA",
-      "See committees recruiting"
+      "Ask the committee"
      ]
     },
     "surfaces": {
@@ -835,7 +813,7 @@
     "heroMedia": [
      {
       "type": "img",
-      "ratio": 0.42
+      "ratio": 0.47
      }
     ],
     "nav": {
@@ -855,14 +833,13 @@
    "width": 390,
    "height": 844,
    "load": "load",
-   "screens": 9,
+   "screens": 8,
    "filled": [
     1,
-    0.57,
-    0.74,
-    0.91,
-    0.55,
-    0.74,
+    0.61,
+    0.67,
+    0.66,
+    0.59,
     1,
     1,
     1
@@ -881,26 +858,25 @@
      "h": 844
     },
     "page": {
-     "height": 7026,
-     "screens": 8.3,
-     "words": 367,
+     "height": 6653,
+     "screens": 7.9,
+     "words": 314,
      "img": 5,
      "video": 0,
      "canvas": 0,
-     "svg": 22,
+     "svg": 23,
      "sections": 6,
      "horizontalOverflow": 0,
      "overflowCulprits": [],
      "uiFragments": 0,
      "uiAbuse": false,
-     "realPictures": 4,
+     "realPictures": 3,
      "videoCount": 0,
      "uiPictures": 0,
      "pictureSamples": [
       "photo-1521737711867-e3b97375f902?w=600&q=80",
       "photo-1552664730-d307ca884978?w=600&q=80",
-      "photo-1576091160399-112ba8d25d1d?w=800&q=80",
-      "photo-1523240795612-9a054b0db644?w=1200&q=80"
+      "photo-1576091160399-112ba8d25d1d?w=800&q=80"
      ],
      "blendText": 0,
      "sideScrollers": 0,
@@ -958,10 +934,10 @@
       "kind": "heading"
      },
      {
-      "text": "What it is for.",
+      "text": "Written into the constitution.",
       "words": 4,
-      "chars": 15,
-      "lines": 1,
+      "chars": 30,
+      "lines": 2,
       "size": 32,
       "vw": 8.2,
       "font": "Inter",
@@ -974,13 +950,13 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.92,
-      "top": 1061,
+      "top": 1029,
       "tag": "h2",
       "kind": "heading"
      },
      {
-      "text": "The work it takes on.",
-      "words": 5,
+      "text": "What members take on.",
+      "words": 4,
       "chars": 21,
       "lines": 1,
       "size": 32,
@@ -995,15 +971,15 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.9,
-      "top": 2298,
+      "top": 2214,
       "tag": "h2",
       "kind": "heading"
      },
      {
-      "text": "Who does the work.",
-      "words": 4,
-      "chars": 18,
-      "lines": 1,
+      "text": "Who is serving this year.",
+      "words": 5,
+      "chars": 25,
+      "lines": 2,
       "size": 32,
       "vw": 8.2,
       "font": "Inter",
@@ -1016,14 +992,14 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.9,
-      "top": 3264,
+      "top": 3148,
       "tag": "h2",
       "kind": "heading"
      },
      {
-      "text": "Ask the committee.",
-      "words": 3,
-      "chars": 18,
+      "text": "Write to the committee.",
+      "words": 4,
+      "chars": 23,
       "lines": 1,
       "size": 32,
       "vw": 8.2,
@@ -1037,14 +1013,14 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.92,
-      "top": 3732,
+      "top": 3447,
       "tag": "h2",
       "kind": "heading"
      },
      {
-      "text": "The work is open to students.",
-      "words": 6,
-      "chars": 29,
+      "text": "One of 12 standing committees.",
+      "words": 5,
+      "chars": 30,
       "lines": 2,
       "size": 32,
       "vw": 8.2,
@@ -1058,7 +1034,7 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.9,
-      "top": 4803,
+      "top": 4478,
       "tag": "h2",
       "kind": "heading"
      },
@@ -1079,7 +1055,7 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.9,
-      "top": 5642,
+      "top": 5269,
       "tag": "h2",
       "kind": "heading"
      },
@@ -1100,7 +1076,7 @@
       "align": "left",
       "position": "center",
       "widthRatio": 0.9,
-      "top": 5849,
+      "top": 5476,
       "tag": "h3",
       "kind": "heading"
      }
@@ -1161,7 +1137,7 @@
      "microLabelShare": 0,
      "microSamples": [],
      "upperShare": 0,
-     "centerShare": 0.01,
+     "centerShare": 0.02,
      "smallText": 0
     },
     "eyebrows": [],
@@ -1186,7 +1162,7 @@
       },
       {
        "color": "#f1f0ec",
-       "top": 981,
+       "top": 933,
        "hsl": {
         "h": 48,
         "s": 0.15,
@@ -1195,7 +1171,7 @@
       },
       {
        "color": "#ffffff",
-       "top": 2218,
+       "top": 2118,
        "hsl": {
         "h": 0,
         "s": 0,
@@ -1204,7 +1180,7 @@
       },
       {
        "color": "#111827",
-       "top": 5582,
+       "top": 5209,
        "hsl": {
         "h": 221,
         "s": 0.39,
@@ -1215,23 +1191,23 @@
      "textColors": [
       {
        "color": "#064629",
-       "share": 0.23
-      },
-      {
-       "color": "#1f2937",
-       "share": 0.2
+       "share": 0.28
       },
       {
        "color": "#9ca3af",
-       "share": 0.19
+       "share": 0.22
       },
       {
        "color": "#e8f7f0",
-       "share": 0.15
+       "share": 0.18
+      },
+      {
+       "color": "#1f2937",
+       "share": 0.11
       },
       {
        "color": "#ffffff",
-       "share": 0.08
+       "share": 0.09
       }
      ],
      "button": {
@@ -1255,7 +1231,7 @@
      "mono": 0,
      "upper": 0,
      "heroLabels": [
-      "See committees recruiting"
+      "Ask the committee"
      ]
     },
     "surfaces": {
@@ -1282,7 +1258,7 @@
     "heroMedia": [
      {
       "type": "img",
-      "ratio": 0.25
+      "ratio": 0.29
      }
     ],
     "nav": {
@@ -1343,8 +1319,7 @@
    "width": 390,
    "fold": "C:\\Users\\goldw\\Desktop\\freelance\\liberia-medical-students-association\\lmsa-website\\.taste-skill\\inspect\\mobile-fold.jpg",
    "pages": [
-    "C:\\Users\\goldw\\Desktop\\freelance\\liberia-medical-students-association\\lmsa-website\\.taste-skill\\inspect\\mobile-page-01.jpg",
-    "C:\\Users\\goldw\\Desktop\\freelance\\liberia-medical-students-association\\lmsa-website\\.taste-skill\\inspect\\mobile-page-02.jpg"
+    "C:\\Users\\goldw\\Desktop\\freelance\\liberia-medical-students-association\\lmsa-website\\.taste-skill\\inspect\\mobile-page-01.jpg"
    ]
   }
  ]
