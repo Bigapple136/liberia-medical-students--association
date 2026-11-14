@@ -80,6 +80,17 @@ function statusLine(recruitment) {
    community-health pictures instead. Committees not listed here keep the shared
    set unchanged. */
 const COMMITTEE_PHOTOS = {
+  academic: {
+    opening: {
+      story: 'symposium',
+    },
+    planning: {
+      section: 'learn',
+    },
+    practising: {
+      section: 'lead',
+    },
+  },
   health: {
     opening: {
       hero: 'volunteer',
@@ -126,7 +137,8 @@ const COMMITTEE_PROFILES = {
       heading: 'Health notes',
       intro: 'Reporting filed under Health in the association news.',
     },
-    reportIssue: {
+    ask: {
+      actionLabel: 'Report an issue',
       subject: {
         value: 'health',
         label: 'A health or sanitation issue',
@@ -148,6 +160,91 @@ const COMMITTEE_PROFILES = {
           text: 'If the fix needs the administration, the committee takes it there and keeps the record open until it closes.',
         },
       ],
+    },
+  },
+
+  /* Academic is a programme, not a service desk, so its spine is the year's
+     plan: two symposia and the workshops between them. The page then has to do
+     two jobs the default order cannot — show a student where the committee's
+     support already exists (study resources, mentorship, research, symposia),
+     and give them a way to change the programme rather than just read it. */
+  academic: {
+    // The association files academic reporting under the shared `academic`
+    // news category, so the page carries that reporting without a
+    // committee-scoped news endpoint.
+    alsoInNews: {
+      category: 'academic',
+      heading: 'Academic notes',
+      intro: 'Reporting filed under Academic in the association news.',
+    },
+    support: {
+      title: 'Where to take a study question.',
+      intro:
+        'The committee runs the programme. These are the desks it keeps open all year, for the questions that do not need a whole symposium.',
+      links: [
+        {
+          label: 'Study resources',
+          to: '/academics/resources',
+          description:
+            'Past papers, guides and tools the committee keeps current for every year group.',
+        },
+        {
+          label: 'Mentorship',
+          to: '/academics/mentorship',
+          description:
+            'Matched with a student further along the same path, for the advice a syllabus cannot give.',
+        },
+        {
+          label: 'Research',
+          to: '/academics/research',
+          description:
+            'Turn a question into a project, with guidance on where to start and who to ask.',
+        },
+        {
+          label: 'Symposia',
+          to: '/academics/symposia',
+          description:
+            'What is coming up, what past symposia covered, and how to present at the next one.',
+        },
+        {
+          label: 'Career centre',
+          to: '/academics/career-center',
+          description:
+            'Where the degree can go, and what the next step after it takes.',
+        },
+      ],
+    },
+    ask: {
+      actionLabel: 'Suggest a topic',
+      subject: {
+        // The value is what lands in the committee's inbox subject line, so it
+        // is written to be read there rather than as a slug.
+        value: 'Academic programme topic',
+        label: 'A topic or speaker for the academic programme',
+      },
+      title: 'A topic worth an afternoon? Name it.',
+      intro:
+        'Symposia and workshops are only as good as the questions students bring. If there is something you want taught, argued or demonstrated, it starts here — one suggestion is enough.',
+      steps: [
+        {
+          title: 'You name the topic',
+          text: 'Use the form below or write to the committee. Say what you want covered and, if you know of one, who should teach it.',
+        },
+        {
+          title: 'The committee chooses and invites',
+          text: 'Suggestions are weighed against the year’s plan and the time a session takes. The committee approaches the speakers and panellists.',
+        },
+        {
+          title: 'It goes on the calendar',
+          text: 'Scheduled sessions appear on this page and in the events list, so you can see your idea become an hour.',
+        },
+      ],
+    },
+    closing: {
+      title: 'The programme is only as good as what students ask for.',
+      body: 'Two symposia a year, and the workshops between them, are built from the questions students bring. Suggesting a topic takes a minute and changes what the committee runs.',
+      action: 'Suggest a topic',
+      secondary: { label: 'See the term’s plan', href: '#committee-plan-title' },
     },
   },
 };
@@ -392,7 +489,8 @@ export default function CommitteePageTemplate() {
     (committee?.term_plan?.length ? committee.term_plan : fallback?.term_plan) ||
     [];
   const profile = COMMITTEE_PROFILES[slug] || {};
-  const reportIssue = profile.reportIssue || null;
+  const ask = profile.ask || null;
+  const support = profile.support || null;
   const closingNote = profile.closing || null;
   // The contact band is shared with the other committees' pages as they stand;
   // only a profile that asks for it gets the compact treatment.
@@ -845,37 +943,88 @@ export default function CommitteePageTemplate() {
         </section>
       )}
 
-      {/* ---------- Report an issue ----------
+      {/* ---------- Study support routes ----------
+          Academic work is mostly done elsewhere on the site: the library, the
+          mentorship scheme, the research desk. A student who lands here looking
+          for help does not need another description of the committee's remit,
+          so these routes sit under the programme, set as a ledger rather than a
+          set of cards. Only a profile with routes gets the section. */}
+      {support && support.links?.length > 0 && (
+        <section className="bg-paper" aria-labelledby="committee-support-title">
+          <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 md:py-28 lg:px-8">
+            <div className="reveal-on-scroll max-w-3xl">
+              <h2
+                id="committee-support-title"
+                className="max-w-[18ch] text-[clamp(2rem,3.6vw,3.25rem)] font-bold leading-[1.02] tracking-[-0.04em] text-lmsa-900"
+              >
+                {support.title}
+              </h2>
+              {support.intro && (
+                <p className="mt-5 max-w-[52ch] text-[19px] leading-8 text-gray-800">
+                  {support.intro}
+                </p>
+              )}
+            </div>
+
+            <ul className="mt-12 grid gap-x-16 md:grid-cols-2">
+              {support.links.map(link => (
+                <li
+                  key={link.to}
+                  className="reveal-on-scroll border-t border-lmsa-200 py-6"
+                >
+                  <Link
+                    to={link.to}
+                    className="group inline-flex min-h-6 items-baseline gap-2 text-[19px] font-semibold leading-7 text-lmsa-900 underline decoration-2 decoration-lmsa-200 underline-offset-[6px] transition-colors hover:decoration-lmsa-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
+                  >
+                    {link.label}
+                    <ArrowRight
+                      size={16}
+                      aria-hidden="true"
+                      className="translate-y-[2px] transition-transform duration-200 group-hover:translate-x-1"
+                    />
+                  </Link>
+                  <p className="mt-2 max-w-[44ch] text-[17px] leading-7 text-gray-800">
+                    {link.description}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+      )}
+
+      {/* ---------- Ask the committee for something ----------
           The page's one dark interruption, placed where intent is highest: a
-          student who has just read what the committee does and has a problem.
-          The button preselects the issue subject on the contact form below, so
-          the report does not arrive as a general inquiry — it reuses the form
-          already on the page rather than adding an endpoint. */}
-      {reportIssue && (
-        <section className="bg-lmsa-900 text-white" aria-labelledby="committee-report-title">
+          student who has just read what the committee does and wants it to do
+          something. Health lets people report a fault here; Academic lets them
+          propose a topic. The button preselects the subject on the contact form
+          below, so the message does not arrive as a general inquiry — it reuses
+          the form already on the page rather than adding an endpoint. */}
+      {ask && (
+        <section className="bg-lmsa-900 text-white" aria-labelledby="committee-ask-title">
           <div className="mx-auto grid max-w-7xl gap-12 px-4 py-20 sm:px-6 md:py-24 lg:grid-cols-[0.95fr_1.05fr] lg:items-start lg:gap-16 lg:px-8">
             <div className="reveal-on-scroll">
               <h2
-                id="committee-report-title"
+                id="committee-ask-title"
                 className="max-w-[16ch] text-[clamp(2rem,4vw,3.5rem)] font-bold leading-[1.0] tracking-[-0.045em]"
               >
-                {reportIssue.title}
+                {ask.title}
               </h2>
               <p className="mt-6 max-w-[46ch] text-[19px] leading-8 text-lmsa-100">
-                {reportIssue.intro}
+                {ask.intro}
               </p>
               <a
                 href="#committee-contact"
-                onClick={() => goToContact(reportIssue.subject.value)}
+                onClick={() => goToContact(ask.subject.value)}
                 className="mt-9 inline-flex min-h-12 items-center gap-2 rounded-lg bg-lmsa-50 px-6 text-[15px] font-semibold text-lmsa-900 transition-transform duration-200 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-400 focus-visible:ring-offset-2 focus-visible:ring-offset-lmsa-900"
               >
-                Report an issue
+                {ask.actionLabel || 'Ask the committee'}
                 <ArrowRight size={17} aria-hidden="true" />
               </a>
             </div>
 
             <ol className="reveal-on-scroll border-t border-lmsa-700">
-              {reportIssue.steps.map((step, index) => (
+              {ask.steps.map((step, index) => (
                 <li
                   key={step.title}
                   className="grid grid-cols-[2.5rem_1fr] gap-x-3 border-b border-lmsa-700 py-5 md:grid-cols-[3.5rem_1fr] md:gap-x-6"
@@ -1397,9 +1546,9 @@ export default function CommitteePageTemplate() {
                   <option value="join">Joining this committee</option>
                   <option value="event">An event</option>
                   <option value="resource">A document or resource</option>
-                  {reportIssue && (
-                    <option value={reportIssue.subject.value}>
-                      {reportIssue.subject.label}
+                  {ask && (
+                    <option value={ask.subject.value}>
+                      {ask.subject.label}
                     </option>
                   )}
                   <option value="other">Something else</option>
@@ -1471,7 +1620,7 @@ export default function CommitteePageTemplate() {
               <div className="mt-8 flex flex-wrap items-center gap-x-8 gap-y-4">
                 <a
                   href="#committee-contact"
-                  onClick={() => goToContact(reportIssue?.subject.value)}
+                  onClick={() => goToContact(ask?.subject?.value)}
                   className="inline-flex min-h-12 items-center gap-2 rounded-lg bg-lmsa-50 px-6 text-[15px] font-semibold text-lmsa-900 transition-transform duration-200 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-400 focus-visible:ring-offset-2 focus-visible:ring-offset-lmsa-900"
                 >
                   {closingNote.action}

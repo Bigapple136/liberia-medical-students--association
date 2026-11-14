@@ -18,6 +18,52 @@ export const ALL_COMMITTEES_DATA = {
       'Select topics and invite participants for academic events',
     ],
     key_activities: ['Annual Medical Symposium', 'Clinical Skills Workshops', 'Academic Mentorship Program', 'Study Group Coordination', 'Library Resource Management', 'Guest Speaker Series'],
+    // The year's academic programme, read by CommitteePageTemplate as the
+    // page's spine. Everything here follows from the constitutional mandate
+    // (two symposia, library schedules, topics and speakers) rather than from a
+    // calendar: `when` is relative on purpose, because exact dates belong in
+    // the events list and a stale date on this rail reads as a broken promise.
+    //
+    // DRAFTED from the mandate, pending correction by the committee. Nothing is
+    // marked `done` until the committee says so.
+    term_plan: [
+      {
+        when: 'Throughout the year',
+        title:
+          'Run at least two symposia, one clinical and one pre-clinical, on topics students have asked for',
+        status: 'ongoing',
+      },
+      {
+        when: 'Before the first symposium',
+        title:
+          'Agree the year’s topics with students, then invite the speakers and panellists to teach them',
+        status: 'planned',
+      },
+      {
+        when: 'Each semester',
+        title:
+          'Hold clinical-skills and pre-clinical workshops alongside the taught timetable, not on top of it',
+        status: 'planned',
+      },
+      {
+        when: 'Start of each semester',
+        title:
+          'Publish a library schedule that fits exam blocks and clinical rotations, agreed with library staff',
+        status: 'planned',
+      },
+      {
+        when: 'Each semester',
+        title:
+          'Keep the library’s journals and periodicals current, and tell students what has arrived',
+        status: 'ongoing',
+      },
+      {
+        when: 'Before exams',
+        title:
+          'Run peer study groups and revision sessions for the cohort facing exams',
+        status: 'planned',
+      },
+    ],
   },
   health: {
     name: 'Health Committee',
