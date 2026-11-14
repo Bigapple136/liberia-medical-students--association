@@ -17,10 +17,17 @@
 - **Green 800:** `#085C36` - Dark accents
 - **Green 900:** `#064629` - Deep accents
 
-### Accent Colors
-- **Liberian Red:** `#DC143C` - Urgency, alerts
-- **Academic Blue:** `#1976D2` - Academic content
-- **Achievement Gold:** `#FFB300` - Awards, badges
+### Accent Colors (state only)
+
+Only four tones may carry meaning: **green** (affirmative), **amber** (attention), **red** (stop/destructive), **blue** (information).
+
+- **Liberian Red:** `#DC143C` - Errors, rejected, cancelled, destructive actions
+- **Academic Blue:** `#1976D2` - Information notices, neutral status
+- **Achievement Gold:** `#FFB300` - Pending, warnings, outstanding dues
+
+**Categories are neutral.** News categories, membership types, document access levels, roles and counts use `bg-gray-100 text-gray-700` (or `bg-gray-900 text-white` for top emphasis). Labels carry the meaning.
+
+**Retired from UI:** purple, indigo, cyan, teal, rose, orange — surfaces and photo overlays only, never a signal.
 
 ### Neutrals
 - **White:** `#FFFFFF` - Primary background
@@ -149,6 +156,13 @@ font-weight: 500;
 **Pending:** `background: #FFF8E1; color: #C68400;`
 **Inactive:** `background: #F3F4F6; color: #4B5563;`
 
+### Story Dateline
+Use `<StoryMeta>` (`src/components/common/StoryMeta.jsx`), never a coloured category pill.
+```
+CATEGORY · SEP 2, 2026 · 4 MIN READ     (11px, uppercase, tracking 0.12em, gray-500; category in lmsa-700)
+```
+Shows `Updated <date>` past 36h after publication; read time at 200 wpm; items drop out when absent.
+
 ---
 
 ## 📱 RESPONSIVE BREAKPOINTS
@@ -256,7 +270,9 @@ padding: 80px 20px;
 ## 🎨 DESIGN STYLE
 
 ### What We're Going For
-- **Modern institutional** (like AMSA.org)
+- **Modern institutional** — AMA's *structure*, AMSA's *warmth*, LMSA's own green
+- Audience axis + topic axis in the navigation, on every page
+- News surfaces with datelines, not decoration
 - Clean, structured, mission-driven
 - Generous whitespace
 - Minimal visual effects (function over decoration)
@@ -321,5 +337,5 @@ lmsa-icon-academics-24px.svg
 
 ---
 
-**Last Updated:** April 2026
-**Version:** 1.0
+**Last Updated:** November 2026
+**Version:** 1.1

@@ -3,24 +3,11 @@ import { ArrowRight, Loader, Newspaper, RefreshCw } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { EditorialCallout, EditorialSectionHeader } from '@components/common/EditorialSections';
+import StoryMeta from '@components/common/StoryMeta';
 import { newsService } from '@services/news.service';
-import { NEWS_CATEGORIES, categoryBadgeClass, categoryLabel } from '@utils/newsCategories';
+import { NEWS_CATEGORIES, categoryLabel } from '@utils/newsCategories';
 
 const PAGE_SIZE = 9;
-
-function formatDate(dateString) {
-  if (!dateString) return '';
-  return new Date(dateString).toLocaleDateString('default', { month: 'long', day: 'numeric', year: 'numeric' });
-}
-
-function CategoryBadge({ category }) {
-  if (!category) return null;
-  return (
-    <span className={`px-2.5 py-1 text-[13px] font-semibold ${categoryBadgeClass(category)}`}>
-      {categoryLabel(category)}
-    </span>
-  );
-}
 
 function FeatureStory({ post }) {
   return (
@@ -38,13 +25,13 @@ function FeatureStory({ post }) {
         ) : (
           <Newspaper size={64} className="text-lmsa-300" aria-hidden="true" />
         )}
-      </div>        <div className="flex flex-col p-6 md:p-10">
-          <div className="mb-4 flex flex-wrap items-center gap-3">
-          <CategoryBadge category={post.category} />
-          <time dateTime={post.published_at || undefined} className="text-sm text-gray-500">
-            {formatDate(post.published_at)}
-          </time>
-        </div>
+      </div>        <div className="flex flex-col p-6 md:p-8">
+          <StoryMeta
+            category={post.category}
+            publishedAt={post.published_at}
+            updatedAt={post.updated_at}
+            content={post.content}
+          />
         <h3 className="mt-4 text-2xl font-semibold leading-snug tracking-[-0.02em] text-lmsa-900 md:text-3xl">
           {post.title}
         </h3>
@@ -77,12 +64,12 @@ function StoryCard({ post }) {
         )}
       </div>
       <div className="flex flex-1 flex-col p-6 pb-12">
-        <div className="flex flex-wrap items-center gap-3">
-          <CategoryBadge category={post.category} />
-          <time dateTime={post.published_at || undefined} className="text-sm text-gray-500">
-            {formatDate(post.published_at)}
-          </time>
-        </div>
+        <StoryMeta
+          category={post.category}
+          publishedAt={post.published_at}
+          updatedAt={post.updated_at}
+          content={post.content}
+        />
         <h3 className="mt-4 line-clamp-2 pr-8 text-xl font-semibold tracking-[-0.02em] text-lmsa-900">{post.title}</h3>
         {post.excerpt && <p className="mt-2 line-clamp-2 text-sm leading-6 text-gray-600">{post.excerpt}</p>}
         <ArrowRight

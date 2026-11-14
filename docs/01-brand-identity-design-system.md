@@ -90,6 +90,23 @@ Success, awards, premium features
 
 ---
 
+### Color Is a State System, Not Decoration
+
+Only four tones carry meaning in the interface. Everything categorical is neutral.
+
+| Tone | Tokens | Means | Examples |
+|------|--------|-------|----------|
+| **Affirmative** | `lmsa-50` / `lmsa-700` | live and healthy | active, approved, published, upcoming, ongoing |
+| **Attention** | `amber-50` / `amber-700` | someone needs to act | pending, warnings, outstanding dues, registration required |
+| **Stop** | `red-50` / `red-700` | failed, blocked, or destructive | form errors, rejected, cancelled, suspended, delete |
+| **Information** | `blue-50` / `blue-700` | context, not action | info notices, neutral status copy |
+
+**Categories are neutral.** News categories, membership types, document access levels, staff roles and dashboard counts render on the gray scale — `bg-gray-100 text-gray-700`, or `bg-gray-900 text-white` where one value needs the most emphasis. The label carries the meaning; colour is never asked to do it, because a colour that means six things means nothing.
+
+**Retired from UI:** purple, indigo, cyan, teal, rose and orange. They may still appear as page-hero surfaces or photographic overlays, but never as a signal. Red is reserved for stop states — never for an access level, an old item, or anything merely important. Each rule exists because the misuse was real: red once marked admin-level documents, and purple simultaneously meant honorary membership, page views, a registration fee, the announcement category, the admin role and restricted documents.
+
+---
+
 ### Neutral Colors
 
 #### **Grayscale** (Foundation)
@@ -317,6 +334,19 @@ font-weight: 500;
 - **Pending:** `background: #FFF8E1; color: #C68400`
 - **Inactive:** `background: #F3F4F6; color: #4B5563`
 
+#### **Story Dateline**
+
+The metadata line under a story headline, rendered by `src/components/common/StoryMeta.jsx`:
+
+```jsx
+<StoryMeta category={post.category} publishedAt={post.published_at} updatedAt={post.updated_at} content={post.content} />
+```
+
+- Uppercase, 11px, `tracking-[0.12em]`, gray-500; the category sits in `lmsa-700`; separators are drawn by `.story-meta > * + *::before` so a post with no category or no body simply gets a shorter line.
+- Reads `Updated <date>` only when `updated_at` is more than 36 hours after `published_at` — a republication inside that window is the same story going out.
+- Reading time is estimated at 200 words per minute from the story body, and omitted when there is no body.
+- Required on the homepage stories, the news index (feature and cards) and the news detail header. Category is never rendered as a coloured pill.
+
 ---
 
 ### Forms
@@ -533,6 +563,22 @@ text-align: center;
 - **Liberian cultural elements** - national flag colors, local context
 - **Mobile-first optimization** for Liberian internet infrastructure
 - **Student-centered focus** for medical students (not all physicians yet)
+
+---
+
+### Reference Inspiration: AMA (ama-assn.org) — Structure, Not Style
+
+We study the AMA for **how a medical association organises and dates its information**. We do not take its visual language. Its blue-and-red identity, its density and its mega-menu belong to it; imitating them would make LMSA read as an affiliate portal rather than a student-led association with its own green identity. Authority comes from structure, not from costume.
+
+**Adopted:**
+
+- **Two ways in, always.** Visitors arrive either by audience or by topic. The audience axis (Students, Faculty, Alumni, Partners) lives in the site utility bar and at the top of the mobile menu; the topic axis is the primary nav. A new area of the site must be reachable from both, or it is reachable from neither in practice.
+- **A dateline on every story.** Category · date (or "Updated") · reading time, from `StoryMeta`. Metadata is what makes a news-heavy page trustworthy, and it costs nothing to produce.
+- **News-first ordering.** On any story surface the dateline sits above the headline, the headline does the visual work, and the excerpt explains. Decorative numerals, oversized years and icon collages do not belong on a story card.
+- **One accent with meaning.** See *Color Is a State System*. AMA uses one brand colour and reserves red for alarms; seven pastel categories were the opposite of that discipline.
+- **Documents as credibility.** Reports, constitutions and policy PDFs are dated artifacts published in the resource library, not buried prose.
+
+**Not adopted:** mega-menu furniture, small body type, promo-card grids, and the institutional blue/red palette. Density for its own sake is not seriousness — with our paper background and large type, a wall of links would read as clutter, not authority.
 
 ---
 

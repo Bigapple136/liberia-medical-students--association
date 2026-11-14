@@ -77,7 +77,7 @@ export default function AdminDashboard() {
     { label: 'Pending applications', value: pendingCount, accent: 'text-amber-600' },
     { label: 'Approved members', value: approvedCount, accent: 'text-lmsa-600' },
     { label: 'Committees', value: committees ? committees.length : null, accent: 'text-lmsa-600' },
-    { label: 'Upcoming events', value: upcomingEvents ? upcomingEvents.length : null, accent: 'text-blue-600' },
+    { label: 'Upcoming events', value: upcomingEvents ? upcomingEvents.length : null, accent: 'text-lmsa-600' },
   ];
 
   return (

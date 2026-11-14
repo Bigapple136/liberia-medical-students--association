@@ -1,13 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, ArrowRight, Eye, Loader, RefreshCw } from 'lucide-react';
+import StoryMeta from '@components/common/StoryMeta';
 import { newsService } from '@services/news.service';
-import { categoryBadgeClass, categoryLabel } from '@utils/newsCategories';
-
-function formatDate(dateString) {
-  if (!dateString) return '';
-  return new Date(dateString).toLocaleDateString('default', { month: 'long', day: 'numeric', year: 'numeric' });
-}
 
 export default function NewsDetailPage() {
   const { slug } = useParams();
@@ -130,20 +125,16 @@ export default function NewsDetailPage() {
             </Link>
 
             <header className="mt-8">
-              <div className="flex flex-wrap items-center gap-3">
-                {post.category && (
-                  <span className={`px-2.5 py-1 text-[13px] font-semibold ${categoryBadgeClass(post.category)}`}>
-                    {categoryLabel(post.category)}
-                  </span>
-                )}
-                {post.published_at && (
-                  <time dateTime={post.published_at} className="text-sm text-gray-500">
-                    {formatDate(post.published_at)}
-                  </time>
-                )}
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+                <StoryMeta
+                  category={post.category}
+                  publishedAt={post.published_at}
+                  updatedAt={post.updated_at}
+                  content={post.content}
+                />
                 {post.views != null && (
-                  <span className="flex items-center gap-1.5 text-sm text-gray-500">
-                    <Eye size={15} aria-hidden="true" />
+                  <span className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-gray-500">
+                    <Eye size={14} aria-hidden="true" />
                     {post.views} view{post.views !== 1 ? 's' : ''}
                   </span>
                 )}

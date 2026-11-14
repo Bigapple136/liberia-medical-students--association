@@ -305,7 +305,6 @@ const accentStyles = {
   green: { surface: 'bg-lmsa-900', text: 'text-lmsa-50', mark: 'bg-lmsa-400', icon: 'text-lmsa-200', overlay: 'bg-lmsa-900/90' },
   blue: { surface: 'bg-blue-800', text: 'text-white', mark: 'bg-blue-400', icon: 'text-blue-100', overlay: 'bg-blue-900/90' },
   gold: { surface: 'bg-amber-800', text: 'text-white', mark: 'bg-amber-400', icon: 'text-amber-100', overlay: 'bg-amber-900/90' },
-  rose: { surface: 'bg-rose-800', text: 'text-white', mark: 'bg-rose-400', icon: 'text-rose-100', overlay: 'bg-rose-900/90' },
   ink: { surface: 'bg-gray-900', text: 'text-white', mark: 'bg-lmsa-400', icon: 'text-lmsa-200', overlay: 'bg-gray-900/90' },
 };
 

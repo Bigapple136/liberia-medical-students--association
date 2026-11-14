@@ -17,7 +17,6 @@ import {
   HeartPulse,
   Lightbulb,
   Loader,
-  Megaphone,
   MessageCircle,
   Network,
   Newspaper,
@@ -27,6 +26,7 @@ import {
 } from 'lucide-react';
 import { stockPhotos } from '@config/images';
 import Photo from '@components/common/Photo';
+import StoryMeta from '@components/common/StoryMeta';
 import { PatternBackground } from '@components/common/SvgPatterns';
 import { newsService } from '@services/news.service';
 import { useAuth } from '@context/AuthContext';
@@ -268,21 +268,19 @@ export default function HomePage() {
           ) : (
             <>
               <article className="story-feature">
-                {/* Featured story with photo */}
                 <Photo
                   src={featurePost.featured_image_url || stockPhotos.stories.symposium.src}
                   alt={featurePost.featured_image_url ? featurePost.title : stockPhotos.stories.symposium.alt}
-                  className="story-art story-art-feature"
+                  className="story-art-feature"
                   fallbackGradient="bg-gradient-to-br from-lmsa-900 to-lmsa-700"
-                  overlay="bg-gradient-to-t from-lmsa-900/80 via-lmsa-900/20 to-transparent"
-                >
-                  <div className="relative z-10 flex min-h-[230px] items-center justify-between p-8 text-lmsa-100">
-                    <span className="self-start text-5xl font-semibold tracking-[-0.06em] text-lmsa-200">{featurePost.published_at ? new Date(featurePost.published_at).getFullYear() : '2026'}</span>
-                    <Megaphone size={50} strokeWidth={1.1} className="text-lmsa-200" aria-hidden="true" />
-                  </div>
-                </Photo>
+                />
                 <div className="story-content">
-                  <p className="story-category">{featurePost.category || 'Featured story'}</p>
+                  <StoryMeta
+                    category={featurePost.category}
+                    publishedAt={featurePost.published_at}
+                    updatedAt={featurePost.updated_at}
+                    content={featurePost.content}
+                  />
                   <h3>{featurePost.title}</h3>
                   <p>{featurePost.excerpt || ''}</p>
                   <Link to={`/news/${featurePost.slug}`} className="text-link">
@@ -296,7 +294,12 @@ export default function HomePage() {
                   <article className="story-list-item" key={post.slug}>
                     <span className="story-list-index">0{index + 2}</span>
                     <div>
-                      <p className="story-category">{post.category || 'Story'}</p>
+                      <StoryMeta
+                        category={post.category}
+                        publishedAt={post.published_at}
+                        updatedAt={post.updated_at}
+                        content={post.content}
+                      />
                       <h3>{post.title}</h3>
                       <p>{post.excerpt || ''}</p>
                       <Link to={`/news/${post.slug}`} className="text-link">

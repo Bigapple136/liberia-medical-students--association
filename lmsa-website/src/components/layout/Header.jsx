@@ -4,6 +4,15 @@ import { useEffect, useRef, useState } from 'react';
 import { useAuth } from '@context/AuthContext';
 import { ADMIN_ROLES } from '@utils/constants';
 
+// The second way into the site, beside committees and programs: students,
+// faculty, alumni and partners each arrive with a different question.
+const audienceNav = [
+  { label: 'Students', path: '/membership' },
+  { label: 'Faculty', path: '/about' },
+  { label: 'Alumni', path: '/leadership/past-presidents' },
+  { label: 'Partners', path: '/partnership' },
+];
+
 const primaryNav = [
   {
     label: 'About',
@@ -90,6 +99,16 @@ export default function Header() {
       <div className="site-utility">
         <div className="site-container site-utility-inner">
           <p className="site-utility-message">A student-led voice for better healthcare in Liberia</p>
+          <nav className="site-audience-nav" aria-label="Audience navigation">
+            <span className="site-audience-label" aria-hidden="true">
+              For
+            </span>
+            {audienceNav.map((audience) => (
+              <Link key={audience.path} to={audience.path}>
+                {audience.label}
+              </Link>
+            ))}
+          </nav>
           <nav className="site-utility-links" aria-label="Utility navigation">
             <Link to="/contact">Contact LMSA</Link>
             <Link to="/portal">Member portal</Link>
@@ -186,6 +205,17 @@ export default function Header() {
       {isMenuOpen && (
         <div id="mobile-navigation" className="site-mobile-navigation">
           <div className="site-container site-mobile-navigation-inner">
+            <div className="site-mobile-audiences">
+              <p className="site-mobile-audiences-label">For you</p>
+              <div className="site-mobile-audience-links">
+                {audienceNav.map((audience) => (
+                  <Link key={audience.path} to={audience.path} onClick={closeMenu}>
+                    {audience.label}
+                  </Link>
+                ))}
+              </div>
+            </div>
+
             {primaryNav.map((section) => (
               <details key={section.label} className="site-mobile-group">
                 <summary>

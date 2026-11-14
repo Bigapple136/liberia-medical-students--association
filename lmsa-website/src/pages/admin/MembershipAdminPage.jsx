@@ -19,11 +19,13 @@ const STATUS_FILTERS = [
   { value: 'all',       label: 'All',       color: 'bg-gray-100 text-gray-700 border-gray-200' },
 ];
 
+// Membership type is a category, so every type uses the same neutral chip.
+// The label distinguishes them; colour is reserved for status.
 const MEMBERSHIP_TYPES = {
-  full:      { label: 'Full Member',      color: 'bg-lmsa-50 text-lmsa-700' },
-  associate: { label: 'Associate Member', color: 'bg-blue-50 text-blue-700' },
-  honorary:  { label: 'Honorary Member',  color: 'bg-purple-50 text-purple-700' },
-  veteran:   { label: 'Veteran Member',   color: 'bg-amber-50 text-amber-700' },
+  full:      { label: 'Full Member',      color: 'bg-gray-100 text-gray-700' },
+  associate: { label: 'Associate Member', color: 'bg-gray-100 text-gray-700' },
+  honorary:  { label: 'Honorary Member',  color: 'bg-gray-100 text-gray-700' },
+  veteran:   { label: 'Veteran Member',   color: 'bg-gray-100 text-gray-700' },
 };
 
 // ─── Main Component ─────────────────────────────────────────────────────────

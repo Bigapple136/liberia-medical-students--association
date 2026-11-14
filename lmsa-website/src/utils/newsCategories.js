@@ -14,20 +14,6 @@ export const NEWS_CATEGORIES = [
   { value: 'event', label: 'Events' },
 ];
 
-export const CATEGORY_BADGE_CLASSES = {
-  news: 'bg-blue-50 text-blue-700',
-  announcement: 'bg-purple-50 text-purple-700',
-  achievement: 'bg-lmsa-50 text-lmsa-700',
-  opportunity: 'bg-amber-50 text-amber-700',
-  health: 'bg-red-50 text-red-700',
-  academic: 'bg-indigo-50 text-indigo-700',
-  event: 'bg-cyan-50 text-cyan-700',
-};
-
-export function categoryBadgeClass(category) {
-  return CATEGORY_BADGE_CLASSES[category] || 'bg-gray-100 text-gray-700';
-}
-
 export function categoryLabel(category) {
   return NEWS_CATEGORIES.find((entry) => entry.value === category)?.label || category;
 }

@@ -39,11 +39,13 @@ const STAGE_LABELS = {
   exam: 'Exam preparation',
 };
 
+// Access level is a category, not a warning. Red stays reserved for errors and
+// destructive actions, so the restricted levels use neutral emphasis instead.
 const ACCESS_BADGES = {
-  public: 'bg-lmsa-50 text-lmsa-700',
-  members: 'bg-blue-50 text-blue-700',
-  executive: 'bg-amber-50 text-amber-700',
-  admin: 'bg-red-50 text-red-700',
+  public: 'bg-gray-100 text-gray-600',
+  members: 'bg-lmsa-50 text-lmsa-700',
+  executive: 'bg-gray-900 text-white',
+  admin: 'bg-gray-900 text-white',
 };
 
 function categoryLabel(value) {

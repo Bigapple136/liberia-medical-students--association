@@ -10,14 +10,15 @@ import {
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { newsService } from '@services/news.service';
+import { NEWS_CATEGORIES } from '@utils/newsCategories';
 import Select from '@components/common/Select';
 
 // ─── Constants ─────────────────────────────────────────────────────────────
 const STATUS_FILTERS = [
   { value: 'draft',     label: 'Draft',     color: 'bg-gray-100 text-gray-700 border-gray-200' },
   { value: 'published', label: 'Published', color: 'bg-lmsa-50 text-lmsa-700 border-lmsa-200' },
-  { value: 'archived',  label: 'Archived',  color: 'bg-amber-50 text-amber-700 border-amber-200' },
-  { value: 'all',       label: 'All',       color: 'bg-blue-50 text-blue-700 border-blue-200' },
+  { value: 'archived',  label: 'Archived',  color: 'bg-gray-100 text-gray-700 border-gray-200' },
+  { value: 'all',       label: 'All',       color: 'bg-gray-100 text-gray-700 border-gray-200' },
 ];
 
 const STATUS_OPTIONS = [
@@ -26,25 +27,9 @@ const STATUS_OPTIONS = [
   { value: 'archived',  label: 'Archived' },
 ];
 
-const CATEGORY_OPTIONS = [
-  { value: 'news',         label: 'News' },
-  { value: 'announcement', label: 'Announcement' },
-  { value: 'achievement',  label: 'Achievement' },
-  { value: 'opportunity',  label: 'Opportunity' },
-  { value: 'health',       label: 'Health' },
-  { value: 'academic',     label: 'Academic' },
-  { value: 'event',        label: 'Event' },
-];
-
-const CATEGORY_COLORS = {
-  news:         'bg-blue-50 text-blue-700',
-  announcement: 'bg-purple-50 text-purple-700',
-  achievement:  'bg-lmsa-50 text-lmsa-700',
-  opportunity:  'bg-amber-50 text-amber-700',
-  health:       'bg-red-50 text-red-700',
-  academic:     'bg-indigo-50 text-indigo-700',
-  event:        'bg-cyan-50 text-cyan-700',
-};
+// Categories come from the shared list so the admin and the public site can
+// never drift apart. Category is a label, not a state, so it renders neutral.
+const CATEGORY_CHIP = 'bg-gray-100 text-gray-700';
 
 const EMPTY_FORM = {
   title: '',
@@ -237,7 +222,7 @@ export default function NewsAdminPage() {
 // ─── Post Card ─────────────────────────────────────────────────────────────
 function PostCard({ post, expanded, onToggle, onEdit, onDelete, onQuickStatus }) {
   const statusInfo = STATUS_FILTERS.find(f => f.value === post.status) || STATUS_FILTERS[0];
-  const catColor = CATEGORY_COLORS[post.category] || 'bg-gray-100 text-gray-700';
+  const catColor = CATEGORY_CHIP;
 
   return (
     <div className="bg-white rounded-xl border border-gray-200 overflow-hidden transition-all">
@@ -466,7 +451,7 @@ function PostForm({ post, tags, onSave, onClose }) {
             label="Category"
             value={form.category}
             onChange={e => handleChange('category', e.target.value)}
-            options={CATEGORY_OPTIONS}
+            options={NEWS_CATEGORIES}
           />
           <Select
             label="Status"

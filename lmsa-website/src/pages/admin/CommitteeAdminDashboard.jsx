@@ -840,7 +840,7 @@ function EventsTab({ committee }) {
                   <p className="text-sm text-gray-500 mt-0.5 truncate">{ev.location} • {ev.event_type}</p>
                   <div className="flex flex-wrap gap-2 mt-1.5">
                     <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
-                      ev.status === 'upcoming' ? 'bg-blue-50 text-blue-700' :
+                      ev.status === 'upcoming' ? 'bg-lmsa-50 text-lmsa-700' :
                       ev.status === 'completed' ? 'bg-gray-100 text-gray-500' :
                       'bg-lmsa-50 text-lmsa-700'
                     }`}>{ev.status}</span>
@@ -848,7 +848,7 @@ function EventsTab({ committee }) {
                       <span className="text-xs px-2 py-0.5 rounded-full bg-amber-50 text-amber-700">Registration required</span>
                     )}
                     {ev.fee > 0 && (
-                      <span className="text-xs px-2 py-0.5 rounded-full bg-purple-50 text-purple-700">${ev.fee}</span>
+                      <span className="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-700">${ev.fee}</span>
                     )}
                   </div>
                 </div>
@@ -1000,8 +1000,10 @@ function DocumentsTab({ committee }) {
                     <span
                       className={`text-xs px-2 py-0.5 rounded-full font-medium ${
                         doc.access_level === 'public'
-                          ? 'bg-green-50 text-green-800'
-                          : 'bg-gray-100 text-gray-700'
+                          ? 'bg-gray-100 text-gray-700'
+                          : doc.access_level === 'members'
+                            ? 'bg-lmsa-50 text-lmsa-800'
+                            : 'bg-gray-900 text-white'
                       }`}
                     >
                       {doc.access_level}
@@ -1259,9 +1261,9 @@ function AchievementsTab({ committee }) {
 function AnalyticsTab({ committee }) {
   const stats = [
     { label: 'Total Members', value: committee.member_count || 0, icon: Users, color: 'text-lmsa-600', bg: 'bg-lmsa-50' },
-    { label: 'Active Events', value: committee.active_events ?? '—', icon: Calendar, color: 'text-blue-600', bg: 'bg-blue-50' },
-    { label: 'Documents', value: committee.doc_count ?? '—', icon: FileText, color: 'text-amber-600', bg: 'bg-amber-50' },
-    { label: 'Page Views', value: committee.views || '—', icon: Eye, color: 'text-purple-600', bg: 'bg-purple-50' },
+    { label: 'Active Events', value: committee.active_events ?? '—', icon: Calendar, color: 'text-lmsa-600', bg: 'bg-lmsa-50' },
+    { label: 'Documents', value: committee.doc_count ?? '—', icon: FileText, color: 'text-lmsa-600', bg: 'bg-lmsa-50' },
+    { label: 'Page Views', value: committee.views || '—', icon: Eye, color: 'text-lmsa-600', bg: 'bg-lmsa-50' },
   ];
 
   return (

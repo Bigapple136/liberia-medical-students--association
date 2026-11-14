@@ -25,7 +25,18 @@ export default {
           DEFAULT: '#f1f0ec',
           muted: '#e7e6e1',
         },
-        // Supporting colors
+        // ── Colour is a state system, not decoration ───────────────────
+        // Only four tones carry meaning in the UI:
+        //   lmsa   affirmative / brand — active, approved, published, upcoming
+        //   amber  attention — pending, warning, outstanding dues
+        //   red    stop — errors, destructive actions, rejected, cancelled
+        //   blue   information — info notices, neutral status
+        // Categories (news categories, membership types, document access
+        // levels, roles, dashboard counts) use the gray scale; the label
+        // carries the meaning. The scales below remain available for
+        // page-hero surfaces and photographic overlays, but purple, indigo,
+        // cyan, teal, rose and orange must not encode new UI meaning.
+        // See docs/01-brand-identity-design-system.md.
         red: {
           50: '#FEF0F0',
           100: '#FDD8D8',
@@ -47,7 +58,7 @@ export default {
           600: '#FFB300', // Achievement gold
           800: '#C68400',
         },
-        // Teal — Fresh & Modern (Healthcare/Info)
+        // Teal — retired from UI (photographic overlays only)
         teal: {
           50: '#E6FFFA',
           100: '#B2F5EA',
@@ -57,7 +68,7 @@ export default {
           700: '#285E61',
           800: '#234E52',
         },
-        // Purple — Premium & Distinctive (Leadership/Executive)
+        // Purple — retired from UI (was leadership/executive)
         purple: {
           50: '#FAF5FF',
           100: '#E9D5FF',
@@ -67,7 +78,7 @@ export default {
           700: '#6B21A8',
           800: '#581C87',
         },
-        // Orange — Energy & Community (Events/CTAs)
+        // Orange — retired from UI (never used)
         orange: {
           50: '#FFF7ED',
           100: '#FFEDD5',
@@ -77,7 +88,7 @@ export default {
           700: '#C2410C',
           800: '#9A3412',
         },
-        // Rose — Human & Approachable (Welfare/Wellness)
+        // Rose — retired from UI (page-hero surface art only)
         rose: {
           50: '#FFF1F2',
           100: '#FFE4E6',

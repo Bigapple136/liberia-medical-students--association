@@ -17,10 +17,10 @@ import Select from '@components/common/Select';
 const STATUS_FILTERS = [
   { value: 'draft',     label: 'Draft',     color: 'bg-gray-100 text-gray-700 border-gray-200' },
   { value: 'upcoming',  label: 'Upcoming',  color: 'bg-lmsa-50 text-lmsa-700 border-lmsa-200' },
-  { value: 'ongoing',   label: 'Ongoing',   color: 'bg-green-50 text-green-700 border-green-200' },
-  { value: 'completed', label: 'Completed', color: 'bg-indigo-50 text-indigo-700 border-indigo-200' },
+  { value: 'ongoing',   label: 'Ongoing',   color: 'bg-lmsa-50 text-lmsa-700 border-lmsa-200' },
+  { value: 'completed', label: 'Completed', color: 'bg-gray-100 text-gray-700 border-gray-200' },
   { value: 'cancelled', label: 'Cancelled', color: 'bg-red-50 text-red-700 border-red-200' },
-  { value: 'all',       label: 'All',       color: 'bg-blue-50 text-blue-700 border-blue-200' },
+  { value: 'all',       label: 'All',       color: 'bg-gray-100 text-gray-700 border-gray-200' },
 ];
 
 const STATUS_OPTIONS = STATUS_FILTERS.filter(f => f.value !== 'all');
@@ -394,9 +394,9 @@ function EventCard({ event, expanded, onToggle, onEdit, onDelete, onQuickStatus 
                 const cls = s.value === 'cancelled'
                   ? 'text-red-700 bg-red-50 border border-red-200 hover:bg-red-100'
                   : s.value === 'completed'
-                  ? 'text-indigo-700 bg-indigo-50 border border-indigo-200 hover:bg-indigo-100'
+                  ? 'text-gray-700 bg-gray-100 border border-gray-200 hover:bg-gray-200'
                   : s.value === 'ongoing'
-                  ? 'text-green-700 bg-green-50 border border-green-200 hover:bg-green-100'
+                  ? 'text-lmsa-700 bg-lmsa-50 border border-lmsa-200 hover:bg-lmsa-100'
                   : 'text-lmsa-700 bg-lmsa-50 border border-lmsa-200 hover:bg-lmsa-100';
                 return (
                   <button

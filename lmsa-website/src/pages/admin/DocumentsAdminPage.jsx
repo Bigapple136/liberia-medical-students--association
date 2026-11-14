@@ -261,10 +261,9 @@ export default function DocumentsAdminPage() {
                   </td>
                   <td className="px-4 py-3">
                     <span className={`text-xs px-2 py-0.5 rounded-full inline-flex items-center gap-1 ${
-                      doc.access_level === 'public' ? 'bg-lmsa-50 text-lmsa-800'
-                        : doc.access_level === 'members' ? 'bg-blue-50 text-blue-700'
-                        : doc.access_level === 'executive' ? 'bg-amber-50 text-amber-700'
-                        : 'bg-purple-50 text-purple-700'
+                      doc.access_level === 'public' ? 'bg-gray-100 text-gray-700'
+                        : doc.access_level === 'members' ? 'bg-lmsa-50 text-lmsa-800'
+                        : 'bg-gray-900 text-white'
                     }`}>
                       <Filter size={11} />
                       {doc.access_level}

@@ -46,14 +46,16 @@ function displayNameOf(user) {
 
 const ROLE_LABELS = { admin: 'Admin', executive: 'Executive', super_admin: 'Super admin' };
 
+// Roles are a category, not a state, so they use the neutral scale: the
+// label carries the meaning and weight carries the hierarchy.
 function roleChipClasses(role) {
   switch (role) {
     case 'super_admin':
-      return 'bg-purple-50 text-purple-800';
+      return 'bg-gray-900 text-white';
     case 'executive':
-      return 'bg-blue-50 text-blue-800';
-    default:
       return 'bg-lmsa-50 text-lmsa-800';
+    default:
+      return 'bg-gray-100 text-gray-700';
   }
 }
 

@@ -122,15 +122,3 @@ export const stockPhotos = {
   },
 };
 
-/**
- * Fallback gradient backgrounds used when images fail to load
- * or as overlays on top of images.
- */
-export const gradients = {
-  green: 'bg-gradient-to-br from-lmsa-900 via-lmsa-800 to-lmsa-700',
-  blue: 'bg-gradient-to-br from-blue-800 via-blue-700 to-blue-600',
-  gold: 'bg-gradient-to-br from-amber-800 via-amber-700 to-amber-600',
-  rose: 'bg-gradient-to-br from-rose-800 via-rose-700 to-rose-600',
-  ink: 'bg-gradient-to-br from-gray-900 via-gray-800 to-lmsa-900',
-  teal: 'bg-gradient-to-br from-teal-800 via-teal-700 to-lmsa-700',
-};
