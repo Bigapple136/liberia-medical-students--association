@@ -5,12 +5,13 @@ import fs from 'node:fs';
 
 const BASE = process.env.BASE_URL || 'http://localhost:4173';
 const ROUND = process.argv[2] || 'r1';
+const PATH = process.argv[3] || '/academics/career-center';
 const OUT = new URL(`./inspect/career-${ROUND}/`, import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1');
 fs.mkdirSync(OUT, { recursive: true });
 
 const browser = await chromium.launch({ channel: 'msedge', headless: true });
 const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
-await page.goto(`${BASE}/academics/career-center`, { waitUntil: 'networkidle' });
+await page.goto(`${BASE}${PATH}`, { waitUntil: 'networkidle' });
 await page.waitForTimeout(2500);
 
 const total = await page.evaluate(() => document.documentElement.scrollHeight);

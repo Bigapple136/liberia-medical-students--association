@@ -22,16 +22,71 @@ export const ALL_COMMITTEES_DATA = {
   health: {
     name: 'Health Committee',
     icon: 'Heart',
-    description: 'The Health Committee ensures the general sanitation of dormitories, academic buildings, and their environs while planning health-related functions for LMSA members.',
+    description: 'Keeps the places students learn and live clean and safe, and runs the programmes that help students look after themselves and each other.',
     mandate: [
-      'Ensure satisfactory sanitation of dormitories and academic buildings',
-      'Maintain acceptable health standards in all LMSA facilities',
-      'Plan and execute health-related functions for members',
-      'Coordinate with health authorities on student health matters',
-      'Conduct regular health and sanitation inspections',
-      'Promote health awareness among students',
+      'Keep dormitories, lecture halls, and the grounds around them clean and safe',
+      'Hold every LMSA facility to a health standard the association sets and can defend',
+      'Run health programmes for members, from screenings to first-aid training',
+      'Represent students wherever health authorities make decisions that affect them',
+      'Inspect on a regular schedule, and follow up until what is broken gets fixed',
+      'Publish health information students can use, not just notices on a board',
     ],
-    key_activities: ['Campus Health Inspections', 'Health Awareness Campaigns', 'First Aid Training', 'Mental Health Support Programs', 'Vaccination Drives', 'Wellness Workshops'],
+    key_activities: [
+      'Inspect dormitories and academic buildings on a schedule',
+      'Run health awareness campaigns through the semester',
+      'Train members in first aid and emergency response',
+      'Support mental health programmes',
+      'Organise vaccination drives with health authorities',
+      'Host wellness workshops on nutrition, stress, and sleep',
+    ],
+    // The committee's plan for the current term, read by
+    // CommitteePageTemplate as the page's spine (report -> inspect -> fix ->
+    // publish). Each entry is what the committee intends to do, where it stands
+    // and when. `when` is deliberately relative ("Start of term", "Before
+    // exams") rather than a calendar date: exact dates belong in the events
+    // list, and a stale date here would read as a broken promise.
+    //
+    // DRAFTED from the constitutional mandate, pending correction by the
+    // committee. Statuses are `ongoing` for continuous work and `planned` for
+    // what is still ahead; nothing is marked `done` until the committee says so.
+    term_plan: [
+      {
+        when: 'Throughout the term',
+        title:
+          'Inspect dormitories, lecture halls and the grounds around them, and log every fault found',
+        status: 'ongoing',
+      },
+      {
+        when: 'Start of term',
+        title:
+          'Publish the health standard every LMSA facility is held to, so students know what to expect',
+        status: 'planned',
+      },
+      {
+        when: 'Mid-term',
+        title:
+          'Run first-aid and emergency-response training for members, with a practical assessment',
+        status: 'planned',
+      },
+      {
+        when: 'Mid-term',
+        title:
+          'Organise a vaccination drive with the county health authority',
+        status: 'planned',
+      },
+      {
+        when: 'Before exams',
+        title:
+          'Hold wellness workshops on nutrition, stress and sleep, and open the mental-health programme to every student',
+        status: 'planned',
+      },
+      {
+        when: 'End of term',
+        title:
+          'Publish what was inspected, what was fixed and what is still outstanding',
+        status: 'planned',
+      },
+    ],
   },
   'research-journal': {
     name: 'Research & Journal Committee',
