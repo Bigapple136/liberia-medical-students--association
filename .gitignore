@@ -35,3 +35,6 @@ temp/
 *.tgz
 .cache/
 *.orig
+
+# Local second clone of this repository (not a submodule)
+lmsa-repo/
