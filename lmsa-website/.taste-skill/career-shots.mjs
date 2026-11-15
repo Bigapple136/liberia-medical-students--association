@@ -1,4 +1,5 @@
-// Screenshot harness for the design look-and-fix loop (not committed tooling).
+// Screenshot harness for the design look-and-fix loop. Writes into
+// .taste-skill/inspect/, which is gitignored.
 // Usage: node .taste-skill/career-shots.mjs [round]
 import { chromium } from 'playwright-core';
 import fs from 'node:fs';
