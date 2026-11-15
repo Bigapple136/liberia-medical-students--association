@@ -407,14 +407,14 @@ export default function CareerCenterPage() {
                   <ul className="mt-2 space-y-1.5">
                     {picked.tips.map((tip) => (
                       <li key={tip} className="flex items-center gap-2.5 text-[15px] leading-6 text-gray-800">
-                        <Check size={15} className="shrink-0 text-lmsa-600" aria-hidden="true" />
+                        <Check size={15} className="shrink-0 text-lmsa-700" aria-hidden="true" />
                         {tip}
                       </li>
                     ))}
                   </ul>
                   <Link
                     to="/contact"
-                    className="mt-6 inline-flex min-h-11 items-center gap-2 rounded-lg bg-lmsa-600 px-5 text-[15px] font-semibold text-white transition-colors hover:bg-lmsa-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
+                    className="mt-6 inline-flex min-h-11 items-center gap-2 rounded-lg bg-lmsa-700 px-5 text-[15px] font-semibold text-white transition-colors hover:bg-lmsa-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
                   >
                     {picked.action}
                     <ArrowRight size={17} aria-hidden="true" />
@@ -464,7 +464,7 @@ export default function CareerCenterPage() {
                 <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-4 px-5 py-4 text-[17px] font-semibold leading-7 text-lmsa-900 md:px-6 md:py-5 md:text-[20px] [&::-webkit-details-marker]:hidden">
                   {item.q}
                   <span
-                    className="relative h-4 w-4 shrink-0 text-lmsa-600 transition-transform duration-300 group-open:rotate-45"
+                    className="relative h-4 w-4 shrink-0 text-lmsa-700 transition-transform duration-300 group-open:rotate-45"
                     aria-hidden="true"
                   >
                     <span className="absolute left-0 top-1/2 h-[2px] w-full -translate-y-1/2 bg-current" />

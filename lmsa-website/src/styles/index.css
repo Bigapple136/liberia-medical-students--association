@@ -55,12 +55,16 @@
     @apply rounded-lg font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2;
   }
 
+  /* White on the brand green (#0C8950) measures 4.46:1, under the 4.5:1 AA
+     floor this project holds itself to. The brand token stays as it is — it is
+     pinned by the brand guide — so the filled buttons step one shade down the
+     same scale, where white clears 5.9:1. */
   .btn-primary {
-    @apply bg-lmsa-600 text-white hover:bg-lmsa-700 active:bg-lmsa-800 focus-visible:ring-lmsa-600;
+    @apply bg-lmsa-700 text-white hover:bg-lmsa-800 active:bg-lmsa-900 focus-visible:ring-lmsa-600;
   }
 
   .btn-secondary {
-    @apply bg-transparent border-2 border-lmsa-600 text-lmsa-600 hover:bg-lmsa-50 active:bg-lmsa-100 focus-visible:ring-lmsa-600;
+    @apply bg-transparent border-2 border-lmsa-600 text-lmsa-700 hover:bg-lmsa-50 active:bg-lmsa-100 active:text-lmsa-800 focus-visible:ring-lmsa-600;
   }
 
   .btn-ghost {
@@ -848,7 +852,7 @@
 
   .site-header-join,
   .site-mobile-action-primary {
-    @apply inline-flex items-center justify-center gap-2 bg-lmsa-600 px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-lmsa-700;
+    @apply inline-flex items-center justify-center gap-2 bg-lmsa-700 px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-lmsa-800;
   }
 
   .site-menu-toggle {
@@ -1264,7 +1268,7 @@
   }
 
   .footer-join-link {
-    @apply inline-flex shrink-0 items-center gap-2 self-start bg-lmsa-600 px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-lmsa-500 md:self-end;
+    @apply inline-flex shrink-0 items-center gap-2 self-start bg-lmsa-700 px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-lmsa-800 md:self-end;
   }
 
   .footer-grid {
@@ -1328,7 +1332,7 @@
      matching the minimum every other button on the site meets. inline-flex
      centres the label in the taller box. */
   .footer-newsletter-button {
-    @apply inline-flex min-h-11 shrink-0 items-center justify-center bg-lmsa-600 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-lmsa-500 disabled:cursor-not-allowed disabled:opacity-60;
+    @apply inline-flex min-h-11 shrink-0 items-center justify-center bg-lmsa-700 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-lmsa-800 disabled:cursor-not-allowed disabled:opacity-60;
   }
 
   .footer-column-title {

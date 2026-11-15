@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import {
   ArrowLeft,
   ArrowRight,
+  ChevronDown,
   Download,
   Loader,
   Mail,
@@ -81,14 +82,18 @@ function statusLine(recruitment) {
    set unchanged. */
 const COMMITTEE_PHOTOS = {
   academic: {
+    // The shared `stories.symposium` photo is a clinician looking at a phone,
+    // not the room full of people the alt text promises. The events hero is
+    // actually a conference audience, which is what a symposium page should
+    // open on.
     opening: {
-      story: 'symposium',
+      hero: 'events',
     },
+    // The plan section carries this one now that the mandate band is gone: a
+    // table of open books says "academic" in a way the workshop photograph —
+    // people at a wall of sticky notes — did not.
     planning: {
       section: 'learn',
-    },
-    practising: {
-      section: 'lead',
     },
   },
   health: {
@@ -169,6 +174,23 @@ const COMMITTEE_PROFILES = {
      support already exists (study resources, mentorship, research, symposia),
      and give them a way to change the programme rather than just read it. */
   academic: {
+    // The constitutional register is the floor the plan was built from, not a
+    // section a student came for, so it folds shut at the end of the plan.
+    mandate: 'footnote',
+    // The named programmes are printed on the plan rail itself, so the band
+    // that listed them separately is gone.
+    activities: 'hidden',
+    // The registry describes the committee in the third person, for a directory
+    // entry ("plans and executes all functions related to LMSA's academic
+    // affairs"). That sentence is the first thing a visitor reads here, so the
+    // page opens on what the committee actually runs this year instead. Same
+    // claims — symposia, workshops, student-chosen topics — written for the
+    // person reading it. The registry line still stands on the committees index.
+    // The "topics come from students" half of this lives in the ask band and
+    // the closing note, both of which ask for something; saying it here too
+    // would be the third time on one page.
+    intro:
+      'The committee runs the year’s academic programme: two symposia, one clinical and one pre-clinical, and the workshops between them.',
     // The association files academic reporting under the shared `academic`
     // news category, so the page carries that reporting without a
     // committee-scoped news endpoint.
@@ -491,6 +513,7 @@ export default function CommitteePageTemplate() {
   const profile = COMMITTEE_PROFILES[slug] || {};
   const ask = profile.ask || null;
   const support = profile.support || null;
+  const heroIntro = profile.intro || null;
   const closingNote = profile.closing || null;
   // The contact band is shared with the other committees' pages as they stand;
   // only a profile that asks for it gets the compact treatment.
@@ -503,17 +526,33 @@ export default function CommitteePageTemplate() {
   // The mandate sits above the work by default; on a committee that runs a
   // service the work comes first and the mandate is a footnote.
   const mandateHidden = profile.mandate === 'hidden';
+  // 'footnote' keeps the register on the page as a disclosure inside the plan
+  // section, so the duties stay findable without a band of their own.
+  const mandateFootnote = profile.mandate === 'footnote';
+  const activitiesHidden = profile.activities === 'hidden';
 
   /* Follows an in-page jump to the contact form. An anchor jump leaves focus
      on <body>, so a keyboard or screen-reader user who takes the page's main
-     action starts reading the document again from the top. Focus the heading
-     they actually landed on, and pre-fill the subject when the jump came from
-     the report block. */
-  function goToContact(subject) {
+     action starts reading the document again from the top. Focus what they
+     actually landed on, and pre-fill the subject when the jump came from the
+     report block. A jump aimed at the form itself focuses its first field, so
+     the next Tab keeps moving through the fields rather than past them. */
+  /* Same idea for the in-page index: a heading marker is not focusable, so the
+     jump would leave a keyboard user's focus behind at the top of the page.
+     Focusing the heading they arrived at also means the next Tab starts from
+     that section rather than from the hero. */
+  function jumpTo(id) {
+    requestAnimationFrame(() => document.getElementById(id)?.focus());
+  }
+
+  function goToContact(subject, { focusField = false } = {}) {
     if (subject) setContactForm(f => ({ ...f, subject }));
-    requestAnimationFrame(() =>
-      document.getElementById('committee-contact-title')?.focus()
-    );
+    requestAnimationFrame(() => {
+      const landed = document.getElementById(
+        focusField ? 'committee-contact-name' : 'committee-contact-title'
+      );
+      landed?.focus();
+    });
   }
 
   async function sendContact(event) {
@@ -593,7 +632,7 @@ export default function CommitteePageTemplate() {
           </p>
           <Link
             to="/leadership/committees"
-            className="mt-8 inline-flex min-h-12 items-center gap-2 rounded-lg bg-lmsa-600 px-6 text-[15px] font-semibold text-white transition-colors hover:bg-lmsa-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
+            className="mt-8 inline-flex min-h-12 items-center gap-2 rounded-lg bg-lmsa-700 px-6 text-[15px] font-semibold text-white transition-colors hover:bg-lmsa-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
           >
             See the register
             <ArrowRight size={17} aria-hidden="true" />
@@ -671,9 +710,9 @@ export default function CommitteePageTemplate() {
               {committee.name}
             </h1>
 
-            {committee.description && (
+            {(heroIntro || committee.description) && (
               <p className="mt-6 max-w-[52ch] text-[19px] leading-8 text-lmsa-50">
-                {committee.description}
+                {heroIntro || committee.description}
               </p>
             )}
 
@@ -688,7 +727,7 @@ export default function CommitteePageTemplate() {
             )}
             {!status && committee.unavailable && answered && (
               <p className="mt-6 text-[15px] leading-6 text-lmsa-100">
-                Recruitment details could not be loaded.
+                We couldn’t load this round’s recruitment status. Refresh the page to try again.
               </p>
             )}
 
@@ -724,6 +763,49 @@ export default function CommitteePageTemplate() {
                 </a>
               )}
             </div>
+
+            {/* An index for a long page. It lists only sections that are
+                actually on the page — a committee without a plan or a profile
+                without support routes gets no link pretending otherwise. Set
+                as plain underlined text rather than as buttons, so the action
+                above keeps the weight a primary action needs. */}
+            <nav
+              aria-label="On this page"
+              className="mt-6 flex flex-wrap items-center gap-x-6 text-[15px] font-semibold text-lmsa-100"
+            >
+              {[
+                {
+                  label: 'This term’s plan',
+                  target: 'committee-plan-title',
+                  shown: termPlan.length > 0,
+                },
+                {
+                  label: 'Study support',
+                  target: 'committee-support-title',
+                  shown: Boolean(support?.links?.length),
+                },
+                { label: 'Write to the committee', target: 'contact', shown: true },
+              ]
+                .filter(item => item.shown)
+                .map(item => (
+                  <a
+                    key={item.target}
+                    href={
+                      item.target === 'contact'
+                        ? '#committee-contact'
+                        : `#${item.target}`
+                    }
+                    onClick={() =>
+                      item.target === 'contact'
+                        ? goToContact()
+                        : jumpTo(item.target)
+                    }
+                    className="inline-flex min-h-11 items-center underline decoration-lmsa-400 decoration-2 underline-offset-[6px] transition-colors hover:text-white hover:decoration-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-400 focus-visible:ring-offset-2 focus-visible:ring-offset-lmsa-900"
+                  >
+                    {item.label}
+                  </a>
+                ))}
+            </nav>
           </div>
 
           <figure className="reveal-on-scroll">
@@ -770,9 +852,12 @@ export default function CommitteePageTemplate() {
         <section className="bg-lmsa-50" aria-labelledby="committee-plan-title">
           <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 md:py-28 lg:px-8">
             <div className="reveal-on-scroll max-w-3xl">
+              {/* The closing section links here; the offset clears the sticky
+                  header (112px on desktop) rather than hiding this under it. */}
               <h2
                 id="committee-plan-title"
-                className="max-w-[18ch] text-[clamp(2rem,3.6vw,3.25rem)] font-bold leading-[1.02] tracking-[-0.04em] text-lmsa-900"
+                tabIndex={-1}
+                className="scroll-mt-32 max-w-[18ch] text-[clamp(2rem,3.6vw,3.25rem)] font-bold leading-[1.02] tracking-[-0.04em] text-lmsa-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-lmsa-600"
               >
                 What we are doing this term.
               </h2>
@@ -789,14 +874,31 @@ export default function CommitteePageTemplate() {
               {termPlan.map(item => (
                 <li
                   key={`${item.when}-${item.title}`}
-                  className="reveal-on-scroll grid gap-y-3 border-b border-lmsa-200 py-6 md:grid-cols-[10rem_1fr_auto] md:items-baseline md:gap-x-10"
+                  className="reveal-on-scroll grid gap-y-3 border-b border-lmsa-200 py-6 md:grid-cols-[12rem_1fr_auto] md:items-baseline md:gap-x-10 lg:grid-cols-[16rem_1fr_auto]"
                 >
-                  <p className="text-[13px] font-semibold uppercase leading-5 tracking-[0.12em] text-lmsa-600">
+                  {/* The time column is wide enough at desktop for the longest
+                      timing phrase the plan uses ("Before the first symposium"
+                      measures 246px at this size and tracking); the old 10rem
+                      column broke every label after a word or two and left the
+                      rail looking mis-set. Where a phrase still outgrows its
+                      column, at tablet widths or with new data, it balances
+                      rather than orphaning one word. */}
+                  <p className="text-balance text-[13px] font-semibold uppercase leading-5 tracking-[0.12em] text-lmsa-700">
                     {item.when}
                   </p>
-                  <p className="max-w-[52ch] text-[19px] leading-8 text-lmsa-900">
-                    {item.title}
-                  </p>
+                  <div>
+                    <p className="max-w-[52ch] text-[19px] leading-8 text-lmsa-900">
+                      {item.title}
+                    </p>
+                    {/* The name a student would ask for by name — "Clinical
+                        Skills Workshops" — belongs on the entry that runs it,
+                        not in a second list of the same programmes. */}
+                    {item.programme && (
+                      <p className="mt-2 text-[13px] font-semibold uppercase leading-5 tracking-[0.12em] text-lmsa-700">
+                        {item.programme}
+                      </p>
+                    )}
+                  </div>
                   <span className="inline-flex items-center gap-2 text-[13px] font-semibold uppercase tracking-[0.12em] text-lmsa-700">
                     <span
                       aria-hidden="true"
@@ -811,6 +913,60 @@ export default function CommitteePageTemplate() {
                 </li>
               ))}
             </ol>
+
+            {mandateFootnote && mandate.length > 0 && (
+              <>
+                {/* With the mandate and activity bands gone, the plan is the
+                    section that carries a photograph, and a session in progress
+                    is what the rail above describes. */}
+                <figure className="reveal-on-scroll mt-16 lg:max-w-[52rem]">
+                  <img
+                    src={planning.src}
+                    alt={planning.alt}
+                    className="aspect-[16/9] w-full rounded-lg object-cover"
+                    loading="lazy"
+                  />
+                  <figcaption className="mt-3 text-[13px] leading-5 text-gray-600">
+                    Photo: {planning.credit}
+                  </figcaption>
+                </figure>
+
+                {/* The register used to be a band above the programme, saying
+                    in the constitution's words what the plan says in the
+                    committee's. It keeps its place on the page as evidence,
+                    folded shut. */}
+                <details className="group mt-14 border-t border-lmsa-200 pt-6 lg:max-w-[68rem]">
+                  <summary className="flex cursor-pointer list-none items-center justify-between gap-6 rounded-sm text-[19px] font-semibold leading-7 text-lmsa-900 marker:content-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-4 [&::-webkit-details-marker]:hidden">
+                    Written into the constitution.
+                    <ChevronDown
+                      size={18}
+                      aria-hidden="true"
+                      className="shrink-0 text-lmsa-700 transition-transform duration-200 group-open:rotate-180"
+                    />
+                  </summary>
+                  <p className="mt-4 max-w-[52ch] text-[17px] leading-7 text-gray-800">
+                    The duties the constitution sets for this committee — the
+                    floor the plan above is built on.
+                  </p>
+                  <ul className="mt-6 border-t border-lmsa-200">
+                    {mandate.map(item => (
+                      <li
+                        key={item}
+                        className="border-b border-lmsa-200 py-4 text-[17px] leading-7 text-lmsa-900"
+                      >
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                  <Link
+                    to="/about/constitution#elections"
+                    className="mt-6 inline-flex min-h-12 items-center text-[15px] font-semibold text-lmsa-700 underline decoration-2 underline-offset-[6px] transition-colors hover:decoration-lmsa-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
+                  >
+                    Read the constitution
+                  </Link>
+                </details>
+              </>
+            )}
           </div>
         </section>
       )}
@@ -819,7 +975,7 @@ export default function CommitteePageTemplate() {
           Skipped entirely where the mandate is the footnote: the register is
           the committee's remit, and for a service committee it belongs under
           the programme, not in front of it. */}
-      {!mandateHidden && (
+      {!mandateHidden && !mandateFootnote && (
       <section className="bg-paper" aria-labelledby="committee-mandate-title">
         <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 md:py-28 lg:px-8">
           <div className="reveal-on-scroll max-w-3xl">
@@ -864,7 +1020,7 @@ export default function CommitteePageTemplate() {
                     >
                       <span
                         aria-hidden="true"
-                        className="pt-[0.4rem] text-[13px] font-semibold tabular-nums text-lmsa-600"
+                        className="pt-[0.4rem] text-[13px] font-semibold tabular-nums text-lmsa-700"
                       >
                         {String(index + 1).padStart(2, '0')}
                       </span>
@@ -888,7 +1044,7 @@ export default function CommitteePageTemplate() {
       )}
 
       {/* ---------- The work ---------- */}
-      {activities.length > 0 && (
+      {!activitiesHidden && activities.length > 0 && (
         <section className="bg-white" aria-labelledby="committee-work-title">
           <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 md:py-28 lg:px-8">
             <div className="reveal-on-scroll max-w-3xl">
@@ -916,7 +1072,7 @@ export default function CommitteePageTemplate() {
                 >
                   <span
                     aria-hidden="true"
-                    className="text-[13px] font-semibold tabular-nums text-lmsa-600"
+                    className="text-[13px] font-semibold tabular-nums text-lmsa-700"
                   >
                     {String(index + 1).padStart(2, '0')}
                   </span>
@@ -955,7 +1111,8 @@ export default function CommitteePageTemplate() {
             <div className="reveal-on-scroll max-w-3xl">
               <h2
                 id="committee-support-title"
-                className="max-w-[18ch] text-[clamp(2rem,3.6vw,3.25rem)] font-bold leading-[1.02] tracking-[-0.04em] text-lmsa-900"
+                tabIndex={-1}
+                className="scroll-mt-32 max-w-[18ch] text-[clamp(2rem,3.6vw,3.25rem)] font-bold leading-[1.02] tracking-[-0.04em] text-lmsa-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-lmsa-600"
               >
                 {support.title}
               </h2>
@@ -967,10 +1124,17 @@ export default function CommitteePageTemplate() {
             </div>
 
             <ul className="mt-12 grid gap-x-16 md:grid-cols-2">
-              {support.links.map(link => (
+              {support.links.map((link, index) => (
                 <li
                   key={link.to}
-                  className="reveal-on-scroll border-t border-lmsa-200 py-6"
+                  className={`reveal-on-scroll border-t border-lmsa-200 py-6 ${
+                    // An odd count would otherwise leave a hole in the last row;
+                    // the final row closes the ledger across the full width.
+                    index === support.links.length - 1 &&
+                    support.links.length % 2 === 1
+                      ? 'md:col-span-2'
+                      : ''
+                  }`}
                 >
                   <Link
                     to={link.to}
@@ -998,7 +1162,7 @@ export default function CommitteePageTemplate() {
           student who has just read what the committee does and wants it to do
           something. Health lets people report a fault here; Academic lets them
           propose a topic. The button preselects the subject on the contact form
-          below, so the message does not arrive as a general inquiry — it reuses
+          below, so the message does not arrive as a general enquiry — it reuses
           the form already on the page rather than adding an endpoint. */}
       {ask && (
         <section className="bg-lmsa-900 text-white" aria-labelledby="committee-ask-title">
@@ -1014,8 +1178,8 @@ export default function CommitteePageTemplate() {
                 {ask.intro}
               </p>
               <a
-                href="#committee-contact"
-                onClick={() => goToContact(ask.subject.value)}
+                href="#committee-contact-form"
+                onClick={() => goToContact(ask.subject.value, { focusField: true })}
                 className="mt-9 inline-flex min-h-12 items-center gap-2 rounded-lg bg-lmsa-50 px-6 text-[15px] font-semibold text-lmsa-900 transition-transform duration-200 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-400 focus-visible:ring-offset-2 focus-visible:ring-offset-lmsa-900"
               >
                 {ask.actionLabel || 'Ask the committee'}
@@ -1378,14 +1542,19 @@ export default function CommitteePageTemplate() {
             compactContact ? 'py-14 md:py-16' : 'py-20 md:py-28'
           }`}
         >
+          {/* The copy is one block on desktop and a set of loose items on a
+              phone (`contents`), which is what lets the form sit between the
+              copy and the newsletter without a second copy of either in the
+              DOM. With no gap on the wrapper, the spacing a block would have
+              supplied comes from the children's own margins. */}
           <div
             className={`grid lg:items-start lg:gap-x-16 ${
               compactContact
-                ? 'gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:gap-y-10'
-                : 'gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-y-14'
+                ? 'gap-0 lg:grid-cols-[0.9fr_1.1fr] lg:gap-y-10'
+                : 'gap-0 lg:grid-cols-[1.05fr_0.95fr] lg:gap-y-14'
             }`}
           >
-            <div className="reveal-on-scroll lg:col-start-1 lg:row-start-1">
+            <div className="reveal-on-scroll contents lg:col-start-1 lg:row-start-1 lg:block">
               <h2
                 id="committee-contact-title"
                 tabIndex={-1}
@@ -1393,7 +1562,7 @@ export default function CommitteePageTemplate() {
                   compactContact
                     ? 'max-w-[22ch] text-[clamp(1.5rem,2.4vw,1.95rem)] leading-[1.12] tracking-[-0.03em] '
                     : 'max-w-[18ch] text-[clamp(2rem,3.6vw,3.25rem)] leading-[1.02] tracking-[-0.04em] '
-                }font-bold text-lmsa-900 focus:outline-none`}
+                }font-bold text-lmsa-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-lmsa-600`}
               >
                 Write to the committee.
               </h2>
@@ -1409,7 +1578,7 @@ export default function CommitteePageTemplate() {
               {!loading && members.length === 0 && (
                 <p className="mt-6 max-w-[46ch] text-[17px] leading-7 text-gray-800">
                   {committee.unavailable
-                    ? 'This year’s roster could not be loaded.'
+                    ? 'We couldn’t load this year’s roster. Refresh the page, or write to the committee for the current list.'
                     : 'This year’s roster is not published yet. Seats are appointed by the Executive Committee at the start of the year.'}
                 </p>
               )}
@@ -1429,8 +1598,11 @@ export default function CommitteePageTemplate() {
 
               {/* Sits in the same column as the copy rather than in the grid's
                   second row: placed in the row instead, it waited below the
-                  whole height of the form and left a dead gap under the copy. */}
-              <div className="mt-8 max-w-[46ch]">
+                  whole height of the form and left a dead gap under the copy.
+                  On a phone it follows the form, because a subscription offered
+                  before the form asked for a message buries the thing the
+                  section exists for. */}
+              <div className="order-last mt-8 max-w-[46ch] lg:order-none">
                 <h3 className="text-[17px] font-semibold text-lmsa-900">
                   Updates from this committee
                 </h3>
@@ -1464,7 +1636,7 @@ export default function CommitteePageTemplate() {
                     />
                     <button
                       type="submit"
-                      className="inline-flex min-h-12 items-center rounded-lg bg-lmsa-600 px-6 text-[15px] font-semibold text-white transition-colors hover:bg-lmsa-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
+                      className="inline-flex min-h-12 items-center rounded-lg bg-lmsa-700 px-6 text-[15px] font-semibold text-white transition-colors hover:bg-lmsa-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
                     >
                       Subscribe
                     </button>
@@ -1477,55 +1649,56 @@ export default function CommitteePageTemplate() {
                 full-bleed form read as a second page section and pulled weight
                 away from the work above it. */}
             <form
+              id="committee-contact-form"
               onSubmit={sendContact}
-              className={`reveal-on-scroll lg:col-start-2 lg:row-start-1 ${
+              className={`reveal-on-scroll scroll-mt-24 lg:col-start-2 lg:row-start-1 lg:mt-0 ${
                 compactContact
-                  ? 'space-y-4 rounded-lg border border-gray-200 bg-white p-5 sm:p-6'
-                  : 'space-y-5'
+                  ? 'mt-8 space-y-4 rounded-lg border border-gray-200 bg-white p-5 sm:p-6'
+                  : 'mt-10 space-y-5'
               }`}
             >
               {/* Only the compact card pairs the name and email fields; the
                   shared layout keeps its single column of fields. */}
               <div className={compactContact ? 'grid gap-4 sm:grid-cols-2' : 'space-y-5'}>
-              <div>
-                <label
-                  htmlFor="committee-contact-name"
-                  className="block text-[15px] font-semibold text-lmsa-900"
-                >
-                  Your name
-                </label>
-                <input
-                  id="committee-contact-name"
-                  className="input mt-2 min-h-12"
-                  value={contactForm.name}
-                  onChange={e =>
-                    setContactForm(f => ({ ...f, name: e.target.value }))
-                  }
-                  autoComplete="name"
-                  maxLength={80}
-                  required
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="committee-contact-email"
-                  className="block text-[15px] font-semibold text-lmsa-900"
-                >
-                  Your email
-                </label>
-                <input
-                  id="committee-contact-email"
-                  className="input mt-2 min-h-12"
-                  type="email"
-                  value={contactForm.email}
-                  onChange={e =>
-                    setContactForm(f => ({ ...f, email: e.target.value }))
-                  }
-                  autoComplete="email"
-                  maxLength={254}
-                  required
-                />
-              </div>
+                <div>
+                  <label
+                    htmlFor="committee-contact-name"
+                    className="block text-[15px] font-semibold text-lmsa-900"
+                  >
+                    Your name
+                  </label>
+                  <input
+                    id="committee-contact-name"
+                    className="input mt-2 min-h-12"
+                    value={contactForm.name}
+                    onChange={e =>
+                      setContactForm(f => ({ ...f, name: e.target.value }))
+                    }
+                    autoComplete="name"
+                    maxLength={80}
+                    required
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor="committee-contact-email"
+                    className="block text-[15px] font-semibold text-lmsa-900"
+                  >
+                    Your email
+                  </label>
+                  <input
+                    id="committee-contact-email"
+                    className="input mt-2 min-h-12"
+                    type="email"
+                    value={contactForm.email}
+                    onChange={e =>
+                      setContactForm(f => ({ ...f, email: e.target.value }))
+                    }
+                    autoComplete="email"
+                    maxLength={254}
+                    required
+                  />
+                </div>
               </div>
               <div>
                 <label
@@ -1542,7 +1715,7 @@ export default function CommitteePageTemplate() {
                     setContactForm(f => ({ ...f, subject: e.target.value }))
                   }
                 >
-                  <option value="">General inquiry</option>
+                  <option value="">General enquiry</option>
                   <option value="join">Joining this committee</option>
                   <option value="event">An event</option>
                   <option value="resource">A document or resource</option>
@@ -1576,7 +1749,7 @@ export default function CommitteePageTemplate() {
               <button
                 type="submit"
                 disabled={contactSending}
-                className="inline-flex min-h-12 items-center gap-2 rounded-lg bg-lmsa-600 px-6 text-[15px] font-semibold text-white transition-colors hover:bg-lmsa-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2 disabled:opacity-60"
+                className="inline-flex min-h-12 items-center gap-2 rounded-lg bg-lmsa-700 px-6 text-[15px] font-semibold text-white transition-colors hover:bg-lmsa-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2 disabled:opacity-60"
               >
                 {contactSending ? (
                   <>
@@ -1619,8 +1792,8 @@ export default function CommitteePageTemplate() {
               </p>
               <div className="mt-8 flex flex-wrap items-center gap-x-8 gap-y-4">
                 <a
-                  href="#committee-contact"
-                  onClick={() => goToContact(ask?.subject?.value)}
+                  href="#committee-contact-form"
+                  onClick={() => goToContact(ask?.subject?.value, { focusField: true })}
                   className="inline-flex min-h-12 items-center gap-2 rounded-lg bg-lmsa-50 px-6 text-[15px] font-semibold text-lmsa-900 transition-transform duration-200 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-400 focus-visible:ring-offset-2 focus-visible:ring-offset-lmsa-900"
                 >
                   {closingNote.action}

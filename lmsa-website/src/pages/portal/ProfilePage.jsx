@@ -115,7 +115,7 @@ function DuesCard() {
         <div className="mt-3 h-16 animate-pulse rounded-lg bg-gray-100" aria-hidden="true" />
       ) : dues === null ? (
         <p className="mt-3 text-sm text-gray-600">
-          Your dues could not be loaded.{' '}
+          We couldn’t load your dues.{' '}
           <button
             type="button"
             onClick={loadDues}
@@ -453,7 +453,7 @@ export default function ProfilePage() {
                 Forgotten your current password?{' '}
                 <Link
                   to="/forgot-password"
-                  className="font-semibold text-lmsa-600 underline underline-offset-2 hover:no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600"
+                  className="font-semibold text-lmsa-700 underline underline-offset-2 hover:no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600"
                 >
                   Reset it via email
                 </Link>{' '}
@@ -509,7 +509,7 @@ export default function ProfilePage() {
 
               {changingPassword && (
                 <div className="mt-3 text-center">
-                  <Spinner size="sm" label="Updating…" className="text-lmsa-600 mb-2" />
+                  <Spinner size="sm" label="Updating…" className="text-lmsa-700 mb-2" />
                   <p className="text-gray-600">Updating password…</p>
                 </div>
               )}

@@ -75,9 +75,9 @@ export default function AdminDashboard() {
 
   const stats = [
     { label: 'Pending applications', value: pendingCount, accent: 'text-amber-600' },
-    { label: 'Approved members', value: approvedCount, accent: 'text-lmsa-600' },
-    { label: 'Committees', value: committees ? committees.length : null, accent: 'text-lmsa-600' },
-    { label: 'Upcoming events', value: upcomingEvents ? upcomingEvents.length : null, accent: 'text-lmsa-600' },
+    { label: 'Approved members', value: approvedCount, accent: 'text-lmsa-700' },
+    { label: 'Committees', value: committees ? committees.length : null, accent: 'text-lmsa-700' },
+    { label: 'Upcoming events', value: upcomingEvents ? upcomingEvents.length : null, accent: 'text-lmsa-700' },
   ];
 
   return (
@@ -92,7 +92,7 @@ export default function AdminDashboard() {
       {!loading && partialError && (
         <div className="mb-6 flex flex-wrap items-center gap-3 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
           <AlertCircle size={18} className="shrink-0" aria-hidden="true" />
-          <p className="flex-1">Some dashboard data could not be loaded. Figures shown as “—” are unavailable, not zero.</p>
+          <p className="flex-1">We couldn’t load part of the dashboard. Figures showing “—” are unavailable, not zero.</p>
           <button
             type="button"
             onClick={loadDashboard}
@@ -157,7 +157,7 @@ export default function AdminDashboard() {
             </div>
           ) : applications === null ? (
             <p className="py-6 text-center text-sm text-gray-600">
-              Applications could not be loaded.{' '}
+              We couldn’t load the applications.{' '}
               <button type="button" onClick={loadDashboard} className="font-semibold text-lmsa-700 underline underline-offset-2 hover:no-underline">
                 Try again
               </button>

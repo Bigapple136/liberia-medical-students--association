@@ -209,7 +209,7 @@ export default function ExecutiveCouncilPage() {
             <div className="mt-9 flex flex-wrap items-center gap-x-8 gap-y-4">
               <Link
                 to="/leadership#stand"
-                className="inline-flex min-h-12 items-center gap-2 rounded-lg bg-lmsa-600 px-6 text-[15px] font-semibold text-white transition-colors hover:bg-lmsa-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
+                className="inline-flex min-h-12 items-center gap-2 rounded-lg bg-lmsa-700 px-6 text-[15px] font-semibold text-white transition-colors hover:bg-lmsa-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
               >
                 See how to stand
                 <ArrowRight size={17} aria-hidden="true" />

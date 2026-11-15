@@ -104,7 +104,7 @@ export default function RegisterPage() {
   return (
     <div className="min-h-svh flex bg-gray-50">
       {/* Left Side - Brand */}
-      <div className="hidden lg:flex lg:w-1/2 bg-lmsa-600 items-center justify-center p-12">
+      <div className="hidden lg:flex lg:w-1/2 bg-lmsa-800 items-center justify-center p-12">
         <div className="max-w-md text-white">
           <h1 className="text-5xl font-bold mb-6 uppercase tracking-tight">Join LMSA</h1>
           <p className="text-xl text-lmsa-100 mb-8 text-balance">
@@ -156,7 +156,7 @@ export default function RegisterPage() {
               </Button>
               <Link
                 to="/"
-                className="mt-6 inline-flex items-center gap-2 text-sm text-gray-600 hover:text-lmsa-600 transition-colors duration-200"
+                className="mt-6 inline-flex items-center gap-2 text-sm text-gray-600 hover:text-lmsa-700 transition-colors duration-200"
               >
                 <ArrowLeft size={14} aria-hidden="true" />
                 Back to home
@@ -167,7 +167,7 @@ export default function RegisterPage() {
           {/* Back Link */}
           <Link
             to="/"
-            className="inline-flex items-center gap-2 text-gray-600 hover:text-lmsa-600 transition-colors duration-200 mb-8"
+            className="inline-flex items-center gap-2 text-gray-600 hover:text-lmsa-700 transition-colors duration-200 mb-8"
           >
             <ArrowLeft size={16} />
             <span className="text-sm">Back to home</span>
@@ -265,7 +265,7 @@ export default function RegisterPage() {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="hover:text-lmsa-600 transition-colors duration-200 cursor-pointer"
+                    className="hover:text-lmsa-700 transition-colors duration-200 cursor-pointer"
                     aria-label={showPassword ? 'Hide password' : 'Show password'}
                   >
                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -301,12 +301,12 @@ export default function RegisterPage() {
               leftIcon={<Lock size={18} />}
               rightIcon={
                 <div className="flex items-center gap-2">
-                  {passwordsMatch && <Check size={18} className="text-lmsa-600" />}
+                  {passwordsMatch && <Check size={18} className="text-lmsa-700" />}
                   {passwordsDiffer && <X size={18} className="text-red-600" />}
                   <button
                     type="button"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="hover:text-lmsa-600 transition-colors duration-200 cursor-pointer"
+                    className="hover:text-lmsa-700 transition-colors duration-200 cursor-pointer"
                     aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
                   >
                     {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -325,15 +325,15 @@ export default function RegisterPage() {
                 type="checkbox"
                 checked={agreedToTerms}
                 onChange={(e) => setAgreedToTerms(e.target.checked)}
-                className="w-4 h-4 mt-0.5 rounded border-gray-300 text-lmsa-600 focus:ring-lmsa-600 cursor-pointer"
+                className="w-4 h-4 mt-0.5 rounded border-gray-300 text-lmsa-700 focus:ring-lmsa-600 cursor-pointer"
               />
               <span className="text-sm text-gray-700">
                 I agree to the{' '}
-                <Link to="/terms" className="text-lmsa-600 hover:underline">
+                <Link to="/terms" className="text-lmsa-700 hover:underline">
                   Terms of Service
                 </Link>{' '}
                 and{' '}
-                <Link to="/privacy" className="text-lmsa-600 hover:underline">
+                <Link to="/privacy" className="text-lmsa-700 hover:underline">
                   Privacy Policy
                 </Link>
               </span>
@@ -348,7 +348,7 @@ export default function RegisterPage() {
           <div className="mt-8 text-center text-sm">
             <p className="text-gray-600">
               Already have an account?{' '}
-              <Link to="/login" className="text-lmsa-600 hover:text-lmsa-700 font-medium transition-colors duration-200">
+              <Link to="/login" className="text-lmsa-700 hover:text-lmsa-900 font-medium transition-colors duration-200">
                 Sign in here
               </Link>
             </p>

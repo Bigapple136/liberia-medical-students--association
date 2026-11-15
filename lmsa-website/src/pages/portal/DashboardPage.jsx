@@ -210,7 +210,7 @@ export default function DashboardPage() {
       {!loading && partialError && (
         <div className="mb-6 flex flex-wrap items-center gap-3 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
           <AlertCircle size={18} className="shrink-0" aria-hidden="true" />
-          <p className="flex-1">Some of your dashboard could not be loaded. Anything shown as “—” is unavailable, not zero.</p>
+          <p className="flex-1">We couldn’t load part of your dashboard. Anything showing “—” is unavailable, not zero.</p>
           <button
             type="button"
             onClick={loadDashboard}
@@ -253,7 +253,7 @@ export default function DashboardPage() {
                   /* storage unavailable — dismissal just lasts this visit */
                 }
               }}
-              className="-m-2 flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-lmsa-700/70 hover:text-lmsa-900 hover:bg-lmsa-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600"
+              className="-m-2 flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-lmsa-700 hover:text-lmsa-900 hover:bg-lmsa-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600"
               aria-label="Dismiss this month's priority"
             >
               <X size={16} aria-hidden="true" />
@@ -362,7 +362,7 @@ export default function DashboardPage() {
           <h2 className="text-xl sm:text-2xl font-bold">My Upcoming Events</h2>
           <Link
             to="/portal/events"
-            className="text-sm text-lmsa-600 hover:text-lmsa-700 flex items-center gap-1 p-2 -m-2 min-h-[44px] min-w-[44px] justify-center"
+            className="text-sm text-lmsa-700 hover:text-lmsa-900 flex items-center gap-1 p-2 -m-2 min-h-[44px] min-w-[44px] justify-center"
           >
             Manage my events <ArrowRight size={14} />
           </Link>
@@ -376,7 +376,7 @@ export default function DashboardPage() {
         ) : myEvents === null ? (
           <Card>
             <p className="py-6 text-center text-sm text-gray-600">
-              Your events could not be loaded.{' '}
+              We couldn’t load your events.{' '}
               <button type="button" onClick={loadDashboard} className="font-semibold text-lmsa-700 underline underline-offset-2 hover:no-underline">
                 Try again
               </button>
@@ -389,7 +389,7 @@ export default function DashboardPage() {
               <p className="text-gray-600 mb-1">No upcoming events registered</p>
               <p className="text-sm text-gray-500">
                 Browse{' '}
-                <Link to="/events" className="text-lmsa-600 hover:underline">
+                <Link to="/events" className="text-lmsa-700 hover:underline">
                   upcoming events
                 </Link>{' '}
                 to register.
@@ -401,7 +401,7 @@ export default function DashboardPage() {
             {myEvents.map(event => {
               const body = (
                 <div className="flex items-start gap-3">
-                  <Calendar size={20} className="text-lmsa-600 flex-shrink-0 mt-1" aria-hidden="true" />
+                  <Calendar size={20} className="text-lmsa-700 flex-shrink-0 mt-1" aria-hidden="true" />
                   <div className="flex-1 min-w-0">
                     <h3 className="font-semibold text-lg">{event.title}</h3>
                     <div className="flex flex-wrap gap-2 sm:gap-3 text-sm text-gray-600 mt-1">
@@ -442,7 +442,7 @@ export default function DashboardPage() {
           <h2 className="text-xl sm:text-2xl font-bold">Recent News</h2>
           <Link
             to="/news"
-            className="text-sm text-lmsa-600 hover:text-lmsa-700 flex items-center gap-1 p-2 -m-2 min-h-[44px] min-w-[44px] justify-center"
+            className="text-sm text-lmsa-700 hover:text-lmsa-900 flex items-center gap-1 p-2 -m-2 min-h-[44px] min-w-[44px] justify-center"
           >
             View all news <ArrowRight size={14} />
           </Link>
@@ -456,7 +456,7 @@ export default function DashboardPage() {
         ) : newsPosts === null ? (
           <Card>
             <p className="py-6 text-center text-sm text-gray-600">
-              News could not be loaded.{' '}
+              We couldn’t load the news.{' '}
               <button type="button" onClick={loadDashboard} className="font-semibold text-lmsa-700 underline underline-offset-2 hover:no-underline">
                 Try again
               </button>

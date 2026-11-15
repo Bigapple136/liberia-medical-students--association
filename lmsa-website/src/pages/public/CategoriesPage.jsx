@@ -76,7 +76,7 @@ export default function CategoriesPage() {
               </p>
               <a
                 href="#categories"
-                className="mt-8 inline-flex min-h-12 items-center justify-center gap-2 bg-lmsa-600 px-6 text-sm font-semibold text-white transition-colors hover:bg-lmsa-700"
+                className="mt-8 inline-flex min-h-12 items-center justify-center gap-2 bg-lmsa-700 px-6 text-sm font-semibold text-white transition-colors hover:bg-lmsa-800"
               >
                 Compare the four categories
                 <ArrowDown size={15} aria-hidden="true" />
@@ -218,7 +218,7 @@ export default function CategoriesPage() {
               <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-6">
                 <Link
                   to="/membership#apply"
-                  className="inline-flex min-h-12 items-center justify-center gap-2 bg-lmsa-600 px-6 text-sm font-semibold text-white transition-colors hover:bg-lmsa-700"
+                  className="inline-flex min-h-12 items-center justify-center gap-2 bg-lmsa-700 px-6 text-sm font-semibold text-white transition-colors hover:bg-lmsa-800"
                 >
                   Start your application
                   <ArrowRight size={16} aria-hidden="true" />

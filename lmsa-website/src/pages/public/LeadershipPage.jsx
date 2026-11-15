@@ -187,7 +187,7 @@ export default function LeadershipPage() {
   const statusLine = cycleLoading
     ? 'Reading the election calendar…'
     : cycleError
-      ? 'Election dates could not be loaded right now — check back shortly.'
+      ? 'We couldn’t load the election dates. Check back shortly.'
       : cycleMessage(cycleState);
 
   function openDialog(level, positionName) {
@@ -223,7 +223,7 @@ export default function LeadershipPage() {
 
           {loading ? (
             <p className="mt-14 flex items-center gap-3 text-[17px] text-gray-700" aria-live="polite">
-              <Loader className="animate-spin text-lmsa-600" size={18} aria-hidden="true" />
+              <Loader className="animate-spin text-lmsa-700" size={18} aria-hidden="true" />
               Loading the current officers…
             </p>
           ) : (
@@ -493,7 +493,7 @@ export default function LeadershipPage() {
                       <button
                         type="button"
                         onClick={() => openDialog(level, selected)}
-                        className="inline-flex min-h-12 items-center gap-2 rounded-lg bg-lmsa-600 px-6 text-[15px] font-semibold text-white transition-colors hover:bg-lmsa-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
+                        className="inline-flex min-h-12 items-center gap-2 rounded-lg bg-lmsa-700 px-6 text-[15px] font-semibold text-white transition-colors hover:bg-lmsa-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
                       >
                         {action.label}
                         <ArrowRight size={16} aria-hidden="true" />

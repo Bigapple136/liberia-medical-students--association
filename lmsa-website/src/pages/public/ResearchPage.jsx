@@ -247,7 +247,7 @@ export default function ResearchPage() {
           <div className="reveal-on-scroll mt-12">
             <Link
               to="/leadership/committees/research-journal"
-              className="inline-flex min-h-12 items-center gap-2 rounded-lg bg-lmsa-600 px-6 text-[15px] font-semibold text-white transition-colors hover:bg-lmsa-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
+              className="inline-flex min-h-12 items-center gap-2 rounded-lg bg-lmsa-700 px-6 text-[15px] font-semibold text-white transition-colors hover:bg-lmsa-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
             >
               Contact the journal team
               <ArrowRight size={17} aria-hidden="true" />

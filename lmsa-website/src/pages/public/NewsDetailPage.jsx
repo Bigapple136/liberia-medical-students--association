@@ -35,7 +35,7 @@ export default function NewsDetailPage() {
     return (
       <main className="editorial-page">
         <div className="flex min-h-[60vh] items-center justify-center" role="status">
-          <Loader size={32} className="animate-spin text-lmsa-600" aria-hidden="true" />
+          <Loader size={32} className="animate-spin text-lmsa-700" aria-hidden="true" />
           <span className="sr-only">Loading story…</span>
         </div>
       </main>
@@ -58,7 +58,7 @@ export default function NewsDetailPage() {
                 <button
                   type="button"
                   onClick={loadPost}
-                  className="inline-flex items-center gap-2 border border-lmsa-200 bg-lmsa-50 px-6 py-3 text-sm font-semibold text-lmsa-700 transition-colors hover:bg-lmsa-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
+                  className="inline-flex items-center gap-2 border border-lmsa-200 bg-lmsa-50 px-6 py-3 text-sm font-semibold text-lmsa-700 transition-colors hover:bg-lmsa-100 hover:text-lmsa-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
                 >
                   <RefreshCw size={15} aria-hidden="true" />
                   Try again
@@ -93,7 +93,7 @@ export default function NewsDetailPage() {
               </p>
               <Link
                 to="/news"
-                className="mt-8 inline-flex items-center gap-2 border border-lmsa-200 bg-lmsa-50 px-6 py-3 text-sm font-semibold text-lmsa-700 transition-colors hover:bg-lmsa-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
+                className="mt-8 inline-flex items-center gap-2 border border-lmsa-200 bg-lmsa-50 px-6 py-3 text-sm font-semibold text-lmsa-700 transition-colors hover:bg-lmsa-100 hover:text-lmsa-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
               >
                 <ArrowLeft size={15} aria-hidden="true" />
                 Back to all news

@@ -179,7 +179,7 @@ export default function DocumentsPage() {
         <div className="site-container">
           {loading ? (
             <div role="status" className="border border-gray-200 bg-white p-12 text-center">
-              <Loader size={26} className="mx-auto mb-4 animate-spin text-lmsa-600" aria-hidden="true" />
+              <Loader size={26} className="mx-auto mb-4 animate-spin text-lmsa-700" aria-hidden="true" />
               <p className="text-sm font-medium text-gray-600">Loading the library…</p>
             </div>
           ) : error ? (
@@ -192,7 +192,7 @@ export default function DocumentsPage() {
               <button
                 type="button"
                 onClick={() => loadDocuments(category)}
-                className="mt-6 inline-flex items-center gap-2 border border-lmsa-200 bg-lmsa-50 px-6 py-3 text-sm font-semibold text-lmsa-700 transition-colors hover:bg-lmsa-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
+                className="mt-6 inline-flex items-center gap-2 border border-lmsa-200 bg-lmsa-50 px-6 py-3 text-sm font-semibold text-lmsa-700 transition-colors hover:bg-lmsa-100 hover:text-lmsa-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
               >
                 <RefreshCw size={15} aria-hidden="true" />
                 Try again
@@ -213,7 +213,7 @@ export default function DocumentsPage() {
                 <button
                   type="button"
                   onClick={() => setCategory('')}
-                  className="mt-6 inline-flex items-center gap-2 border border-lmsa-200 bg-lmsa-50 px-6 py-3 text-sm font-semibold text-lmsa-700 transition-colors hover:bg-lmsa-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
+                  className="mt-6 inline-flex items-center gap-2 border border-lmsa-200 bg-lmsa-50 px-6 py-3 text-sm font-semibold text-lmsa-700 transition-colors hover:bg-lmsa-100 hover:text-lmsa-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
                 >
                   Show all documents
                 </button>
@@ -224,7 +224,7 @@ export default function DocumentsPage() {
               {visibleDocuments.map((doc) => (
                 <article key={doc.id} className="flex flex-col border border-gray-200 bg-white p-6">
                   <div className="flex items-start gap-3">
-                    <span className="flex h-10 w-10 shrink-0 items-center justify-center bg-lmsa-50 text-lmsa-600" aria-hidden="true">
+                    <span className="flex h-10 w-10 shrink-0 items-center justify-center bg-lmsa-50 text-lmsa-700" aria-hidden="true">
                       <FileText size={20} />
                     </span>
                     <div className="min-w-0">
@@ -269,7 +269,7 @@ export default function DocumentsPage() {
                     type="button"
                     onClick={() => handleDownload(doc)}
                     disabled={downloading === doc.id}
-                    className="mt-5 flex w-full items-center justify-center gap-2 bg-lmsa-600 px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-lmsa-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2 disabled:opacity-60"
+                    className="mt-5 flex w-full items-center justify-center gap-2 bg-lmsa-700 px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-lmsa-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2 disabled:opacity-60"
                   >
                     {downloading === doc.id ? (
                       <>

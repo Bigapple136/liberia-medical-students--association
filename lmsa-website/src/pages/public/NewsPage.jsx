@@ -165,7 +165,7 @@ export default function NewsPage() {
         <div className="site-container">
           {loading ? (
             <div role="status" className="border border-gray-200 bg-white p-12 text-center">
-              <Loader size={26} className="mx-auto mb-4 animate-spin text-lmsa-600" aria-hidden="true" />
+              <Loader size={26} className="mx-auto mb-4 animate-spin text-lmsa-700" aria-hidden="true" />
               <p className="text-sm font-medium text-gray-600">Loading the stories…</p>
             </div>
           ) : error ? (
@@ -178,7 +178,7 @@ export default function NewsPage() {
               <button
                 type="button"
                 onClick={handleRetry}
-                className="mt-6 inline-flex items-center gap-2 border border-lmsa-200 bg-lmsa-50 px-6 py-3 text-sm font-semibold text-lmsa-700 transition-colors hover:bg-lmsa-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
+                className="mt-6 inline-flex items-center gap-2 border border-lmsa-200 bg-lmsa-50 px-6 py-3 text-sm font-semibold text-lmsa-700 transition-colors hover:bg-lmsa-100 hover:text-lmsa-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
               >
                 <RefreshCw size={15} aria-hidden="true" />
                 Try again
@@ -199,7 +199,7 @@ export default function NewsPage() {
                 <button
                   type="button"
                   onClick={() => setCategory('all')}
-                  className="mt-6 inline-flex items-center gap-2 border border-lmsa-200 bg-lmsa-50 px-6 py-3 text-sm font-semibold text-lmsa-700 transition-colors hover:bg-lmsa-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
+                  className="mt-6 inline-flex items-center gap-2 border border-lmsa-200 bg-lmsa-50 px-6 py-3 text-sm font-semibold text-lmsa-700 transition-colors hover:bg-lmsa-100 hover:text-lmsa-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
                 >
                   Show all stories
                 </button>
@@ -224,7 +224,7 @@ export default function NewsPage() {
                     type="button"
                     onClick={handleLoadMore}
                     disabled={loadingMore}
-                    className="inline-flex min-w-[170px] items-center justify-center gap-2 border border-lmsa-200 bg-lmsa-50 px-6 py-3 text-sm font-semibold text-lmsa-700 transition-colors hover:bg-lmsa-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2 disabled:opacity-50"
+                    className="inline-flex min-w-[170px] items-center justify-center gap-2 border border-lmsa-200 bg-lmsa-50 px-6 py-3 text-sm font-semibold text-lmsa-700 transition-colors hover:bg-lmsa-100 hover:text-lmsa-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2 disabled:opacity-50"
                   >
                     {loadingMore ? (
                       <>

@@ -148,7 +148,7 @@ export default function NewsAdminPage() {
           )}
           <button
             onClick={handleCreateNew}
-            className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-lmsa-600 rounded-lg hover:bg-lmsa-700 transition-colors"
+            className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-lmsa-700 rounded-lg hover:bg-lmsa-800 transition-colors"
           >
             <Plus size={16} />
             New Post
@@ -192,7 +192,7 @@ export default function NewsAdminPage() {
       {/* ── Posts List ──────────────────────────────────────────────── */}
       {loading ? (
         <div className="flex items-center justify-center h-48">
-          <Loader className="animate-spin text-lmsa-600" size={28} />
+          <Loader className="animate-spin text-lmsa-700" size={28} />
         </div>
       ) : posts.length === 0 ? (
         <EmptyState
@@ -299,7 +299,7 @@ function PostCard({ post, expanded, onToggle, onEdit, onDelete, onQuickStatus })
             {post.status !== 'published' && (
               <button
                 onClick={(e) => { e.stopPropagation(); onQuickStatus(post, 'published'); }}
-                className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-white bg-lmsa-600 rounded-lg hover:bg-lmsa-700 transition-colors"
+                className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-white bg-lmsa-700 rounded-lg hover:bg-lmsa-800 transition-colors"
               >
                 <Send size={14} /> Publish
               </button>
@@ -514,7 +514,7 @@ function PostForm({ post, tags, onSave, onClose }) {
           <button
             type="submit"
             disabled={saving}
-            className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-lmsa-600 rounded-lg hover:bg-lmsa-700 transition-colors disabled:opacity-50"
+            className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-lmsa-700 rounded-lg hover:bg-lmsa-800 transition-colors disabled:opacity-50"
           >
             {saving ? <Loader size={14} className="animate-spin" /> : <Save size={14} />}
             {isEditing ? 'Save Changes' : 'Create Post'}

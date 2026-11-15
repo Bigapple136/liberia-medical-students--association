@@ -115,7 +115,7 @@ export default function MembershipAdminPage() {
       {/* ── Applications List ─────────────────────────────────────────── */}
       {loading ? (
         <div className="flex items-center justify-center h-48">
-          <Loader className="animate-spin text-lmsa-600" size={28} />
+          <Loader className="animate-spin text-lmsa-700" size={28} />
         </div>
       ) : applications.length === 0 ? (
         <EmptyState
@@ -174,7 +174,7 @@ function ApplicationCard({ application, expanded, onToggle, onStatusUpdate }) {
       >
         <div className="flex items-center gap-4 flex-1 min-w-0">
           {/* Applicant Avatar */}
-          <div className="w-10 h-10 rounded-full bg-lmsa-100 flex items-center justify-center text-lmsa-700 font-bold text-sm shrink-0">
+          <div className="w-10 h-10 rounded-full bg-lmsa-100 flex items-center justify-center text-lmsa-800 font-bold text-sm shrink-0">
             {app.applicant_name?.split(' ').map(n => n[0]).join('').slice(0, 2) || '??'}
           </div>
 
@@ -245,7 +245,7 @@ function ApplicationCard({ application, expanded, onToggle, onStatusUpdate }) {
               <button
                 onClick={() => handleAction('approved')}
                 disabled={acting}
-                className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-lmsa-600 rounded-lg hover:bg-lmsa-700 transition-colors disabled:opacity-50"
+                className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-lmsa-700 rounded-lg hover:bg-lmsa-800 transition-colors disabled:opacity-50"
               >
                 {acting ? <Loader size={14} className="animate-spin" /> : <Check size={14} />}
                 Approve

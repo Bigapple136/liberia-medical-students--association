@@ -74,7 +74,7 @@ import Spinner from './components/common/Spinner';
 function RouteFallback() {
   return (
     <div className="min-h-svh flex items-center justify-center">
-      <Spinner size="lg" label="Loading page" className="text-lmsa-600" />
+      <Spinner size="lg" label="Loading page" className="text-lmsa-700" />
     </div>
   );
 }

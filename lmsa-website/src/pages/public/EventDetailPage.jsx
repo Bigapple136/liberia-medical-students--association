@@ -26,7 +26,7 @@ function formatTime(start, end) {
 function MetaItem({ icon: Icon, label, children }) {
   return (
     <div className="flex items-start gap-3 border border-gray-200 bg-white p-4">
-      <Icon size={18} className="mt-0.5 shrink-0 text-lmsa-600" aria-hidden="true" />
+      <Icon size={18} className="mt-0.5 shrink-0 text-lmsa-700" aria-hidden="true" />
       <div>
         <p className="text-[13px] font-semibold text-gray-500">{label}</p>
         <p className="mt-1 text-sm font-medium text-lmsa-900">{children}</p>
@@ -87,7 +87,7 @@ export default function EventDetailPage() {
     return (
       <main className="editorial-page">
         <div className="flex min-h-[60vh] items-center justify-center" role="status">
-          <Loader size={32} className="animate-spin text-lmsa-600" aria-hidden="true" />
+          <Loader size={32} className="animate-spin text-lmsa-700" aria-hidden="true" />
           <span className="sr-only">Loading event…</span>
         </div>
       </main>
@@ -110,7 +110,7 @@ export default function EventDetailPage() {
                 <button
                   type="button"
                   onClick={loadEvent}
-                  className="inline-flex items-center gap-2 border border-lmsa-200 bg-lmsa-50 px-6 py-3 text-sm font-semibold text-lmsa-700 transition-colors hover:bg-lmsa-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
+                  className="inline-flex items-center gap-2 border border-lmsa-200 bg-lmsa-50 px-6 py-3 text-sm font-semibold text-lmsa-700 transition-colors hover:bg-lmsa-100 hover:text-lmsa-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
                 >
                   <RefreshCw size={15} aria-hidden="true" />
                   Try again
@@ -144,7 +144,7 @@ export default function EventDetailPage() {
               </p>
               <Link
                 to="/events"
-                className="mt-8 inline-flex items-center gap-2 border border-lmsa-200 bg-lmsa-50 px-6 py-3 text-sm font-semibold text-lmsa-700 transition-colors hover:bg-lmsa-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
+                className="mt-8 inline-flex items-center gap-2 border border-lmsa-200 bg-lmsa-50 px-6 py-3 text-sm font-semibold text-lmsa-700 transition-colors hover:bg-lmsa-100 hover:text-lmsa-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
               >
                 <ArrowLeft size={15} aria-hidden="true" />
                 Back to all events
@@ -220,7 +220,7 @@ export default function EventDetailPage() {
                 <div className="mt-4 flex flex-wrap gap-x-8 gap-y-3 text-sm text-gray-600">
                   {deadline && (
                     <span className="flex items-center gap-2">
-                      <Calendar size={15} className="text-lmsa-600" aria-hidden="true" />
+                      <Calendar size={15} className="text-lmsa-700" aria-hidden="true" />
                       Register by{' '}
                       <time dateTime={event.registration_deadline}>
                         {deadline.toLocaleDateString('default', { month: 'long', day: 'numeric', year: 'numeric' })}
@@ -229,7 +229,7 @@ export default function EventDetailPage() {
                   )}
                   {spotsFilled != null && (
                     <span className="flex items-center gap-2">
-                      <Users size={15} className="text-lmsa-600" aria-hidden="true" />
+                      <Users size={15} className="text-lmsa-700" aria-hidden="true" />
                       {spotsFilled} of {event.max_attendees} spots filled
                     </span>
                   )}
@@ -247,7 +247,7 @@ export default function EventDetailPage() {
                     <p className="text-sm text-gray-600">You’ll need to sign in to your member account to register.</p>
                     <Link
                       to="/login"
-                      className="mt-4 inline-flex items-center gap-2 bg-lmsa-600 px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-lmsa-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
+                      className="mt-4 inline-flex items-center gap-2 bg-lmsa-700 px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-lmsa-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
                     >
                       Sign in to register
                       <ArrowRight size={15} aria-hidden="true" />
@@ -258,7 +258,7 @@ export default function EventDetailPage() {
                     type="button"
                     onClick={handleRegister}
                     disabled={registered || registering}
-                    className="mt-5 inline-flex items-center gap-2 bg-lmsa-600 px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-lmsa-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2 disabled:opacity-60"
+                    className="mt-5 inline-flex items-center gap-2 bg-lmsa-700 px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-lmsa-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2 disabled:opacity-60"
                   >
                     {registering ? (
                       <Loader size={16} className="animate-spin" aria-hidden="true" />

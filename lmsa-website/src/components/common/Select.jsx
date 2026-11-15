@@ -59,7 +59,7 @@ const Select = forwardRef(({
         </p>
       )}
       {!error && helperText && (
-        <p id={`${selectId}-helper`} className="mt-1.5 text-sm text-lmsa-500">
+        <p id={`${selectId}-helper`} className="mt-1.5 text-sm text-lmsa-700">
           {helperText}
         </p>
       )}

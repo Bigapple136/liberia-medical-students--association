@@ -177,7 +177,7 @@ export default function CommitteesPage() {
 
           {loading ? (
             <p className="mt-14 flex items-center gap-3 text-[17px] text-gray-700" aria-live="polite">
-              <Loader className="animate-spin text-lmsa-600" size={18} aria-hidden="true" />
+              <Loader className="animate-spin text-lmsa-700" size={18} aria-hidden="true" />
               Loading the register…
             </p>
           ) : (
@@ -185,8 +185,8 @@ export default function CommitteesPage() {
               {offline && (
                 <div className="reveal-on-scroll mt-12 bg-paper px-6 py-5">
                   <p className="max-w-[56ch] text-[15px] leading-6 text-lmsa-900">
-                    Recruitment details could not be loaded, so the register lists the standing
-                    committees without a recruitment status.
+                    We couldn’t load this round’s recruitment details, so the register lists the
+                    standing committees without a status.
                   </p>
                 </div>
               )}
@@ -217,7 +217,7 @@ export default function CommitteesPage() {
                               className="-my-2 inline-flex min-h-12 items-center gap-2 rounded py-2 transition-colors hover:text-lmsa-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
                             >
                               {committee.name}
-                              <ArrowRight size={18} aria-hidden="true" className="text-lmsa-600" />
+                              <ArrowRight size={18} aria-hidden="true" className="text-lmsa-700" />
                             </Link>
                           </h3>
                           {members && (
@@ -319,7 +319,7 @@ export default function CommitteesPage() {
             <div className="mt-9 flex flex-wrap items-center gap-x-8 gap-y-4">
               <Link
                 to="/get-involved/committees"
-                className="inline-flex min-h-12 items-center gap-2 rounded-lg bg-lmsa-600 px-6 text-[15px] font-semibold text-white transition-colors hover:bg-lmsa-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
+                className="inline-flex min-h-12 items-center gap-2 rounded-lg bg-lmsa-700 px-6 text-[15px] font-semibold text-white transition-colors hover:bg-lmsa-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
               >
                 Join a committee
                 <ArrowRight size={17} aria-hidden="true" />

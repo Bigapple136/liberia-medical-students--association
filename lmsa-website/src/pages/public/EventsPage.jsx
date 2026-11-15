@@ -57,15 +57,15 @@ function EventCard({ event, past = false }) {
         <p className="mt-2 line-clamp-2 text-sm leading-6 text-gray-600">{event.description}</p>
         <div className="mt-5 space-y-2 text-sm text-gray-600">
           <div className="flex items-center gap-2">
-            <Calendar size={14} className="text-lmsa-600" aria-hidden="true" />
+            <Calendar size={14} className="text-lmsa-700" aria-hidden="true" />
             <time dateTime={event.start_datetime || undefined}>{formatDate(event.start_datetime, event.end_datetime)}</time>
           </div>
           <div className="flex items-center gap-2">
-            <Clock size={14} className="text-lmsa-600" aria-hidden="true" />
+            <Clock size={14} className="text-lmsa-700" aria-hidden="true" />
             <span>{formatTime(event.start_datetime, event.end_datetime)}</span>
           </div>
           <div className="flex items-center gap-2">
-            <MapPin size={14} className="text-lmsa-600" aria-hidden="true" />
+            <MapPin size={14} className="text-lmsa-700" aria-hidden="true" />
             <span>{event.location}</span>
           </div>
         </div>
@@ -125,7 +125,7 @@ export default function EventsPage() {
           <EditorialSectionHeader title="Coming up across LMSA." description="Open an event to see the schedule, location, and ways to take part." />
           {loading ? (
             <div role="status" className="border border-gray-200 bg-white p-12 text-center">
-              <Loader size={26} className="mx-auto mb-4 animate-spin text-lmsa-600" aria-hidden="true" />
+              <Loader size={26} className="mx-auto mb-4 animate-spin text-lmsa-700" aria-hidden="true" />
               <p className="text-sm font-medium text-gray-600">Loading the calendar…</p>
             </div>
           ) : error ? (
@@ -138,7 +138,7 @@ export default function EventsPage() {
               <button
                 type="button"
                 onClick={loadEvents}
-                className="mt-6 inline-flex items-center gap-2 border border-lmsa-200 bg-lmsa-50 px-6 py-3 text-sm font-semibold text-lmsa-700 transition-colors hover:bg-lmsa-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
+                className="mt-6 inline-flex items-center gap-2 border border-lmsa-200 bg-lmsa-50 px-6 py-3 text-sm font-semibold text-lmsa-700 transition-colors hover:bg-lmsa-100 hover:text-lmsa-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
               >
                 <RefreshCw size={15} aria-hidden="true" />
                 Try again
@@ -153,7 +153,7 @@ export default function EventsPage() {
               </p>
               <Link
                 to="/contact"
-                className="mt-6 inline-flex items-center gap-2 border border-lmsa-200 bg-lmsa-50 px-6 py-3 text-sm font-semibold text-lmsa-700 transition-colors hover:bg-lmsa-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
+                className="mt-6 inline-flex items-center gap-2 border border-lmsa-200 bg-lmsa-50 px-6 py-3 text-sm font-semibold text-lmsa-700 transition-colors hover:bg-lmsa-100 hover:text-lmsa-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
               >
                 Suggest an event
                 <ArrowRight size={15} aria-hidden="true" />

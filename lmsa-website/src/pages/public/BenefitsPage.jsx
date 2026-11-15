@@ -74,7 +74,7 @@ export default function BenefitsPage() {
               <div className="mt-8 flex flex-wrap items-center gap-6">
                 <Link
                   to="/membership/categories"
-                  className="inline-flex min-h-12 items-center justify-center gap-2 bg-lmsa-600 px-6 text-sm font-semibold text-white transition-colors hover:bg-lmsa-700"
+                  className="inline-flex min-h-12 items-center justify-center gap-2 bg-lmsa-700 px-6 text-sm font-semibold text-white transition-colors hover:bg-lmsa-800"
                 >
                   Choose your membership
                   <ArrowRight size={16} aria-hidden="true" />
@@ -273,7 +273,7 @@ export default function BenefitsPage() {
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center lg:justify-end">
               <Link
                 to="/membership"
-                className="inline-flex min-h-12 items-center justify-center gap-2 bg-lmsa-600 px-6 text-sm font-semibold text-white transition-colors hover:bg-lmsa-700"
+                className="inline-flex min-h-12 items-center justify-center gap-2 bg-lmsa-700 px-6 text-sm font-semibold text-white transition-colors hover:bg-lmsa-800"
               >
                 Explore membership
                 <ArrowRight size={16} aria-hidden="true" />

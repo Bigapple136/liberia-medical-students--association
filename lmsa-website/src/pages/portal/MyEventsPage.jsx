@@ -174,7 +174,7 @@ export default function MyEventsPage() {
       ) : events === null ? (
         <Card>
           <p className="py-6 text-center text-sm text-gray-600">
-            Your events could not be loaded.{' '}
+            We couldn’t load your events.{' '}
             <button
               type="button"
               onClick={loadEvents}
@@ -191,7 +191,7 @@ export default function MyEventsPage() {
             <p className="text-gray-600 mb-1">No upcoming events registered</p>
             <p className="text-sm text-gray-500">
               Browse{' '}
-              <Link to="/events" className="text-lmsa-600 hover:underline">
+              <Link to="/events" className="text-lmsa-700 hover:underline">
                 upcoming events
               </Link>{' '}
               to register.
@@ -203,7 +203,7 @@ export default function MyEventsPage() {
           {events.map((event) => (
             <Card key={event.id} className="p-4 sm:p-6">
               <div className="flex items-start gap-3">
-                <Calendar size={20} className="text-lmsa-600 flex-shrink-0 mt-1" aria-hidden="true" />
+                <Calendar size={20} className="text-lmsa-700 flex-shrink-0 mt-1" aria-hidden="true" />
                 <div className="flex-1 min-w-0">
                   <h2 className="font-semibold text-lg">{event.title}</h2>
                   <div className="flex flex-wrap gap-2 sm:gap-3 text-sm text-gray-600 mt-1">
@@ -223,7 +223,7 @@ export default function MyEventsPage() {
                   {event.slug && (
                     <Link
                       to={`/events/${event.slug}`}
-                      className="inline-flex min-h-[44px] items-center justify-end gap-1 text-sm font-medium text-lmsa-600 hover:text-lmsa-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
+                      className="inline-flex min-h-[44px] items-center justify-end gap-1 text-sm font-medium text-lmsa-700 hover:text-lmsa-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
                     >
                       Event page <ArrowRight size={14} aria-hidden="true" />
                     </Link>

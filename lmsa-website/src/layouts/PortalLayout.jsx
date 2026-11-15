@@ -62,7 +62,7 @@ export default function PortalLayout() {
     <div className="min-h-svh bg-gray-50">
       <a
         href="#main-content"
-        className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:top-4 focus:left-4 focus:px-4 focus:py-2 focus:bg-lmsa-600 focus:text-white focus:rounded-md focus:outline-none focus:ring-2 focus:ring-lmsa-500 focus:ring-offset-2"
+        className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:top-4 focus:left-4 focus:px-4 focus:py-2 focus:bg-lmsa-700 focus:text-white focus:rounded-md focus:outline-none focus:ring-2 focus:ring-lmsa-500 focus:ring-offset-2"
       >
         Skip to main content
       </a>
@@ -82,7 +82,7 @@ export default function PortalLayout() {
             <Menu size={22} />
           </button>
           <Link to="/portal/dashboard" className="flex items-center gap-2" onClick={closeDrawer}>
-            <div className="w-8 h-8 rounded-lg bg-lmsa-600 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-lmsa-700 flex items-center justify-center">
               <HeartPulse size={16} className="text-white" aria-hidden="true" />
             </div>
             <div className="leading-tight">
@@ -113,7 +113,7 @@ export default function PortalLayout() {
           {/* Identity header — badge links home so the exit exists even with the drawer closed */}
           <div className="p-5 border-b border-gray-200 flex items-center justify-between">
             <Link to="/" className="flex items-center gap-2" onClick={closeDrawer} aria-label="LMSA home">
-              <div className="w-9 h-9 rounded-lg bg-lmsa-600 flex items-center justify-center">
+              <div className="w-9 h-9 rounded-lg bg-lmsa-700 flex items-center justify-center">
                 <HeartPulse size={18} className="text-white" aria-hidden="true" />
               </div>
               <div>

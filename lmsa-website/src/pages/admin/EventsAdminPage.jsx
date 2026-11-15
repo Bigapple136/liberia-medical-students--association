@@ -180,7 +180,7 @@ export default function EventsAdminPage() {
           )}
           <button
             onClick={handleCreateNew}
-            className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-lmsa-600 rounded-lg hover:bg-lmsa-700 transition-colors"
+            className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-lmsa-700 rounded-lg hover:bg-lmsa-800 transition-colors"
           >
             <Plus size={16} />
             New Event
@@ -224,7 +224,7 @@ export default function EventsAdminPage() {
       {/* ── Events List ─────────────────────────────────────────────── */}
       {loading ? (
         <div className="flex items-center justify-center h-48">
-          <Loader className="animate-spin text-lmsa-600" size={28} />
+          <Loader className="animate-spin text-lmsa-700" size={28} />
         </div>
       ) : events.length === 0 ? (
         <EmptyState
@@ -395,9 +395,7 @@ function EventCard({ event, expanded, onToggle, onEdit, onDelete, onQuickStatus 
                   ? 'text-red-700 bg-red-50 border border-red-200 hover:bg-red-100'
                   : s.value === 'completed'
                   ? 'text-gray-700 bg-gray-100 border border-gray-200 hover:bg-gray-200'
-                  : s.value === 'ongoing'
-                  ? 'text-lmsa-700 bg-lmsa-50 border border-lmsa-200 hover:bg-lmsa-100'
-                  : 'text-lmsa-700 bg-lmsa-50 border border-lmsa-200 hover:bg-lmsa-100';
+                  : 'text-lmsa-700 bg-lmsa-50 border border-lmsa-200 hover:bg-lmsa-100 hover:text-lmsa-800';
                 return (
                   <button
                     key={s.value}
@@ -662,7 +660,7 @@ function EventForm({ event, committees, onSave, onClose }) {
               type="checkbox"
               checked={form.registration_required}
               onChange={e => handleChange('registration_required', e.target.checked)}
-              className="h-4 w-4 rounded border-gray-300 text-lmsa-600 focus:ring-lmsa-500"
+              className="h-4 w-4 rounded border-gray-300 text-lmsa-700 focus:ring-lmsa-500"
             />
             Registration required
           </label>
@@ -730,7 +728,7 @@ function EventForm({ event, committees, onSave, onClose }) {
           <button
             type="submit"
             disabled={saving}
-            className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-lmsa-600 rounded-lg hover:bg-lmsa-700 transition-colors disabled:opacity-50"
+            className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-lmsa-700 rounded-lg hover:bg-lmsa-800 transition-colors disabled:opacity-50"
           >
             {saving ? <Loader size={14} className="animate-spin" /> : <Save size={14} />}
             {isEditing ? 'Save Changes' : 'Create Event'}

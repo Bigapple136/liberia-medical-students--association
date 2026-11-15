@@ -77,7 +77,7 @@ export default function HomePage() {
             </div>
             <Link
               to={ROUTES.PORTAL_DASHBOARD}
-              className="inline-flex min-h-[44px] items-center gap-2 rounded-lg bg-lmsa-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-lmsa-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
+              className="inline-flex min-h-[44px] items-center gap-2 rounded-lg bg-lmsa-700 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-lmsa-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
             >
               Open your portal
               <ArrowUpRight size={16} aria-hidden="true" />
@@ -242,7 +242,7 @@ export default function HomePage() {
         <div className="story-grid">
           {loading ? (
             <div role="status" className="col-span-full border border-gray-200 bg-white p-8 text-center">
-              <Loader size={26} className="mx-auto mb-3 animate-spin text-lmsa-600" aria-hidden="true" />
+              <Loader size={26} className="mx-auto mb-3 animate-spin text-lmsa-700" aria-hidden="true" />
               <p className="text-sm font-medium text-gray-600">Loading the latest stories…</p>
             </div>
           ) : error ? (
@@ -253,7 +253,7 @@ export default function HomePage() {
               <button
                 type="button"
                 onClick={handleRetry}
-                className="mt-4 inline-flex items-center gap-2 border border-lmsa-200 bg-lmsa-50 px-4 py-2 text-sm font-semibold text-lmsa-700 transition-colors hover:bg-lmsa-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
+                className="mt-4 inline-flex items-center gap-2 border border-lmsa-200 bg-lmsa-50 px-4 py-2 text-sm font-semibold text-lmsa-700 transition-colors hover:bg-lmsa-100 hover:text-lmsa-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
               >
                 <RefreshCw size={14} aria-hidden="true" />
                 Try again

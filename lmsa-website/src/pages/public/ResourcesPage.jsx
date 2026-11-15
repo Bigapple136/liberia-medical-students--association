@@ -176,7 +176,7 @@ export default function ResourcesPage() {
               <button
                 type="button"
                 onClick={loadMaterials}
-                className="inline-flex min-h-11 items-center justify-center gap-2 bg-lmsa-600 px-6 text-sm font-semibold text-white transition-colors hover:bg-lmsa-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-900 focus-visible:ring-offset-2"
+                className="inline-flex min-h-11 items-center justify-center gap-2 bg-lmsa-700 px-6 text-sm font-semibold text-white transition-colors hover:bg-lmsa-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-900 focus-visible:ring-offset-2"
               >
                 Try again
               </button>

@@ -31,18 +31,24 @@ export const ALL_COMMITTEES_DATA = {
         when: 'Throughout the year',
         title:
           'Run at least two symposia, one clinical and one pre-clinical, on topics students have asked for',
+        // The standing programme this entry is carried out as. Printed on the
+        // rail so a student hunting for the symposium by name finds it on the
+        // entry that runs it, rather than in a second list of the same work.
+        programme: 'Annual Medical Symposium',
         status: 'ongoing',
       },
       {
         when: 'Before the first symposium',
         title:
           'Agree the year’s topics with students, then invite the speakers and panellists to teach them',
+        programme: 'Guest Speaker Series',
         status: 'planned',
       },
       {
         when: 'Each semester',
         title:
           'Hold clinical-skills and pre-clinical workshops alongside the taught timetable, not on top of it',
+        programme: 'Clinical Skills Workshops',
         status: 'planned',
       },
       {
@@ -55,12 +61,14 @@ export const ALL_COMMITTEES_DATA = {
         when: 'Each semester',
         title:
           'Keep the library’s journals and periodicals current, and tell students what has arrived',
+        programme: 'Library Resource Management',
         status: 'ongoing',
       },
       {
         when: 'Before exams',
         title:
           'Run peer study groups and revision sessions for the cohort facing exams',
+        programme: 'Study Group Coordination',
         status: 'planned',
       },
     ],

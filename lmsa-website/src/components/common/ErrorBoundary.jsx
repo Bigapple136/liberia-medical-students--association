@@ -69,7 +69,7 @@ export class ErrorBoundary extends Component {
             <div className="mt-8 p-4 bg-gray-100 rounded-lg">
               <p className="text-sm text-gray-600">
                 <strong>Need help?</strong> Contact us at{' '}
-                <a href={`mailto:${CONTACT_EMAIL}`} className="text-lmsa-600 hover:underline">
+                <a href={`mailto:${CONTACT_EMAIL}`} className="text-lmsa-700 hover:underline">
                   {CONTACT_EMAIL}
                 </a>
               </p>

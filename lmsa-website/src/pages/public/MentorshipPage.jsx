@@ -379,14 +379,14 @@ export default function MentorshipPage() {
                     <ul className="mt-2 space-y-1.5">
                       {picked.tips.map((tip) => (
                         <li key={tip} className="flex items-center gap-2.5 text-[15px] leading-6 text-gray-800">
-                          <Check size={15} className="shrink-0 text-lmsa-600" aria-hidden="true" />
+                          <Check size={15} className="shrink-0 text-lmsa-700" aria-hidden="true" />
                           {tip}
                         </li>
                       ))}
                     </ul>
                     <Link
                       to="/contact"
-                      className="mt-6 inline-flex min-h-11 items-center gap-2 rounded-lg bg-lmsa-600 px-5 text-[15px] font-semibold text-white transition-colors hover:bg-lmsa-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
+                      className="mt-6 inline-flex min-h-11 items-center gap-2 rounded-lg bg-lmsa-700 px-5 text-[15px] font-semibold text-white transition-colors hover:bg-lmsa-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
                     >
                       {picked.action}
                       <ArrowRight size={17} aria-hidden="true" />

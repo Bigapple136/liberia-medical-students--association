@@ -46,18 +46,18 @@ function SymposiumCard({ event, upcoming }) {
       )}
       <div className="mt-5 flex flex-wrap gap-x-6 gap-y-3 text-sm text-gray-600">
         <span className="flex items-center gap-2">
-          <Calendar size={16} className="text-lmsa-600" aria-hidden="true" />
+          <Calendar size={16} className="text-lmsa-700" aria-hidden="true" />
           {formatDateRange(event.start_datetime, event.end_datetime)}
         </span>
         {event.location && (
           <span className="flex items-center gap-2">
-            <MapPin size={16} className="text-lmsa-600" aria-hidden="true" />
+            <MapPin size={16} className="text-lmsa-700" aria-hidden="true" />
             {event.location}
           </span>
         )}
         {typeof event.registration_count === 'number' && (
           <span className="flex items-center gap-2">
-            <Users size={16} className="text-lmsa-600" aria-hidden="true" />
+            <Users size={16} className="text-lmsa-700" aria-hidden="true" />
             {event.registration_count} registered{event.max_attendees ? ` of ${event.max_attendees}` : ''}
           </span>
         )}
@@ -65,7 +65,7 @@ function SymposiumCard({ event, upcoming }) {
       {upcoming && (
         <Link
           to={`/events/${event.slug}`}
-          className="mt-6 inline-flex items-center gap-2 bg-lmsa-600 px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-lmsa-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
+          className="mt-6 inline-flex items-center gap-2 bg-lmsa-700 px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-lmsa-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
         >
           View & register
           <ArrowRight size={15} aria-hidden="true" />
@@ -121,7 +121,7 @@ export default function SymposiaPage() {
           <EditorialSectionHeader title="Upcoming symposia." description="Plan ahead for the conversations and communities you want to be part of." />
           {loading ? (
             <div role="status" className="border border-gray-200 bg-white p-10 text-center">
-              <Loader size={26} className="mx-auto mb-4 animate-spin text-lmsa-600" aria-hidden="true" />
+              <Loader size={26} className="mx-auto mb-4 animate-spin text-lmsa-700" aria-hidden="true" />
               <p className="text-sm font-medium text-gray-600">Loading symposia…</p>
             </div>
           ) : error ? (
@@ -130,7 +130,7 @@ export default function SymposiaPage() {
               <button
                 type="button"
                 onClick={loadSymposia}
-                className="mt-6 inline-flex items-center gap-2 border border-lmsa-200 bg-lmsa-50 px-6 py-3 text-sm font-semibold text-lmsa-700 transition-colors hover:bg-lmsa-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
+                className="mt-6 inline-flex items-center gap-2 border border-lmsa-200 bg-lmsa-50 px-6 py-3 text-sm font-semibold text-lmsa-700 transition-colors hover:bg-lmsa-100 hover:text-lmsa-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
               >
                 <RefreshCw size={15} aria-hidden="true" />
                 Try again
@@ -151,7 +151,7 @@ export default function SymposiaPage() {
               </p>
               <Link
                 to="/events"
-                className="mt-6 inline-flex items-center gap-2 border border-lmsa-200 bg-lmsa-50 px-6 py-3 text-sm font-semibold text-lmsa-700 transition-colors hover:bg-lmsa-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
+                className="mt-6 inline-flex items-center gap-2 border border-lmsa-200 bg-lmsa-50 px-6 py-3 text-sm font-semibold text-lmsa-700 transition-colors hover:bg-lmsa-100 hover:text-lmsa-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
               >
                 See upcoming events
                 <ArrowRight size={15} aria-hidden="true" />
@@ -169,7 +169,7 @@ export default function SymposiaPage() {
             // already announces that symposia are loading, and two live regions
             // on one page announce twice.
             <div aria-hidden="true" className="border border-gray-200 bg-white p-10 text-center">
-              <Loader size={26} className="mx-auto mb-4 animate-spin text-lmsa-600" />
+              <Loader size={26} className="mx-auto mb-4 animate-spin text-lmsa-700" />
               <p className="text-sm font-medium text-gray-600">Loading past symposia…</p>
             </div>
           ) : error ? null : past.length > 0 ? (

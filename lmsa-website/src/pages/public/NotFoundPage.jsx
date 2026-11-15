@@ -7,10 +7,10 @@ export default function NotFoundPage() {
     <div className="min-h-svh flex items-center justify-center bg-gray-50 px-4">
       <div className="text-center max-w-2xl mx-auto">
         <div className="inline-flex items-center justify-center w-24 h-24 bg-lmsa-100 rounded-full mb-8">
-          <AlertTriangle size={48} className="text-lmsa-600" strokeWidth={1.5} />
+          <AlertTriangle size={48} className="text-lmsa-700" strokeWidth={1.5} />
         </div>
         
-        <h1 className="text-8xl md:text-9xl font-bold text-lmsa-600 mb-4 uppercase tracking-tight">404</h1>
+        <h1 className="text-8xl md:text-9xl font-bold text-lmsa-700 mb-4 uppercase tracking-tight">404</h1>
         <h2 className="text-3xl md:text-4xl font-bold mb-4 uppercase tracking-tight">Page Not Found</h2>
         <p className="text-xl text-gray-600 mb-8 max-w-lg mx-auto text-balance">
           Sorry, the page you&apos;re looking for doesn&apos;t exist or has been moved. Let&apos;s get you back on track.
@@ -33,22 +33,22 @@ export default function NotFoundPage() {
         <div className="bg-white rounded-xl border border-gray-200 p-8 shadow-sm">
           <h3 className="font-semibold text-lg mb-4">Popular Pages</h3>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            <Link to="/about" className="text-lmsa-600 hover:text-lmsa-700 transition-colors duration-200 text-sm font-medium">
+            <Link to="/about" className="text-lmsa-700 hover:text-lmsa-900 transition-colors duration-200 text-sm font-medium">
               About LMSA
             </Link>
-            <Link to="/membership" className="text-lmsa-600 hover:text-lmsa-700 transition-colors duration-200 text-sm font-medium">
+            <Link to="/membership" className="text-lmsa-700 hover:text-lmsa-900 transition-colors duration-200 text-sm font-medium">
               Membership
             </Link>
-            <Link to="/leadership" className="text-lmsa-600 hover:text-lmsa-700 transition-colors duration-200 text-sm font-medium">
+            <Link to="/leadership" className="text-lmsa-700 hover:text-lmsa-900 transition-colors duration-200 text-sm font-medium">
               Leadership
             </Link>
-            <Link to="/portal" className="text-lmsa-600 hover:text-lmsa-700 transition-colors duration-200 text-sm font-medium">
+            <Link to="/portal" className="text-lmsa-700 hover:text-lmsa-900 transition-colors duration-200 text-sm font-medium">
               Member Portal
             </Link>
-            <Link to="/register" className="text-lmsa-600 hover:text-lmsa-700 transition-colors duration-200 text-sm font-medium">
+            <Link to="/register" className="text-lmsa-700 hover:text-lmsa-900 transition-colors duration-200 text-sm font-medium">
               Join LMSA
             </Link>
-            <Link to="/contact" className="text-lmsa-600 hover:text-lmsa-700 transition-colors duration-200 text-sm font-medium">
+            <Link to="/contact" className="text-lmsa-700 hover:text-lmsa-900 transition-colors duration-200 text-sm font-medium">
               Contact
             </Link>
           </div>

@@ -62,7 +62,7 @@ export default function PastPresidentsPage() {
         <div className="site-container">
           {loading ? (
             <div className="flex h-48 items-center justify-center">
-              <Loader className="animate-spin text-lmsa-600" size={28} aria-label="Loading past presidents" />
+              <Loader className="animate-spin text-lmsa-700" size={28} aria-label="Loading past presidents" />
             </div>
           ) : error ? (
             <div className="border border-gray-200 bg-white p-8 text-center">
@@ -71,7 +71,7 @@ export default function PastPresidentsPage() {
               <button
                 type="button"
                 onClick={loadPastPresidents}
-                className="mt-4 inline-flex items-center gap-2 border border-lmsa-200 bg-lmsa-50 px-4 py-2 text-sm font-semibold text-lmsa-700 transition-colors hover:bg-lmsa-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
+                className="mt-4 inline-flex items-center gap-2 border border-lmsa-200 bg-lmsa-50 px-4 py-2 text-sm font-semibold text-lmsa-700 transition-colors hover:bg-lmsa-100 hover:text-lmsa-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
               >
                 <RefreshCw size={14} aria-hidden="true" />
                 Try again

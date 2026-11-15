@@ -132,7 +132,7 @@ export default function DocumentsAdminPage() {
       {/* ── Header ──────────────────────────────────────────────────── */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-lmsa-600 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-xl bg-lmsa-700 flex items-center justify-center">
             <FileText size={20} className="text-white" />
           </div>
           <div>
@@ -144,7 +144,7 @@ export default function DocumentsAdminPage() {
         </div>
         <button
           onClick={() => fileRef.current?.click()}
-          className="flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-white bg-lmsa-600 rounded-lg hover:bg-lmsa-700 transition-colors self-start sm:self-auto"
+          className="flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-white bg-lmsa-700 rounded-lg hover:bg-lmsa-800 transition-colors self-start sm:self-auto"
         >
           <Upload size={16} />
           Upload Document
@@ -198,7 +198,7 @@ export default function DocumentsAdminPage() {
           className="border-2 border-dashed border-gray-200 rounded-xl p-8 text-center cursor-pointer hover:border-lmsa-400 hover:bg-lmsa-50 transition-colors"
         >
           {uploading ? (
-            <><Loader size={24} className="animate-spin mx-auto mb-2 text-lmsa-600" /><p className="text-sm text-gray-500">Uploading...</p></>
+            <><Loader size={24} className="animate-spin mx-auto mb-2 text-lmsa-700" /><p className="text-sm text-gray-500">Uploading...</p></>
           ) : (
             <><Upload size={24} className="mx-auto mb-2 text-gray-400" /><p className="text-sm text-gray-600 font-medium">Click to upload file</p><p className="text-xs text-gray-400 mt-1">PDF, DOC, images up to 10MB</p></>
           )}
@@ -209,7 +209,7 @@ export default function DocumentsAdminPage() {
       {/* ── Documents List ──────────────────────────────────────────── */}
       {loading ? (
         <div className="flex items-center justify-center h-48">
-          <Loader className="animate-spin text-lmsa-600" size={28} />
+          <Loader className="animate-spin text-lmsa-700" size={28} />
         </div>
       ) : docs.length === 0 ? (
         <EmptyState

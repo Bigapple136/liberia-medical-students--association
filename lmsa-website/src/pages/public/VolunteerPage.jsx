@@ -69,7 +69,7 @@ export default function VolunteerPage() {
             <div className="grid gap-4 sm:grid-cols-2">
               {benefits.map((benefit, index) => (
                 <div key={index} className="flex items-start gap-3 border-b border-lmsa-200 pb-4 rise" style={{ animationDelay: `${index * 60}ms` }}>
-                  <div className="flex gap-2 text-base leading-7 text-gray-700"><CheckCircle size={18} className="mt-1.5 shrink-0 text-lmsa-600" aria-hidden="true" /><span>{benefit}</span></div>
+                  <div className="flex gap-2 text-base leading-7 text-gray-700"><CheckCircle size={18} className="mt-1.5 shrink-0 text-lmsa-700" aria-hidden="true" /><span>{benefit}</span></div>
                 </div>
               ))}
               <section aria-label="Networking" className="rise">

@@ -92,7 +92,7 @@ export default function AboutPage() {
             description="Our values are practical commitments for how we learn, lead, and serve together."
           />
           <div className="grid gap-4 md:grid-cols-3">
-            {values.map(({ icon: Icon, title, description }, index) => (
+            {values.map(({ icon: Icon, title, description }) => (
               <article key={title} className="editorial-link-card">
                 <span className="editorial-link-card-icon" aria-hidden="true">
                   <Icon size={22} strokeWidth={1.6} />

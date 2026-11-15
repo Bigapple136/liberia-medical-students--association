@@ -201,7 +201,7 @@ export default function CommitteeAdminDashboard() {
               <Link
                 to={`/leadership/committees/${activeCommittee.slug}`}
                 target="_blank"
-                className="flex items-center justify-center gap-2 px-4 py-2 text-sm text-lmsa-600 border border-lmsa-200 rounded-lg hover:bg-lmsa-50 transition-colors self-start sm:self-auto"
+                className="flex items-center justify-center gap-2 px-4 py-2 text-sm text-lmsa-700 border border-lmsa-200 rounded-lg hover:bg-lmsa-50 transition-colors self-start sm:self-auto"
               >
                 <Eye size={15} />
                 View Public Page
@@ -220,7 +220,7 @@ export default function CommitteeAdminDashboard() {
                       onClick={() => setActiveTab(tab.id)}
                       className={`flex items-center gap-2 px-4 py-3 text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${
                         activeTab === tab.id
-                          ? 'border-lmsa-600 text-lmsa-600'
+                          ? 'border-lmsa-600 text-lmsa-700'
                           : 'border-transparent text-gray-500 hover:text-gray-800'
                       }`}
                     >
@@ -384,7 +384,7 @@ function DetailsTab({ committee, onSave }) {
               type="checkbox"
               checked={form.accepting_applications}
               onChange={e => setForm(f => ({ ...f, accepting_applications: e.target.checked }))}
-              className="h-4 w-4 rounded border-gray-300 text-lmsa-600 focus:ring-lmsa-500"
+              className="h-4 w-4 rounded border-gray-300 text-lmsa-700 focus:ring-lmsa-500"
             />
             Currently accepting applications
           </label>
@@ -425,7 +425,7 @@ function DetailsTab({ committee, onSave }) {
           {form.mandate.map((item, idx) => (
             <div key={idx} className="flex gap-2">
               <div className="w-6 h-6 rounded-full bg-lmsa-100 flex items-center justify-center shrink-0 mt-2.5">
-                <span className="text-xs font-bold text-lmsa-600">{idx + 1}</span>
+                <span className="text-xs font-bold text-lmsa-800">{idx + 1}</span>
               </div>
               <input
                 className="input flex-1"
@@ -440,7 +440,7 @@ function DetailsTab({ committee, onSave }) {
           ))}
           <button
             onClick={() => addItem('mandate')}
-            className="flex items-center gap-2 text-sm text-lmsa-600 hover:text-lmsa-700 mt-2"
+            className="flex items-center gap-2 text-sm text-lmsa-700 hover:text-lmsa-900 mt-2"
           >
             <Plus size={14} /> Add Mandate Item
           </button>
@@ -465,7 +465,7 @@ function DetailsTab({ committee, onSave }) {
         </div>
         <button
           onClick={() => addItem('key_activities')}
-          className="flex items-center gap-2 text-sm text-lmsa-600 hover:text-lmsa-700 mt-3"
+          className="flex items-center gap-2 text-sm text-lmsa-700 hover:text-lmsa-900 mt-3"
         >
           <Plus size={14} /> Add Activity
         </button>
@@ -593,7 +593,7 @@ function MembersTab({ committee, onUpdate }) {
 
       {/* Members Table */}
       {loading ? (
-        <div className="flex items-center justify-center h-32"><Loader className="animate-spin text-lmsa-600" /></div>
+        <div className="flex items-center justify-center h-32"><Loader className="animate-spin text-lmsa-700" /></div>
       ) : (
         <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
           <table className="w-full">
@@ -616,7 +616,7 @@ function MembersTab({ committee, onUpdate }) {
                       {member.profile_photo_url ? (
                         <img src={member.profile_photo_url} alt="" className="w-9 h-9 rounded-full object-cover" />
                       ) : (
-                        <div className="w-9 h-9 rounded-full bg-lmsa-100 flex items-center justify-center text-lmsa-700 font-bold text-sm">
+                        <div className="w-9 h-9 rounded-full bg-lmsa-100 flex items-center justify-center text-lmsa-800 font-bold text-sm">
                           {member.full_name?.split(' ').map(n => n[0]).join('').slice(0,2)}
                         </div>
                       )}
@@ -671,14 +671,14 @@ function MembersTab({ committee, onUpdate }) {
                       onClick={() => { setNew(f => ({ ...f, user_id: u.id })); setUsers([]); }}
                       className={`w-full flex items-center gap-3 px-3 py-2 hover:bg-lmsa-50 text-left ${newMember.user_id === u.id ? 'bg-lmsa-50' : ''}`}
                     >
-                      <div className="w-7 h-7 rounded-full bg-lmsa-100 flex items-center justify-center text-xs font-bold text-lmsa-700">
+                      <div className="w-7 h-7 rounded-full bg-lmsa-100 flex items-center justify-center text-xs font-bold text-lmsa-800">
                         {u.full_name?.split(' ').map(n => n[0]).join('').slice(0,2)}
                       </div>
                       <div>
                         <p className="text-sm font-medium">{u.full_name}</p>
                         <p className="text-xs text-gray-500">Year {u.year_level} • {u.email}</p>
                       </div>
-                      {newMember.user_id === u.id && <Check size={14} className="ml-auto text-lmsa-600" />}
+                      {newMember.user_id === u.id && <Check size={14} className="ml-auto text-lmsa-700" />}
                     </button>
                   ))}
                 </div>
@@ -823,7 +823,7 @@ function EventsTab({ committee }) {
 
       {/* Events List */}
       {loading ? (
-        <div className="flex items-center justify-center h-32"><Loader className="animate-spin text-lmsa-600" /></div>
+        <div className="flex items-center justify-center h-32"><Loader className="animate-spin text-lmsa-700" /></div>
       ) : events.length === 0 ? (
         <EmptyState icon={Calendar} message="No events yet" sub="Create the first event for this committee" />
       ) : (
@@ -832,7 +832,7 @@ function EventsTab({ committee }) {
             <div key={ev.id} className="bg-white rounded-xl border border-gray-200 p-4 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-4">
               <div className="flex gap-4 min-w-0">
                 <div className="text-center bg-lmsa-50 rounded-lg px-3 py-2 min-w-[52px]">
-                  <p className="text-xs text-lmsa-600 font-semibold">{new Date(ev.start_datetime).toLocaleString('default',{month:'short'})}</p>
+                  <p className="text-xs text-lmsa-700 font-semibold">{new Date(ev.start_datetime).toLocaleString('default',{month:'short'})}</p>
                   <p className="text-xl font-bold text-lmsa-700">{new Date(ev.start_datetime).getDate()}</p>
                 </div>
                 <div className="min-w-0">
@@ -958,7 +958,7 @@ function DocumentsTab({ committee }) {
           className="border-2 border-dashed border-gray-200 rounded-xl p-8 text-center cursor-pointer hover:border-lmsa-400 hover:bg-lmsa-50 transition-colors"
         >
           {uploading ? (
-            <><Loader size={24} className="animate-spin mx-auto mb-2 text-lmsa-600" /><p className="text-sm text-gray-500">Uploading...</p></>
+            <><Loader size={24} className="animate-spin mx-auto mb-2 text-lmsa-700" /><p className="text-sm text-gray-500">Uploading...</p></>
           ) : (
             <><Upload size={24} className="mx-auto mb-2 text-gray-500" /><p className="text-sm text-gray-600 font-medium">Click to upload file</p><p className="text-xs text-gray-500 mt-1">PDF, DOC, images up to 10MB</p></>
           )}
@@ -968,7 +968,7 @@ function DocumentsTab({ committee }) {
 
       {/* Documents List */}
       {loading ? (
-        <div className="flex items-center justify-center h-32"><Loader className="animate-spin text-lmsa-600" /></div>
+        <div className="flex items-center justify-center h-32"><Loader className="animate-spin text-lmsa-700" /></div>
       ) : docs.length === 0 ? (
         <EmptyState icon={FileText} message="No documents uploaded" sub="Upload charters, reports, and meeting minutes" />
       ) : (
@@ -1123,7 +1123,7 @@ function AnnouncementsTab({ committee }) {
       )}
 
       {loading ? (
-        <div className="flex items-center justify-center h-32"><Loader className="animate-spin text-lmsa-600" /></div>
+        <div className="flex items-center justify-center h-32"><Loader className="animate-spin text-lmsa-700" /></div>
       ) : items.length === 0 ? (
         <EmptyState icon={Bell} message="No announcements" sub="Create announcements to display on the committee page" />
       ) : (
@@ -1235,7 +1235,7 @@ function AchievementsTab({ committee }) {
       )}
 
       {loading ? (
-        <div className="flex items-center justify-center h-32"><Loader className="animate-spin text-lmsa-600" /></div>
+        <div className="flex items-center justify-center h-32"><Loader className="animate-spin text-lmsa-700" /></div>
       ) : items.length === 0 ? (
         <EmptyState icon={Award} message="No achievements yet" sub="Add milestones and accomplishments for this committee" />
       ) : (
@@ -1260,10 +1260,10 @@ function AchievementsTab({ committee }) {
 // ─── Tab: Analytics ───────────────────────────────────────────────────────────
 function AnalyticsTab({ committee }) {
   const stats = [
-    { label: 'Total Members', value: committee.member_count || 0, icon: Users, color: 'text-lmsa-600', bg: 'bg-lmsa-50' },
-    { label: 'Active Events', value: committee.active_events ?? '—', icon: Calendar, color: 'text-lmsa-600', bg: 'bg-lmsa-50' },
-    { label: 'Documents', value: committee.doc_count ?? '—', icon: FileText, color: 'text-lmsa-600', bg: 'bg-lmsa-50' },
-    { label: 'Page Views', value: committee.views || '—', icon: Eye, color: 'text-lmsa-600', bg: 'bg-lmsa-50' },
+    { label: 'Total Members', value: committee.member_count || 0, icon: Users, color: 'text-lmsa-700', bg: 'bg-lmsa-50' },
+    { label: 'Active Events', value: committee.active_events ?? '—', icon: Calendar, color: 'text-lmsa-700', bg: 'bg-lmsa-50' },
+    { label: 'Documents', value: committee.doc_count ?? '—', icon: FileText, color: 'text-lmsa-700', bg: 'bg-lmsa-50' },
+    { label: 'Page Views', value: committee.views || '—', icon: Eye, color: 'text-lmsa-700', bg: 'bg-lmsa-50' },
   ];
 
   return (
@@ -1339,7 +1339,7 @@ function LoadingScreen() {
   return (
     <div className="h-screen flex items-center justify-center bg-gray-50">
       <div className="text-center">
-        <Loader size={32} className="animate-spin text-lmsa-600 mx-auto mb-3" />
+        <Loader size={32} className="animate-spin text-lmsa-700 mx-auto mb-3" />
         <p className="text-gray-500">Loading committees...</p>
       </div>
     </div>
@@ -1409,7 +1409,7 @@ function ApplicationsTab({ committee }) {
               key={f}
               onClick={() => setFilter(f)}
               className={`px-3 py-1.5 text-sm font-medium rounded-lg capitalize transition-colors ${
-                filter === f ? 'bg-lmsa-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                filter === f ? 'bg-lmsa-700 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
               }`}
             >
               {f}
@@ -1420,7 +1420,7 @@ function ApplicationsTab({ committee }) {
 
       {loading ? (
         <div className="flex items-center justify-center h-32">
-          <Loader className="animate-spin text-lmsa-600" />
+          <Loader className="animate-spin text-lmsa-700" />
         </div>
       ) : applications.length === 0 ? (
         <div className="bg-white rounded-xl border border-gray-200 py-12 text-center text-gray-500">
@@ -1438,7 +1438,7 @@ function ApplicationsTab({ committee }) {
                 aria-expanded={expanded === app.id}
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-full bg-lmsa-100 flex items-center justify-center text-lmsa-700 font-bold text-sm shrink-0">
+                  <div className="w-9 h-9 rounded-full bg-lmsa-100 flex items-center justify-center text-lmsa-800 font-bold text-sm shrink-0">
                     {(app.applicant_name || '?').split(' ').map(n => n[0]).join('').slice(0, 2)}
                   </div>
                   <div>

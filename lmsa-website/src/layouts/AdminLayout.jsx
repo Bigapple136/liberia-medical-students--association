@@ -70,7 +70,7 @@ function SidebarContent({ user, logout, onNavigate }) {
           className="flex min-h-[44px] items-center gap-2 rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600"
         >
           <span
-            className="flex h-8 w-8 items-center justify-center rounded-lg bg-lmsa-600 text-sm font-bold text-white"
+            className="flex h-8 w-8 items-center justify-center rounded-lg bg-lmsa-700 text-sm font-bold text-white"
             aria-hidden="true"
           >
             LM
@@ -200,7 +200,7 @@ export default function AdminLayout() {
     <div className="min-h-svh bg-gray-50">
       <a
         href="#main-content"
-        className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:top-4 focus:left-4 focus:px-4 focus:py-2 focus:bg-lmsa-600 focus:text-white focus:rounded-md focus:outline-none focus:ring-2 focus:ring-lmsa-500 focus:ring-offset-2"
+        className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:top-4 focus:left-4 focus:px-4 focus:py-2 focus:bg-lmsa-700 focus:text-white focus:rounded-md focus:outline-none focus:ring-2 focus:ring-lmsa-500 focus:ring-offset-2"
       >
         Skip to main content
       </a>
@@ -220,7 +220,7 @@ export default function AdminLayout() {
         </button>
         <span className="flex items-center gap-2">
           <span
-            className="flex h-8 w-8 items-center justify-center rounded-lg bg-lmsa-600 text-sm font-bold text-white"
+            className="flex h-8 w-8 items-center justify-center rounded-lg bg-lmsa-700 text-sm font-bold text-white"
             aria-hidden="true"
           >
             LM

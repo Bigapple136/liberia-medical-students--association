@@ -115,7 +115,7 @@ export default function LoginPage() {
   return (
     <div className="min-h-svh flex bg-gray-50">
       {/* Left Side - Brand */}
-      <div className="hidden lg:flex lg:w-1/2 bg-lmsa-600 items-center justify-center p-12">
+      <div className="hidden lg:flex lg:w-1/2 bg-lmsa-800 items-center justify-center p-12">
         <div className="max-w-md text-white">
           <h1 className="text-5xl font-bold mb-6 uppercase tracking-tight">LMSA</h1>
           <p className="text-xl text-lmsa-100 mb-8 text-balance">
@@ -140,7 +140,7 @@ export default function LoginPage() {
             /* Welcome / transition state — replaces the form from the moment
                credentials check out until the redirect fires. */
             <div className="text-center py-12" aria-live="polite">
-              <Spinner size="lg" label="Signing you in" className="text-lmsa-600 mb-6" />
+              <Spinner size="lg" label="Signing you in" className="text-lmsa-700 mb-6" />
               <h2 className="text-3xl font-bold mb-2 uppercase tracking-tight">
                 {firstName ? `Welcome back, ${firstName}!` : 'Welcome back!'}
               </h2>
@@ -151,7 +151,7 @@ export default function LoginPage() {
               {/* Back Link */}
               <Link
                 to="/"
-                className="inline-flex items-center gap-2 text-gray-600 hover:text-lmsa-600 transition-colors duration-200 mb-8"
+                className="inline-flex items-center gap-2 text-gray-600 hover:text-lmsa-700 transition-colors duration-200 mb-8"
               >
                 <ArrowLeft size={16} />
                 <span className="text-sm">Back to home</span>
@@ -185,7 +185,7 @@ export default function LoginPage() {
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="hover:text-lmsa-600 transition-colors duration-200 cursor-pointer"
+                      className="hover:text-lmsa-700 transition-colors duration-200 cursor-pointer"
                       aria-label={showPassword ? 'Hide password' : 'Show password'}
                     >
                       {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -202,13 +202,13 @@ export default function LoginPage() {
                       type="checkbox"
                       checked={rememberMe}
                       onChange={(e) => setRememberMe(e.target.checked)}
-                      className="w-4 h-4 rounded border-gray-300 text-lmsa-600 focus:ring-lmsa-600 cursor-pointer"
+                      className="w-4 h-4 rounded border-gray-300 text-lmsa-700 focus:ring-lmsa-600 cursor-pointer"
                     />
                     <span className="text-sm text-gray-700">Remember me</span>
                   </label>
                   <Link
                     to="/forgot-password"
-                    className="text-sm text-lmsa-600 hover:text-lmsa-700 font-medium transition-colors duration-200"
+                    className="text-sm text-lmsa-700 hover:text-lmsa-900 font-medium transition-colors duration-200"
                   >
                     Forgot password?
                   </Link>
@@ -223,7 +223,7 @@ export default function LoginPage() {
               <div className="mt-8 text-center text-sm">
                 <p className="text-gray-600">
                   Don&apos;t have an account?{' '}
-                  <Link to="/register" className="text-lmsa-600 hover:text-lmsa-700 font-medium transition-colors duration-200">
+                  <Link to="/register" className="text-lmsa-700 hover:text-lmsa-900 font-medium transition-colors duration-200">
                     Register here
                   </Link>
                 </p>
@@ -233,7 +233,7 @@ export default function LoginPage() {
               <div className="mt-8 p-4 bg-gray-100 rounded-lg">
                 <p className="text-sm text-gray-600 text-balance">
                   <strong>Need help?</strong> Contact us at{' '}
-                  <a href={`mailto:${CONTACT_EMAIL}`} className="text-lmsa-600 hover:underline">
+                  <a href={`mailto:${CONTACT_EMAIL}`} className="text-lmsa-700 hover:underline">
                     {CONTACT_EMAIL}
                   </a>
                 </p>

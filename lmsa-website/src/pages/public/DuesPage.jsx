@@ -258,7 +258,7 @@ export default function DuesPage() {
               <div className="mt-8 flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:gap-6">
                 <Link
                   to="/membership#apply"
-                  className="inline-flex min-h-12 items-center justify-center gap-2 bg-lmsa-600 px-6 text-sm font-semibold text-white transition-colors hover:bg-lmsa-700"
+                  className="inline-flex min-h-12 items-center justify-center gap-2 bg-lmsa-700 px-6 text-sm font-semibold text-white transition-colors hover:bg-lmsa-800"
                 >
                   Start your membership
                   <ArrowRight size={16} aria-hidden="true" />

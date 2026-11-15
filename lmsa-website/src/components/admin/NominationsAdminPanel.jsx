@@ -198,7 +198,7 @@ export default function NominationsAdminPanel() {
           <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
             <input
               type="checkbox"
-              className="w-4 h-4 rounded border-gray-300 text-lmsa-600 focus:ring-lmsa-500"
+              className="w-4 h-4 rounded border-gray-300 text-lmsa-700 focus:ring-lmsa-500"
               checked={cycleForm.accepting_nominations}
               onChange={e => setCycleForm(f => ({ ...f, accepting_nominations: e.target.checked }))}
             />
@@ -207,7 +207,7 @@ export default function NominationsAdminPanel() {
           <button
             type="submit"
             disabled={savingCycle}
-            className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-lmsa-600 rounded-lg hover:bg-lmsa-700 disabled:opacity-50"
+            className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-lmsa-700 rounded-lg hover:bg-lmsa-800 disabled:opacity-50"
           >
             {savingCycle ? <Loader size={14} className="animate-spin" /> : null}
             Save cycle
@@ -238,7 +238,7 @@ export default function NominationsAdminPanel() {
 
       {loading ? (
         <div className="flex h-32 items-center justify-center">
-          <Loader className="animate-spin text-lmsa-600" size={24} aria-label="Loading nominations" />
+          <Loader className="animate-spin text-lmsa-700" size={24} aria-label="Loading nominations" />
         </div>
       ) : nominations.length === 0 ? (
         <p className="bg-white rounded-xl border border-gray-200 p-6 text-sm text-gray-500">
@@ -297,7 +297,7 @@ export default function NominationsAdminPanel() {
                   type="button"
                   onClick={() => handleReview(n.id, 'approved')}
                   disabled={savingId === n.id}
-                  className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-white bg-lmsa-600 rounded-lg hover:bg-lmsa-700 disabled:opacity-50"
+                  className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-white bg-lmsa-700 rounded-lg hover:bg-lmsa-800 disabled:opacity-50"
                 >
                   <Check size={13} /> Accept
                 </button>

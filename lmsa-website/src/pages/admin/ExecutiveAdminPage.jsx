@@ -185,7 +185,7 @@ export default function ExecutiveAdminPage() {
         </div>
         <button
           onClick={openCreate}
-          className="flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-white bg-lmsa-600 rounded-lg hover:bg-lmsa-700 transition-colors self-start sm:self-auto"
+          className="flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-white bg-lmsa-700 rounded-lg hover:bg-lmsa-800 transition-colors self-start sm:self-auto"
         >
           <Plus size={16} /> Add Position
         </button>
@@ -294,7 +294,7 @@ export default function ExecutiveAdminPage() {
                       onClick={() => selectUser(user)}
                       className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 text-left text-sm"
                     >
-                      <div className="w-8 h-8 rounded-full bg-lmsa-100 flex items-center justify-center text-lmsa-700 font-bold text-xs shrink-0">
+                      <div className="w-8 h-8 rounded-full bg-lmsa-100 flex items-center justify-center text-lmsa-800 font-bold text-xs shrink-0">
                         {user.full_name?.split(' ').map(n => n[0]).join('').slice(0, 2) || '??'}
                       </div>
                       <div>
@@ -307,12 +307,12 @@ export default function ExecutiveAdminPage() {
               )}
               {selectedUser && (
                 <div className="mt-2 flex items-center gap-2 px-3 py-2 bg-lmsa-50 rounded-lg text-sm">
-                  <User size={14} className="text-lmsa-600" />
+                  <User size={14} className="text-lmsa-700" />
                   <span className="font-medium text-lmsa-800">{selectedUser.full_name}</span>
                   <button
                     type="button"
                     onClick={() => { setSelectedUser(null); setUserSearch(''); setForm(f => ({ ...f, user_id: '' })); }}
-                    className="ml-auto p-0.5 rounded hover:bg-lmsa-100"
+                    className="ml-auto p-0.5 rounded hover:bg-lmsa-100 hover:text-lmsa-800"
                   >
                     <X size={14} className="text-lmsa-500" />
                   </button>
@@ -384,7 +384,7 @@ export default function ExecutiveAdminPage() {
               <button
                 type="submit"
                 disabled={saving}
-                className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-lmsa-600 rounded-lg hover:bg-lmsa-700 transition-colors disabled:opacity-50"
+                className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-lmsa-700 rounded-lg hover:bg-lmsa-800 transition-colors disabled:opacity-50"
               >
                 {saving ? <Loader size={14} className="animate-spin" /> : <Check size={14} />}
                 {editingId ? 'Save Changes' : 'Create Position'}
@@ -397,7 +397,7 @@ export default function ExecutiveAdminPage() {
       {/* ── Positions List ────────────────────────────────────────────── */}
       {loading ? (
         <div className="flex items-center justify-center h-48">
-          <Loader className="animate-spin text-lmsa-600" size={28} />
+          <Loader className="animate-spin text-lmsa-700" size={28} />
         </div>
       ) : filtered.length === 0 ? (
         <div className="bg-white rounded-xl border border-gray-200 p-12 text-center">
@@ -419,7 +419,7 @@ export default function ExecutiveAdminPage() {
                 onClick={() => setExpandedId(expandedId === pos.id ? null : pos.id)}
               >
                 <div className="flex items-center gap-4 flex-1 min-w-0">
-                  <div className="w-10 h-10 rounded-full bg-lmsa-100 flex items-center justify-center text-lmsa-700 font-bold text-sm shrink-0">
+                  <div className="w-10 h-10 rounded-full bg-lmsa-100 flex items-center justify-center text-lmsa-800 font-bold text-sm shrink-0">
                     {pos.holder_photo_url ? (
                       <img src={pos.holder_photo_url} alt={pos.holder_name} className="w-full h-full rounded-full object-cover" />
                     ) : pos.holder_name ? (
@@ -492,7 +492,7 @@ export default function ExecutiveAdminPage() {
                   <div className="flex gap-2">
                     <button
                       onClick={() => openEdit(pos)}
-                      className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-lmsa-700 bg-lmsa-50 border border-lmsa-200 rounded-lg hover:bg-lmsa-100 transition-colors"
+                      className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-lmsa-700 bg-lmsa-50 border border-lmsa-200 rounded-lg hover:bg-lmsa-100 hover:text-lmsa-800 transition-colors"
                     >
                       <Pencil size={13} /> Edit
                     </button>

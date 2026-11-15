@@ -86,7 +86,7 @@ export default function ContactPage() {
               <Card className="mb-8 hover:shadow-md transition-shadow duration-200">
                 <div className="space-y-6">
                   <div className="flex items-start gap-3">
-                    <MapPin size={20} className="text-lmsa-600 flex-shrink-0 mt-1" />
+                    <MapPin size={20} className="text-lmsa-700 flex-shrink-0 mt-1" />
                     <div>
                       <h3 className="font-semibold text-lg mb-2">Address</h3>
                       <p className="text-gray-600 text-balance">
@@ -98,25 +98,25 @@ export default function ContactPage() {
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
-                    <Mail size={20} className="text-lmsa-600 flex-shrink-0 mt-1" />
+                    <Mail size={20} className="text-lmsa-700 flex-shrink-0 mt-1" />
                     <div>
                       <h3 className="font-semibold text-lg mb-2">Email</h3>
-                      <a href={`mailto:${CONTACT_EMAIL}`} className="text-lmsa-600 hover:text-lmsa-700 transition-colors duration-200">
+                      <a href={`mailto:${CONTACT_EMAIL}`} className="text-lmsa-700 hover:text-lmsa-900 transition-colors duration-200">
                         {CONTACT_EMAIL}
                       </a>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
-                    <Phone size={20} className="text-lmsa-600 flex-shrink-0 mt-1" />
+                    <Phone size={20} className="text-lmsa-700 flex-shrink-0 mt-1" />
                     <div>
                       <h3 className="font-semibold text-lg mb-2">Phone</h3>
-                      <a href="tel:+231770000000" className="text-lmsa-600 hover:text-lmsa-700 transition-colors duration-200">
+                      <a href="tel:+231770000000" className="text-lmsa-700 hover:text-lmsa-900 transition-colors duration-200">
                         +231 77 000 0000
                       </a>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
-                    <Clock size={20} className="text-lmsa-600 flex-shrink-0 mt-1" />
+                    <Clock size={20} className="text-lmsa-700 flex-shrink-0 mt-1" />
                     <div>
                       <h3 className="font-semibold text-lg mb-2">Office Hours</h3>
                       <p className="text-gray-600 text-balance">
@@ -134,21 +134,21 @@ export default function ContactPage() {
                 <div className="flex gap-4">
                   <a
                     href="#"
-                    className="p-3 bg-gray-100 rounded-lg hover:bg-lmsa-600 hover:text-white text-gray-700 transition-all duration-200"
+                    className="p-3 bg-gray-100 rounded-lg hover:bg-lmsa-800 hover:text-white text-gray-700 transition-all duration-200"
                     aria-label="Facebook"
                   >
                     <Facebook size={20} />
                   </a>
                   <a
                     href="#"
-                    className="p-3 bg-gray-100 rounded-lg hover:bg-lmsa-600 hover:text-white text-gray-700 transition-all duration-200"
+                    className="p-3 bg-gray-100 rounded-lg hover:bg-lmsa-800 hover:text-white text-gray-700 transition-all duration-200"
                     aria-label="Twitter"
                   >
                     <Twitter size={20} />
                   </a>
                   <a
                     href="#"
-                    className="p-3 bg-gray-100 rounded-lg hover:bg-lmsa-600 hover:text-white text-gray-700 transition-all duration-200"
+                    className="p-3 bg-gray-100 rounded-lg hover:bg-lmsa-800 hover:text-white text-gray-700 transition-all duration-200"
                     aria-label="Instagram"
                   >
                     <Instagram size={20} />

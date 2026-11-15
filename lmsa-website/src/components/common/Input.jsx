@@ -52,7 +52,7 @@ const Input = forwardRef(({
         </div>
       )}
       {success && (
-        <div className="absolute right-3 top-1/2 -translate-y-1/2 text-lmsa-600 pointer-events-none">
+        <div className="absolute right-3 top-1/2 -translate-y-1/2 text-lmsa-700 pointer-events-none">
           <Check size={18} />
         </div>
       )}
@@ -68,7 +68,7 @@ const Input = forwardRef(({
         </p>
       )}
       {!error && helperText && (
-        <p id={`${inputId}-helper`} className="mt-1.5 text-sm text-lmsa-500">
+        <p id={`${inputId}-helper`} className="mt-1.5 text-sm text-lmsa-700">
           {helperText}
         </p>
       )}

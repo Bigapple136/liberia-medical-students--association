@@ -138,7 +138,7 @@ export default function NominationDialog({
                 value={statement}
                 onChange={e => setStatement(e.target.value)}
                 className="input"
-                placeholder="Tell members what you want to do in this role and why you're the person for it."
+                placeholder="Tell members what you want to do in this role and why you’re the person for it."
                 required
               />
             </div>

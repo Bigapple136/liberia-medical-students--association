@@ -90,7 +90,7 @@ export default function ResetPasswordPage() {
   return (
     <div className="min-h-svh flex bg-gray-50">
       {/* Left Side - Brand */}
-      <div className="hidden lg:flex lg:w-1/2 bg-lmsa-600 items-center justify-center p-12">
+      <div className="hidden lg:flex lg:w-1/2 bg-lmsa-800 items-center justify-center p-12">
         <div className="max-w-md text-white">
           <h1 className="text-5xl font-bold mb-6 uppercase tracking-tight">LMSA</h1>
           <p className="text-xl text-lmsa-100 mb-8 text-balance">
@@ -113,7 +113,7 @@ export default function ResetPasswordPage() {
           {/* Back Link */}
           <Link
             to="/login"
-            className="inline-flex items-center gap-2 text-gray-600 hover:text-lmsa-600 transition-colors duration-200 mb-8"
+            className="inline-flex items-center gap-2 text-gray-600 hover:text-lmsa-700 transition-colors duration-200 mb-8"
           >
             <ArrowLeft size={16} />
             <span className="text-sm">Back to login</span>
@@ -145,7 +145,7 @@ export default function ResetPasswordPage() {
               <div className="mt-4 text-center text-sm">
                 <p className="text-gray-600">
                   Remember your password?{' '}
-                  <Link to="/login" className="text-lmsa-600 hover:text-lmsa-700 font-medium transition-colors duration-200">
+                  <Link to="/login" className="text-lmsa-700 hover:text-lmsa-900 font-medium transition-colors duration-200">
                     Sign in
                   </Link>
                 </p>
@@ -174,7 +174,7 @@ export default function ResetPasswordPage() {
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="hover:text-lmsa-600 transition-colors duration-200 cursor-pointer"
+                      className="hover:text-lmsa-700 transition-colors duration-200 cursor-pointer"
                       aria-label={showPassword ? 'Hide password' : 'Show password'}
                     >
                       {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -195,7 +195,7 @@ export default function ResetPasswordPage() {
                     <button
                       type="button"
                       onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                      className="hover:text-lmsa-600 transition-colors duration-200 cursor-pointer"
+                      className="hover:text-lmsa-700 transition-colors duration-200 cursor-pointer"
                       aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
                     >
                       {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -214,7 +214,7 @@ export default function ResetPasswordPage() {
               <div className="mt-8 text-center text-sm">
                 <p className="text-gray-600">
                   Remember your password?{' '}
-                  <Link to="/login" className="text-lmsa-600 hover:text-lmsa-700 font-medium transition-colors duration-200">
+                  <Link to="/login" className="text-lmsa-700 hover:text-lmsa-900 font-medium transition-colors duration-200">
                     Sign in
                   </Link>
                 </p>
@@ -226,7 +226,7 @@ export default function ResetPasswordPage() {
           <div className="mt-8 p-4 bg-gray-100 rounded-lg">
             <p className="text-sm text-gray-600 text-balance">
               <strong>Need help?</strong> Contact us at{' '}
-              <a href={`mailto:${CONTACT_EMAIL}`} className="text-lmsa-600 hover:underline">
+              <a href={`mailto:${CONTACT_EMAIL}`} className="text-lmsa-700 hover:underline">
                 {CONTACT_EMAIL}
               </a>
             </p>
