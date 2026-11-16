@@ -33,6 +33,14 @@ dropped — but it stops being a co-equal section: one band after the programme,
 existing copy and the form link, no three-step loop on this page. It becomes a shared
 component every committee page can carry.
 
+*Superseded after P4.* Built rather than argued, the band failed its own test: with the
+programme tab carrying the ledger, the join tab carrying a second report call, and the
+closing note carrying the promise a third time, the page pitched one duty three times and
+read as the portal’s fault desk. The band and the join-tab call are gone. Reporting is
+said once, in the closing note (“the record stays open until the fault is closed”), and
+the public form at the foot files it with the Health subject already set. A member still
+has the portal’s own route to the committee.
+
 **4. Build it general, ship it on Health first.**
 The model is committee-agnostic: Academic's symposia, Social's events, Research's
 publications are all programmes. The template renders a programme section wherever a

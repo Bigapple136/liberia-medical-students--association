@@ -138,13 +138,13 @@ const COMMITTEE_PROFILES = {
     // committee instead of one long scroll. A visitor who came from a search for
     // health news, a student asking what is on, and someone deciding whether to
     // join want three different pages — on a single scroll each of them reads
-    // two-thirds of what they did not ask for, and the fault report, which is
-    // one duty among several, ends up reading as the page's subject.
+    // two-thirds of what they did not ask for.
     //
-    // Now: what is on and what has been published. The work: the programme and
-    // the fault-reporting duty. People: who is on the committee and how to join.
-    // Each panel carries its own action, so the hero carries none. Every other
-    // committee keeps the stacked page — one layout is not the house style.
+    // What's on: the next dates and what has been published. The programme: the
+    // ledger of what the committee runs. The committee: who serves on it and how
+    // to join. Each panel carries its own action, so the hero carries none.
+    // Every other committee keeps the stacked page — one layout is not the house
+    // style.
     layout: 'tabs',
     // The hero says who the work is for, because it is the one thing about
     // this committee a reader can get wrong: the programmes are not an
@@ -182,31 +182,17 @@ const COMMITTEE_PROFILES = {
       heading: 'Health notes',
       intro: 'Reporting filed under Health in the association news.',
     },
+    // Reporting is public, but it is not this page's subject. It used to be
+    // pitched three times — a section on The work, a column under the join call,
+    // and the closing band — which read as a duty borrowed from the portal. It
+    // is said once now, in the closing band, and the form at the foot takes it;
+    // the profile keeps only the subject the form opens with, so a fault filed
+    // through it arrives already marked.
     ask: {
-      actionLabel: 'Report an issue',
       subject: {
         value: 'health',
         label: 'A health or sanitation issue',
       },
-      title: 'Something broken or unsafe? Say so.',
-      intro:
-        'A tap that has not worked for a month, a hall that is not cleaned, a dormitory with no water. Reporting it starts the committee’s own loop: inspected on site, dated, and followed up until it is fixed.',
-      steps: [
-        {
-          title: 'You report it',
-          // "Below" pointed at a form half a page further down once the report
-          // loop moved to the top of this page, so it says where the form is.
-          text: 'Use the form at the foot of this page, or write to the committee. Say what is wrong and where. One report is enough.',
-        },
-        {
-          title: 'It gets inspected and logged',
-          text: 'A member checks the site and records the finding with a date, so the same fault cannot be quietly forgotten.',
-        },
-        {
-          title: 'It is followed up until it is fixed',
-          text: 'If the fix needs the administration, the committee takes it there and keeps the record open until it closes.',
-        },
-      ],
     },
   },
 
@@ -659,16 +645,22 @@ export default function CommitteePageTemplate() {
     [announcements]
   );
 
-  // A tab is only offered when it has something in it. `Now` can be empty on a
-  // committee with nothing published and no dates; `The work` always carries the
-  // fault-reporting duty and `People` always carries the way in.
+  // A tab is only offered when it has something in it. `What’s on` can be empty
+  // on a committee with nothing published and no dates, and `The programme` is
+  // empty until the committee has published one; `The committee` always has the
+  // way in. The ids stay `now`/`work`/`people` so a link already sent still
+  // lands on the view it named.
   const nowHasContent =
     nextSessions.length > 0 || updates.length > 0 || news.length > 0;
   const tabItems = [
-    { id: 'now', label: 'Now' },
-    { id: 'work', label: 'The work' },
-    { id: 'people', label: 'People' },
-  ].filter(tab => tab.id !== 'now' || nowHasContent);
+    { id: 'now', label: 'What’s on' },
+    { id: 'work', label: 'The programme' },
+    { id: 'people', label: 'The committee' },
+  ].filter(
+    tab =>
+      (tab.id !== 'now' || nowHasContent) &&
+      (tab.id !== 'work' || programmes.length > 0)
+  );
 
   // The URL is the tab's state: `?view=work` survives a reload and can be sent
   // to someone. An unknown or absent value lands on the first tab that exists.
@@ -765,8 +757,8 @@ export default function CommitteePageTemplate() {
       : null;
 
   // The programme ledger already carries the dates its sessions fall on, and the
-  // tabbed page lists the nearest ones on `Now`, so the page never prints them a
-  // third time as a calendar column: the programme is the calendar. Its
+  // tabbed page lists the nearest ones on `What’s on`, so the page never prints
+  // them a third time as a calendar column: the programme is the calendar. Its
   // published reporting stays — that is the other clock on that band and
   // nothing else shows it. Where the calendar *is* shown, the records section
   // leaves upcoming events out, so one page never lists the same three dates
@@ -1015,9 +1007,10 @@ export default function CommitteePageTemplate() {
               {/* When the round is open the action leaves the page, because the
                   application lives on the join page. When it is not, the page's
                   own action is the one on it: writing to the committee. */}
-              {/* A tabbed page puts its actions in its panels — applying under
-                  People, reporting under The work — so the hero carries only the
-                  committee's address, which every tab can use. */}
+              {/* A tabbed page puts its actions in its panels — applying
+                  under The committee, the programme under The programme — so the
+                  hero carries only the committee's address, which every tab can
+                  use. */}
               {tabsLayout ? null : status?.open ? (
                 <Link
                   to="/get-involved/committees"
@@ -1132,7 +1125,7 @@ export default function CommitteePageTemplate() {
         </nav>
       )}
 
-      {/* ---------- Now: the next three things to turn up to ----------
+      {/* ---------- What’s on: the next three things to turn up to ----------
           The tab answers one question — is there anything for me this week — so
           dates lead and nothing sits above them. Each row names its programme so
           a reader can go straight from the date to the work it belongs to. */}
@@ -1443,68 +1436,6 @@ export default function CommitteePageTemplate() {
         </section>
       )}
 
-      {/* ---------- The report loop: the tabbed page's standing offer ----------
-          Reporting is not why this page is opened — the programme is — but it is
-          the committee's other duty and the one thing here no other committee
-          offers. So it follows the programme, on paper: read after the work it
-          is an offer; read before it, it asked a student to have a problem
-          first. The three steps are the promise about what happens after a
-          report lands, so they sit beside the invitation rather than below it. */}
-      {tabsLayout && ask && activeTab === 'work' && (
-        <section className="bg-paper" aria-labelledby="committee-ask-title">
-          <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 md:py-20 lg:px-8">
-            <div className="grid gap-12 lg:grid-cols-[0.95fr_1.05fr] lg:items-start lg:gap-16">
-              <div className="reveal-on-scroll">
-                <h2
-                  id="committee-ask-title"
-                  tabIndex={-1}
-                  className="max-w-[16ch] scroll-mt-32 text-[clamp(2rem,4vw,3.5rem)] font-bold leading-[1.0] tracking-[-0.045em] text-lmsa-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-lmsa-600"
-                >
-                  {ask.title}
-                </h2>
-                <p className="mt-6 max-w-[46ch] text-[19px] leading-8 text-gray-800">
-                  {ask.intro}
-                </p>
-                <a
-                  href="#committee-contact-form"
-                  onClick={() =>
-                    goToContact(ask.subject.value, { focusField: true })
-                  }
-                  className="mt-9 inline-flex min-h-12 items-center gap-2 rounded-lg bg-lmsa-700 px-6 text-[15px] font-semibold text-white transition-colors hover:bg-lmsa-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
-                >
-                  {ask.actionLabel || 'Report an issue'}
-                  <ArrowRight size={17} aria-hidden="true" />
-                </a>
-              </div>
-
-              <ol className="reveal-on-scroll border-t border-lmsa-200">
-                {ask.steps.map((step, index) => (
-                  <li
-                    key={step.title}
-                    className="grid grid-cols-[2.5rem_1fr] gap-x-3 border-b border-lmsa-200 py-5 md:grid-cols-[3.5rem_1fr] md:gap-x-6"
-                  >
-                    <span
-                      aria-hidden="true"
-                      className="pt-[0.3rem] text-[13px] font-semibold tabular-nums text-lmsa-700"
-                    >
-                      {String(index + 1).padStart(2, '0')}
-                    </span>
-                    <div>
-                      <p className="text-[19px] font-semibold leading-7 text-lmsa-900">
-                        {step.title}
-                      </p>
-                      <p className="mt-1 max-w-[44ch] text-[17px] leading-7 text-gray-800">
-                        {step.text}
-                      </p>
-                    </div>
-                  </li>
-                ))}
-              </ol>
-            </div>
-          </div>
-        </section>
-      )}
-
       {/* ---------- What the committee is for ----------
           Skipped entirely where the mandate is the footnote: the register is
           the committee's remit, and a page built around its programme puts that
@@ -1699,9 +1630,9 @@ export default function CommitteePageTemplate() {
           not arrive as a general enquiry — it reuses the form already on the
           page rather than adding an endpoint.
 
-          The tabbed layout skips this band: its ask is the reason that tab
-          exists, so it renders on paper inside `The work` instead, and the dark
-          band would only be the same invitation a second time. */}
+          The tabbed layout skips this band: its ask is said once on paper, in
+          the closing band, and the dark band would only be the same invitation
+          a second time. */}
       {ask && !tabsLayout && (
         <section className="bg-lmsa-900 text-white" aria-labelledby="committee-ask-title">
           <div className="mx-auto grid max-w-7xl gap-12 px-4 py-20 sm:px-6 md:py-24 lg:grid-cols-[0.95fr_1.05fr] lg:items-start lg:gap-16 lg:px-8">
@@ -2005,21 +1936,18 @@ export default function CommitteePageTemplate() {
                   Not applying?
                 </h3>
                 <p className="mt-4 max-w-[46ch] text-[17px] leading-7 text-gray-800">
-                  Anyone can report a faulty tap, a hall that is not cleaned, or a
-                  dormitory with no water — staff, neighbours and students alike.
-                  A member inspects what is reported, dates the finding, and keeps
-                  the record open until the fault is fixed.
+                  The programme is not only for people who serve on the
+                  committee. Training, drives and workshops are open to students
+                  and to the wider community, and they are listed with their
+                  dates on this page.
                 </p>
-                <a
-                  href="#committee-contact-form"
-                  onClick={() =>
-                    goToContact(ask?.subject?.value, { focusField: true })
-                  }
-                  className="mt-6 inline-flex min-h-12 items-center gap-2 rounded-lg bg-lmsa-700 px-6 text-[15px] font-semibold text-white transition-colors hover:bg-lmsa-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
+                <Link
+                  to={`/leadership/committees/${slug}?view=work`}
+                  className="mt-6 inline-flex min-h-12 items-center gap-2 text-[15px] font-semibold text-lmsa-700 underline decoration-2 underline-offset-[6px] transition-colors hover:decoration-lmsa-900"
                 >
-                  {ask?.actionLabel || 'Report an issue'}
-                  <ArrowRight size={17} aria-hidden="true" />
-                </a>
+                  See this term’s programme
+                  <ArrowRight size={15} aria-hidden="true" />
+                </Link>
               </div>
             </div>
           </div>
@@ -2187,7 +2115,7 @@ export default function CommitteePageTemplate() {
                   compactContact ? 'mt-3 text-[17px] leading-7' : 'mt-5 text-[19px] leading-8'
                 }`}
               >
-                {/* The report block sends people to this form, so the tabbed
+                {/* The closing band sends people to this form, so the tabbed
                     page names the thing that arrives here rather than leaving
                     the reader to work out that a fault is reported here. */}
                 {tabsLayout
@@ -2419,14 +2347,25 @@ export default function CommitteePageTemplate() {
                   {closingNote.action}
                   <ArrowRight size={17} aria-hidden="true" />
                 </a>
-                {closingSecondary && (
-                  <a
-                    href={closingSecondary.href}
-                    className="inline-flex min-h-12 items-center text-[15px] font-semibold text-lmsa-100 underline decoration-2 underline-offset-[6px] transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-400 focus-visible:ring-offset-2 focus-visible:ring-offset-lmsa-900"
-                  >
-                    {closingSecondary.label}
-                  </a>
-                )}
+                {/* The programme is a section on a stacked page and a tab of
+                    its own on a tabbed one, where an anchor to it would point at
+                    a section the current view does not render. */}
+                {closingSecondary &&
+                  (tabsLayout ? (
+                    <Link
+                      to={`/leadership/committees/${slug}?view=work`}
+                      className="inline-flex min-h-12 items-center text-[15px] font-semibold text-lmsa-100 underline decoration-2 underline-offset-[6px] transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-400 focus-visible:ring-offset-2 focus-visible:ring-offset-lmsa-900"
+                    >
+                      {closingSecondary.label}
+                    </Link>
+                  ) : (
+                    <a
+                      href={closingSecondary.href}
+                      className="inline-flex min-h-12 items-center text-[15px] font-semibold text-lmsa-100 underline decoration-2 underline-offset-[6px] transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-400 focus-visible:ring-offset-2 focus-visible:ring-offset-lmsa-900"
+                    >
+                      {closingSecondary.label}
+                    </a>
+                  ))}
               </div>
             </div>
           </div>
