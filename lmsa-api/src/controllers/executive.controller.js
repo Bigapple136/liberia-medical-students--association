@@ -4,11 +4,15 @@ import { supabase } from '../config/supabase.js';
 // Public — only active positions. Order by position_rank ASC.
 export const getAll = async (req, res) => {
   try {
+    // Columns are named rather than `*`: a public office holder is a name, a
+    // portrait and the office. The user id, email and year level are portal facts
+    // (docs/16-public-and-portal-boundary.md §4).
     let query = supabase
       .from('executive_positions')
       .select(`
-        *,
-        holder:user_id ( id, full_name, profile_photo_url, year_level )
+        id, position_name, position_rank, academic_year,
+        elected_at, term_start, term_end, status, created_at,
+        holder:user_id ( full_name, profile_photo_url )
       `)
       .eq('status', 'active')
       .order('position_rank', { ascending: true });
@@ -28,14 +32,19 @@ export const getAll = async (req, res) => {
       });
     }
 
-    // Flatten user data — mirror membership.controller.js pattern
-    const positions = data.map(p => ({
-      ...p,
-      holder_name: p.holder?.full_name || null,
-      holder_photo_url: p.holder?.profile_photo_url || null,
-      holder_year_level: p.holder?.year_level || null,
-      holder: undefined,
-    }));
+    // Flatten user data — mirror membership.controller.js pattern. `user_id` is
+    // deleted rather than passed through: a public response carries no personal
+    // identifier, and no public surface needs one to name an office holder.
+    const positions = data.map(p => {
+      const visible = {
+        ...p,
+        holder_name: p.holder?.full_name || null,
+        holder_photo_url: p.holder?.profile_photo_url || null,
+      };
+      delete visible.holder;
+      delete visible.user_id;
+      return visible;
+    });
 
     res.json({
       success: true,
@@ -60,8 +69,9 @@ export const getPastPresidents = async (req, res) => {
     const { data, error } = await supabase
       .from('executive_positions')
       .select(`
-        *,
-        holder:user_id ( id, full_name, profile_photo_url, year_level )
+        id, position_name, position_rank, academic_year,
+        elected_at, term_start, term_end, status, created_at,
+        holder:user_id ( full_name, profile_photo_url )
       `)
       .eq('position_name', 'President')
       .eq('status', 'completed')
@@ -78,13 +88,16 @@ export const getPastPresidents = async (req, res) => {
     // name/photo comes from their user profile when one exists. A null
     // user_id (someone who has since left the system entirely) flattens to
     // nulls; the frontend falls back to an honest "not on record" label.
-    const positions = data.map(p => ({
-      ...p,
-      holder_name: p.holder?.full_name || null,
-      holder_photo_url: p.holder?.profile_photo_url || null,
-      holder_year_level: p.holder?.year_level || null,
-      holder: undefined,
-    }));
+    const positions = data.map(p => {
+      const visible = {
+        ...p,
+        holder_name: p.holder?.full_name || null,
+        holder_photo_url: p.holder?.profile_photo_url || null,
+      };
+      delete visible.holder;
+      delete visible.user_id;
+      return visible;
+    });
 
     res.json({
       success: true,

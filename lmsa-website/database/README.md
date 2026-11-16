@@ -17,6 +17,18 @@ new numbered files are added.
 | 007 | `007_fix_mandate_column_type.sql` | **Crash fix.** `committees.mandate` was declared `TEXT` in 001, but every UI that reads or writes it (admin Details tab, public committee page) always treated it as an array of strings, same as its sibling `key_activities` (correctly `TEXT[]` since 002) — 001 just never matched. Saving a mandate from the admin edit form silently "worked" but stored the JSON-stringified array as literal text, and the next read crashed with `mandate.map is not a function`, on both the admin page and the public one. Converts the column to `TEXT[]` and repairs any row already corrupted this way (unpacks the JSON-string back into a real array) rather than just fixing new saves going forward. Depends on 001; safe to run whether or not any committee has had its mandate edited yet. |
 | 009 | `009_document_stage.sql` | Adds an optional `stage` column to `documents` (`pre_clinical`, `clinical`, `exam`, or `NULL`), with a CHECK constraint and a partial index. Study materials were all filed under one category, so the resources page could name three stages and then show a single flat list that ignored them; the tag is what lets that page filter by stage and the admin documents page set it. `NULL` is deliberate — existing documents stay untagged and the resources page shows them under their own heading rather than guessing. Safe to re-run. Depends on 001. |
 | 008 | `008_reset_committees_constitutional.sql` | **Replaces 006's placeholder data with the real thing.** 006 seeded 12 committees under a made-up naming scheme; the actual 12 constitutional committees (Academic, Health, Research & Journal, Social & Program, Dietary, Judicial, Sports, Auditing, Foreign Affairs, Membership, Media & Publicity, Welfare), with full descriptions/mandates/key activities/icons, were already written out in `src/utils/committeesData.js` but never loaded into the database. Deletes the 006 rows and inserts these 12, generated programmatically from that file (not hand-typed) to guarantee an exact match. `src/config/committees.js`'s icon mapping was re-keyed to the same 12 slugs in the same change. **Destructive** (`DELETE FROM committees`, not an upsert) — safe to run once against 006's placeholder data, not safe to re-run after real customization (chairs, members, hand-edited mandates) has happened since. Depends on 006 (rows to replace) and 007 (`mandate` must already be `TEXT[]` — this migration inserts array literals into it). |
+| 010 | `010_committee_programmes.sql` | Turns a committee page from authored prose into a list of programmes an admin maintains. Creates `committee_programmes` (name, slug, one-sentence summary, audience, image, `sort_order`, `draft`/`published`) and adds a nullable `events.programme_id` FK, so a programme's dates, venues, fees and capacity are ordinary event rows rather than a second copy of the same facts. Deliberately has **no state column** — running/upcoming/finished/announced are derived from the sessions' datetimes by the API. The FK is `ON DELETE SET NULL`: deleting a programme unassigns its sessions instead of deleting a term's worth of events. Safe to re-run. Depends on 001 (`committees`, `events`, `users`, `update_updated_at_column()`). |
+
+## Status as of 2026-11-16 (latest first)
+
+- 🟡 **010 written, not yet applied** — adds `committee_programmes` and
+  `events.programme_id`. Until the SQL has run, the programmes endpoint
+  returns a 400 (it selects a table that does not exist) and any event
+  save that sends `programme_id` fails the same way. The committee page
+  itself still renders from its own data in the meantime, so nothing is
+  broken by deploying the API first — the section simply stays empty.
+  Run `010_committee_programmes.sql` before turning the page over to
+  fetched programmes.
 
 ## Status as of 2026-11-09 (latest first)
 
@@ -120,7 +132,11 @@ or the app's own admin UI):**
     Editor** that `documents` now has a `stage` column (nullable,
     `text`) and that the existing rows still show `NULL` for it. Run
     this before deploying the admin upload form that sends `stage`.
-11. Update the status line above once confirmed.
+11. Open `010_committee_programmes.sql`, same process. Confirm in
+    **Table Editor** that `committee_programmes` exists with two indexes
+    (one on `(committee_id, lower(name))`) and that `events` now has a
+    nullable `programme_id` column. Safe to re-run.
+12. Update the status line above once confirmed.
 
 When 004 wasn't yet applied, `/get-involved/committees` and
 `/leadership/committees` fell back to a static committee list with **no**

@@ -7,9 +7,15 @@ export const getAll = async (req, res) => {
     const limit = Math.min(50, Math.max(1, parseInt(req.query.limit, 10) || 10));
     const from = (page - 1) * limit;
 
+    // Columns are named: `author_id` is a user identifier and no public surface
+    // renders it (docs/16-public-and-portal-boundary.md §4). Staff reads — the
+    // admin list — keep `*`.
+    const PUBLIC_POST_COLUMNS =
+      'id, title, slug, excerpt, content, featured_image_url, category, published_at, views, created_at';
+
     let query = supabase
       .from('news_posts')
-      .select('*', { count: 'exact' })
+      .select(PUBLIC_POST_COLUMNS, { count: 'exact' })
       .eq('status', 'published')
       .order('published_at', { ascending: false });
 
@@ -49,7 +55,9 @@ export const getBySlug = async (req, res) => {
 
     const { data: post, error } = await supabase
       .from('news_posts')
-      .select('*')
+      .select(
+        'id, title, slug, excerpt, content, featured_image_url, category, published_at, views, created_at'
+      )
       .eq('slug', slug)
       .eq('status', 'published')
       .single();

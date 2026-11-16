@@ -2,13 +2,14 @@
 // FILE: src/pages/admin/CommitteeAdminDashboard.jsx
 // Complete admin interface for managing all committees
 // ============================================
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import {
   BookOpen, Heart, FileText, Users, Utensils, Scale,
   Trophy, DollarSign, Globe, UserPlus, Megaphone, HeartHandshake,
   Edit3, Plus, Trash2, Upload, Save, X, Eye,
-  Bell, Award, BarChart2, Calendar, Download, Search,
+  Bell, Award, BarChart2, Calendar, Download, Search, Layers,
+  ArrowUp, ArrowDown,
   Check, ExternalLink, Inbox,
   Loader, ArrowLeft, Settings
 } from 'lucide-react';
@@ -41,6 +42,7 @@ const TABS = [
   { id: 'details',       label: 'Details',       icon: Edit3 },
   { id: 'members',       label: 'Members',       icon: Users },
   { id: 'applications',  label: 'Applications',  icon: Inbox },
+  { id: 'programmes',    label: 'Programmes',    icon: Layers },
   { id: 'events',        label: 'Events',        icon: Calendar },
   { id: 'documents',     label: 'Documents',     icon: FileText },
   { id: 'announcements', label: 'Announcements', icon: Bell },
@@ -53,6 +55,12 @@ export default function CommitteeAdminDashboard() {
   const [committees, setCommittees]       = useState([]);
   const [activeCommittee, setActive]      = useState(null);
   const [activeTab, setActiveTab]         = useState('details');
+  // Set by the Programmes tab's "Add session", read once by the Events tab,
+  // then cleared: two props beats a state library for one hand-off.
+  const [eventPrefill, setEventPrefill]   = useState(null);
+  // Stable identity, so the Events tab's prefill effect runs on a new hand-off
+  // rather than on every render of this dashboard.
+  const clearEventPrefill = useCallback(() => setEventPrefill(null), []);
   const [loading, setLoading]             = useState(true);
   const [sidebarOpen, setSidebarOpen]     = useState(true);
 
@@ -129,7 +137,7 @@ export default function CommitteeAdminDashboard() {
             return (
               <button
                 key={c.id}
-                onClick={() => { setActive(c); setActiveTab('details'); }}
+                onClick={() => { setActive(c); setActiveTab('details'); setEventPrefill(null); }}
                 className={`w-full flex items-center gap-3 px-4 py-3 text-left transition-colors ${
                   isActive
                     ? 'bg-lmsa-50 font-semibold text-lmsa-800'
@@ -237,7 +245,22 @@ export default function CommitteeAdminDashboard() {
               {activeTab === 'details'       && <DetailsTab committee={activeCommittee} onSave={handleCommitteeUpdate} />}
               {activeTab === 'members'       && <MembersTab committee={activeCommittee} onUpdate={handleCommitteeUpdate} />}
               {activeTab === 'applications'  && <ApplicationsTab committee={activeCommittee} />}
-              {activeTab === 'events'        && <EventsTab  committee={activeCommittee} />}
+              {activeTab === 'programmes'    && (
+                <ProgrammesTab
+                  committee={activeCommittee}
+                  onAddSession={(programmeId) => {
+                    setEventPrefill({ programmeId });
+                    setActiveTab('events');
+                  }}
+                />
+              )}
+              {activeTab === 'events'        && (
+                <EventsTab
+                  committee={activeCommittee}
+                  prefill={eventPrefill}
+                  onPrefillConsumed={clearEventPrefill}
+                />
+              )}
               {activeTab === 'documents'     && <DocumentsTab committee={activeCommittee} />}
               {activeTab === 'announcements' && <AnnouncementsTab committee={activeCommittee} />}
               {activeTab === 'achievements'  && <AchievementsTab committee={activeCommittee} />}
@@ -701,20 +724,436 @@ function MembersTab({ committee, onUpdate }) {
   );
 }
 
-// ─── Tab: Events ──────────────────────────────────────────────────────────────
-function EventsTab({ committee }) {
-  const [events, setEvents]     = useState([]);
-  const [loading, setLoading]   = useState(true);
-  const [showForm, setShowForm] = useState(false);
-  const [form, setForm] = useState({
-    title: '', description: '', event_type: 'academic',
-    location: '', start_datetime: '', end_datetime: '',
-    registration_required: false, max_attendees: '', fee: '0',
+// ─── Tab: Programmes ──────────────────────────────────────────────────────────
+// What a programme owns: a name, one sentence saying what it is, who it is for,
+// an image, and whether it is public. Everything else a visitor reads — the
+// dates, the venue, the fee — belongs to its sessions, and whether it is
+// running is derived from those dates by the API. So there is no state field
+// here on purpose: it cannot be typed, only computed.
+const EMPTY_PROGRAMME_FORM = {
+  name: '', summary: '', audience: '', image_url: '', status: 'draft',
+};
+
+const PROGRAMME_NAME_LIMIT    = 60;
+const PROGRAMME_SUMMARY_LIMIT = 160;
+const PROGRAMME_AUDIENCE_LIMIT = 120;
+
+function formatSessionDate(value) {
+  if (!value) return '';
+  return new Date(value).toLocaleString('default', {
+    weekday: 'short', day: 'numeric', month: 'short',
+    hour: '2-digit', minute: '2-digit',
   });
-  const [saving, setSaving] = useState(false);
+}
+
+function programmeStateChip(programme) {
+  switch (programme.state) {
+    case 'running':
+      return { label: 'Running now', className: 'bg-lmsa-50 text-lmsa-800 border-lmsa-200' };
+    case 'upcoming':
+      return {
+        label: programme.next_session
+          ? `Next ${new Date(programme.next_session.start_datetime).toLocaleDateString('default', { day: 'numeric', month: 'short' })}`
+          : 'Upcoming',
+        className: 'bg-white text-gray-600 border-gray-200',
+      };
+    case 'finished':
+      return { label: 'Finished', className: 'bg-gray-100 text-gray-500 border-gray-200' };
+    default:
+      return { label: 'Dates to be announced', className: 'bg-white text-gray-600 border-gray-200' };
+  }
+}
+
+function ProgrammesTab({ committee, onAddSession }) {
+  const [programmes, setProgrammes] = useState([]);
+  const [loading, setLoading]       = useState(true);
+  const [showForm, setShowForm]     = useState(false);
+  const [editingId, setEditingId]   = useState(null);
+  const [form, setForm]             = useState(EMPTY_PROGRAMME_FORM);
+  const [saving, setSaving]         = useState(false);
+  const nameRef = useRef(null);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => { loadEvents(); }, [committee.id]);
+  useEffect(() => { loadProgrammes(); }, [committee.id]);
+
+  useEffect(() => {
+    if (showForm) nameRef.current?.focus();
+  }, [showForm]);
+
+  async function loadProgrammes() {
+    setLoading(true);
+    try {
+      const data = await committeeService.getProgrammes(committee.id);
+      setProgrammes(data || []);
+    } catch {
+      toast.error('Failed to load programmes');
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  function openCreate() {
+    setForm(EMPTY_PROGRAMME_FORM);
+    setEditingId(null);
+    setShowForm(true);
+  }
+
+  function openEdit(programme) {
+    setForm({
+      name: programme.name || '',
+      summary: programme.summary || '',
+      audience: programme.audience || '',
+      image_url: programme.image_url || '',
+      status: programme.status || 'draft',
+    });
+    setEditingId(programme.id);
+    setShowForm(true);
+  }
+
+  function closeForm() {
+    setShowForm(false);
+    setEditingId(null);
+    setForm(EMPTY_PROGRAMME_FORM);
+  }
+
+  async function saveProgramme(e) {
+    e.preventDefault();
+    if (!form.name.trim() || !form.summary.trim()) return;
+
+    setSaving(true);
+    const payload = {
+      name: form.name.trim(),
+      summary: form.summary.trim(),
+      audience: form.audience.trim(),
+      image_url: form.image_url.trim(),
+      status: form.status,
+    };
+
+    try {
+      if (editingId) {
+        await committeeService.updateProgramme(committee.id, editingId, payload);
+        toast.success('Programme updated');
+      } else {
+        await committeeService.createProgramme(committee.id, payload);
+        toast.success('Programme created');
+      }
+      closeForm();
+      loadProgrammes();
+    } catch (err) {
+      // The duplicate-name 409 is the one an admin will actually hit, so show
+      // the server's own wording rather than a generic failure.
+      toast.error(err?.response?.data?.message || 'Failed to save programme');
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function togglePublish(programme) {
+    const next = programme.status === 'published' ? 'draft' : 'published';
+    try {
+      const updated = await committeeService.updateProgramme(committee.id, programme.id, { status: next });
+      setProgrammes(prev => prev.map(p => (p.id === programme.id ? { ...p, ...updated } : p)));
+      toast.success(next === 'published' ? 'Programme published' : 'Programme unpublished');
+    } catch {
+      toast.error('Failed to change visibility');
+    }
+  }
+
+  async function removeProgramme(programme) {
+    const sessions = programme.session_count || 0;
+    const consequence = sessions
+      ? ` Its ${sessions} session${sessions === 1 ? '' : 's'} stay in Events, unassigned.`
+      : '';
+    if (!confirm(`Delete "${programme.name}"?${consequence}`)) return;
+
+    try {
+      const result = await committeeService.deleteProgramme(committee.id, programme.id);
+      setProgrammes(prev => prev.filter(p => p.id !== programme.id));
+      const orphaned = result?.unassigned_sessions || 0;
+      toast.success(
+        orphaned
+          ? `Programme deleted · ${orphaned} session${orphaned === 1 ? '' : 's'} left unassigned`
+          : 'Programme deleted'
+      );
+    } catch {
+      toast.error('Failed to delete programme');
+    }
+  }
+
+  // Optimistic: the arrows should feel immediate, and a failed save rolls the
+  // list back rather than leaving the screen disagreeing with the database.
+  async function move(index, direction) {
+    const target = index + direction;
+    if (target < 0 || target >= programmes.length) return;
+
+    const previous = programmes;
+    const next = [...programmes];
+    [next[index], next[target]] = [next[target], next[index]];
+    setProgrammes(next);
+
+    try {
+      await committeeService.reorderProgrammes(committee.id, next.map(p => p.id));
+    } catch {
+      setProgrammes(previous);
+      toast.error('Failed to save the new order');
+    }
+  }
+
+  const published = programmes.filter(p => p.status === 'published').length;
+  const nextSession = programmes
+    .map(p => p.next_session?.start_datetime)
+    .filter(Boolean)
+    .sort()[0];
+
+  return (
+    <div className="max-w-4xl">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-6">
+        <div>
+          <h2 className="font-bold text-gray-900">Programmes</h2>
+          <p className="text-sm text-gray-500">
+            {programmes.length} programme{programmes.length === 1 ? '' : 's'} · {published} published
+            {nextSession && ` · next session ${new Date(nextSession).toLocaleDateString('default', { day: 'numeric', month: 'short' })}`}
+          </p>
+        </div>
+        {!showForm && (
+          <button
+            onClick={openCreate}
+            className="btn btn-primary flex items-center justify-center gap-2 self-start sm:self-auto"
+          >
+            <Plus size={16} />
+            New programme
+          </button>
+        )}
+      </div>
+
+      {showForm && (
+        <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
+          <h3 className="font-semibold text-gray-900 mb-4">
+            {editingId ? 'Edit programme' : 'New programme'}
+          </h3>
+          <form onSubmit={saveProgramme}>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <Label>Name *</Label>
+                <input
+                  ref={nameRef}
+                  className="input"
+                  maxLength={PROGRAMME_NAME_LIMIT}
+                  required
+                  value={form.name}
+                  placeholder="First Aid Training"
+                  onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
+                />
+              </div>
+              <div>
+                <Label>Audience</Label>
+                <input
+                  className="input"
+                  maxLength={PROGRAMME_AUDIENCE_LIMIT}
+                  value={form.audience}
+                  placeholder="Open to students and the wider community"
+                  onChange={e => setForm(f => ({ ...f, audience: e.target.value }))}
+                />
+              </div>
+              <div className="col-span-2">
+                <Label>Summary *</Label>
+                <textarea
+                  className="input resize-none"
+                  rows={3}
+                  maxLength={PROGRAMME_SUMMARY_LIMIT}
+                  required
+                  value={form.summary}
+                  placeholder="First-aid and emergency-response training, open to students and the wider community."
+                  onChange={e => setForm(f => ({ ...f, summary: e.target.value }))}
+                />
+                <p className="text-xs text-gray-500 text-right mt-1">
+                  {form.summary.length} / {PROGRAMME_SUMMARY_LIMIT}
+                </p>
+              </div>
+              <div className="col-span-2">
+                <Label>Image URL (optional)</Label>
+                <input
+                  className="input"
+                  type="url"
+                  maxLength={500}
+                  value={form.image_url}
+                  placeholder="https://example.com/programme.jpg"
+                  onChange={e => setForm(f => ({ ...f, image_url: e.target.value }))}
+                />
+              </div>
+              <div className="col-span-2">
+                <Label>Visibility</Label>
+                <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6">
+                  {['draft', 'published'].map(value => (
+                    <label key={value} className="flex items-center gap-2 text-sm text-gray-700">
+                      <input
+                        type="radio"
+                        name="programme-status"
+                        value={value}
+                        checked={form.status === value}
+                        onChange={() => setForm(f => ({ ...f, status: value }))}
+                        className="w-4 h-4 accent-lmsa-600"
+                      />
+                      {value === 'draft'
+                        ? 'Draft — hidden from the public page'
+                        : 'Published — visible on the committee page'}
+                    </label>
+                  ))}
+                </div>
+              </div>
+            </div>
+            <div className="flex flex-col sm:flex-row sm:justify-end gap-3 pt-5 mt-5 border-t border-gray-100">
+              <button type="button" onClick={closeForm} className="btn bg-gray-100 text-gray-700 hover:bg-gray-200">
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={saving || !form.name.trim() || !form.summary.trim()}
+                className="btn btn-primary flex items-center justify-center gap-2 disabled:opacity-50"
+              >
+                {saving ? <Loader size={15} className="animate-spin" /> : <Save size={15} />}
+                Save programme
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {loading ? (
+        <div className="flex items-center justify-center h-32"><Loader className="animate-spin text-lmsa-700" /></div>
+      ) : programmes.length === 0 ? (
+        <EmptyState
+          icon={Layers}
+          message="No programmes yet"
+          sub="A programme groups sessions under one name on the public committee page. Create it here, then add its sessions. Nothing appears publicly until you publish."
+        />
+      ) : (
+        <div className="space-y-3">
+          {programmes.map((programme, index) => {
+            const chip = programmeStateChip(programme);
+            const sessions = programme.session_count || 0;
+            return (
+              <div key={programme.id} className="bg-white rounded-xl border border-gray-200 p-4 sm:p-5">
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+                  <div className="min-w-0">
+                    <h3 className="font-semibold text-gray-900 truncate">{programme.name}</h3>
+                    {programme.summary && (
+                      <p className="text-sm text-gray-500 mt-0.5">{programme.summary}</p>
+                    )}
+                  </div>
+                  <span
+                    title="Computed from session dates"
+                    className={`self-start shrink-0 text-xs px-2 py-0.5 rounded-full border font-medium ${chip.className}`}
+                  >
+                    {chip.label}
+                  </span>
+                </div>
+
+                <p className="text-sm text-gray-500 mt-2 break-words">
+                  {sessions === 0 ? 'No sessions yet' : `${sessions} session${sessions === 1 ? '' : 's'}`}
+                  {programme.next_session && ` · next ${formatSessionDate(programme.next_session.start_datetime)}`}
+                  {programme.next_session?.venue && ` · ${programme.next_session.venue}`}
+                  <span className={`ml-2 text-xs px-1.5 py-0.5 rounded font-medium ${
+                    programme.status === 'published'
+                      ? 'bg-lmsa-50 text-lmsa-700'
+                      : 'bg-gray-100 text-gray-500'
+                  }`}>
+                    {programme.status === 'published' ? 'Published' : 'Draft'}
+                  </span>
+                </p>
+
+                <div className="flex flex-wrap items-center gap-2 mt-3">
+                  <button
+                    onClick={() => onAddSession(programme.id)}
+                    className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-lmsa-700 bg-lmsa-50 border border-lmsa-200 rounded-lg hover:bg-lmsa-100 transition-colors"
+                  >
+                    <Plus size={14} />
+                    Add session
+                  </button>
+                  <button
+                    onClick={() => openEdit(programme)}
+                    className="px-3 py-2 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-200 rounded-lg hover:bg-gray-200 transition-colors"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => togglePublish(programme)}
+                    className="px-3 py-2 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-200 rounded-lg hover:bg-gray-200 transition-colors"
+                  >
+                    {programme.status === 'published' ? 'Unpublish' : 'Publish'}
+                  </button>
+                  <button
+                    onClick={() => removeProgramme(programme)}
+                    className="px-3 py-2 text-sm font-medium text-red-700 bg-red-50 border border-red-200 rounded-lg hover:bg-red-100 transition-colors"
+                  >
+                    Delete
+                  </button>
+                  <span className="sm:ml-auto flex items-center gap-1">
+                    <button
+                      aria-label="Move up"
+                      onClick={() => move(index, -1)}
+                      disabled={index === 0}
+                      className="p-2 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-700 disabled:opacity-30 disabled:hover:bg-transparent"
+                    >
+                      <ArrowUp size={15} />
+                    </button>
+                    <button
+                      aria-label="Move down"
+                      onClick={() => move(index, 1)}
+                      disabled={index === programmes.length - 1}
+                      className="p-2 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-700 disabled:opacity-30 disabled:hover:bg-transparent"
+                    >
+                      <ArrowDown size={15} />
+                    </button>
+                  </span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── Tab: Events ──────────────────────────────────────────────────────────────
+const EMPTY_EVENT_FORM = {
+  title: '', description: '', event_type: 'academic',
+  location: '', start_datetime: '', end_datetime: '',
+  registration_required: false, max_attendees: '', fee: '0',
+  programme_id: '',
+};
+
+function EventsTab({ committee, prefill, onPrefillConsumed }) {
+  const [events, setEvents]         = useState([]);
+  const [programmes, setProgrammes] = useState([]);
+  const [loading, setLoading]       = useState(true);
+  const [showForm, setShowForm]     = useState(false);
+  const [form, setForm]             = useState(EMPTY_EVENT_FORM);
+  const [saving, setSaving]         = useState(false);
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { loadEvents(); loadProgrammes(); }, [committee.id]);
+
+  // The committee is fixed on this page, so its programmes are all the task
+  // needs — drafts included, because an admin may well schedule into one.
+  async function loadProgrammes() {
+    try {
+      const data = await committeeService.getProgrammes(committee.id);
+      setProgrammes(data || []);
+    } catch {
+      setProgrammes([]);
+    }
+  }
+
+  // "Add session" on a programme row lands here: open the form with the
+  // programme already chosen, then clear the hand-off so it cannot replay.
+  useEffect(() => {
+    if (!prefill?.programmeId) return;
+    setForm({ ...EMPTY_EVENT_FORM, programme_id: prefill.programmeId });
+    setShowForm(true);
+    onPrefillConsumed();
+  }, [prefill, onPrefillConsumed]);
 
   async function loadEvents() {
     setLoading(true);
@@ -732,7 +1171,9 @@ function EventsTab({ committee }) {
       await committeeService.createEvent(committee.id, form);
       toast.success('Event created');
       setShowForm(false);
-      setForm({ title:'', description:'', event_type:'academic', location:'', start_datetime:'', end_datetime:'', registration_required:false, max_attendees:'', fee:'0' });
+      // Keep the programme: adding session three of a programme should not
+      // mean choosing it again each time.
+      setForm(f => ({ ...EMPTY_EVENT_FORM, programme_id: f.programme_id }));
       loadEvents();
     } catch {
       toast.error('Failed to create event');
@@ -787,6 +1228,22 @@ function EventsTab({ committee }) {
               </select>
             </div>
             <div>
+              <Label>Programme (optional)</Label>
+              <select className="input" value={form.programme_id} onChange={e => setForm(f => ({...f, programme_id: e.target.value}))}>
+                <option value="">None — one-off event</option>
+                {programmes.map(p => (
+                  <option key={p.id} value={p.id}>
+                    {p.status === 'draft' ? `${p.name} (draft)` : p.name}
+                  </option>
+                ))}
+              </select>
+              <p className="text-xs text-gray-500 mt-1">
+                {programmes.length === 0
+                  ? 'This committee has no programmes yet.'
+                  : 'Groups this session under a programme on the committee page.'}
+              </p>
+            </div>
+            <div>
               <Label>Location</Label>
               <input className="input" placeholder="Venue or online" value={form.location} onChange={e => setForm(f => ({...f, location: e.target.value}))} />
             </div>
@@ -838,6 +1295,11 @@ function EventsTab({ committee }) {
                 <div className="min-w-0">
                   <h3 className="font-semibold text-gray-900">{ev.title}</h3>
                   <p className="text-sm text-gray-500 mt-0.5 truncate">{ev.location} • {ev.event_type}</p>
+                  {ev.programme_id && (
+                    <p className="text-xs text-lmsa-700 mt-0.5 truncate">
+                      {programmes.find(p => p.id === ev.programme_id)?.name || 'Programme'}
+                    </p>
+                  )}
                   <div className="flex flex-wrap gap-2 mt-1.5">
                     <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
                       ev.status === 'upcoming' ? 'bg-lmsa-50 text-lmsa-700' :

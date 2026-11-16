@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { Link, useParams, useSearchParams } from 'react-router-dom';
 import {
   ArrowLeft,
   ArrowRight,
@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { committeeService } from '@services/committee.service';
+import { eventService } from '@services/event.service';
 import { newsService } from '@services/news.service';
 import { getRecruitmentStatus } from '@config/committees';
 import { ALL_COMMITTEES_DATA } from '@utils/committeesData';
@@ -96,6 +97,15 @@ const COMMITTEE_PHOTOS = {
       section: 'learn',
     },
   },
+  'research-journal': {
+    // The shared "what members take on" photo is a stethoscope on a coat: it
+    // says clinician, not editor, and this page is about what gets written and
+    // published. The library photograph is the honest one for a shelf of work.
+    practising: {
+      section: 'learn',
+      alt: 'Open medical textbooks and study materials',
+    },
+  },
   health: {
     opening: {
       hero: 'volunteer',
@@ -110,10 +120,12 @@ const COMMITTEE_PHOTOS = {
 
 /* Per-committee structure, not styling.
 
-   The Health Committee's work is not a description of a remit: it is a service
-   with a loop — someone reports a problem, the committee inspects it, follows
-   it up, and publishes the outcome. That loop is the page's spine, and it wants
-   a different order from a committee whose work is mostly academic.
+   The Health Committee's work is not a description of a remit. It runs health
+   programmes and activities — training, drives, workshops, and the inspections
+   behind them — open to students and the wider community, not only to members.
+   A reader arrives for what the committee puts on; reporting a fault is the
+   standing offer underneath. That wants a different order from a committee
+   whose work is mostly academic.
 
    `mandate: 'hidden'` drops the constitutional register from the page
    altogether: a student who arrives with a blocked drain is not here to read
@@ -122,7 +134,32 @@ const COMMITTEE_PHOTOS = {
    current order and the current wording. */
 const COMMITTEE_PROFILES = {
   health: {
+    // `tabs` is a layout, not a style: the page becomes three views of one
+    // committee instead of one long scroll. A visitor who came from a search for
+    // health news, a student asking what is on, and someone deciding whether to
+    // join want three different pages — on a single scroll each of them reads
+    // two-thirds of what they did not ask for, and the fault report, which is
+    // one duty among several, ends up reading as the page's subject.
+    //
+    // Now: what is on and what has been published. The work: the programme and
+    // the fault-reporting duty. People: who is on the committee and how to join.
+    // Each panel carries its own action, so the hero carries none. Every other
+    // committee keeps the stacked page — one layout is not the house style.
+    layout: 'tabs',
+    // The hero says who the work is for, because it is the one thing about
+    // this committee a reader can get wrong: the programmes are not an
+    // internal members' benefit.
+    intro:
+      'The committee runs the health programme for students and the wider community, not only members: first-aid training, vaccination drives and wellness workshops. It also inspects the places students live and learn, and follows a fault until it is fixed.',
     mandate: 'hidden',
+    // The plan rail already carries the committee's work, with a time and a
+    // status on each entry: inspecting on a schedule, publishing the standard,
+    // first-aid training, the vaccination drive, wellness and mental health,
+    // then publishing what was fixed. The activities band repeated five of
+    // those six in different words, dropped the timing, and carried a
+    // full-screen stock photograph of a clinic that is not LMSA's. It is the
+    // same call Academic makes: the spine says it once.
+    activities: 'hidden',
     // The page closes on the loop it opened with, not on what a committee is:
     // the association-wide "one of twelve standing committees" pitch belongs on
     // the committees index, not under this committee's work.
@@ -131,7 +168,10 @@ const COMMITTEE_PROFILES = {
       title: 'The record stays open until the fault is closed.',
       body: 'Every report is checked on site, dated and logged. Where a fix needs the administration, the committee takes it there and keeps the record open until it is done.',
       action: 'Report an issue',
-      secondary: { label: 'See this term’s plan', href: '#committee-plan-title' },
+      secondary: {
+        label: 'See what’s on this term',
+        href: '#committee-plan-title',
+      },
     },
     // Health has no committee-scoped news endpoint, but the admin editor files
     // health reporting under the shared `health` news category. `alsoInNews`
@@ -150,11 +190,13 @@ const COMMITTEE_PROFILES = {
       },
       title: 'Something broken or unsafe? Say so.',
       intro:
-        'A tap that has not worked for a month, a hall that is not cleaned, a dormitory with no water. These reach the committee before anything else on this page does.',
+        'A tap that has not worked for a month, a hall that is not cleaned, a dormitory with no water. Reporting it starts the committee’s own loop: inspected on site, dated, and followed up until it is fixed.',
       steps: [
         {
           title: 'You report it',
-          text: 'Use the form below or write to the committee. Say what is wrong and where. One report is enough.',
+          // "Below" pointed at a form half a page further down once the report
+          // loop moved to the top of this page, so it says where the form is.
+          text: 'Use the form at the foot of this page, or write to the committee. Say what is wrong and where. One report is enough.',
         },
         {
           title: 'It gets inspected and logged',
@@ -165,6 +207,54 @@ const COMMITTEE_PROFILES = {
           text: 'If the fix needs the administration, the committee takes it there and keeps the record open until it closes.',
         },
       ],
+    },
+  },
+
+  /* Research & Journal is a publisher. Its output already exists on this site
+     — the documents library files journals and newsletters as categories — and
+     the registry-shaped page never said so, so a student who wanted to read the
+     journal had no route to it. The page now points at the shelves, and closes
+     on the thing the committee actually needs from students, which is copy. */
+  'research-journal': {
+    // The registry sentence names the committee twice and buries the product
+    // ("gathers, organizes, edits, and publishes data for LMSA's official
+    // journal..."). Same claims, stated as what comes out.
+    intro:
+      'Publishes LMSA’s journal once a year and a newsletter twice a semester, gathered, edited and reviewed by students before it goes out.',
+    support: {
+      navLabel: 'Publications',
+      title: 'Where the writing lives.',
+      intro:
+        'The committee edits and publishes; these are the shelves the results go on, and the desk to start from.',
+      links: [
+        {
+          label: 'The journal',
+          to: '/documents?category=journal',
+          description:
+            'Every issue the association has filed, in one place in the documents library.',
+        },
+        {
+          label: 'Newsletters',
+          to: '/documents?category=newsletter',
+          description:
+            'Two a semester, filed alongside the journal so the archive reads in order.',
+        },
+        {
+          label: 'Research desk',
+          to: '/academics/research',
+          description:
+            'What the association offers a student starting a project of their own.',
+        },
+      ],
+    },
+    // The default closing is the association-wide "one of twelve standing
+    // committees" pitch, which belongs on the index. This one stays on the
+    // committee: what it publishes, and what it needs to publish it.
+    closing: {
+      title: 'What gets published is what gets submitted.',
+      body: 'One journal a year and a newsletter twice a semester, edited and reviewed before they go out. Everything published is filed in the documents library, where any member can read it.',
+      action: 'Submit your work',
+      secondary: { label: 'Open the documents library', href: '/documents' },
     },
   },
 
@@ -309,7 +399,20 @@ export default function CommitteePageTemplate() {
   const [docs, setDocs] = useState([]);
   const [announcements, setAnnouncements] = useState([]);
   const [achievements, setAchievements] = useState([]);
+  const [programmes, setProgrammes] = useState([]);
   const [news, setNews] = useState([]);
+  const [searchParams] = useSearchParams();
+  const railRef = useRef(null);
+  // Set by a tab click so the rail brings itself back into view after the panel
+  // swaps; a first load and a deep link should not jump.
+  const tabChangedRef = useRef(false);
+
+  const profile = COMMITTEE_PROFILES[slug] || {};
+  // The only layout that departs from the stacked page: one committee presented
+  // as three views instead of one scroll. It is built around the programme
+  // ledger — the page fetches it, prints it, and lets it carry the dates instead
+  // of a separate calendar.
+  const tabsLayout = profile.layout === 'tabs';
   const [loading, setLoading] = useState(true);
   const [contactForm, setContactForm] = useState({
     name: '',
@@ -336,6 +439,7 @@ export default function CommitteePageTemplate() {
       setDocs([]);
       setAnnouncements([]);
       setAchievements([]);
+      setProgrammes([]);
       setNews([]);
 
       try {
@@ -372,12 +476,25 @@ export default function CommitteePageTemplate() {
           return;
         }
 
-        const [m, ev, d, ann, ach] = await Promise.allSettled([
+        const [m, ev, d, ann, ach, prog] = await Promise.allSettled([
           committeeService.getMembers(data.id),
-          committeeService.getEvents(data.id),
+          // The public events list, not the authenticated committee route. The
+          // latter gives a member everything (drafts included) and a stranger
+          // nothing — both wrong for a page meant to be read by the public. This
+          // route drops draft events and draft programmes' sessions for anyone
+          // who is not staff, so the page shows one list to everyone
+          // (docs/16-public-and-portal-boundary.md §3).
+          eventService.getAll({ committee: slug }),
           committeeService.getDocuments(data.id),
           committeeService.getAnnouncements(data.id),
           committeeService.getAchievements(data.id),
+          // Only a committee whose page is built around the programme prints a
+          // ledger, so the other ten do not ask for one. An anonymous visitor
+          // gets published programmes only — the API decides that from the
+          // caller's role, not from anything the page sends.
+          COMMITTEE_PROFILES[slug]?.layout === 'tabs'
+            ? committeeService.getProgrammes(data.id)
+            : Promise.resolve([]),
         ]);
         if (!active) return;
         setMembers(
@@ -397,6 +514,15 @@ export default function CommitteePageTemplate() {
         setAchievements(
           ach.status === 'fulfilled' && Array.isArray(ach.value)
             ? ach.value
+            : []
+        );
+        // No programmes published, or the request failed: the section does not
+        // render at all. A public page does not carry a "no programmes yet"
+        // placeholder, and it does not fall back to bundled copy either — the
+        // fixtures are gone, so there is nothing to show that nobody published.
+        setProgrammes(
+          prog.status === 'fulfilled' && Array.isArray(prog.value)
+            ? prog.value
             : []
         );
       } catch {
@@ -499,6 +625,69 @@ export default function CommitteePageTemplate() {
     [announcements]
   );
 
+  /* The Now tab's first block: the nearest sessions a reader can turn up to,
+     across every programme, each labelled with the programme it belongs to so
+     the two tabs point at each other. Sort is by start time — the committee's
+     own order means something within a programme, not across them. */
+  const nextSessions = useMemo(
+    () =>
+      upcomingEvents
+        .filter(event => new Date(event.start_datetime) >= new Date())
+        .sort(
+          (a, b) => new Date(a.start_datetime) - new Date(b.start_datetime)
+        )
+        .slice(0, 3)
+        .map(event => ({
+          ...event,
+          programmeName:
+            programmes.find(programme => programme.id === event.programme_id)
+              ?.name || null,
+        })),
+    [upcomingEvents, programmes]
+  );
+
+  /* Notices and announcements are one stream of updates to a reader; the pinned
+     flag says which to keep, not which kind of thing it is. Newest first, three
+     at most — a public page is not an archive. */
+  const updates = useMemo(
+    () =>
+      [...announcements]
+        .sort(
+          (a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0)
+        )
+        .slice(0, 3),
+    [announcements]
+  );
+
+  // A tab is only offered when it has something in it. `Now` can be empty on a
+  // committee with nothing published and no dates; `The work` always carries the
+  // fault-reporting duty and `People` always carries the way in.
+  const nowHasContent =
+    nextSessions.length > 0 || updates.length > 0 || news.length > 0;
+  const tabItems = [
+    { id: 'now', label: 'Now' },
+    { id: 'work', label: 'The work' },
+    { id: 'people', label: 'People' },
+  ].filter(tab => tab.id !== 'now' || nowHasContent);
+
+  // The URL is the tab's state: `?view=work` survives a reload and can be sent
+  // to someone. An unknown or absent value lands on the first tab that exists.
+  const requestedTab = searchParams.get('view');
+  const activeTab = tabItems.some(tab => tab.id === requestedTab)
+    ? requestedTab
+    : tabItems[0].id;
+
+  useEffect(() => {
+    // The flag is cleared inside the frame, not before it: StrictMode runs
+    // effects twice in development, and clearing it early turned the second,
+    // surviving pass into a no-op that left the reader at the top of the page.
+    if (!tabChangedRef.current) return;
+    requestAnimationFrame(() => {
+      tabChangedRef.current = false;
+      railRef.current?.scrollIntoView({ block: 'start' });
+    });
+  }, [activeTab]);
+
   const fallback = ALL_COMMITTEES_DATA[slug];
   const committeeCount = Object.keys(ALL_COMMITTEES_DATA).length;
   const mandate =
@@ -510,7 +699,6 @@ export default function CommitteePageTemplate() {
   const termPlan =
     (committee?.term_plan?.length ? committee.term_plan : fallback?.term_plan) ||
     [];
-  const profile = COMMITTEE_PROFILES[slug] || {};
   const ask = profile.ask || null;
   const support = profile.support || null;
   const heroIntro = profile.intro || null;
@@ -520,16 +708,77 @@ export default function CommitteePageTemplate() {
   const compactContact = profile.contact === 'compact';
   const newsBrief = profile.alsoInNews || null;
   const upcomingBrief = upcomingEvents.slice(0, 3);
-  // Where the brief is rendered the calendar has already been shown; keeping it
-  // in "On the record" too would list the same events twice on one page.
-  const eventsShownAbove = Boolean(newsBrief);
-  // The mandate sits above the work by default; on a committee that runs a
-  // service the work comes first and the mandate is a footnote.
+  // The mandate sits above the work by default; a committee whose page is its
+  // programme puts the work first and the mandate in a footnote.
   const mandateHidden = profile.mandate === 'hidden';
   // 'footnote' keeps the register on the page as a disclosure inside the plan
   // section, so the duties stay findable without a band of their own.
   const mandateFootnote = profile.mandate === 'footnote';
   const activitiesHidden = profile.activities === 'hidden';
+  // Health's programmes are records now, not prose: the committee maintains them
+  // in the dashboard and the API derives each one's state from its sessions'
+  // datetimes, so nothing on this page types a programme's status and a
+  // programme cannot go on claiming to run after its last session has ended.
+  // Academic still reads its plan from the bundled registry until it moves over.
+  const planHasContent = tabsLayout
+    ? programmes.length > 0
+    : termPlan.length > 0;
+
+  // The server returns them in reading order (running, upcoming, announced,
+  // finished, with the committee's own order breaking ties), so grouping is all
+  // that happens here. Empty groups are dropped rather than printed as headings
+  // with nothing underneath them.
+  const programmeGroups = [
+    {
+      id: 'running',
+      heading: 'Running now',
+      dot: 'h-[7px] w-[7px] rounded-full bg-lmsa-600',
+      items: programmes.filter(programme => programme.state === 'running'),
+    },
+    {
+      id: 'upcoming',
+      heading: 'Still ahead',
+      dot: 'h-[7px] w-[7px] rounded-full border border-lmsa-600',
+      items: programmes.filter(programme => programme.state === 'upcoming'),
+    },
+    {
+      id: 'announced',
+      heading: 'Dates to be announced',
+      dot: 'h-[7px] w-[7px] rounded-full border border-dashed border-lmsa-600',
+      items: programmes.filter(programme => programme.state === 'announced'),
+    },
+    {
+      id: 'finished',
+      heading: 'Earlier in the term',
+      dot: 'h-[7px] w-[7px] rounded-full bg-lmsa-200',
+      items: programmes.filter(programme => programme.state === 'finished'),
+    },
+  ].filter(group => group.items.length > 0);
+
+  // A committee with nothing published has no plan section, so a closing link
+  // pointing at one would be a dead anchor. The report band is the page's
+  // standing offer and stays put.
+  const closingSecondary =
+    closingNote?.secondary &&
+    (closingNote.secondary.href !== '#committee-plan-title' || planHasContent)
+      ? closingNote.secondary
+      : null;
+
+  // The programme ledger already carries the dates its sessions fall on, and the
+  // tabbed page lists the nearest ones on `Now`, so the page never prints them a
+  // third time as a calendar column: the programme is the calendar. Its
+  // published reporting stays — that is the other clock on that band and
+  // nothing else shows it. Where the calendar *is* shown, the records section
+  // leaves upcoming events out, so one page never lists the same three dates
+  // twice.
+  const calendarShown = upcomingBrief.length > 0 && !tabsLayout;
+  // A session already printed under its programme above is not listed again
+  // here: what this section can still add is the one-off events that belong to
+  // no programme.
+  const recordsUpcoming =
+    tabsLayout && planHasContent
+      ? upcomingEvents.filter(event => !event.programme_id)
+      : upcomingEvents;
 
   /* Follows an in-page jump to the contact form. An anchor jump leaves focus
      on <body>, so a keyboard or screen-reader user who takes the page's main
@@ -644,6 +893,37 @@ export default function CommitteePageTemplate() {
 
   const recruitment = getRecruitmentStatus(committee);
   const status = statusLine(recruitment);
+  // An index for a long page, listing only the sections this committee has.
+  // The contact entry appears only when the hero's button leaves the page (the
+  // round is open and it goes to the join page); when it is closed the button
+  // already lands on the form, and a second route to the same anchor 40px
+  // below is not navigation. When nothing is left the nav is not rendered at
+  // all — an empty <nav> landmark announces "On this page" and offers nothing.
+  // A tabbed page is three short views with its tabs above them, so it needs no
+  // index; the stacked page does.
+  const onPageLinks = tabsLayout ? [] : [
+    {
+      // Listed only when there is a plan to reach. The hero's action goes to
+      // the form (or, when the round is open, off the page), so this is the one
+      // route to the programme rather than a second one to somewhere else.
+      label: 'This term’s plan',
+      href: '#committee-plan-title',
+      jump: 'committee-plan-title',
+      shown: planHasContent,
+    },
+    {
+      label: support?.navLabel || 'Study support',
+      href: '#committee-support-title',
+      jump: 'committee-support-title',
+      shown: Boolean(support?.links?.length),
+    },
+    {
+      label: 'Write to the committee',
+      href: '#committee-contact',
+      jump: 'contact',
+      shown: Boolean(status?.open),
+    },
+  ].filter(item => item.shown);
   const photos = stockPhotos;
   const photoOverrides = COMMITTEE_PHOTOS[slug] || {};
   // An override names a `hero`, `sections`, or `stories` photo; the alt text
@@ -697,7 +977,7 @@ export default function CommitteePageTemplate() {
                 competing button. */}
             <Link
               to="/leadership/committees"
-              className="mb-7 inline-flex min-h-6 items-center gap-2 text-[14px] font-medium text-lmsa-200 transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-400 focus-visible:ring-offset-2 focus-visible:ring-offset-lmsa-900"
+              className="mb-7 inline-flex min-h-11 items-center gap-2 text-[14px] font-medium text-lmsa-200 transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-400 focus-visible:ring-offset-2 focus-visible:ring-offset-lmsa-900"
             >
               <ArrowLeft size={15} aria-hidden="true" />
               All committees
@@ -725,17 +1005,20 @@ export default function CommitteePageTemplate() {
                 {status.text}
               </p>
             )}
-            {!status && committee.unavailable && answered && (
-              <p className="mt-6 text-[15px] leading-6 text-lmsa-100">
-                We couldn’t load this round’s recruitment status. Refresh the page to try again.
-              </p>
-            )}
+            {/* A failed recruitment lookup used to be reported here, under the
+                intro and above the page's own action. For a standing committee
+                that message is about a number this page never otherwise shows,
+                and the index already says when recruitment details are
+                unavailable — so the hero stays on the work. */}
 
             <div className="mt-9 flex flex-wrap items-center gap-x-8 gap-y-4">
               {/* When the round is open the action leaves the page, because the
                   application lives on the join page. When it is not, the page's
                   own action is the one on it: writing to the committee. */}
-              {status?.open ? (
+              {/* A tabbed page puts its actions in its panels — applying under
+                  People, reporting under The work — so the hero carries only the
+                  committee's address, which every tab can use. */}
+              {tabsLayout ? null : status?.open ? (
                 <Link
                   to="/get-involved/committees"
                   className="inline-flex min-h-12 items-center gap-2 rounded-lg bg-lmsa-50 px-6 text-[15px] font-semibold text-lmsa-900 transition-transform duration-200 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-400 focus-visible:ring-offset-2 focus-visible:ring-offset-lmsa-900"
@@ -745,7 +1028,7 @@ export default function CommitteePageTemplate() {
                 </Link>
               ) : (
                 <a
-                  href="#committee-contact"
+                  href="#committee-contact-form"
                   onClick={() => goToContact()}
                   className="inline-flex min-h-12 items-center gap-2 rounded-lg bg-lmsa-50 px-6 text-[15px] font-semibold text-lmsa-900 transition-transform duration-200 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-400 focus-visible:ring-offset-2 focus-visible:ring-offset-lmsa-900"
                 >
@@ -764,48 +1047,36 @@ export default function CommitteePageTemplate() {
               )}
             </div>
 
-            {/* An index for a long page. It lists only sections that are
-                actually on the page — a committee without a plan or a profile
-                without support routes gets no link pretending otherwise. Set
-                as plain underlined text rather than as buttons, so the action
-                above keeps the weight a primary action needs. */}
-            <nav
-              aria-label="On this page"
-              className="mt-6 flex flex-wrap items-center gap-x-6 text-[15px] font-semibold text-lmsa-100"
-            >
-              {[
-                {
-                  label: 'This term’s plan',
-                  target: 'committee-plan-title',
-                  shown: termPlan.length > 0,
-                },
-                {
-                  label: 'Study support',
-                  target: 'committee-support-title',
-                  shown: Boolean(support?.links?.length),
-                },
-                { label: 'Write to the committee', target: 'contact', shown: true },
-              ]
-                .filter(item => item.shown)
-                .map(item => (
+            {/* An index for a long page, set as plain underlined text rather
+                than as buttons so the action above keeps the weight a primary
+                action needs. See `onPageLinks` for what is listed and why. */}
+            {onPageLinks.length > 0 && (
+              <nav
+                aria-label="On this page"
+                className="mt-6 flex flex-wrap items-center gap-x-6 text-[15px] font-semibold text-lmsa-100"
+              >
+                {onPageLinks.map(item => (
                   <a
-                    key={item.target}
-                    href={
-                      item.target === 'contact'
-                        ? '#committee-contact'
-                        : `#${item.target}`
-                    }
-                    onClick={() =>
-                      item.target === 'contact'
-                        ? goToContact()
-                        : jumpTo(item.target)
-                    }
+                    key={item.jump}
+                    href={item.href}
+                    onClick={() => {
+                      // The report entry lands on the form with its subject
+                      // already set, exactly as the ask band's button does.
+                      if (item.jump === 'contact-form') {
+                        goToContact(ask.subject.value, { focusField: true });
+                      } else if (item.jump === 'contact') {
+                        goToContact();
+                      } else {
+                        jumpTo(item.jump);
+                      }
+                    }}
                     className="inline-flex min-h-11 items-center underline decoration-lmsa-400 decoration-2 underline-offset-[6px] transition-colors hover:text-white hover:decoration-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-400 focus-visible:ring-offset-2 focus-visible:ring-offset-lmsa-900"
                   >
                     {item.label}
                   </a>
                 ))}
-            </nav>
+              </nav>
+            )}
           </div>
 
           <figure className="reveal-on-scroll">
@@ -822,8 +1093,167 @@ export default function CommitteePageTemplate() {
         </div>
       </section>
 
+      {/* ---------- The rail (tabbed layout) ----------
+          Three views of one committee. Links rather than ARIA tabs: each view
+          has a URL that can be sent to someone or reloaded, and the back button
+          does the obvious thing. The active one is marked with a rule and
+          `aria-current`, not by colour alone. A one-tab rail would be noise, so
+          the rail only renders when there is a choice to make. */}
+      {tabsLayout && tabItems.length > 1 && (
+        <nav
+          ref={railRef}
+          aria-label="Sections of this committee’s page"
+          className="scroll-mt-28 border-b border-lmsa-200 bg-white"
+        >
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <ul className="-mb-px flex gap-8 overflow-x-auto">
+              {tabItems.map(tab => (
+                <li key={tab.id} className="shrink-0">
+                  <Link
+                    to={`/leadership/committees/${slug}${
+                      tab.id === 'now' ? '' : `?view=${tab.id}`
+                    }`}
+                    aria-current={activeTab === tab.id ? 'page' : undefined}
+                    onClick={() => {
+                      tabChangedRef.current = true;
+                    }}
+                    className={`inline-flex min-h-[56px] items-center border-b-2 text-[15px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2 ${
+                      activeTab === tab.id
+                        ? 'border-lmsa-600 text-lmsa-900'
+                        : 'border-transparent text-gray-600 hover:text-lmsa-800'
+                    }`}
+                  >
+                    {tab.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </nav>
+      )}
+
+      {/* ---------- Now: the next three things to turn up to ----------
+          The tab answers one question — is there anything for me this week — so
+          dates lead and nothing sits above them. Each row names its programme so
+          a reader can go straight from the date to the work it belongs to. */}
+      {tabsLayout && activeTab === 'now' && nextSessions.length > 0 && (
+        <section className="bg-paper" aria-labelledby="committee-now-title">
+          <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 md:py-20 lg:px-8">
+            <div className="reveal-on-scroll flex flex-wrap items-baseline justify-between gap-x-8 gap-y-3">
+              <h2
+                id="committee-now-title"
+                className="max-w-[18ch] text-[clamp(2rem,3.6vw,3.25rem)] font-bold leading-[1.02] tracking-[-0.04em] text-lmsa-900"
+              >
+                Next up.
+              </h2>
+              <Link
+                to="/events"
+                className="text-[15px] font-semibold text-lmsa-700 underline decoration-2 underline-offset-[6px] transition-colors hover:decoration-lmsa-900"
+              >
+                All events
+              </Link>
+            </div>
+
+            <ul className="mt-10 border-t border-lmsa-200">
+              {nextSessions.map(session => {
+                const registrationOpen =
+                  Boolean(session.registration_required) &&
+                  (!session.registration_deadline ||
+                    new Date(session.registration_deadline) > new Date());
+                const timing = [
+                  formatDate(session.start_datetime, {
+                    weekday: 'short',
+                    day: 'numeric',
+                    month: 'short',
+                  }),
+                  new Date(session.start_datetime).toLocaleTimeString('en-GB', {
+                    hour: 'numeric',
+                    minute: '2-digit',
+                  }),
+                  session.venue || session.location,
+                ]
+                  .filter(Boolean)
+                  .join(' · ');
+
+                return (
+                  <li
+                    key={session.id || session.slug}
+                    className="grid gap-y-2 border-b border-lmsa-200 py-6 md:grid-cols-[16rem_1fr] md:items-baseline md:gap-x-10"
+                  >
+                    <p className="text-balance text-[13px] font-semibold uppercase leading-5 tracking-[0.12em] text-lmsa-700">
+                      {timing}
+                    </p>
+                    <div>
+                      <p className="text-[21px] font-semibold leading-7 text-lmsa-900">
+                        {session.title}
+                      </p>
+                      {session.programmeName && (
+                        <p className="mt-1 max-w-[52ch] text-[15px] leading-6 text-gray-700">
+                          {session.programmeName}
+                        </p>
+                      )}
+                      {session.slug && (
+                        <Link
+                          to={`/events/${session.slug}`}
+                          className="mt-2 inline-flex min-h-12 items-center gap-2 text-[15px] font-semibold text-lmsa-700 underline decoration-2 underline-offset-[6px] transition-colors hover:decoration-lmsa-900"
+                        >
+                          {registrationOpen ? 'Register' : 'Session details'}
+                          <ArrowRight size={15} aria-hidden="true" />
+                        </Link>
+                      )}
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        </section>
+      )}
+
+      {/* ---------- Updates (tabbed layout) ----------
+          Notices and announcements are one stream to a reader; `pinned` decides
+          what to keep at the top, not what kind of thing it is. The pinned band
+          below is the stacked page's treatment; a tabbed page reads it as a list
+          with dates. */}
+      {tabsLayout && activeTab === 'now' && updates.length > 0 && (
+        <section className="bg-white" aria-labelledby="committee-updates-title">
+          <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 md:py-20 lg:px-8">
+            <h2
+              id="committee-updates-title"
+              className="max-w-[20ch] text-[clamp(1.6rem,2.6vw,2.25rem)] font-bold leading-[1.05] tracking-[-0.04em] text-lmsa-900"
+            >
+              Updates from the committee.
+            </h2>
+            <ul className="mt-8 max-w-[64ch] border-t border-lmsa-200">
+              {updates.map(update => (
+                <li
+                  key={update.id}
+                  className="border-b border-lmsa-200 py-5"
+                >
+                  <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
+                    <p className="text-[17px] font-semibold leading-7 text-lmsa-900">
+                      {update.title}
+                    </p>
+                    {formatDate(update.created_at) && (
+                      <p className="shrink-0 text-[14px] leading-6 text-gray-600">
+                        {formatDate(update.created_at)}
+                      </p>
+                    )}
+                  </div>
+                  {update.message && (
+                    <p className="mt-1 text-[17px] leading-7 text-gray-800">
+                      {update.message}
+                    </p>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+      )}
+
       {/* ---------- Notices pinned by the committee ---------- */}
-      {pinned.length > 0 && (
+      {!tabsLayout && pinned.length > 0 && (
         <section className="bg-lmsa-50" aria-label="Pinned notices">
           <ul className="mx-auto max-w-7xl space-y-4 px-4 py-8 sm:px-6 lg:px-8">
             {pinned.map(notice => (
@@ -842,13 +1272,18 @@ export default function CommitteePageTemplate() {
         </section>
       )}
 
-      {/* ---------- What the committee is doing this term ----------
-          The plan is the spine of a service committee: what it intends to do,
-          where each piece stands, and roughly when. It is drawn from the
-          bundled registry because no API field carries a plan yet, and it is
-          printed only when there is one — a committee that has not published a
-          plan gets no empty section. */}
-      {termPlan.length > 0 && (
+      {/* ---------- The programme: what the committee is running ----------
+          The programme is the spine of the page where a committee publishes
+          one. A reader arrives
+          for what the committee puts on — training, drives, workshops — not for
+          a description of a remit, so it opens the page with a timing and a
+          state on every entry. On a tabbed committee it is fetched: the
+          committee maintains its programmes in the dashboard and the API derives
+          each one's state from its sessions. Printed only when there is a
+          published programme, so a committee with nothing announced yet gets no
+          empty section and the hero keeps its reporting action. */}
+      {planHasContent &&
+        (!tabsLayout || activeTab === 'work') && (
         <section className="bg-lmsa-50" aria-labelledby="committee-plan-title">
           <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 md:py-28 lg:px-8">
             <div className="reveal-on-scroll max-w-3xl">
@@ -859,17 +1294,53 @@ export default function CommitteePageTemplate() {
                 tabIndex={-1}
                 className="scroll-mt-32 max-w-[18ch] text-[clamp(2rem,3.6vw,3.25rem)] font-bold leading-[1.02] tracking-[-0.04em] text-lmsa-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-lmsa-600"
               >
-                What we are doing this term.
+                {tabsLayout
+                  ? 'This term’s programme.'
+                  : 'What we are doing this term.'}
               </h2>
               <p className="mt-5 max-w-[52ch] text-[20px] leading-8 text-gray-700">
-                Planned from the mandate, with where each piece stands. The
-                committee keeps this list up to date as the term moves.
+                {tabsLayout
+                  ? 'Open to students and the wider community, not only members. Every programme below carries its state and its timing, so you can see what is running and what is coming. Underneath them is the standard they are held to, and the record published at the end of the term.'
+                  : 'Planned from the mandate, with where each piece stands. The committee keeps this list up to date as the term moves.'}
               </p>
             </div>
 
             {/* The rail is the plan's structure: a time column, the entry, and
                 its state. Set on hairlines like the site's other registers so
                 it reads as a schedule rather than a set of promises. */}
+            {/* The ledger names the programmes and answers the state
+                question in the same breath: what is running now, then what is
+                still ahead, each row led by the programme a student would ask
+                for by name. The two machinery entries follow as their own
+                ledger — they are not things to turn up to. */}
+            {tabsLayout && programmes.length > 0 && (
+              <div className="mt-14 lg:max-w-[68rem]">
+                {/* State comes first, as it does on the rest of this page, and
+                    each row is led by the programme's own name — what a reader
+                    came to find and what they would ask for by name. */}
+                {programmeGroups.map((group, index) => (
+                  <div
+                    key={group.id}
+                    className={`reveal-on-scroll ${index > 0 ? 'mt-14' : ''}`}
+                  >
+                    <h3 className="flex items-center gap-3 border-b border-lmsa-200 pb-3 text-[13px] font-semibold uppercase tracking-[0.16em] text-lmsa-700">
+                      <span aria-hidden="true" className={group.dot} />
+                      {group.heading}
+                    </h3>
+                    <ul>
+                      {group.items.map(programme => (
+                        <ProgrammeEntry
+                          key={programme.id}
+                          programme={programme}
+                        />
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {!tabsLayout && (
             <ol className="mt-14 border-t border-lmsa-200 lg:max-w-[68rem]">
               {termPlan.map(item => (
                 <li
@@ -913,6 +1384,7 @@ export default function CommitteePageTemplate() {
                 </li>
               ))}
             </ol>
+            )}
 
             {mandateFootnote && mandate.length > 0 && (
               <>
@@ -971,10 +1443,72 @@ export default function CommitteePageTemplate() {
         </section>
       )}
 
+      {/* ---------- The report loop: the tabbed page's standing offer ----------
+          Reporting is not why this page is opened — the programme is — but it is
+          the committee's other duty and the one thing here no other committee
+          offers. So it follows the programme, on paper: read after the work it
+          is an offer; read before it, it asked a student to have a problem
+          first. The three steps are the promise about what happens after a
+          report lands, so they sit beside the invitation rather than below it. */}
+      {tabsLayout && ask && activeTab === 'work' && (
+        <section className="bg-paper" aria-labelledby="committee-ask-title">
+          <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 md:py-20 lg:px-8">
+            <div className="grid gap-12 lg:grid-cols-[0.95fr_1.05fr] lg:items-start lg:gap-16">
+              <div className="reveal-on-scroll">
+                <h2
+                  id="committee-ask-title"
+                  tabIndex={-1}
+                  className="max-w-[16ch] scroll-mt-32 text-[clamp(2rem,4vw,3.5rem)] font-bold leading-[1.0] tracking-[-0.045em] text-lmsa-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-lmsa-600"
+                >
+                  {ask.title}
+                </h2>
+                <p className="mt-6 max-w-[46ch] text-[19px] leading-8 text-gray-800">
+                  {ask.intro}
+                </p>
+                <a
+                  href="#committee-contact-form"
+                  onClick={() =>
+                    goToContact(ask.subject.value, { focusField: true })
+                  }
+                  className="mt-9 inline-flex min-h-12 items-center gap-2 rounded-lg bg-lmsa-700 px-6 text-[15px] font-semibold text-white transition-colors hover:bg-lmsa-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
+                >
+                  {ask.actionLabel || 'Report an issue'}
+                  <ArrowRight size={17} aria-hidden="true" />
+                </a>
+              </div>
+
+              <ol className="reveal-on-scroll border-t border-lmsa-200">
+                {ask.steps.map((step, index) => (
+                  <li
+                    key={step.title}
+                    className="grid grid-cols-[2.5rem_1fr] gap-x-3 border-b border-lmsa-200 py-5 md:grid-cols-[3.5rem_1fr] md:gap-x-6"
+                  >
+                    <span
+                      aria-hidden="true"
+                      className="pt-[0.3rem] text-[13px] font-semibold tabular-nums text-lmsa-700"
+                    >
+                      {String(index + 1).padStart(2, '0')}
+                    </span>
+                    <div>
+                      <p className="text-[19px] font-semibold leading-7 text-lmsa-900">
+                        {step.title}
+                      </p>
+                      <p className="mt-1 max-w-[44ch] text-[17px] leading-7 text-gray-800">
+                        {step.text}
+                      </p>
+                    </div>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* ---------- What the committee is for ----------
           Skipped entirely where the mandate is the footnote: the register is
-          the committee's remit, and for a service committee it belongs under
-          the programme, not in front of it. */}
+          the committee's remit, and a page built around its programme puts that
+          programme in front of it rather than this. */}
       {!mandateHidden && !mandateFootnote && (
       <section className="bg-paper" aria-labelledby="committee-mandate-title">
         <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 md:py-28 lg:px-8">
@@ -1068,7 +1602,7 @@ export default function CommitteePageTemplate() {
               {activities.map((activity, index) => (
                 <li
                   key={activity}
-                  className="reveal-on-scroll border-t border-gray-200 pt-5"
+                  className="reveal-on-scroll border-t border-lmsa-200 pt-5"
                 >
                   <span
                     aria-hidden="true"
@@ -1138,7 +1672,7 @@ export default function CommitteePageTemplate() {
                 >
                   <Link
                     to={link.to}
-                    className="group inline-flex min-h-6 items-baseline gap-2 text-[19px] font-semibold leading-7 text-lmsa-900 underline decoration-2 decoration-lmsa-200 underline-offset-[6px] transition-colors hover:decoration-lmsa-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
+                    className="group inline-flex min-h-11 items-center gap-2 text-[19px] font-semibold leading-7 text-lmsa-900 underline decoration-2 decoration-lmsa-200 underline-offset-[6px] transition-colors hover:decoration-lmsa-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
                   >
                     {link.label}
                     <ArrowRight
@@ -1160,11 +1694,15 @@ export default function CommitteePageTemplate() {
       {/* ---------- Ask the committee for something ----------
           The page's one dark interruption, placed where intent is highest: a
           student who has just read what the committee does and wants it to do
-          something. Health lets people report a fault here; Academic lets them
-          propose a topic. The button preselects the subject on the contact form
-          below, so the message does not arrive as a general enquiry — it reuses
-          the form already on the page rather than adding an endpoint. */}
-      {ask && (
+          something. Academic lets them propose a topic here. The button
+          preselects the subject on the contact form below, so the message does
+          not arrive as a general enquiry — it reuses the form already on the
+          page rather than adding an endpoint.
+
+          The tabbed layout skips this band: its ask is the reason that tab
+          exists, so it renders on paper inside `The work` instead, and the dark
+          band would only be the same invitation a second time. */}
+      {ask && !tabsLayout && (
         <section className="bg-lmsa-900 text-white" aria-labelledby="committee-ask-title">
           <div className="mx-auto grid max-w-7xl gap-12 px-4 py-20 sm:px-6 md:py-24 lg:grid-cols-[0.95fr_1.05fr] lg:items-start lg:gap-16 lg:px-8">
             <div className="reveal-on-scroll">
@@ -1214,13 +1752,17 @@ export default function CommitteePageTemplate() {
         </section>
       )}
 
-      {/* ---------- What is happening: calendar + health reporting ----------
-          Two clocks on one band. The left column is what is scheduled and can
-          still change; the right is what has already been published, carried by
-          the association's `health` news category rather than a committee field
-          that does not exist. Either column can be empty without collapsing the
-          other, and with both empty the section does not render at all. */}
-      {newsBrief && (upcomingBrief.length > 0 || news.length > 0) && (
+      {/* ---------- What is happening: health reporting ----------
+          What has already been published, carried by the association's `health`
+          news category rather than a committee field that does not exist. The
+          scheduled half of this band has moved onto the programme ledger above
+          wherever a committee publishes programmes; on a committee that does
+          not, the calendar column still renders here. Either column can be
+          empty without collapsing the other, and with both empty the section
+          does not render at all. */}
+      {(!tabsLayout || activeTab === 'now') &&
+        newsBrief &&
+        (calendarShown || news.length > 0) && (
         <section className="bg-lmsa-50" aria-labelledby="committee-happening-title">
           <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 md:py-28 lg:px-8">
             <div className="reveal-on-scroll max-w-3xl">
@@ -1231,7 +1773,7 @@ export default function CommitteePageTemplate() {
                 What is happening.
               </h2>
               <p className="mt-5 max-w-[52ch] text-[19px] leading-8 text-gray-800">
-                {upcomingBrief.length > 0
+                {calendarShown
                   ? news.length > 0
                     ? 'What the committee has scheduled next, and what its work has been reported as.'
                     : 'What the committee has scheduled next.'
@@ -1241,12 +1783,12 @@ export default function CommitteePageTemplate() {
 
             <div
               className={`mt-14 grid gap-14 lg:gap-16 ${
-                upcomingBrief.length > 0 && news.length > 0
+                calendarShown && news.length > 0
                   ? 'lg:grid-cols-[1fr_1fr]'
                   : 'lg:grid-cols-[minmax(0,32rem)]'
               }`}
             >
-              {upcomingBrief.length > 0 && (
+              {calendarShown && (
                 <div>
                   <div className="flex items-baseline justify-between gap-4 border-b border-lmsa-200 pb-3">
                     <h3 className="text-[13px] font-semibold uppercase tracking-[0.16em] text-lmsa-700">
@@ -1324,7 +1866,8 @@ export default function CommitteePageTemplate() {
           Only when there is a roster. A committee that has not published its
           members used to get a full section whose whole content was an apology;
           that fact belongs in one line beside the contact form, not a screen. */}
-      {members.length > 0 && (
+      {members.length > 0 &&
+        (!tabsLayout || activeTab === 'people') && (
         <section className="bg-paper" aria-labelledby="committee-people-title">
           <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 md:py-28 lg:px-8">
             <div className="reveal-on-scroll max-w-3xl">
@@ -1411,9 +1954,82 @@ export default function CommitteePageTemplate() {
         </section>
       )}
 
+      {/* ---------- Join the committee (tabbed layout) ----------
+          The way in, in public. Two readers reach this tab: a student asking how
+          to join, and a resident asking what they can do if they are not joining
+          at all. Both are answered, because the page is the association's public
+          face and most of its readers are not members. Only the first is gated
+          on a recruitment round — reporting a fault never is. */}
+      {tabsLayout && activeTab === 'people' && (
+        <section className="bg-lmsa-50" aria-labelledby="committee-join-title">
+          <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 md:py-28 lg:px-8">
+            <div className="grid gap-12 lg:grid-cols-[0.95fr_1.05fr] lg:items-start lg:gap-16">
+              <div className="reveal-on-scroll">
+                <h2
+                  id="committee-join-title"
+                  className="max-w-[18ch] text-[clamp(2rem,3.6vw,3.25rem)] font-bold leading-[1.02] tracking-[-0.04em] text-lmsa-900"
+                >
+                  Join the committee.
+                </h2>
+                <p className="mt-5 max-w-[48ch] text-[19px] leading-8 text-gray-800">
+                  Standing committees are staffed by students, and applications
+                  are made online — you will be asked to sign in before you write
+                  your statement.
+                </p>
+                {status && (
+                  <p className="mt-4 text-[15px] leading-6 text-gray-700">
+                    {status.text}
+                  </p>
+                )}
+                {status?.open ? (
+                  <Link
+                    to="/get-involved/committees"
+                    className="mt-8 inline-flex min-h-12 items-center gap-2 rounded-lg bg-lmsa-700 px-6 text-[15px] font-semibold text-white transition-colors hover:bg-lmsa-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
+                  >
+                    Apply to join
+                    <ArrowRight size={17} aria-hidden="true" />
+                  </Link>
+                ) : (
+                  <Link
+                    to="/get-involved/committees"
+                    className="mt-8 inline-flex min-h-12 items-center gap-2 text-[15px] font-semibold text-lmsa-700 underline decoration-2 underline-offset-[6px] transition-colors hover:decoration-lmsa-900"
+                  >
+                    How committee recruitment works
+                    <ArrowRight size={15} aria-hidden="true" />
+                  </Link>
+                )}
+              </div>
+
+              <div className="reveal-on-scroll border-t border-lmsa-200 pt-8 lg:border-t-0 lg:border-l lg:pl-16 lg:pt-0">
+                <h3 className="text-[20px] font-semibold text-lmsa-900">
+                  Not applying?
+                </h3>
+                <p className="mt-4 max-w-[46ch] text-[17px] leading-7 text-gray-800">
+                  Anyone can report a faulty tap, a hall that is not cleaned, or a
+                  dormitory with no water — staff, neighbours and students alike.
+                  A member inspects what is reported, dates the finding, and keeps
+                  the record open until the fault is fixed.
+                </p>
+                <a
+                  href="#committee-contact-form"
+                  onClick={() =>
+                    goToContact(ask?.subject?.value, { focusField: true })
+                  }
+                  className="mt-6 inline-flex min-h-12 items-center gap-2 rounded-lg bg-lmsa-700 px-6 text-[15px] font-semibold text-white transition-colors hover:bg-lmsa-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
+                >
+                  {ask?.actionLabel || 'Report an issue'}
+                  <ArrowRight size={17} aria-hidden="true" />
+                </a>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* ---------- Records: notices, events, documents, milestones ---------- */}
-      {(notices.length > 0 ||
-        (!eventsShownAbove && upcomingEvents.length > 0) ||
+      {!tabsLayout &&
+        (notices.length > 0 ||
+        (!calendarShown && recordsUpcoming.length > 0) ||
         pastEvents.length > 0 ||
         docs.length > 0 ||
         achievements.length > 0) && (
@@ -1453,13 +2069,13 @@ export default function CommitteePageTemplate() {
               </div>
             )}
 
-            {!eventsShownAbove && upcomingEvents.length > 0 && (
+            {!calendarShown && recordsUpcoming.length > 0 && (
               <div className="mt-16">
                 <h3 className="text-[20px] font-semibold text-lmsa-900">
                   Coming up
                 </h3>
                 <ul className="mt-6 space-y-8">
-                  {upcomingEvents.map(event => (
+                  {recordsUpcoming.map(event => (
                     <EventRow key={event.id || event.slug} event={event} />
                   ))}
                 </ul>
@@ -1571,14 +2187,18 @@ export default function CommitteePageTemplate() {
                   compactContact ? 'mt-3 text-[17px] leading-7' : 'mt-5 text-[19px] leading-8'
                 }`}
               >
-                A question about the work, a request for a document, or an idea
-                for the year ahead.
+                {/* The report block sends people to this form, so the tabbed
+                    page names the thing that arrives here rather than leaving
+                    the reader to work out that a fault is reported here. */}
+                {tabsLayout
+                  ? 'Report a fault, ask about the work, or request a document.'
+                  : 'A question about the work, a request for a document, or an idea for the year ahead.'}
               </p>
 
               {!loading && members.length === 0 && (
                 <p className="mt-6 max-w-[46ch] text-[17px] leading-7 text-gray-800">
                   {committee.unavailable
-                    ? 'We couldn’t load this year’s roster. Refresh the page, or write to the committee for the current list.'
+                    ? 'Committee members for this year: we couldn’t load the roster. Refresh the page, or write to the committee for the current list.'
                     : 'This year’s roster is not published yet. Seats are appointed by the Executive Committee at the start of the year.'}
                 </p>
               )}
@@ -1799,12 +2419,12 @@ export default function CommitteePageTemplate() {
                   {closingNote.action}
                   <ArrowRight size={17} aria-hidden="true" />
                 </a>
-                {closingNote.secondary && (
+                {closingSecondary && (
                   <a
-                    href={closingNote.secondary.href}
+                    href={closingSecondary.href}
                     className="inline-flex min-h-12 items-center text-[15px] font-semibold text-lmsa-100 underline decoration-2 underline-offset-[6px] transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-400 focus-visible:ring-offset-2 focus-visible:ring-offset-lmsa-900"
                   >
-                    {closingNote.secondary.label}
+                    {closingSecondary.label}
                   </a>
                 )}
               </div>
@@ -1859,6 +2479,108 @@ export default function CommitteePageTemplate() {
 }
 
 /* ---------- Rows ---------- */
+
+/* What the page itself already says about who its work is for. A programme's
+   audience line is printed only when it says something different: repeating one
+   sentence on every row is noise, and a row that omits it is not hiding
+   anything. */
+const PAGE_AUDIENCE = 'open to students and the wider community';
+
+const normaliseAudience = value =>
+  String(value ?? '')
+    .trim()
+    .toLowerCase()
+    .replace(/\.$/, '');
+
+/* One programme in the tabbed page's ledger.
+
+   The name is the row's heading, because that is what a student came to find.
+   The next session is stated as a fact — day, time, place — rather than as a
+   promise, and what has already happened is a count, not a second list of the
+   same dates.
+
+   Nothing here decides a state. `state`, `sessions` and `past_session_count` all
+   arrive computed from the sessions' datetimes, so an entry cannot claim to be
+   running after its last session has ended just because nobody edited a label. A
+   programme with no sessions says so and links nowhere. */
+function ProgrammeEntry({ programme }) {
+  const next = programme.sessions?.[0] || null;
+  const past = programme.past_session_count || 0;
+
+  const day = next
+    ? formatDate(next.start_datetime, {
+        weekday: 'short',
+        day: 'numeric',
+        month: 'short',
+      })
+    : null;
+  const time = next
+    ? new Date(next.start_datetime).toLocaleTimeString('en-GB', {
+        hour: 'numeric',
+        minute: '2-digit',
+      })
+    : null;
+  const place = next ? next.venue || next.location : null;
+
+  // The timing column says what a reader can act on: a programme that is on or
+  // coming leads with its next session. A finished or undated one leaves the
+  // column empty rather than repeating the group heading above it — what it has
+  // to say is in the row itself ("2 sessions already held this term").
+  const timing =
+    programme.state === 'running' || programme.state === 'upcoming'
+      ? [day, time, place].filter(Boolean).join(' · ')
+      : '';
+
+  // Registration belongs to the session, not the programme: this is the same
+  // link either way, named for what the reader would go there to do.
+  const registrationOpen =
+    Boolean(next?.registration_required) &&
+    (!next.registration_deadline ||
+      new Date(next.registration_deadline) > new Date());
+
+  const audience =
+    programme.audience &&
+    normaliseAudience(programme.audience) !== PAGE_AUDIENCE
+      ? programme.audience
+      : null;
+
+  return (
+    <li className="grid gap-y-2 border-b border-lmsa-200 py-6 md:grid-cols-[16rem_1fr] md:items-baseline md:gap-x-10">
+      <p className="text-balance text-[13px] font-semibold uppercase leading-5 tracking-[0.12em] text-lmsa-700">
+        {timing}
+      </p>
+      <div>
+        <p className="text-[21px] font-semibold leading-7 text-lmsa-900">
+          {programme.name}
+        </p>
+        {programme.summary && (
+          <p className="mt-1.5 max-w-[52ch] text-[17px] leading-7 text-gray-800">
+            {programme.summary}
+          </p>
+        )}
+        {audience && (
+          <p className="mt-2 max-w-[52ch] text-[15px] leading-6 text-gray-700">
+            {audience}
+          </p>
+        )}
+        {past > 0 && (
+          <p className="mt-2 text-[15px] leading-6 text-gray-700">
+            {past} session{past === 1 ? '' : 's'} already held this term
+          </p>
+        )}
+        {next?.slug && (
+          <Link
+            to={`/events/${next.slug}`}
+            className="mt-2 inline-flex min-h-12 items-center gap-2 text-[15px] font-semibold text-lmsa-700 underline decoration-2 underline-offset-[6px] transition-colors hover:decoration-lmsa-900"
+          >
+            {registrationOpen ? 'Register' : 'Session details'}
+            <ArrowRight size={15} aria-hidden="true" />
+          </Link>
+        )}
+      </div>
+    </li>
+  );
+}
 
 function EventRow({ event, past }) {
   const start = formatDate(event.start_datetime);

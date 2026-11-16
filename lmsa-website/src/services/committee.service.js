@@ -80,6 +80,49 @@ export const committeeService = {
     await api.delete(`/committees/${committeeId}/events/${eventId}`);
   },
 
+  // ─── Programmes ──────────────────────────────────────────────────────────
+  // A programme is the frame the committee's sessions hang off. Its dates,
+  // venue and fee are the sessions' own; its state is derived from them by the
+  // API, so nothing here ever sends a state.
+
+  /** Programmes for one committee (admin view: drafts included, with counts) */
+  async getProgrammes(committeeId) {
+    const response = await api.get(`/committees/${committeeId}/programmes`);
+    return response.data.programmes;
+  },
+
+  /** Create a programme. Defaults to a draft server-side when status is omitted */
+  async createProgramme(committeeId, programme) {
+    const response = await api.post(`/committees/${committeeId}/programmes`, programme);
+    return response.data.programme;
+  },
+
+  /** Update a programme, including its draft/published status */
+  async updateProgramme(committeeId, programmeId, programme) {
+    const response = await api.put(
+      `/committees/${committeeId}/programmes/${programmeId}`,
+      programme
+    );
+    return response.data.programme;
+  },
+
+  /** Delete a programme. Its sessions are unassigned, never deleted */
+  async deleteProgramme(committeeId, programmeId) {
+    const response = await api.delete(
+      `/committees/${committeeId}/programmes/${programmeId}`
+    );
+    return response.data;
+  },
+
+  /** Save the whole order at once — the list is what an admin actually set */
+  async reorderProgrammes(committeeId, orderedIds) {
+    const response = await api.put(
+      `/committees/${committeeId}/programmes/reorder`,
+      { order: orderedIds }
+    );
+    return response.data;
+  },
+
   // ─── Documents ───────────────────────────────────────────────────────────
 
   /** Get all documents for a committee */

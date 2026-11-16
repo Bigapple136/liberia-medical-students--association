@@ -8,7 +8,11 @@ const STAGES = ['pre_clinical', 'clinical', 'exam'];
 const isValidStage = (stage) => stage === null || stage === undefined || stage === '' || STAGES.includes(stage);
 
 // ─── Helper: check access level ─────────────────────────────────────────────
-const canAccess = (doc, user) => {
+// Exported because the committee documents read (committee.controller.js) serves
+// the same rows through a different route, and the rule must not fork: a
+// document's access level is a property of the document, not of the URL that
+// happened to list it.
+export const canAccessDocument = (doc, user) => {
   switch (doc.access_level) {
     case 'public':
       return true;
@@ -46,9 +50,18 @@ export const getAll = async (req, res) => {
       });
     }
 
-    // Filter by access level based on the requester
+    // Filter by access level for the requester, and drop the uploader id: this
+    // list is public, and a public response carries no user identifier
+    // (docs/16-public-and-portal-boundary.md §4). The admin list is a separate
+    // route and keeps it.
     const user = req.user || null;
-    const documents = data.filter(doc => canAccess(doc, user));
+    const documents = data
+      .filter(doc => canAccessDocument(doc, user))
+      .map(doc => {
+        const visible = { ...doc };
+        delete visible.uploaded_by;
+        return visible;
+      });
 
     res.json({
       success: true,
@@ -83,7 +96,7 @@ export const download = async (req, res) => {
 
     // Check access level
     const user = req.user || null;
-    if (!canAccess(doc, user)) {
+    if (!canAccessDocument(doc, user)) {
       return res.status(403).json({
         success: false,
         message: 'You do not have access to this document',

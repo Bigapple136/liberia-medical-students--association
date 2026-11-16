@@ -1,14 +1,20 @@
 import express from 'express';
 import { body } from 'express-validator';
-import { authenticate, authorize } from '../middleware/auth.middleware.js';
+import {
+  authenticate,
+  authorize,
+  optionalAuthenticate,
+} from '../middleware/auth.middleware.js';
 import { validate } from '../middleware/validate.middleware.js';
 import * as ec from '../controllers/event.controller.js';
 
 const router = express.Router();
 
 // ─── Public routes ────────────────────────────────────────────────────────────
-router.get('/', ec.getAll);
-router.get('/:slug', ec.getBySlug);
+// Optional auth, because the response genuinely differs by reader: sessions of
+// a draft programme are filtered out for the public and kept for staff.
+router.get('/', optionalAuthenticate, ec.getAll);
+router.get('/:slug', optionalAuthenticate, ec.getBySlug);
 
 // ─── Authenticated: register / unregister ────────────────────────────────────
 router.post('/:id/register', authenticate, ec.register);

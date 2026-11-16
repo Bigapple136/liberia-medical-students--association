@@ -1,6 +1,10 @@
 import express from 'express';
 import { body } from 'express-validator';
-import { authenticate, authorize } from '../middleware/auth.middleware.js';
+import {
+  authenticate,
+  authorize,
+  optionalAuthenticate,
+} from '../middleware/auth.middleware.js';
 import { validate } from '../middleware/validate.middleware.js';
 import * as cc from '../controllers/committee.controller.js';
 
@@ -9,6 +13,11 @@ const router = express.Router();
 // ─── Public routes ────────────────────────────────────────────────────────────
 router.get('/', cc.getAll);
 router.get('/:slug', cc.getBySlug);
+
+// A committee's programmes. One route for both readers — '/:slug/programmes'
+// and '/:id/programmes' are the same path shape, so the controller resolves the
+// identifier and the caller's role decides whether drafts are included.
+router.get('/:identifier/programmes', optionalAuthenticate, cc.getProgrammes);
 
 // ─── Public interactions ──────────────────────────────────────────────────────
 // `.trim()` sanitises before `.notEmpty()` checks, so a submission of spaces
@@ -100,5 +109,13 @@ router.put('/applications/:id', ...isAdmin, cc.updateApplicationStatus);
 // Achievements
 router.post('/:id/achievements', ...isAdmin, cc.createAchievement);
 router.delete('/:id/achievements/:achievementId', ...isAdmin, cc.deleteAchievement);
+
+// Programmes
+// 'reorder' is declared before the ':programmeId' update: both are PUTs under
+// the same prefix, and Express takes the first route that matches.
+router.post('/:id/programmes', ...isAdmin, cc.createProgramme);
+router.put('/:id/programmes/reorder', ...isAdmin, cc.reorderProgrammes);
+router.put('/:id/programmes/:programmeId', ...isAdmin, cc.updateProgramme);
+router.delete('/:id/programmes/:programmeId', ...isAdmin, cc.deleteProgramme);
 
 export default router;

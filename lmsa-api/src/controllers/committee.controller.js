@@ -1,6 +1,15 @@
 import { supabase } from '../config/supabase.js';
+import { canAccessDocument } from './document.controller.js';
 import { sendEmail } from '../config/email.js';
 import { escapeHtml, normalizeMaxAttendees } from '../utils/helpers.js';
+import {
+  compareProgrammes,
+  deriveProgrammeState,
+  isUuid,
+  resolveProgrammeAssignment,
+  sessionEndTime,
+  uniqueProgrammeSlug,
+} from '../utils/programmes.js';
 
 // Approved-application counts keyed by committee id.
 //
@@ -29,16 +38,25 @@ const getApprovedCounts = async (committeeIds) => {
   }
 };
 
+// The columns a public read may return, named rather than `*` so that a column
+// added to `committees` later — a budget, a private note, a staff-only link —
+// cannot reach a public page just by existing in the table. The chair is a name
+// and nothing else: the dashboard is where their email, year level and id live
+// (docs/16-public-and-portal-boundary.md §4).
+const PUBLIC_COMMITTEE_SELECT = `
+        id, name, slug, description, mandate, key_activities,
+        committee_type, icon, status, email, meeting_schedule, views,
+        created_at, updated_at,
+        chair:chair_id ( full_name ),
+        member_count:committee_members(count)
+      `;
+
 // ─── GET /api/committees ──────────────────────────────────────────────────────
 export const getAll = async (req, res) => {
   try {
     const { data, error } = await supabase
       .from('committees')
-      .select(`
-        *,
-        chair:chair_id ( id, full_name, profile_photo_url, year_level ),
-        member_count:committee_members(count)
-      `)
+      .select(PUBLIC_COMMITTEE_SELECT)
       .eq('status', 'active')
       .order('name');
 
@@ -120,11 +138,7 @@ export const getBySlug = async (req, res) => {
 
     const { data, error } = await supabase
       .from('committees')
-      .select(`
-        *,
-        chair:chair_id ( id, full_name, profile_photo_url, year_level, email ),
-        vice_chair:vice_chair_id ( id, full_name, profile_photo_url, year_level )
-      `)
+      .select(PUBLIC_COMMITTEE_SELECT)
       .eq('slug', slug)
       // Public detail view resolves *active* committees only — an unknown
       // slug and a deactivated one are indistinguishable to the public (both
@@ -409,7 +423,7 @@ export const createEvent = async (req, res) => {
     const {
       title, description, event_type, location, venue,
       start_datetime, end_datetime, registration_required,
-      max_attendees, fee, image_url,
+      max_attendees, fee, image_url, programme_id,
     } = req.body;
 
     const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
@@ -421,6 +435,14 @@ export const createEvent = async (req, res) => {
         success: false,
         message: 'Max attendees must be a whole number of 0 or more',
       });
+    }
+
+    // The event is created through the committee's own route, so the committee
+    // is known: a programme from another committee is a 400, not a silent
+    // mismatch between the page it appears on and the committee it belongs to.
+    const assignment = await resolveProgrammeAssignment(programme_id, id);
+    if (assignment.error) {
+      return res.status(400).json({ success: false, message: assignment.error });
     }
 
     const { data, error } = await supabase
@@ -439,6 +461,7 @@ export const createEvent = async (req, res) => {
         fee: fee || 0,
         image_url,
         committee_id: id,
+        programme_id: assignment.programmeId,
         organizer_id: req.user.id,
         status: 'upcoming',
       })
@@ -513,9 +536,21 @@ export const getDocuments = async (req, res) => {
       });
     }
 
+    // Same rule as GET /api/documents. Listing a committee's documents must not
+    // be a way around a document's access level — a members-only or executive
+    // file is not readable just because it is filed under a committee. The
+    // uploader id is dropped: nothing renders it, and it is a user identifier.
+    const documents = (data || [])
+      .filter(doc => canAccessDocument(doc, req.user))
+      .map(doc => {
+        const visible = { ...doc };
+        delete visible.uploaded_by;
+        return visible;
+      });
+
     res.json({
       success: true,
-      documents: data,
+      documents,
     });
   } catch (error) {
     console.error('Get committee documents error:', error);
@@ -798,6 +833,483 @@ export const deleteAchievement = async (req, res) => {
   }
 };
 
+// ─── Committee programmes ───────────────────────────────────────────────────
+// A committee page is a list of programmes, each with its own sessions. The
+// frame — name, one sentence, audience, image, order — lives in
+// committee_programmes; the dates, venues, fees and capacity behind it are
+// ordinary `events` rows pointing at it, so the page and the calendar cannot
+// drift apart. Nothing about running/upcoming/finished is stored: see
+// utils/programmes.js for why.
+
+const PROGRAMME_COLUMNS =
+  'id, committee_id, name, slug, summary, audience, image_url, sort_order, status, created_at, updated_at';
+
+const PROGRAMME_SESSION_COLUMNS =
+  'id, programme_id, title, slug, start_datetime, end_datetime, venue, location, registration_required, registration_deadline, fee, image_url, status';
+
+const PROGRAMME_STATUSES = ['draft', 'published'];
+const PROGRAMME_LIMITS = { name: 60, summary: 160, audience: 120, image_url: 500 };
+const PROGRAMME_FIELD_LABELS = {
+  summary: 'Summary',
+  audience: 'Audience',
+  image_url: 'Image URL',
+};
+
+// Who may see drafts. The route is public, so this is decided per request from
+// the optional auth middleware rather than by a separate admin route.
+const STAFF_ROLES = ['admin', 'executive', 'super_admin'];
+const isStaffUser = (user) => STAFF_ROLES.includes(user?.role);
+
+// Validates only the fields that were actually sent, so a PUT that reorders a
+// programme cannot blank its summary as a side effect. Returns { values } or
+// { error } with a message fit to show in the dashboard.
+const readProgrammeBody = (body = {}) => {
+  const values = {};
+
+  if (body.name !== undefined) {
+    const name = String(body.name ?? '').trim();
+    if (!name) return { error: 'A programme needs a name' };
+    if (name.length > PROGRAMME_LIMITS.name) {
+      return { error: `Programme names are limited to ${PROGRAMME_LIMITS.name} characters` };
+    }
+    values.name = name;
+  }
+
+  for (const field of ['summary', 'audience', 'image_url']) {
+    if (body[field] === undefined) continue;
+    const value = String(body[field] ?? '').trim();
+    if (value.length > PROGRAMME_LIMITS[field]) {
+      return {
+        error: `${PROGRAMME_FIELD_LABELS[field]} is limited to ${PROGRAMME_LIMITS[field]} characters`,
+      };
+    }
+    // Blank means "no summary / audience / image", stored as null rather than
+    // an empty string so the page can test for absence.
+    values[field] = value || null;
+  }
+
+  if (body.status !== undefined) {
+    if (!PROGRAMME_STATUSES.includes(body.status)) {
+      return { error: `Status must be ${PROGRAMME_STATUSES.join(' or ')}` };
+    }
+    values.status = body.status;
+  }
+
+  if (body.sort_order !== undefined) {
+    const order = Number(body.sort_order);
+    if (!Number.isInteger(order) || order < 0) {
+      return { error: 'Sort order must be a whole number of 0 or more' };
+    }
+    values.sort_order = order;
+  }
+
+  return { values };
+};
+
+// Turns a duplicate name into the 409 the dashboard shows. The unique index is
+// on lower(name), so the two spellings that read as one programme to a visitor
+// are exactly the two that collide here.
+const isDuplicateName = (error) =>
+  error?.code === '23505' &&
+  /committee_programmes_name/i.test(error?.message || '');
+
+// ─── GET /api/committees/:identifier/programmes ─────────────────────────────
+// One route, two readers. Express matches on path shape, so '/:slug/programmes'
+// and '/:id/programmes' cannot be two routes; the identifier is resolved first
+// (a uuid is an id, anything else is a slug) and the caller's role decides the
+// view:
+//
+//   anonymous / member  → published programmes only, in public reading order,
+//                         each with up to three sessions still ahead of it
+//   admin / executive   → every programme including drafts, in admin order,
+//                         with the counts the dashboard shows
+//
+// Drafts are excluded on the server, not by the page, so an unpublished
+// programme cannot be read by guessing its slug.
+export const getProgrammes = async (req, res) => {
+  try {
+    const { identifier } = req.params;
+    const lookupById = isUuid(identifier);
+
+    let committeeQuery = supabase
+      .from('committees')
+      .select('id, slug, name')
+      .eq(lookupById ? 'id' : 'slug', identifier);
+
+    // A deactivated committee has no public page, but the admin still needs to
+    // reach it, so the status filter applies only to the public slug read.
+    if (!lookupById) committeeQuery = committeeQuery.eq('status', 'active');
+
+    const { data: committee, error: committeeError } = await committeeQuery.maybeSingle();
+
+    if (committeeError) {
+      return res.status(400).json({
+        success: false,
+        message: 'Failed to fetch programmes',
+      });
+    }
+
+    if (!committee) {
+      return res.status(404).json({
+        success: false,
+        message: 'Committee not found',
+      });
+    }
+
+    const adminView = isStaffUser(req.user);
+
+    let programmeQuery = supabase
+      .from('committee_programmes')
+      .select(PROGRAMME_COLUMNS)
+      .eq('committee_id', committee.id);
+
+    if (!adminView) programmeQuery = programmeQuery.eq('status', 'published');
+
+    const { data: programmes, error } = await programmeQuery
+      .order('sort_order', { ascending: true })
+      .order('name', { ascending: true });
+
+    if (error) {
+      return res.status(400).json({
+        success: false,
+        message: 'Failed to fetch programmes',
+      });
+    }
+
+    if (!programmes?.length) {
+      return res.json({ success: true, programmes: [] });
+    }
+
+    const { data: sessions, error: sessionsError } = await supabase
+      .from('events')
+      .select(PROGRAMME_SESSION_COLUMNS)
+      .in('programme_id', programmes.map((programme) => programme.id))
+      .order('start_datetime', { ascending: true });
+
+    if (sessionsError) {
+      return res.status(400).json({
+        success: false,
+        message: 'Failed to fetch programme sessions',
+      });
+    }
+
+    // Grouped in one pass rather than one query per programme.
+    const sessionsByProgramme = new Map();
+    for (const session of sessions || []) {
+      const list = sessionsByProgramme.get(session.programme_id) || [];
+      list.push(session);
+      sessionsByProgramme.set(session.programme_id, list);
+    }
+
+    const now = Date.now();
+
+    const shaped = programmes.map((programme) => {
+      const all = sessionsByProgramme.get(programme.id) || [];
+      const live = all.filter((session) => session.status !== 'cancelled');
+      const ahead = live.filter((session) => sessionEndTime(session) >= now);
+      const state = deriveProgrammeState(all, now);
+
+      if (adminView) {
+        return {
+          ...programme,
+          state,
+          session_count: live.length,
+          past_session_count: live.length - ahead.length,
+          next_session: ahead[0] || null,
+        };
+      }
+
+      return {
+        ...programme,
+        state,
+        sessions: ahead.slice(0, 3),
+        upcoming_session_count: ahead.length,
+        session_count: live.length,
+        past_session_count: live.length - ahead.length,
+      };
+    });
+
+    // The admin sees the order it set; the public page reads best by state.
+    if (!adminView) shaped.sort(compareProgrammes);
+
+    res.json({
+      success: true,
+      programmes: shaped,
+    });
+  } catch (error) {
+    console.error('Get committee programmes error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch programmes',
+    });
+  }
+};
+
+// ─── POST /api/committees/:id/programmes ────────────────────────────────────
+export const createProgramme = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { values, error: validationError } = readProgrammeBody(req.body);
+
+    if (validationError) {
+      return res.status(400).json({ success: false, message: validationError });
+    }
+
+    if (!values.name) {
+      return res.status(400).json({ success: false, message: 'A programme needs a name' });
+    }
+
+    const { data: committee, error: committeeError } = await supabase
+      .from('committees')
+      .select('id')
+      .eq('id', id)
+      .maybeSingle();
+
+    if (committeeError) {
+      return res.status(400).json({ success: false, message: 'Failed to create programme' });
+    }
+
+    if (!committee) {
+      return res.status(404).json({ success: false, message: 'Committee not found' });
+    }
+
+    // A new programme is a draft unless the admin explicitly publishes it, so
+    // half-written work never reaches the public page by accident.
+    const status = values.status || 'draft';
+    const slug = await uniqueProgrammeSlug(id, values.name);
+
+    let sortOrder = values.sort_order;
+    if (sortOrder === undefined) {
+      const { data: last } = await supabase
+        .from('committee_programmes')
+        .select('sort_order')
+        .eq('committee_id', id)
+        .order('sort_order', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      sortOrder = (last?.sort_order ?? -1) + 1;
+    }
+
+    const { data, error } = await supabase
+      .from('committee_programmes')
+      .insert({
+        committee_id: id,
+        name: values.name,
+        slug,
+        summary: values.summary ?? null,
+        audience: values.audience ?? null,
+        image_url: values.image_url ?? null,
+        sort_order: sortOrder,
+        status,
+      })
+      .select(PROGRAMME_COLUMNS)
+      .single();
+
+    if (error) {
+      if (isDuplicateName(error)) {
+        return res.status(409).json({
+          success: false,
+          message: `A programme called "${values.name}" already exists for this committee`,
+        });
+      }
+
+      console.error('Create programme error:', error);
+      return res.status(400).json({ success: false, message: 'Failed to create programme' });
+    }
+
+    res.status(201).json({
+      success: true,
+      programme: data,
+    });
+  } catch (error) {
+    console.error('Create programme error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to create programme',
+    });
+  }
+};
+
+// ─── PUT /api/committees/:id/programmes/:programmeId ────────────────────────
+export const updateProgramme = async (req, res) => {
+  try {
+    const { id, programmeId } = req.params;
+    const { values, error: validationError } = readProgrammeBody(req.body);
+
+    if (validationError) {
+      return res.status(400).json({ success: false, message: validationError });
+    }
+
+    if (!Object.keys(values).length) {
+      return res.status(400).json({ success: false, message: 'Nothing to update' });
+    }
+
+    // The slug follows the name: it is only a stable fragment for links, never
+    // something the dashboard edits on its own.
+    if (values.name) {
+      values.slug = await uniqueProgrammeSlug(id, values.name, programmeId);
+    }
+
+    const { data, error } = await supabase
+      .from('committee_programmes')
+      .update(values)
+      .eq('id', programmeId)
+      .eq('committee_id', id)
+      .select(PROGRAMME_COLUMNS)
+      .maybeSingle();
+
+    if (error) {
+      if (isDuplicateName(error)) {
+        return res.status(409).json({
+          success: false,
+          message: `A programme called "${values.name}" already exists for this committee`,
+        });
+      }
+
+      console.error('Update programme error:', error);
+      return res.status(400).json({ success: false, message: 'Failed to update programme' });
+    }
+
+    if (!data) {
+      return res.status(404).json({ success: false, message: 'Programme not found' });
+    }
+
+    res.json({
+      success: true,
+      programme: data,
+    });
+  } catch (error) {
+    console.error('Update programme error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to update programme',
+    });
+  }
+};
+
+// ─── DELETE /api/committees/:id/programmes/:programmeId ─────────────────────
+export const deleteProgramme = async (req, res) => {
+  try {
+    const { id, programmeId } = req.params;
+
+    const { count, error: countError } = await supabase
+      .from('events')
+      .select('id', { count: 'exact', head: true })
+      .eq('programme_id', programmeId);
+
+    if (countError) {
+      return res.status(400).json({ success: false, message: 'Failed to delete programme' });
+    }
+
+    const { data, error } = await supabase
+      .from('committee_programmes')
+      .delete()
+      .eq('id', programmeId)
+      .eq('committee_id', id)
+      .select('id');
+
+    if (error) {
+      console.error('Delete programme error:', error);
+      return res.status(400).json({ success: false, message: 'Failed to delete programme' });
+    }
+
+    if (!data?.length) {
+      return res.status(404).json({ success: false, message: 'Programme not found' });
+    }
+
+    // Deleting the frame never deletes its sessions: the FK is ON DELETE SET
+    // NULL, so those events stay on the calendar on their own. The count goes
+    // back so the dashboard can say what happened instead of quietly orphaning
+    // a term's worth of dates.
+    res.json({
+      success: true,
+      unassigned_sessions: count || 0,
+    });
+  } catch (error) {
+    console.error('Delete programme error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to delete programme',
+    });
+  }
+};
+
+// ─── PUT /api/committees/:id/programmes/reorder ─────────────────────────────
+// The whole order at once, because a drag-and-drop list sends the list, not
+// "move this one up by one" — the latter drifts when two admins reorder at the
+// same time.
+export const reorderProgrammes = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const order = Array.isArray(req.body) ? req.body : req.body?.order;
+
+    if (!Array.isArray(order) || !order.length) {
+      return res.status(400).json({
+        success: false,
+        message: 'Send an ordered array of programme ids',
+      });
+    }
+
+    if (order.some((value) => typeof value !== 'string' || !value.trim())) {
+      return res.status(400).json({
+        success: false,
+        message: 'Every entry in the order must be a programme id',
+      });
+    }
+
+    if (new Set(order).size !== order.length) {
+      return res.status(400).json({
+        success: false,
+        message: 'The same programme id appears twice',
+      });
+    }
+
+    const { data: existing, error } = await supabase
+      .from('committee_programmes')
+      .select('id')
+      .eq('committee_id', id);
+
+    if (error) {
+      return res.status(400).json({ success: false, message: 'Failed to reorder programmes' });
+    }
+
+    const owned = new Set((existing || []).map((row) => row.id));
+    if (order.some((programmeId) => !owned.has(programmeId))) {
+      return res.status(400).json({
+        success: false,
+        message: 'That list contains a programme from another committee',
+      });
+    }
+
+    // PostgREST has no batch update, so one small write per programme. Any
+    // programme left out of the list keeps the order it already had.
+    const results = await Promise.all(
+      order.map((programmeId, index) =>
+        supabase
+          .from('committee_programmes')
+          .update({ sort_order: index })
+          .eq('id', programmeId)
+          .eq('committee_id', id)
+      )
+    );
+
+    if (results.some((result) => result.error)) {
+      return res.status(400).json({ success: false, message: 'Failed to reorder programmes' });
+    }
+
+    res.json({
+      success: true,
+      reordered: order.length,
+    });
+  } catch (error) {
+    console.error('Reorder programmes error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to reorder programmes',
+    });
+  }
+};
 // ─── POST /api/committees/:id/contact ──────────────────────────────────────
 export const submitContactForm = async (req, res) => {
   try {

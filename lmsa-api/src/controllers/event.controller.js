@@ -1,5 +1,9 @@
 import { supabase } from '../config/supabase.js';
 import { normalizeMaxAttendees } from '../utils/helpers.js';
+import { isUuid, resolveProgrammeAssignment } from '../utils/programmes.js';
+
+const STAFF_ROLES = ['admin', 'executive', 'super_admin'];
+const isStaffUser = (user) => STAFF_ROLES.includes(user?.role);
 
 // ─── GET /api/events ──────────────────────────────────────────────────────────
 export const getAll = async (req, res) => {
@@ -9,7 +13,7 @@ export const getAll = async (req, res) => {
       .select('*')
       .order('start_datetime', { ascending: true });
 
-    const { type, status, upcoming } = req.query;
+    const { type, status, upcoming, committee, programme } = req.query;
 
     if (type) {
       query = query.eq('event_type', type);
@@ -21,6 +25,72 @@ export const getAll = async (req, res) => {
 
     if (upcoming === 'true') {
       query = query.gte('start_datetime', new Date().toISOString());
+    }
+
+    // The committee page reads its sessions from here: GET
+    // /api/committees/:id/events is behind auth, so an anonymous visitor can
+    // only ever reach a committee's events through this list. Accepts a slug
+    // (what the page has) or an id (what the dashboard has).
+    if (committee) {
+      let committeeId = committee;
+
+      if (!isUuid(committee)) {
+        const { data: row, error: committeeError } = await supabase
+          .from('committees')
+          .select('id')
+          .eq('slug', committee)
+          .maybeSingle();
+
+        if (committeeError) {
+          return res.status(400).json({
+            success: false,
+            message: 'Failed to fetch events',
+          });
+        }
+
+        if (!row) {
+          return res.status(404).json({
+            success: false,
+            message: 'Committee not found',
+          });
+        }
+
+        committeeId = row.id;
+      }
+
+      query = query.eq('committee_id', committeeId);
+    }
+
+    if (programme) {
+      query = query.eq('programme_id', programme);
+    }
+
+    // A draft programme hides its sessions from the public as well as itself —
+    // otherwise next term's dates leak onto the calendar before they are
+    // announced. Staff keep seeing everything, which is why this is decided
+    // from the optional auth on the route rather than by the page.
+    if (!isStaffUser(req.user)) {
+      const { data: drafts } = await supabase
+        .from('committee_programmes')
+        .select('id')
+        .eq('status', 'draft');
+
+      const draftIds = (drafts || []).map((row) => row.id);
+
+      if (draftIds.length) {
+        // NOT IN alone would drop every one-off event too: NULL is never "in"
+        // a list, so the OR keeps events that belong to no programme.
+        query = query.or(
+          `programme_id.is.null,programme_id.not.in.(${draftIds.join(',')})`
+        );
+      }
+    }
+
+    // A draft event has not been announced: an anonymous visitor does not see it
+    // at all, rather than receiving it with `status: 'draft'` for the client to
+    // hide. Staff keep the whole list, which the dashboard edits from.
+    if (!isStaffUser(req.user)) {
+      query = query.neq('status', 'draft');
     }
 
     const { data, error } = await query;
@@ -53,10 +123,16 @@ export const getAll = async (req, res) => {
       }, {});
     }
 
-    const events = (data || []).map((event) => ({
-      ...event,
-      registration_count: countsByEvent[event.id] || 0,
-    }));
+    // `organizer_id` is a user id: no public surface renders it, and a public
+    // response should carry no personal identifier. `registration_count` stays:
+    // it is an aggregate that answers the one public question about it — is
+    // there room for me — and both the event page and the symposia list read it.
+    const events = (data || []).map((event) => {
+      const visible = { ...event };
+      delete visible.organizer_id;
+      visible.registration_count = countsByEvent[event.id] || 0;
+      return visible;
+    });
 
     res.json({
       success: true,
@@ -89,16 +165,45 @@ export const getBySlug = async (req, res) => {
       });
     }
 
+    // A draft event is not public, and guessing its slug must not confirm that
+    // it exists — the same 404 as an unknown slug.
+    if (data.status === 'draft' && !isStaffUser(req.user)) {
+      return res.status(404).json({
+        success: false,
+        message: 'Event not found',
+      });
+    }
+
+    // A session of a draft programme is as unpublished as the programme: its
+    // detail page must not reveal next term's dates to whoever guesses the slug.
+    if (data.programme_id && !isStaffUser(req.user)) {
+      const { data: programme } = await supabase
+        .from('committee_programmes')
+        .select('status')
+        .eq('id', data.programme_id)
+        .maybeSingle();
+
+      if (programme?.status === 'draft') {
+        return res.status(404).json({
+          success: false,
+          message: 'Event not found',
+        });
+      }
+    }
+
     // Get registration count
     const { count } = await supabase
       .from('event_registrations')
       .select('*', { count: 'exact', head: true })
       .eq('event_id', data.id);
 
+    const visibleEvent = { ...data };
+    delete visibleEvent.organizer_id;
+
     res.json({
       success: true,
       event: {
-        ...data,
+        ...visibleEvent,
         registration_count: count ?? 0,
       },
     });
@@ -118,6 +223,7 @@ export const create = async (req, res) => {
       title, description, event_type, location, venue,
       start_datetime, end_datetime, registration_required,
       max_attendees, registration_deadline, fee, image_url, committee_id,
+      programme_id,
     } = req.body;
 
     const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
@@ -128,6 +234,17 @@ export const create = async (req, res) => {
       return res.status(400).json({
         success: false,
         message: 'Max attendees must be a whole number of 0 or more',
+      });
+    }
+
+    // A programme belongs to exactly one committee; assigning a session to
+    // another committee's programme would put it on a page whose owner cannot
+    // see or edit it.
+    const assignment = await resolveProgrammeAssignment(programme_id, committee_id || null);
+    if (assignment.error) {
+      return res.status(400).json({
+        success: false,
+        message: assignment.error,
       });
     }
 
@@ -148,6 +265,7 @@ export const create = async (req, res) => {
         fee: fee || 0,
         image_url,
         committee_id: committee_id || null,
+        programme_id: assignment.programmeId,
         organizer_id: req.user.id,
         status: 'upcoming',
       })
@@ -182,7 +300,7 @@ export const update = async (req, res) => {
       title, description, event_type, location, venue,
       start_datetime, end_datetime, registration_required,
       max_attendees, registration_deadline, fee, image_url,
-      committee_id, status,
+      committee_id, status, programme_id,
     } = req.body;
 
     // Only touched when the key is sent: the status-only update issued right
@@ -195,6 +313,44 @@ export const update = async (req, res) => {
           success: false,
           message: 'Max attendees must be a whole number of 0 or more',
         });
+      }
+    }
+
+    // Changing the committee has to clear the programme, because a programme
+    // belongs to one committee. The dashboard sends the whole event on save, so
+    // "did the committee change" can only be answered against the stored row —
+    // otherwise every ordinary edit would drop the session out of its
+    // programme. Moving the session to another committee clears it.
+    let programmeId;
+    if (programme_id !== undefined || committee_id !== undefined) {
+      let effectiveCommittee = committee_id || null;
+
+      if (programme_id === undefined || committee_id === undefined) {
+        const { data: existing } = await supabase
+          .from('events')
+          .select('committee_id')
+          .eq('id', id)
+          .maybeSingle();
+
+        if (committee_id === undefined) {
+          effectiveCommittee = existing?.committee_id || null;
+        } else if (
+          programme_id === undefined &&
+          (existing?.committee_id || null) !== (committee_id || null)
+        ) {
+          programmeId = null;
+        }
+      }
+
+      if (programmeId === undefined && programme_id !== undefined) {
+        const assignment = await resolveProgrammeAssignment(programme_id, effectiveCommittee);
+        if (assignment.error) {
+          return res.status(400).json({
+            success: false,
+            message: assignment.error,
+          });
+        }
+        programmeId = assignment.programmeId;
       }
     }
 
@@ -214,6 +370,7 @@ export const update = async (req, res) => {
         fee,
         image_url,
         committee_id,
+        programme_id: programmeId,
         status,
         updated_at: new Date().toISOString(),
       })

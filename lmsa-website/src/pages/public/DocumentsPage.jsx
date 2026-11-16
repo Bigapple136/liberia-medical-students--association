@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { ArrowRight, Download, FileText, Loader, RefreshCw } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { documentService } from '@services/document.service';
 import { EditorialSectionHeader } from '@components/common/EditorialSections';
@@ -68,7 +68,23 @@ export default function DocumentsPage() {
   const [documents, setDocuments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
-  const [category, setCategory] = useState('');
+  // The URL holds the category, so a committee can deep-link its own shelf
+  // (`?category=journal`) and the reader keeps the filter across a reload or a
+  // shared link. Chips write it back; an unknown value falls back to "all"
+  // rather than requesting a category the filter row cannot un-select.
+  const [searchParams, setSearchParams] = useSearchParams();
+  const requestedCategory = searchParams.get('category') || '';
+  const category = CATEGORY_OPTIONS.some(
+    (option) => option.value && option.value === requestedCategory
+  )
+    ? requestedCategory
+    : '';
+  const setCategory = (value) => {
+    const next = new URLSearchParams(searchParams);
+    if (value) next.set('category', value);
+    else next.delete('category');
+    setSearchParams(next, { replace: true });
+  };
   const [stage, setStage] = useState('');
   const [downloading, setDownloading] = useState(null);
 

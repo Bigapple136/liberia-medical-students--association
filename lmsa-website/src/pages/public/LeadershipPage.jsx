@@ -288,9 +288,6 @@ export default function LeadershipPage() {
                           {exec.bio}
                         </p>
                       )}
-                      {exec.holder_year_level && (
-                        <p className="mt-2 text-[15px] text-gray-700">Year {exec.holder_year_level}</p>
-                      )}
 
                       {/* One route for the whole roster: six identical
                           "sign in to stand" links said nothing an officer list

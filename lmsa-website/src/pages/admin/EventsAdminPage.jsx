@@ -48,6 +48,7 @@ const EMPTY_FORM = {
   fee: '',
   image_url: '',
   committee_id: '',
+  programme_id: '',
   status: 'draft',
 };
 
@@ -450,15 +451,49 @@ function EventForm({ event, committees, onSave, onClose }) {
         fee: event.fee ?? '',
         image_url: event.image_url || '',
         committee_id: event.committee_id || '',
+        programme_id: event.programme_id || '',
         status: event.status || 'draft',
       };
     }
     return { ...EMPTY_FORM };
   });
   const [saving, setSaving] = useState(false);
+  const [programmes, setProgrammes] = useState([]);
+  const [programmesLoading, setProgrammesLoading] = useState(false);
+
+  // A programme is only offered once a committee is chosen, and only that
+  // committee's own — the server rejects anything else with a 400, but the
+  // list should never have invited it.
+  useEffect(() => {
+    const committeeId = form.committee_id;
+    if (!committeeId) {
+      setProgrammes([]);
+      return undefined;
+    }
+
+    let cancelled = false;
+    setProgrammesLoading(true);
+    committeeService
+      .getProgrammes(committeeId)
+      .then(rows => { if (!cancelled) setProgrammes(rows || []); })
+      .catch(() => { if (!cancelled) setProgrammes([]); })
+      .finally(() => { if (!cancelled) setProgrammesLoading(false); });
+
+    return () => { cancelled = true; };
+  }, [form.committee_id]);
 
   function handleChange(field, value) {
     setForm(prev => ({ ...prev, [field]: value }));
+  }
+
+  // Changing the committee silently unfiles the session on the server (the
+  // programme belongs to the old committee), so say it out loud here.
+  function handleCommitteeChange(value) {
+    const hadProgramme = !!form.programme_id;
+    setForm(prev => ({ ...prev, committee_id: value, programme_id: '' }));
+    if (hadProgramme) {
+      toast('Programme cleared — it belongs to the previous committee');
+    }
   }
 
   async function handleSubmit(e) {
@@ -504,6 +539,7 @@ function EventForm({ event, committees, onSave, onClose }) {
         fee: form.fee === '' ? 0 : Number(form.fee),
         image_url: form.image_url.trim() || null,
         committee_id: form.committee_id || null,
+        programme_id: form.programme_id || null,
         status: form.status,
       };
 
@@ -534,6 +570,17 @@ function EventForm({ event, committees, onSave, onClose }) {
   const committeeOptions = [
     { value: '', label: 'None (general event)' },
     ...committees.map(c => ({ value: c.id, label: c.name })),
+  ];
+
+  // "None" first: most events are one-offs and this select must not imply
+  // otherwise. Drafts are listed and labelled, because scheduling into an
+  // unpublished programme is a legitimate thing to do knowingly.
+  const programmeOptions = [
+    { value: '', label: 'None — one-off event' },
+    ...programmes.map(p => ({
+      value: p.id,
+      label: p.status === 'draft' ? `${p.name} (draft)` : p.name,
+    })),
   ];
 
   return (
@@ -689,14 +736,30 @@ function EventForm({ event, committees, onSave, onClose }) {
           </div>
         </div>
 
-        {/* Committee association */}
-        <div>
-          <Label>Committee (optional)</Label>
-          <Select
-            value={form.committee_id}
-            onChange={e => handleChange('committee_id', e.target.value)}
-            options={committeeOptions}
-          />
+        {/* Committee association + the programme it makes available */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <Label>Committee (optional)</Label>
+            <Select
+              value={form.committee_id}
+              onChange={e => handleCommitteeChange(e.target.value)}
+              options={committeeOptions}
+            />
+          </div>
+          <div>
+            <Label>Programme (optional)</Label>
+            <Select
+              value={form.programme_id}
+              onChange={e => handleChange('programme_id', e.target.value)}
+              options={programmeOptions}
+              disabled={!form.committee_id || programmesLoading}
+              helperText={
+                form.committee_id
+                  ? 'Groups this session under a programme on the committee page.'
+                  : 'Choose a committee first'
+              }
+            />
+          </div>
         </div>
 
         {/* Featured Image URL */}
