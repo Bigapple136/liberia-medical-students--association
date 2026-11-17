@@ -1,9 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Link, useParams, useSearchParams } from 'react-router-dom';
+import { Link, Navigate, useParams } from 'react-router-dom';
 import {
   ArrowLeft,
   ArrowRight,
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
   Download,
   Loader,
   Mail,
@@ -30,12 +32,16 @@ export { ALL_COMMITTEES_DATA };
      committee opened with two headers and a heading that was not its name. This
      page owns its header, because the name, description, photograph and
      recruitment state all come from the committee itself.
-   - The five tabs are gone. Tabs hid the mandate, the roster and the paperwork
-     behind clicks, and most of the tabs are empty for a committee that has not
-     published members, events or documents yet. Sections now appear when they
-     have something in them, in the order a visitor wants them: what the
+   - There are no tabs. An earlier pass hid the mandate, the roster and the
+     paperwork behind them, and most of the tabs were empty for a committee that
+     has not published members, events or documents yet. Sections appear when
+     they have something in them, in the order a visitor wants them: what the
      committee is for, the work, who does it, then its records and how to reach
      it.
+   - One committee differs in structure, not in style: Health is three pages at
+     three addresses — what is on, the team, and about the committee — because a
+     reader who came for this week's dates should not have to scroll past a
+     roster to reach them. See `layout: 'pages'` in `COMMITTEE_PROFILES`.
    - Cards, icons, badges and gradient banners are replaced by type and space,
      the same register the committees list uses.
    - Counts are printed only when they are known: the old header showed three
@@ -134,24 +140,31 @@ const COMMITTEE_PHOTOS = {
    current order and the current wording. */
 const COMMITTEE_PROFILES = {
   health: {
-    // `tabs` is a layout, not a style: the page becomes three views of one
-    // committee instead of one long scroll. A visitor who came from a search for
-    // health news, a student asking what is on, and someone deciding whether to
-    // join want three different pages — on a single scroll each of them reads
-    // two-thirds of what they did not ask for.
+    // `pages` is a layout, not a style: the committee becomes three pages at
+    // three addresses instead of one long scroll. A visitor who came from a
+    // search for health news, a student asking what is on, and someone deciding
+    // whether to join want three different pages — on a single scroll each of
+    // them reads two-thirds of what they did not ask for. Addresses rather than
+    // tabs, so a page can be sent to someone and the back button, a reload and a
+    // shared link all behave.
     //
-    // What's on: the next dates and what has been published. The programme: the
-    // ledger of what the committee runs. The committee: who serves on it and how
-    // to join. Each panel carries its own action, so the hero carries none.
-    // Every other committee keeps the stacked page — one layout is not the house
-    // style.
-    layout: 'tabs',
+    // The landing page: the next dates, updates, the ledger of what the
+    // committee runs, and the reporting filed under its news category. The team
+    // page: who serves on it and how to join. The about page: the constitution's
+    // register, the committee's records and how to reach it. Each page carries
+    // its own action, so the hero carries none. Every other committee keeps the
+    // stacked page — one layout is not the house style.
+    layout: 'pages',
     // The hero says who the work is for, because it is the one thing about
     // this committee a reader can get wrong: the programmes are not an
     // internal members' benefit.
     intro:
       'The committee runs the health programme for students and the wider community, not only members: first-aid training, vaccination drives and wellness workshops. It also inspects the places students live and learn, and follows a fault until it is fixed.',
-    mandate: 'hidden',
+    // The constitutional register stays on the page, but on the about page
+    // rather than above the programme: a student who arrives with a blocked
+    // drain is not here to read the constitution, and a reader who wants the
+    // duties written down should be able to find them without scrolling past a
+    // roster.
     // The plan rail already carries the committee's work, with a time and a
     // status on each entry: inspecting on a schedule, publishing the standard,
     // first-aid training, the vaccination drive, wellness and mental health,
@@ -164,15 +177,12 @@ const COMMITTEE_PROFILES = {
     // the association-wide "one of twelve standing committees" pitch belongs on
     // the committees index, not under this committee's work.
     contact: 'compact',
-    closing: {
-      title: 'The record stays open until the fault is closed.',
-      body: 'Every report is checked on site, dated and logged. Where a fix needs the administration, the committee takes it there and keeps the record open until it is done.',
-      action: 'Report an issue',
-      secondary: {
-        label: 'See what’s on this term',
-        href: '#committee-plan-title',
-      },
-    },
+    // A closing band has to close something. The band that stood here pitched
+    // reporting a fault, and the form underneath it does the work; with the
+    // form at the foot of the landing page, the band was a second paragraph
+    // asking for what the reader was about to be offered. Suppressed, so the
+    // page ends on the form rather than on an advertisement for it.
+    closing: 'hidden',
     // Health has no committee-scoped news endpoint, but the admin editor files
     // health reporting under the shared `health` news category. `alsoInNews`
     // pulls those posts onto the page and lifts the calendar out of the records
@@ -184,9 +194,9 @@ const COMMITTEE_PROFILES = {
     },
     // Reporting is public, but it is not this page's subject. It used to be
     // pitched three times — a section on The work, a column under the join call,
-    // and the closing band — which read as a duty borrowed from the portal. It
-    // is said once now, in the closing band, and the form at the foot takes it;
-    // the profile keeps only the subject the form opens with, so a fault filed
+    // and a closing band — which read as a duty borrowed from the portal. It is
+    // said once now, in the line above the form on the landing page, and the
+    // profile keeps only the subject the form opens with, so a fault filed
     // through it arrives already marked.
     ask: {
       subject: {
@@ -368,7 +378,7 @@ function formatDate(
 }
 
 export default function CommitteePageTemplate() {
-  const { slug } = useParams();
+  const { slug, section } = useParams();
 
   // The constitutional registry is bundled, so the page can paint the committee
   // straight away instead of holding a spinner over the API. It starts marked
@@ -387,18 +397,25 @@ export default function CommitteePageTemplate() {
   const [achievements, setAchievements] = useState([]);
   const [programmes, setProgrammes] = useState([]);
   const [news, setNews] = useState([]);
-  const [searchParams] = useSearchParams();
-  const railRef = useRef(null);
-  // Set by a tab click so the rail brings itself back into view after the panel
-  // swaps; a first load and a deep link should not jump.
-  const tabChangedRef = useRef(false);
 
   const profile = COMMITTEE_PROFILES[slug] || {};
   // The only layout that departs from the stacked page: one committee presented
-  // as three views instead of one scroll. It is built around the programme
-  // ledger — the page fetches it, prints it, and lets it carry the dates instead
-  // of a separate calendar.
-  const tabsLayout = profile.layout === 'tabs';
+  // as three pages instead of one scroll. It is built around the programme
+  // ledger — the page fetches it, prints it on the landing page, and lets it
+  // carry the dates instead of a separate calendar.
+  const pagesLayout = profile.layout === 'pages';
+  // Which of the three a reader is on. No subpage in the address is the landing
+  // page; a subpage this committee does not have is sent back to the one page it
+  // does, rather than silently rendering the landing page under a wrong URL.
+  const subpage = pagesLayout ? section || 'landing' : null;
+  const straySection = section
+    ? pagesLayout
+      ? !['team', 'about'].includes(section)
+      : true
+    : false;
+  const onLanding = !pagesLayout || subpage === 'landing';
+  const onTeam = !pagesLayout || subpage === 'team';
+  const onAbout = !pagesLayout || subpage === 'about';
   const [loading, setLoading] = useState(true);
   const [contactForm, setContactForm] = useState({
     name: '',
@@ -462,8 +479,14 @@ export default function CommitteePageTemplate() {
           return;
         }
 
+        // The public projections, not the portal reads beside them in the
+        // service: those take a token, and the reader this page exists for has
+        // none — a signed-in member therefore sees the same page as a stranger
+        // (docs/16-public-and-portal-boundary.md §6.7).
+        const publicSlug = data.slug || slug;
+
         const [m, ev, d, ann, ach, prog] = await Promise.allSettled([
-          committeeService.getMembers(data.id),
+          committeeService.getPublicRoster(publicSlug),
           // The public events list, not the authenticated committee route. The
           // latter gives a member everything (drafts included) and a stranger
           // nothing — both wrong for a page meant to be read by the public. This
@@ -471,14 +494,14 @@ export default function CommitteePageTemplate() {
           // who is not staff, so the page shows one list to everyone
           // (docs/16-public-and-portal-boundary.md §3).
           eventService.getAll({ committee: slug }),
-          committeeService.getDocuments(data.id),
-          committeeService.getAnnouncements(data.id),
-          committeeService.getAchievements(data.id),
+          committeeService.getPublicDocuments(publicSlug),
+          committeeService.getPublicNotices(publicSlug),
+          committeeService.getPublicAchievements(publicSlug),
           // Only a committee whose page is built around the programme prints a
           // ledger, so the other ten do not ask for one. An anonymous visitor
           // gets published programmes only — the API decides that from the
           // caller's role, not from anything the page sends.
-          COMMITTEE_PROFILES[slug]?.layout === 'tabs'
+          COMMITTEE_PROFILES[slug]?.layout === 'pages'
             ? committeeService.getProgrammes(data.id)
             : Promise.resolve([]),
         ]);
@@ -571,7 +594,7 @@ export default function CommitteePageTemplate() {
       .querySelectorAll('.reveal-on-scroll')
       .forEach(el => observer.observe(el));
     return () => observer.disconnect();
-  }, [loading, slug]);
+  }, [loading, slug, section]);
 
   const chair = useMemo(
     () =>
@@ -611,9 +634,11 @@ export default function CommitteePageTemplate() {
     [announcements]
   );
 
-  /* The Now tab's first block: the nearest sessions a reader can turn up to,
+  /* The landing page's first block: the nearest sessions a reader can turn up
+     to,
      across every programme, each labelled with the programme it belongs to so
-     the two tabs point at each other. Sort is by start time — the committee's
+     the programme it belongs to, so a date and its programme point at each
+     other. Sort is by start time — the committee's
      own order means something within a programme, not across them. */
   const nextSessions = useMemo(
     () =>
@@ -645,40 +670,14 @@ export default function CommitteePageTemplate() {
     [announcements]
   );
 
-  // A tab is only offered when it has something in it. `What’s on` can be empty
-  // on a committee with nothing published and no dates, and `The programme` is
-  // empty until the committee has published one; `The committee` always has the
-  // way in. The ids stay `now`/`work`/`people` so a link already sent still
-  // lands on the view it named.
-  const nowHasContent =
-    nextSessions.length > 0 || updates.length > 0 || news.length > 0;
-  const tabItems = [
-    { id: 'now', label: 'What’s on' },
-    { id: 'work', label: 'The programme' },
-    { id: 'people', label: 'The committee' },
-  ].filter(
-    tab =>
-      (tab.id !== 'now' || nowHasContent) &&
-      (tab.id !== 'work' || programmes.length > 0)
-  );
-
-  // The URL is the tab's state: `?view=work` survives a reload and can be sent
-  // to someone. An unknown or absent value lands on the first tab that exists.
-  const requestedTab = searchParams.get('view');
-  const activeTab = tabItems.some(tab => tab.id === requestedTab)
-    ? requestedTab
-    : tabItems[0].id;
-
-  useEffect(() => {
-    // The flag is cleared inside the frame, not before it: StrictMode runs
-    // effects twice in development, and clearing it early turned the second,
-    // surviving pass into a no-op that left the reader at the top of the page.
-    if (!tabChangedRef.current) return;
-    requestAnimationFrame(() => {
-      tabChangedRef.current = false;
-      railRef.current?.scrollIntoView({ block: 'start' });
-    });
-  }, [activeTab]);
+  // All three pages are always offered. A page at its own address does not have
+  // to be withheld because it happens to be empty today, and the sections
+  // inside each one still only appear when they have something in them.
+  const subpages = [
+    { id: 'landing', label: 'What’s on', to: `/leadership/committees/${slug}` },
+    { id: 'team', label: 'The team', to: `/leadership/committees/${slug}/team` },
+    { id: 'about', label: 'About', to: `/leadership/committees/${slug}/about` },
+  ];
 
   const fallback = ALL_COMMITTEES_DATA[slug];
   const committeeCount = Object.keys(ALL_COMMITTEES_DATA).length;
@@ -694,7 +693,69 @@ export default function CommitteePageTemplate() {
   const ask = profile.ask || null;
   const support = profile.support || null;
   const heroIntro = profile.intro || null;
-  const closingNote = profile.closing || null;
+  /* The strip under the header. Every card states a count the API actually
+     returned - the same rule the sections follow, so a committee with nothing
+     published gets a shorter strip rather than a strip of zeros. Nothing here
+     repeats a section below it: the dates and the programme are one screen
+     down, and a strip that repeated them would be a second answer to the same
+     question. What it can add is the part of the committee the landing page
+     does not otherwise show - who serves on it, what the register demands, what
+     it has published, and how to write to it - which is also the shortest way
+     to the other two pages. */
+  const glanceFacts = [];
+  if (!loading) {
+    if (members.length > 0) {
+      glanceFacts.push({
+        id: 'team',
+        label: 'The team',
+        value: `${members.length} ${members.length === 1 ? 'person' : 'people'} serving`,
+        detail: chair
+          ? `Chaired by ${chair.full_name}`
+          : 'See who is on it this year',
+        to: `/leadership/committees/${slug}/team`,
+      });
+    }
+    if (mandate.length > 0) {
+      glanceFacts.push({
+        id: 'mandate',
+        label: 'The register',
+        value: `${mandate.length} standing ${mandate.length === 1 ? 'duty' : 'duties'}`,
+        detail: 'Written into the constitution',
+        to: `/leadership/committees/${slug}/about`,
+      });
+    }
+    if (docs.length > 0) {
+      glanceFacts.push({
+        id: 'records',
+        label: 'The records',
+        value: `${docs.length} ${docs.length === 1 ? 'document' : 'documents'} published`,
+        detail: 'Papers, reports and notices',
+        to: `/leadership/committees/${slug}/about`,
+      });
+    }
+    if (news.length > 0) {
+      glanceFacts.push({
+        id: 'news',
+        label: 'In the news',
+        value: `${news.length} ${news.length === 1 ? 'piece' : 'pieces'} on health`,
+        detail: 'Reporting from the association',
+        to: '/news',
+      });
+    }
+    if (committee?.email) {
+      glanceFacts.push({
+        id: 'contact',
+        label: 'Contact',
+        value: committee.email,
+        detail: 'Or use the form at the foot of this page',
+        href: `mailto:${committee.email}`,
+      });
+    }
+  }
+  // `closing: 'hidden'` suppresses the band altogether; without it, a profile
+  // that names no closing note gets the association-wide one.
+  const closingHidden = profile.closing === 'hidden';
+  const closingNote = closingHidden ? null : profile.closing || null;
   // The contact band is shared with the other committees' pages as they stand;
   // only a profile that asks for it gets the compact treatment.
   const compactContact = profile.contact === 'compact';
@@ -712,7 +773,7 @@ export default function CommitteePageTemplate() {
   // datetimes, so nothing on this page types a programme's status and a
   // programme cannot go on claiming to run after its last session has ended.
   // Academic still reads its plan from the bundled registry until it moves over.
-  const planHasContent = tabsLayout
+  const planHasContent = pagesLayout
     ? programmes.length > 0
     : termPlan.length > 0;
 
@@ -757,18 +818,25 @@ export default function CommitteePageTemplate() {
       : null;
 
   // The programme ledger already carries the dates its sessions fall on, and the
-  // tabbed page lists the nearest ones on `What’s on`, so the page never prints
+  // paged page lists the nearest ones on `What’s on`, so the page never prints
   // them a third time as a calendar column: the programme is the calendar. Its
   // published reporting stays — that is the other clock on that band and
   // nothing else shows it. Where the calendar *is* shown, the records section
   // leaves upcoming events out, so one page never lists the same three dates
   // twice.
-  const calendarShown = upcomingBrief.length > 0 && !tabsLayout;
+  const calendarShown = upcomingBrief.length > 0 && !pagesLayout;
+  // The reporting: `alsoInNews` names the association news category a committee
+  // files under, so a section needs both the profile and at least one published
+  // post. It is its own band when the page does not print a calendar beside it —
+  // the dates already lead a paged committee's page — and then it takes the
+  // band's full width instead of a column.
+  const showNews = Boolean(newsBrief) && news.length > 0;
+  const newsSolo = showNews && !calendarShown;
   // A session already printed under its programme above is not listed again
   // here: what this section can still add is the one-off events that belong to
   // no programme.
   const recordsUpcoming =
-    tabsLayout && planHasContent
+    pagesLayout && planHasContent
       ? upcomingEvents.filter(event => !event.programme_id)
       : upcomingEvents;
 
@@ -837,6 +905,10 @@ export default function CommitteePageTemplate() {
     }
   }
 
+  if (straySection) {
+    return <Navigate to={`/leadership/committees/${slug}`} replace />;
+  }
+
   if (!committee && !answered) {
     return (
       <section className="bg-lmsa-900 text-white" aria-busy="true">
@@ -891,9 +963,9 @@ export default function CommitteePageTemplate() {
   // already lands on the form, and a second route to the same anchor 40px
   // below is not navigation. When nothing is left the nav is not rendered at
   // all — an empty <nav> landmark announces "On this page" and offers nothing.
-  // A tabbed page is three short views with its tabs above them, so it needs no
-  // index; the stacked page does.
-  const onPageLinks = tabsLayout ? [] : [
+  // A paged committee is three short pages with the rail between them, so it
+  // needs no index; the stacked page does.
+  const onPageLinks = pagesLayout ? [] : [
     {
       // Listed only when there is a plan to reach. The hero's action goes to
       // the form (or, when the round is open, off the page), so this is the one
@@ -1007,11 +1079,11 @@ export default function CommitteePageTemplate() {
               {/* When the round is open the action leaves the page, because the
                   application lives on the join page. When it is not, the page's
                   own action is the one on it: writing to the committee. */}
-              {/* A tabbed page puts its actions in its panels — applying
-                  under The committee, the programme under The programme — so the
-                  hero carries only the committee's address, which every tab can
+              {/* A paged committee puts its actions on its pages — applying on
+                  the team page, the programme on the landing page — so the hero
+                  carries only the committee's address, which every page can
                   use. */}
-              {tabsLayout ? null : status?.open ? (
+              {pagesLayout ? null : status?.open ? (
                 <Link
                   to="/get-involved/committees"
                   className="inline-flex min-h-12 items-center gap-2 rounded-lg bg-lmsa-50 px-6 text-[15px] font-semibold text-lmsa-900 transition-transform duration-200 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-400 focus-visible:ring-offset-2 focus-visible:ring-offset-lmsa-900"
@@ -1086,37 +1158,30 @@ export default function CommitteePageTemplate() {
         </div>
       </section>
 
-      {/* ---------- The rail (tabbed layout) ----------
-          Three views of one committee. Links rather than ARIA tabs: each view
-          has a URL that can be sent to someone or reloaded, and the back button
-          does the obvious thing. The active one is marked with a rule and
-          `aria-current`, not by colour alone. A one-tab rail would be noise, so
-          the rail only renders when there is a choice to make. */}
-      {tabsLayout && tabItems.length > 1 && (
+      {/* ---------- The rail (paged layout) ----------
+          Three pages of one committee, at three addresses. The active one is
+          marked with a rule and `aria-current`, not by colour alone. The page's
+          own header sits above it, so the rail is the way between the pages
+          rather than a second title bar. */}
+      {pagesLayout && (
         <nav
-          ref={railRef}
           aria-label="Sections of this committee’s page"
-          className="scroll-mt-28 border-b border-lmsa-200 bg-white"
+          className="border-b border-lmsa-200 bg-white"
         >
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <ul className="-mb-px flex gap-8 overflow-x-auto">
-              {tabItems.map(tab => (
-                <li key={tab.id} className="shrink-0">
+              {subpages.map(page => (
+                <li key={page.id} className="shrink-0">
                   <Link
-                    to={`/leadership/committees/${slug}${
-                      tab.id === 'now' ? '' : `?view=${tab.id}`
-                    }`}
-                    aria-current={activeTab === tab.id ? 'page' : undefined}
-                    onClick={() => {
-                      tabChangedRef.current = true;
-                    }}
+                    to={page.to}
+                    aria-current={subpage === page.id ? 'page' : undefined}
                     className={`inline-flex min-h-[56px] items-center border-b-2 text-[15px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2 ${
-                      activeTab === tab.id
+                      subpage === page.id
                         ? 'border-lmsa-600 text-lmsa-900'
                         : 'border-transparent text-gray-600 hover:text-lmsa-800'
                     }`}
                   >
-                    {tab.label}
+                    {page.label}
                   </Link>
                 </li>
               ))}
@@ -1125,11 +1190,21 @@ export default function CommitteePageTemplate() {
         </nav>
       )}
 
+      {/* ---------- At a glance (landing page of a paged committee) ----------
+          Two cards is a row; more than that is a scroll. It sits inside the
+          header block, under the rail, because it is orientation rather than
+          content: it names what the committee has and points at the page that
+          holds it, and the first section below it is still the dates. */}
+      {pagesLayout && onLanding && glanceFacts.length > 1 && (
+        <FactsCarousel facts={glanceFacts} />
+      )}
+
       {/* ---------- What’s on: the next three things to turn up to ----------
-          The tab answers one question — is there anything for me this week — so
+          The landing page answers one question — is there anything for me this
+          week — so
           dates lead and nothing sits above them. Each row names its programme so
           a reader can go straight from the date to the work it belongs to. */}
-      {tabsLayout && activeTab === 'now' && nextSessions.length > 0 && (
+      {onLanding && nextSessions.length > 0 && (
         <section className="bg-paper" aria-labelledby="committee-now-title">
           <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 md:py-20 lg:px-8">
             <div className="reveal-on-scroll flex flex-wrap items-baseline justify-between gap-x-8 gap-y-3">
@@ -1203,12 +1278,12 @@ export default function CommitteePageTemplate() {
         </section>
       )}
 
-      {/* ---------- Updates (tabbed layout) ----------
+      {/* ---------- Updates (paged layout) ----------
           Notices and announcements are one stream to a reader; `pinned` decides
           what to keep at the top, not what kind of thing it is. The pinned band
-          below is the stacked page's treatment; a tabbed page reads it as a list
+          below is the stacked page's treatment; a paged page reads it as a list
           with dates. */}
-      {tabsLayout && activeTab === 'now' && updates.length > 0 && (
+      {onLanding && updates.length > 0 && (
         <section className="bg-white" aria-labelledby="committee-updates-title">
           <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 md:py-20 lg:px-8">
             <h2
@@ -1246,7 +1321,7 @@ export default function CommitteePageTemplate() {
       )}
 
       {/* ---------- Notices pinned by the committee ---------- */}
-      {!tabsLayout && pinned.length > 0 && (
+      {!pagesLayout && pinned.length > 0 && (
         <section className="bg-lmsa-50" aria-label="Pinned notices">
           <ul className="mx-auto max-w-7xl space-y-4 px-4 py-8 sm:px-6 lg:px-8">
             {pinned.map(notice => (
@@ -1270,13 +1345,13 @@ export default function CommitteePageTemplate() {
           one. A reader arrives
           for what the committee puts on — training, drives, workshops — not for
           a description of a remit, so it opens the page with a timing and a
-          state on every entry. On a tabbed committee it is fetched: the
+          state on every entry. On a paged committee it is fetched: the
           committee maintains its programmes in the dashboard and the API derives
           each one's state from its sessions. Printed only when there is a
           published programme, so a committee with nothing announced yet gets no
           empty section and the hero keeps its reporting action. */}
       {planHasContent &&
-        (!tabsLayout || activeTab === 'work') && (
+        onLanding && (
         <section className="bg-lmsa-50" aria-labelledby="committee-plan-title">
           <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 md:py-28 lg:px-8">
             <div className="reveal-on-scroll max-w-3xl">
@@ -1287,12 +1362,12 @@ export default function CommitteePageTemplate() {
                 tabIndex={-1}
                 className="scroll-mt-32 max-w-[18ch] text-[clamp(2rem,3.6vw,3.25rem)] font-bold leading-[1.02] tracking-[-0.04em] text-lmsa-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-lmsa-600"
               >
-                {tabsLayout
+                {pagesLayout
                   ? 'This term’s programme.'
                   : 'What we are doing this term.'}
               </h2>
               <p className="mt-5 max-w-[52ch] text-[20px] leading-8 text-gray-700">
-                {tabsLayout
+                {pagesLayout
                   ? 'Open to students and the wider community, not only members. Every programme below carries its state and its timing, so you can see what is running and what is coming. Underneath them is the standard they are held to, and the record published at the end of the term.'
                   : 'Planned from the mandate, with where each piece stands. The committee keeps this list up to date as the term moves.'}
               </p>
@@ -1306,7 +1381,7 @@ export default function CommitteePageTemplate() {
                 still ahead, each row led by the programme a student would ask
                 for by name. The two machinery entries follow as their own
                 ledger — they are not things to turn up to. */}
-            {tabsLayout && programmes.length > 0 && (
+            {pagesLayout && programmes.length > 0 && (
               <div className="mt-14 lg:max-w-[68rem]">
                 {/* State comes first, as it does on the rest of this page, and
                     each row is led by the programme's own name — what a reader
@@ -1333,7 +1408,7 @@ export default function CommitteePageTemplate() {
               </div>
             )}
 
-            {!tabsLayout && (
+            {!pagesLayout && (
             <ol className="mt-14 border-t border-lmsa-200 lg:max-w-[68rem]">
               {termPlan.map(item => (
                 <li
@@ -1440,7 +1515,7 @@ export default function CommitteePageTemplate() {
           Skipped entirely where the mandate is the footnote: the register is
           the committee's remit, and a page built around its programme puts that
           programme in front of it rather than this. */}
-      {!mandateHidden && !mandateFootnote && (
+      {!mandateHidden && !mandateFootnote && onAbout && (
       <section className="bg-paper" aria-labelledby="committee-mandate-title">
         <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 md:py-28 lg:px-8">
           <div className="reveal-on-scroll max-w-3xl">
@@ -1509,7 +1584,7 @@ export default function CommitteePageTemplate() {
       )}
 
       {/* ---------- The work ---------- */}
-      {!activitiesHidden && activities.length > 0 && (
+      {!activitiesHidden && activities.length > 0 && onAbout && (
         <section className="bg-white" aria-labelledby="committee-work-title">
           <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 md:py-28 lg:px-8">
             <div className="reveal-on-scroll max-w-3xl">
@@ -1570,7 +1645,7 @@ export default function CommitteePageTemplate() {
           for help does not need another description of the committee's remit,
           so these routes sit under the programme, set as a ledger rather than a
           set of cards. Only a profile with routes gets the section. */}
-      {support && support.links?.length > 0 && (
+      {support && support.links?.length > 0 && onAbout && (
         <section className="bg-paper" aria-labelledby="committee-support-title">
           <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 md:py-28 lg:px-8">
             <div className="reveal-on-scroll max-w-3xl">
@@ -1630,10 +1705,10 @@ export default function CommitteePageTemplate() {
           not arrive as a general enquiry — it reuses the form already on the
           page rather than adding an endpoint.
 
-          The tabbed layout skips this band: its ask is said once on paper, in
+          A paged committee skips this band: its ask is said once on paper, in
           the closing band, and the dark band would only be the same invitation
           a second time. */}
-      {ask && !tabsLayout && (
+      {ask && !pagesLayout && (
         <section className="bg-lmsa-900 text-white" aria-labelledby="committee-ask-title">
           <div className="mx-auto grid max-w-7xl gap-12 px-4 py-20 sm:px-6 md:py-24 lg:grid-cols-[0.95fr_1.05fr] lg:items-start lg:gap-16 lg:px-8">
             <div className="reveal-on-scroll">
@@ -1683,43 +1758,42 @@ export default function CommitteePageTemplate() {
         </section>
       )}
 
-      {/* ---------- What is happening: health reporting ----------
-          What has already been published, carried by the association's `health`
-          news category rather than a committee field that does not exist. The
-          scheduled half of this band has moved onto the programme ledger above
-          wherever a committee publishes programmes; on a committee that does
-          not, the calendar column still renders here. Either column can be
-          empty without collapsing the other, and with both empty the section
-          does not render at all. */}
-      {(!tabsLayout || activeTab === 'now') &&
-        newsBrief &&
-        (calendarShown || news.length > 0) && (
-        <section className="bg-lmsa-50" aria-labelledby="committee-happening-title">
+      {/* ---------- What is happening: reporting (and the calendar, where the
+          page still prints one) ----------
+          Health has no committee-scoped news endpoint, so what has already been
+          published arrives through the association's `health` category rather
+          than a field of the committee's own. Where the page also prints a
+          calendar of dates (a committee still on the stacked layout), the two
+          sit side by side. Where it does not — the dates already lead a paged
+          committee's page — the reporting takes the band on its own, three
+          posts across, and the band is named for the reporting instead of
+          calling itself "What is happening" above one narrow column. With
+          neither, the band does not render: a public page does not announce
+          that nothing has been published. */}
+      {onLanding && (calendarShown || showNews) && (
+        <section
+          className="bg-lmsa-50"
+          aria-labelledby="committee-happening-title"
+        >
           <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 md:py-28 lg:px-8">
             <div className="reveal-on-scroll max-w-3xl">
               <h2
                 id="committee-happening-title"
                 className="max-w-[18ch] text-[clamp(2rem,3.6vw,3.25rem)] font-bold leading-[1.02] tracking-[-0.04em] text-lmsa-900"
               >
-                What is happening.
+                {newsSolo ? `${newsBrief.heading}.` : 'What is happening.'}
               </h2>
               <p className="mt-5 max-w-[52ch] text-[19px] leading-8 text-gray-800">
-                {calendarShown
-                  ? news.length > 0
+                {newsSolo
+                  ? newsBrief.intro
+                  : calendarShown && showNews
                     ? 'What the committee has scheduled next, and what its work has been reported as.'
-                    : 'What the committee has scheduled next.'
-                  : "What the committee's work has been reported as."}
+                    : 'What the committee has scheduled next.'}
               </p>
             </div>
 
-            <div
-              className={`mt-14 grid gap-14 lg:gap-16 ${
-                calendarShown && news.length > 0
-                  ? 'lg:grid-cols-[1fr_1fr]'
-                  : 'lg:grid-cols-[minmax(0,32rem)]'
-              }`}
-            >
-              {calendarShown && (
+            {calendarShown ? (
+              <div className="mt-14 grid gap-14 lg:grid-cols-[1fr_1fr] lg:gap-16">
                 <div>
                   <div className="flex items-baseline justify-between gap-4 border-b border-lmsa-200 pb-3">
                     <h3 className="text-[13px] font-semibold uppercase tracking-[0.16em] text-lmsa-700">
@@ -1738,57 +1812,47 @@ export default function CommitteePageTemplate() {
                     ))}
                   </ul>
                 </div>
-              )}
 
-              {news.length > 0 && (
-                <div>
-                  <div className="flex items-baseline justify-between gap-4 border-b border-lmsa-200 pb-3">
-                    <h3 className="text-[13px] font-semibold uppercase tracking-[0.16em] text-lmsa-700">
-                      {newsBrief.heading}
-                    </h3>
-                    <Link
-                      to="/news"
-                      className="shrink-0 text-[14px] font-semibold text-lmsa-700 underline decoration-2 underline-offset-4 transition-colors hover:decoration-lmsa-900"
-                    >
-                      All news
-                    </Link>
+                {showNews && (
+                  <div>
+                    <div className="flex items-baseline justify-between gap-4 border-b border-lmsa-200 pb-3">
+                      <h3 className="text-[13px] font-semibold uppercase tracking-[0.16em] text-lmsa-700">
+                        {newsBrief.heading}
+                      </h3>
+                      <Link
+                        to="/news"
+                        className="shrink-0 text-[14px] font-semibold text-lmsa-700 underline decoration-2 underline-offset-4 transition-colors hover:decoration-lmsa-900"
+                      >
+                        All news
+                      </Link>
+                    </div>
+                    <p className="mt-4 text-[15px] leading-6 text-gray-700">
+                      {newsBrief.intro}
+                    </p>
+                    <ul className="mt-6 space-y-7">
+                      {news.map(post => (
+                        <NewsRow key={post.id || post.slug} post={post} />
+                      ))}
+                    </ul>
                   </div>
-                  <p className="mt-4 text-[15px] leading-6 text-gray-700">
-                    {newsBrief.intro}
-                  </p>
-                  <ul className="mt-6 space-y-7">
-                    {news.map(post => (
-                      <li key={post.id || post.slug} className="reveal-on-scroll">
-                        {formatDate(post.published_at, {
-                          day: 'numeric',
-                          month: 'short',
-                          year: 'numeric',
-                        }) && (
-                          <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-gray-600">
-                            {formatDate(post.published_at, {
-                              day: 'numeric',
-                              month: 'short',
-                              year: 'numeric',
-                            })}
-                          </p>
-                        )}
-                        <Link
-                          to={`/news/${post.slug}`}
-                          className="mt-1 inline-block text-[19px] font-semibold leading-7 text-lmsa-900 underline decoration-2 decoration-lmsa-200 underline-offset-[6px] transition-colors hover:decoration-lmsa-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
-                        >
-                          {post.title}
-                        </Link>
-                        {post.excerpt && (
-                          <p className="mt-2 max-w-[56ch] text-[16px] leading-7 text-gray-800">
-                            {post.excerpt}
-                          </p>
-                        )}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </div>
+                )}
+              </div>
+            ) : (
+              <>
+                <ul className="mt-12 grid gap-x-10 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
+                  {news.map(post => (
+                    <NewsRow key={post.id || post.slug} post={post} heading />
+                  ))}
+                </ul>
+                <Link
+                  to="/news"
+                  className="mt-12 inline-flex min-h-11 items-center gap-2 text-[15px] font-semibold text-lmsa-700 underline decoration-2 underline-offset-[6px] transition-colors hover:decoration-lmsa-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
+                >
+                  All news
+                  <ArrowRight size={15} aria-hidden="true" />
+                </Link>
+              </>
+            )}
           </div>
         </section>
       )}
@@ -1797,8 +1861,8 @@ export default function CommitteePageTemplate() {
           Only when there is a roster. A committee that has not published its
           members used to get a full section whose whole content was an apology;
           that fact belongs in one line beside the contact form, not a screen. */}
-      {members.length > 0 &&
-        (!tabsLayout || activeTab === 'people') && (
+      {(members.length > 0 || (pagesLayout && onTeam && !loading)) &&
+        onTeam && (
         <section className="bg-paper" aria-labelledby="committee-people-title">
           <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 md:py-28 lg:px-8">
             <div className="reveal-on-scroll max-w-3xl">
@@ -1810,6 +1874,19 @@ export default function CommitteePageTemplate() {
               </h2>
             </div>
 
+            {/* A paged committee keeps the roster's absence on the page that
+                carries the roster: with the contact section gone from this
+                page, the note that used to sit beside the form has nowhere
+                else to be, and a reader looking for the members gets an
+                answer rather than a blank. */}
+            {members.length === 0 && (
+              <p className="mt-8 max-w-[52ch] text-[19px] leading-8 text-gray-800">
+                {committee.unavailable
+                  ? 'We couldn’t load this year’s roster. Refresh the page, or write to the committee for the current list.'
+                  : 'This year’s roster is not published yet. Seats are appointed by the Executive Committee at the start of the year.'}
+              </p>
+            )}
+
             {board.length > 0 && (
               <ul className="mt-14 space-y-10">
                 {board.map(member => (
@@ -1818,37 +1895,24 @@ export default function CommitteePageTemplate() {
                     className="reveal-on-scroll grid gap-4 md:grid-cols-[0.38fr_1fr] md:gap-12"
                   >
                     <div className="flex items-center gap-4">
-                      {member.profile_photo_url ? (
-                        <img
-                          src={member.profile_photo_url}
-                          alt={member.full_name}
-                          className="h-16 w-16 shrink-0 rounded-full object-cover"
-                        />
-                      ) : (
-                        <span
-                          aria-hidden="true"
-                          className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-lmsa-100 text-lg font-bold text-lmsa-800"
-                        >
-                          {initialsOf(member.full_name)}
-                        </span>
-                      )}
+                      {/* Initials, not a portrait: the public read carries no
+                          photo, and a silhouette would claim a picture is
+                          coming (docs/16 §4, §9.3). */}
+                      <span
+                        aria-hidden="true"
+                        className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-lmsa-100 text-lg font-bold text-lmsa-800"
+                      >
+                        {initialsOf(member.full_name)}
+                      </span>
                       <div>
                         <p className="text-3xl font-semibold leading-tight tracking-[-0.03em] text-lmsa-900">
                           {member.full_name}
                         </p>
                         <p className="mt-1 text-[15px] leading-6 text-gray-700">
                           {member.position}
-                          {member.year_level
-                            ? ` · Year ${member.year_level}`
-                            : ''}
                         </p>
                       </div>
                     </div>
-                    {member.bio && (
-                      <p className="max-w-[56ch] text-[17px] leading-7 text-gray-800">
-                        {member.bio}
-                      </p>
-                    )}
                   </li>
                 ))}
               </ul>
@@ -1871,11 +1935,6 @@ export default function CommitteePageTemplate() {
                       {member.position && (
                         <span className="text-gray-700">{member.position}</span>
                       )}
-                      {member.year_level && (
-                        <span className="text-gray-700">
-                          Year {member.year_level}
-                        </span>
-                      )}
                     </li>
                   ))}
                 </ul>
@@ -1885,13 +1944,13 @@ export default function CommitteePageTemplate() {
         </section>
       )}
 
-      {/* ---------- Join the committee (tabbed layout) ----------
-          The way in, in public. Two readers reach this tab: a student asking how
+      {/* ---------- Join the committee (team page) ----------
+          The way in, in public. Two readers reach this page: a student asking how
           to join, and a resident asking what they can do if they are not joining
           at all. Both are answered, because the page is the association's public
           face and most of its readers are not members. Only the first is gated
           on a recruitment round — reporting a fault never is. */}
-      {tabsLayout && activeTab === 'people' && (
+      {pagesLayout && onTeam && (
         <section className="bg-lmsa-50" aria-labelledby="committee-join-title">
           <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 md:py-28 lg:px-8">
             <div className="grid gap-12 lg:grid-cols-[0.95fr_1.05fr] lg:items-start lg:gap-16">
@@ -1939,15 +1998,19 @@ export default function CommitteePageTemplate() {
                   The programme is not only for people who serve on the
                   committee. Training, drives and workshops are open to students
                   and to the wider community, and they are listed with their
-                  dates on this page.
+                  dates on the committee’s page.
                 </p>
-                <Link
-                  to={`/leadership/committees/${slug}?view=work`}
-                  className="mt-6 inline-flex min-h-12 items-center gap-2 text-[15px] font-semibold text-lmsa-700 underline decoration-2 underline-offset-[6px] transition-colors hover:decoration-lmsa-900"
-                >
-                  See this term’s programme
-                  <ArrowRight size={15} aria-hidden="true" />
-                </Link>
+                {/* Only where there is a programme to reach: a link to an
+                    anchor that is not on that page is a dead end. */}
+                {planHasContent && (
+                  <Link
+                    to={`/leadership/committees/${slug}#committee-plan-title`}
+                    className="mt-6 inline-flex min-h-12 items-center gap-2 text-[15px] font-semibold text-lmsa-700 underline decoration-2 underline-offset-[6px] transition-colors hover:decoration-lmsa-900"
+                  >
+                    See this term’s programme
+                    <ArrowRight size={15} aria-hidden="true" />
+                  </Link>
+                )}
               </div>
             </div>
           </div>
@@ -1955,7 +2018,7 @@ export default function CommitteePageTemplate() {
       )}
 
       {/* ---------- Records: notices, events, documents, milestones ---------- */}
-      {!tabsLayout &&
+      {onAbout &&
         (notices.length > 0 ||
         (!calendarShown && recordsUpcoming.length > 0) ||
         pastEvents.length > 0 ||
@@ -2075,7 +2138,14 @@ export default function CommitteePageTemplate() {
         </section>
       )}
 
-      {/* ---------- Contact ---------- */}
+      {/* ---------- Contact ----------
+          The form is the page's one action, so it sits where the reader's
+          intent is: the foot of the landing page, after the work. It is not
+          repeated on the team and about pages, where it was a screen of fields
+          at the end of two short pages and read as a second thing to do; the
+          committee's address is in the header of every page for a reader who
+          only wants to write. */}
+      {onLanding && (
       <section
         id="committee-contact"
         className="scroll-mt-24 bg-paper"
@@ -2083,7 +2153,15 @@ export default function CommitteePageTemplate() {
       >
         <div
           className={`mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 ${
-            compactContact ? 'py-14 md:py-16' : 'py-20 md:py-28'
+            // The compact form is the last band on the landing page, and the
+            // sections above it can disappear on their own (reporting needs
+            // published posts, dates need sessions), so its own top padding is
+            // what keeps it off whatever ends up above it. It is set to the
+            // page's usual 80/112 and not to the 56/64 a compact block would
+            // take, so the form opens on air instead of on the ledger's foot.
+            compactContact
+              ? 'pt-20 pb-14 md:pt-28 md:pb-16'
+              : 'py-20 md:py-28'
           }`}
         >
           {/* The copy is one block on desktop and a set of loose items on a
@@ -2115,15 +2193,16 @@ export default function CommitteePageTemplate() {
                   compactContact ? 'mt-3 text-[17px] leading-7' : 'mt-5 text-[19px] leading-8'
                 }`}
               >
-                {/* The closing band sends people to this form, so the tabbed
-                    page names the thing that arrives here rather than leaving
-                    the reader to work out that a fault is reported here. */}
-                {tabsLayout
+                {/* The closing band sends people to this form, so a paged
+                    committee names the thing that arrives here rather than
+                    leaving the reader to work out that a fault is reported
+                    here. */}
+                {pagesLayout
                   ? 'Report a fault, ask about the work, or request a document.'
                   : 'A question about the work, a request for a document, or an idea for the year ahead.'}
               </p>
 
-              {!loading && members.length === 0 && (
+              {!pagesLayout && !loading && members.length === 0 && (
                 <p className="mt-6 max-w-[46ch] text-[17px] leading-7 text-gray-800">
                   {committee.unavailable
                     ? 'Committee members for this year: we couldn’t load the roster. Refresh the page, or write to the committee for the current list.'
@@ -2320,9 +2399,10 @@ export default function CommitteePageTemplate() {
           </div>
         </div>
       </section>
+      )}
 
       {/* ---------- Closing ---------- */}
-      {closingNote ? (
+      {closingNote && onLanding ? (
         <section
           className="bg-lmsa-900 text-white"
           aria-labelledby="committee-next-title"
@@ -2347,30 +2427,22 @@ export default function CommitteePageTemplate() {
                   {closingNote.action}
                   <ArrowRight size={17} aria-hidden="true" />
                 </a>
-                {/* The programme is a section on a stacked page and a tab of
-                    its own on a tabbed one, where an anchor to it would point at
-                    a section the current view does not render. */}
-                {closingSecondary &&
-                  (tabsLayout ? (
-                    <Link
-                      to={`/leadership/committees/${slug}?view=work`}
-                      className="inline-flex min-h-12 items-center text-[15px] font-semibold text-lmsa-100 underline decoration-2 underline-offset-[6px] transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-400 focus-visible:ring-offset-2 focus-visible:ring-offset-lmsa-900"
-                    >
-                      {closingSecondary.label}
-                    </Link>
-                  ) : (
-                    <a
-                      href={closingSecondary.href}
-                      className="inline-flex min-h-12 items-center text-[15px] font-semibold text-lmsa-100 underline decoration-2 underline-offset-[6px] transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-400 focus-visible:ring-offset-2 focus-visible:ring-offset-lmsa-900"
-                    >
-                      {closingSecondary.label}
-                    </a>
-                  ))}
+                {/* The programme is on this page — the closing band is the
+                    landing page's, and the plan is a section of it — so the
+                    second action stays an in-page anchor. */}
+                {closingSecondary && (
+                  <a
+                    href={closingSecondary.href}
+                    className="inline-flex min-h-12 items-center text-[15px] font-semibold text-lmsa-100 underline decoration-2 underline-offset-[6px] transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-400 focus-visible:ring-offset-2 focus-visible:ring-offset-lmsa-900"
+                  >
+                    {closingSecondary.label}
+                  </a>
+                )}
               </div>
             </div>
           </div>
         </section>
-      ) : (
+      ) : !closingHidden && onLanding ? (
       <section
         className="bg-lmsa-900 text-white"
         aria-labelledby="committee-next-title"
@@ -2412,7 +2484,7 @@ export default function CommitteePageTemplate() {
           </figure>
         </div>
       </section>
-      )}
+      ) : null}
     </div>
   );
 }
@@ -2431,7 +2503,7 @@ const normaliseAudience = value =>
     .toLowerCase()
     .replace(/\.$/, '');
 
-/* One programme in the tabbed page's ledger.
+/* One programme in the landing page's ledger.
 
    The name is the row's heading, because that is what a student came to find.
    The next session is stated as a fact — day, time, place — rather than as a
@@ -2571,6 +2643,47 @@ function EventRow({ event, past }) {
   );
 }
 
+/* One published post as the page carries it: the day it went out, what it is
+   called, and the opening of it. No card and no thumbnail — three of these sit
+   in a row, and an image per post would turn the band into a feed and leave the
+   two posts without a picture looking unfinished.
+
+   `heading` is set where these titles are the band's own headings (the
+   reporting on its own); in the two-column layout they sit under the column's
+   heading and stay plain links, so the outline does not read as six sibling
+   subheads. */
+function NewsRow({ post, heading = false }) {
+  const published = formatDate(post.published_at, {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  });
+  const Title = heading ? 'h3' : 'div';
+
+  return (
+    <li className="reveal-on-scroll border-t border-lmsa-300 pt-5">
+      {published && (
+        <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-gray-600">
+          {published}
+        </p>
+      )}
+      <Title className="mt-2 text-[19px] font-semibold leading-7">
+        <Link
+          to={`/news/${post.slug}`}
+          className="text-lmsa-900 underline decoration-2 decoration-lmsa-200 underline-offset-[6px] transition-colors hover:decoration-lmsa-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2"
+        >
+          {post.title}
+        </Link>
+      </Title>
+      {post.excerpt && (
+        <p className="mt-2 max-w-[56ch] text-[16px] leading-7 text-gray-800">
+          {post.excerpt}
+        </p>
+      )}
+    </li>
+  );
+}
+
 function DocumentRow({ doc }) {
   const category = doc.category ? doc.category.replace(/_/g, ' ') : null;
   const size = doc.file_size ? `${Math.round(doc.file_size / 1024)} KB` : null;
@@ -2598,5 +2711,150 @@ function DocumentRow({ doc }) {
         </a>
       )}
     </li>
+  );
+}
+
+/* The strip of facts under the header. A carousel rather than a grid because
+   five cards at 300px either shrink past legibility or take two rows above the
+   dates, which are the reason a reader came.
+
+   It does not advance on its own: moving content a reader did not ask to move
+   is what WCAG 2.2.2 exists for, and someone reading a page should not have to
+   chase a card. The arrows step exactly one card, the track scrolls and snaps
+   on its own for a phone, and the track takes focus so a keyboard can scroll it
+   too. The arrows disable at each end rather than looping, so the strip always
+   says where in it you are. */
+function FactsCarousel({ facts }) {
+  const track = useRef(null);
+  const [atStart, setAtStart] = useState(true);
+  const [atEnd, setAtEnd] = useState(false);
+
+  useEffect(() => {
+    const el = track.current;
+    if (!el) return undefined;
+
+    const measure = () => {
+      setAtStart(el.scrollLeft <= 4);
+      setAtEnd(el.scrollLeft + el.clientWidth >= el.scrollWidth - 4);
+    };
+
+    measure();
+    el.addEventListener('scroll', measure, { passive: true });
+    window.addEventListener('resize', measure);
+    return () => {
+      el.removeEventListener('scroll', measure);
+      window.removeEventListener('resize', measure);
+    };
+  }, [facts.length]);
+
+  // A step is one card plus the gap, so it lands on a card edge instead of
+  // stopping halfway between two of them.
+  function step(direction) {
+    const el = track.current;
+    const card = el?.firstElementChild;
+    if (!el || !card) return;
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    el.scrollBy({
+      left: direction * (card.getBoundingClientRect().width + 16),
+      behavior: reduced ? 'auto' : 'smooth',
+    });
+  }
+
+  const arrow =
+    'inline-flex h-11 w-11 items-center justify-center rounded-full border border-lmsa-300 text-lmsa-800 transition-colors hover:border-lmsa-600 hover:text-lmsa-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2 focus-visible:ring-offset-paper disabled:cursor-default disabled:border-lmsa-200 disabled:text-lmsa-300';
+
+  return (
+    <section
+      className="border-b border-lmsa-200 bg-paper"
+      aria-labelledby="committee-glance-title"
+    >
+      <div className="mx-auto max-w-7xl px-4 py-7 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between gap-6">
+          <h2
+            id="committee-glance-title"
+            className="text-[13px] font-semibold uppercase tracking-[0.14em] text-gray-600"
+          >
+            At a glance
+          </h2>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              className={arrow}
+              onClick={() => step(-1)}
+              disabled={atStart}
+              aria-label="Previous facts"
+            >
+              <ChevronLeft size={18} aria-hidden="true" />
+            </button>
+            <button
+              type="button"
+              className={arrow}
+              onClick={() => step(1)}
+              disabled={atEnd}
+              aria-label="More facts"
+            >
+              <ChevronRight size={18} aria-hidden="true" />
+            </button>
+          </div>
+        </div>
+
+        <ul
+          ref={track}
+          tabIndex={0}
+          aria-label="The committee at a glance"
+          className="mt-4 flex snap-x snap-mandatory gap-4 overflow-x-auto pb-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-4 focus-visible:ring-offset-paper [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        >
+          {facts.map(fact => {
+            const linked = Boolean(fact.to || fact.href);
+            const body = (
+              <>
+                <span className="flex items-start justify-between gap-3">
+                  <span className="text-[12px] font-semibold uppercase tracking-[0.12em] text-gray-500">
+                    {fact.label}
+                  </span>
+                  {linked && (
+                    <ArrowRight
+                      size={15}
+                      aria-hidden="true"
+                      className="mt-0.5 shrink-0 text-lmsa-600"
+                    />
+                  )}
+                </span>
+                <span className="mt-3 block break-words text-[17px] font-semibold leading-6 text-lmsa-900">
+                  {fact.value}
+                </span>
+                {fact.detail && (
+                  <span className="mt-1 block text-[13px] leading-5 text-gray-600">
+                    {fact.detail}
+                  </span>
+                )}
+              </>
+            );
+            const card =
+              'flex h-full flex-col rounded-lg border border-lmsa-200 bg-white p-5';
+            const linkable = `${card} transition-colors hover:border-lmsa-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2`;
+
+            return (
+              <li
+                key={fact.id}
+                className="w-[264px] shrink-0 snap-start sm:w-[300px]"
+              >
+                {fact.to ? (
+                  <Link to={fact.to} className={linkable}>
+                    {body}
+                  </Link>
+                ) : fact.href ? (
+                  <a href={fact.href} className={linkable}>
+                    {body}
+                  </a>
+                ) : (
+                  <div className={card}>{body}</div>
+                )}
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+    </section>
   );
 }

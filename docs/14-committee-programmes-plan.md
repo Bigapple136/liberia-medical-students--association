@@ -41,14 +41,63 @@ said once, in the closing note (“the record stays open until the fault is clos
 the public form at the foot files it with the Health subject already set. A member still
 has the portal’s own route to the committee.
 
+*Amended again.* The closing note went the same way as the band it had outlived: a
+paragraph promising reporting, above the fields that take it, on the one page that also
+carries the programme. Health sets `closing: 'hidden'`, so the landing page ends on the
+form itself, and its opening line names the three things that arrive there. The form is
+not repeated elsewhere: the team and about pages carry no contact section, and the
+committee’s address stays in the header of all three for a reader who only wants to
+write. A roster that has not been published is stated on the team page, where it belongs,
+rather than beside a form that is no longer there.
+
 **4. Build it general, ship it on Health first.**
 The model is committee-agnostic: Academic's symposia, Social's events, Research's
 publications are all programmes. The template renders a programme section wherever a
 committee has programmes and keeps its current shape otherwise, so nothing regresses.
 `layout: 'service'` (the Health special case) has since been retired: Health is
-`layout: 'tabs'`, the layout flag names the only departure from the stacked page, and
-`planLayout` is gone with it — a committee either publishes programmes under the tabbed
+`layout: 'pages'`, the layout flag names the only departure from the stacked page, and
+`planLayout` is gone with it — a committee either publishes programmes under the paged
 layout or reads its plan from the registry.
+
+*Amended after P4.* The paged layout first shipped as three tabs on one URL (`?view=`),
+and tabs were the wrong shape for it: the programme, the roster and the register are
+three different pages for three different readers, and a tab is a folded section, not a
+page. Health is now three addresses under the committee's own:
+
+| Address | Holds |
+| --- | --- |
+| `/leadership/committees/health` | the next dates, updates, the programme ledger, the reporting filed under Health, and the contact form |
+| `/leadership/committees/health/team` | the roster and how to join |
+| `/leadership/committees/health/about` | the constitution's register, the committee's records |
+
+The rail under the header is the way between them and marks the open page with
+`aria-current`. A subpage a committee does not have — any second segment on a stacked
+committee, or an unknown one on a paged committee — is redirected to the committee's
+landing page. The old `?view=` addresses are ignored rather than honoured: what they
+named lives on the landing page (the programme and the dates) or is one rail link
+away (the roster).
+
+*Added after the three-page split.* The landing page carries a strip of facts under the
+rail — “At a glance” — and it is deliberately not a preview of what sits below it. The
+dates and the programme are one screen down, so the cards say the things the landing
+page does not: how many people serve and who chairs them, how many duties the register
+sets, how many documents are published, how many pieces of health reporting exist, and
+the committee’s address. Each count is one the API returned; a committee that has
+published nothing gets a shorter strip rather than a strip of zeros, and fewer than two
+cards is no strip at all. It scrolls sideways with the arrows and by swipe rather than
+advancing on a timer, because a page that moves under a reader is the thing WCAG 2.2.2
+is for.
+
+*The reporting band, for when posts exist.* Health has no committee-scoped news
+endpoint, so the page carries association posts filed under the shared `health` category
+(`alsoInNews`). Where a committee's page also prints a calendar of dates, the reporting
+sits beside it in a column; Health prints no calendar — the programme carries the dates —
+so the band is the reporting on its own: named “Health notes”, three posts across, each a
+date, a title and the opening of the piece, and one route to `/news`. It renders only
+when posts are published, so until the news API returns any health pieces the landing
+page goes from the programme straight to the form. The form band keeps the page's usual
+80/112 top padding for exactly that reason: what sits above it can disappear, and the
+form should not end up against the ledger when it does.
 
 ## 1. Data model
 

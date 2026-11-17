@@ -24,6 +24,36 @@ export const committeeService = {
     return response.data.committee;
   },
 
+  // ─── Public projections ──────────────────────────────────────────────────
+  // What a committee page may show a visitor. Separate from the authenticated
+  // reads further down, which answer the dashboard: the roster here is a name
+  // and a role, and only files marked public are listed
+  // (docs/16-public-and-portal-boundary.md §3–§4).
+
+  /** Public roster: each member's name and role, nothing else */
+  async getPublicRoster(slug) {
+    const response = await api.get(`/committees/${slug}/public/members`);
+    return response.data.members;
+  },
+
+  /** Public notices, pinned first */
+  async getPublicNotices(slug) {
+    const response = await api.get(`/committees/${slug}/public/notices`);
+    return response.data.notices;
+  },
+
+  /** Public documents only — an admin marks a file public to publish it */
+  async getPublicDocuments(slug) {
+    const response = await api.get(`/committees/${slug}/public/documents`);
+    return response.data.documents;
+  },
+
+  /** Public achievements */
+  async getPublicAchievements(slug) {
+    const response = await api.get(`/committees/${slug}/public/achievements`);
+    return response.data.achievements;
+  },
+
   /** Update committee info (admin) */
   async update(id, data) {
     const response = await api.put(`/committees/${id}`, data);

@@ -97,6 +97,9 @@ function AppRoutes() {
           <Route path="/leadership" element={<LeadershipPage />} />
           <Route path="/leadership/committees" element={<CommitteesPage />} />
           <Route path="/leadership/committees/:slug" element={<CommitteePageTemplate />} />
+          {/* A committee with a paged layout keeps its other pages under the same
+              address, so the committee's own URL stays the way into all of them. */}
+          <Route path="/leadership/committees/:slug/:section" element={<CommitteePageTemplate />} />
           <Route path="/leadership/past-presidents" element={<PastPresidentsPage />} />
           <Route path="/leadership/executive-council" element={<ExecutiveCouncilPage />} />
           

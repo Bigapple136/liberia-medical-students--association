@@ -210,9 +210,27 @@ function getMeta(pathname) {
   }
 
   if (pathname.startsWith('/leadership/committees/')) {
+    // A committee can be more than one page (`/health`, `/health/team`), so the
+    // name is the committee's own segment, not whatever word the URL ends on.
+    // Only the committee's landing page is titled as the committee; the others
+    // say which of its pages is open, so three tabs do not share one title.
+    const parts = pathname.split('/').filter(Boolean);
+    const readable = (parts[2] || '')
+      .split('-')
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+    const subpages = {
+      team: { title: 'The team', description: 'who serves on it and how to join' },
+      about: { title: 'About', description: 'its mandate and its records' },
+    };
+    const subpage = subpages[parts[3]];
     return {
-      title: `${readableSlug} | LMSA Committee`,
-      description: `Learn about the ${readableSlug} and its role in the Liberia Medical Students’ Association.`,
+      title: subpage
+        ? `${readable} — ${subpage.title} | LMSA Committee`
+        : `${readable} | LMSA Committee`,
+      description: subpage
+        ? `${subpage.title} at the ${readable}: ${subpage.description}, in the Liberia Medical Students’ Association.`
+        : `Learn about the ${readable} and its role in the Liberia Medical Students’ Association.`,
     };
   }
 
