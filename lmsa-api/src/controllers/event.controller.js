@@ -1,6 +1,7 @@
 import { supabase } from '../config/supabase.js';
 import { normalizeMaxAttendees } from '../utils/helpers.js';
 import { isUuid, resolveProgrammeAssignment } from '../utils/programmes.js';
+import { deriveEventStatus } from '../utils/eventStatus.js';
 
 const STAFF_ROLES = ['admin', 'executive', 'super_admin'];
 const isStaffUser = (user) => STAFF_ROLES.includes(user?.role);
@@ -19,9 +20,8 @@ export const getAll = async (req, res) => {
       query = query.eq('event_type', type);
     }
 
-    if (status) {
-      query = query.eq('status', status);
-    }
+    // The status filter is applied below, after the rows are read, because a
+    // stored status is not always the true one — see deriveEventStatus.
 
     if (upcoming === 'true') {
       query = query.gte('start_datetime', new Date().toISOString());
@@ -127,12 +127,22 @@ export const getAll = async (req, res) => {
     // response should carry no personal identifier. `registration_count` stays:
     // it is an aggregate that answers the one public question about it — is
     // there room for me — and both the event page and the symposia list read it.
-    const events = (data || []).map((event) => {
-      const visible = { ...event };
+    // Derived on read: `upcoming` is not a fact once the end time has gone by,
+    // and nothing rewrites the column when it does. Without this an event sits
+    // in the past still labelled Upcoming until somebody edits it by hand.
+    const readable = (data || []).map((event) => {
+      const visible = { ...event, status: deriveEventStatus(event) };
       delete visible.organizer_id;
       visible.registration_count = countsByEvent[event.id] || 0;
       return visible;
     });
+
+    // Filtered here rather than in SQL for the same reason: a row stored as
+    // 'upcoming' whose dates have passed has to answer to ?status=completed,
+    // and must not answer to ?status=upcoming.
+    const events = status
+      ? readable.filter((event) => event.status === status)
+      : readable;
 
     res.json({
       success: true,
@@ -197,7 +207,7 @@ export const getBySlug = async (req, res) => {
       .select('*', { count: 'exact', head: true })
       .eq('event_id', data.id);
 
-    const visibleEvent = { ...data };
+    const visibleEvent = { ...data, status: deriveEventStatus(data) };
     delete visibleEvent.organizer_id;
 
     res.json({

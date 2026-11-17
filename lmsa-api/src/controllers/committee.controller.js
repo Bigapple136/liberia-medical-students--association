@@ -2,6 +2,7 @@ import { supabase } from '../config/supabase.js';
 import { canAccessDocument } from './document.controller.js';
 import { sendEmail } from '../config/email.js';
 import { escapeHtml, normalizeMaxAttendees } from '../utils/helpers.js';
+import { deriveEventStatus } from '../utils/eventStatus.js';
 import {
   compareProgrammes,
   deriveProgrammeState,
@@ -403,9 +404,14 @@ export const getEvents = async (req, res) => {
       });
     }
 
+    // Derived, so this list carries the same status the public events list does
+    // rather than whatever the column said when the event was created.
     res.json({
       success: true,
-      events: data,
+      events: (data || []).map((event) => ({
+        ...event,
+        status: deriveEventStatus(event),
+      })),
     });
   } catch (error) {
     console.error('Get committee events error:', error);
