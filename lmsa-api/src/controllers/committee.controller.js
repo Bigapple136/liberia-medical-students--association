@@ -833,6 +833,164 @@ export const deleteAchievement = async (req, res) => {
   }
 };
 
+// ─── Public projections ─────────────────────────────────────────────────────
+// Four reads the public committee page needs and the authenticated handlers
+// above cannot serve: those take a token, so the reader the page exists for —
+// someone who is not a member — gets a 401 and the section renders empty.
+//
+// They sit under an explicit '/public/' segment rather than behind
+// optionalAuthenticate, so the reduction is in the query rather than in the
+// caller's role: a signed-in member sees exactly what a stranger sees, which is
+// the rule that keeps a public page quotable
+// (docs/16-public-and-portal-boundary.md §4, §6.1, §6.7). The three-segment
+// shape also cannot collide with '/:id/members', which still answers the
+// dashboard with the full roster.
+
+// Resolves the slug to an active committee's id, or answers the request itself.
+// Every projection below is scoped by that id, so a deactivated committee's
+// records are as unreachable as its page.
+const findPublicCommittee = async (req, res) => {
+  const { slug } = req.params;
+
+  const { data, error } = await supabase
+    .from('committees')
+    .select('id')
+    .eq('slug', slug)
+    .eq('status', 'active')
+    .maybeSingle();
+
+  if (error) {
+    res.status(400).json({ success: false, message: 'Failed to fetch committee' });
+    return null;
+  }
+
+  if (!data) {
+    res.status(404).json({ success: false, message: 'Committee not found' });
+    return null;
+  }
+
+  return data;
+};
+
+// ─── GET /api/committees/:slug/public/members ───────────────────────────────
+// A roster on a public page is a list of representatives, not a list of users:
+// a name and the public role, and nothing else (docs/16 §4). No portrait until
+// there is an explicit public-profile choice, no bio, no email, no year level,
+// no user id, and no joined_at — that is personnel record, not copy.
+export const getPublicMembers = async (req, res) => {
+  try {
+    const committee = await findPublicCommittee(req, res);
+    if (!committee) return;
+
+    const { data, error } = await supabase
+      .from('committee_members')
+      .select('id, position, user:user_id ( full_name )')
+      .eq('committee_id', committee.id)
+      .is('left_at', null)
+      .order('position');
+
+    if (error) {
+      return res.status(400).json({ success: false, message: 'Failed to fetch members' });
+    }
+
+    // A membership whose user row is gone has no name to publish, so it is
+    // dropped rather than rendered as an empty seat.
+    const members = (data || [])
+      .filter((member) => member.user?.full_name)
+      .map((member) => ({
+        id: member.id,
+        position: member.position,
+        full_name: member.user.full_name,
+      }));
+
+    res.json({ success: true, members });
+  } catch (error) {
+    console.error('Get public committee members error:', error);
+    res.status(500).json({ success: false, message: 'Failed to fetch members' });
+  }
+};
+
+// ─── GET /api/committees/:slug/public/notices ───────────────────────────────
+// committee_announcements carries no visibility flag, so a notice is public
+// copy: pinning one is how a committee publishes it (docs/16 §9.1). The body
+// comes with it, because for a notice the message *is* the content — unlike a
+// news post, there is nothing behind it to click through to.
+export const getPublicNotices = async (req, res) => {
+  try {
+    const committee = await findPublicCommittee(req, res);
+    if (!committee) return;
+
+    const { data, error } = await supabase
+      .from('committee_announcements')
+      .select('id, title, message, type, pinned, created_at')
+      .eq('committee_id', committee.id)
+      .order('pinned', { ascending: false })
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      return res.status(400).json({ success: false, message: 'Failed to fetch notices' });
+    }
+
+    res.json({ success: true, notices: data || [] });
+  } catch (error) {
+    console.error('Get public committee notices error:', error);
+    res.status(500).json({ success: false, message: 'Failed to fetch notices' });
+  }
+};
+
+// ─── GET /api/committees/:slug/public/documents ─────────────────────────────
+// Only files an admin marked 'public'. The filter is in the query, so a
+// members-only file is never fetched in order to be dropped, and the public
+// list cannot hint at how many files are held back (docs/16 §6.3). `uploaded_by`
+// and the committee id stay out: one is a user id, the other is already known.
+export const getPublicDocuments = async (req, res) => {
+  try {
+    const committee = await findPublicCommittee(req, res);
+    if (!committee) return;
+
+    const { data, error } = await supabase
+      .from('documents')
+      .select('id, title, description, category, file_url, file_type, file_size, downloads, created_at')
+      .eq('committee_id', committee.id)
+      .eq('access_level', 'public')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      return res.status(400).json({ success: false, message: 'Failed to fetch documents' });
+    }
+
+    res.json({ success: true, documents: data || [] });
+  } catch (error) {
+    console.error('Get public committee documents error:', error);
+    res.status(500).json({ success: false, message: 'Failed to fetch documents' });
+  }
+};
+
+// ─── GET /api/committees/:slug/public/achievements ──────────────────────────
+// What the committee is proud of is public copy: a title, a sentence and a
+// date. The admin's `created_by` is not part of it.
+export const getPublicAchievements = async (req, res) => {
+  try {
+    const committee = await findPublicCommittee(req, res);
+    if (!committee) return;
+
+    const { data, error } = await supabase
+      .from('committee_achievements')
+      .select('id, title, description, date, badge_emoji')
+      .eq('committee_id', committee.id)
+      .order('date', { ascending: false });
+
+    if (error) {
+      return res.status(400).json({ success: false, message: 'Failed to fetch achievements' });
+    }
+
+    res.json({ success: true, achievements: data || [] });
+  } catch (error) {
+    console.error('Get public committee achievements error:', error);
+    res.status(500).json({ success: false, message: 'Failed to fetch achievements' });
+  }
+};
+
 // ─── Committee programmes ───────────────────────────────────────────────────
 // A committee page is a list of programmes, each with its own sessions. The
 // frame — name, one sentence, audience, image, order — lives in

@@ -14,6 +14,17 @@ const router = express.Router();
 router.get('/', cc.getAll);
 router.get('/:slug', cc.getBySlug);
 
+// A committee's records as its public page may show them: the roster, the
+// notices, the files marked public and the achievements. Declared before the
+// authenticated '/:id/...' reads further down, and shaped so they cannot be
+// confused with them — a public page shows the same thing to everyone, so the
+// dashboard's fuller reads stay on their own routes
+// (docs/16-public-and-portal-boundary.md §6.1, §6.7).
+router.get('/:slug/public/members', cc.getPublicMembers);
+router.get('/:slug/public/notices', cc.getPublicNotices);
+router.get('/:slug/public/documents', cc.getPublicDocuments);
+router.get('/:slug/public/achievements', cc.getPublicAchievements);
+
 // A committee's programmes. One route for both readers — '/:slug/programmes'
 // and '/:id/programmes' are the same path shape, so the controller resolves the
 // identifier and the caller's role decides whether drafts are included.

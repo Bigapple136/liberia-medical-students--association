@@ -127,7 +127,7 @@ These are the mechanics that keep the policy honest. They apply to every new com
     admin screens, never the mechanism by which a signed-in member sees member-only content on
     a public page. If a block would only appear to members, it belongs in the portal.
 
-## 7. Where the code stands (2026-11-16)
+## 7. Where the code stands (2026-11-17)
 
 | Feed the committee page needs | Route | Public today |
 |---|---|---|
@@ -135,23 +135,32 @@ These are the mechanics that keep the policy honest. They apply to every new com
 | Programmes | `GET /api/committees/:identifier/programmes` | yes, drafts hidden by role |
 | Sessions and one-off events | `GET /api/events?committee=<slug>` | yes, drafts hidden by role |
 | News | `GET /api/news?category=<slug>` | yes |
-| Roster | `GET /api/committees/:id/members` | **no** — `authenticate` |
-| Notices | `GET /api/committees/:id/announcements` | **no** — `authenticate` |
-| Documents | `GET /api/committees/:id/documents` | **no** — `authenticate`, and unfiltered by `access_level` |
-| Achievements | `GET /api/committees/:id/achievements` | **no** — `authenticate` |
+| Roster | `GET /api/committees/:slug/public/members` | yes — a name and a role, nothing else |
+| Notices | `GET /api/committees/:slug/public/notices` | yes, pinned first |
+| Documents | `GET /api/committees/:slug/public/documents` | yes — `access_level = 'public'` is in the query |
+| Achievements | `GET /api/committees/:slug/public/achievements` | yes |
 
-Two gaps follow directly, and both are prerequisites for any further committee page work:
+Both gaps this section used to name are closed. The page reads its dates from
+`GET /api/events?committee=<slug>` (§10, finding 8), and the four projections above exist as
+their own reads: one query each, columns named, filtered by data rather than by caller —
+current members only, notices, files at `access_level = 'public'`, achievements.
 
-1. **The page still calls the authenticated events route** (`committeeService.getEvents(id)`),
-   so a logged-out visitor sees no dates at all — including the programme sessions that the
-   programme endpoint already lists. It should read `GET /api/events?committee=<slug>`.
-2. **Roster, notices (and documents, achievements where a page shows them) have no public
-   read.** Until the projections in §3–§4 exist, those sections can only be built for signed-in
-   visitors, which is the opposite of what the page is for.
+They sit under an explicit `/public/` segment instead of behind `optionalAuthenticate` on the
+existing handlers, because the dashboard's roster still needs the email and year level that
+§4 keeps off a public page. Two different readers, two different queries, and the difference is
+in the query. The paths are three segments deep so they cannot collide with `/:id/members`.
 
-Order of work: public events on the page → public roster and notices projections → public
-documents projection (`access_level = 'public'`) → then page work that depends on them, such
-as the tabbed Health layout.
+The page calls those four and nothing else (`getPublicRoster`, `getPublicNotices`,
+`getPublicDocuments`, `getPublicAchievements`). A roster row is now a name and a role with
+initials where a portrait would go: the projection carries no photo, no bio and no year, so the
+branches that used to print “Year 4” are gone rather than left to fall silent (§4, §9.3).
+
+One consequence for development. The deployed API answered a **single** frontend origin, so a
+dev server at `localhost:5173` was refused by CORS and the page fell back to bundled copy —
+which reads exactly like an API with nothing to say. `FRONTEND_URL` now takes a comma-separated
+list, so one API can answer the production site and a local dev server; an origin that is not
+listed still gets no CORS header at all, and a same-origin or server-to-server call (no `Origin`
+header) is unaffected.
 
 ## 8. Review checklist
 

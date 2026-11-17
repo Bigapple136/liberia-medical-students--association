@@ -64,8 +64,24 @@ app.set('trust proxy', 1);
 app.use(helmet());
 
 // CORS
+//
+// FRONTEND_URL takes a comma-separated list, so one deployed API can answer the
+// production site and a developer's dev server at the same time — with a single
+// origin, the page in development is refused and falls back to bundled copy,
+// which reads exactly like an API that has nothing to say. Origins are matched
+// exactly and a request from an unlisted one gets no CORS header at all (not an
+// error), because reading the response is the thing being withheld.
+const allowedOrigins = (process.env.FRONTEND_URL || 'http://localhost:5173')
+  .split(',')
+  .map((origin) => origin.trim().replace(/\/$/, ''))
+  .filter(Boolean);
+
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+  origin: (origin, callback) => {
+    // Same-origin, curl and server-to-server calls carry no Origin header.
+    if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
+    return callback(null, false);
+  },
   credentials: true,
 }));
 
