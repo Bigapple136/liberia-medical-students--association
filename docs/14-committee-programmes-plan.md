@@ -44,11 +44,12 @@ has the portal’s own route to the committee.
 *Amended again.* The closing note went the same way as the band it had outlived: a
 paragraph promising reporting, above the fields that take it, on the one page that also
 carries the programme. Health sets `closing: 'hidden'`, so the landing page ends on the
-form itself, and its opening line names the three things that arrive there. The form is
-not repeated elsewhere: the team and about pages carry no contact section, and the
-committee’s address stays in the header of all three for a reader who only wants to
-write. A roster that has not been published is stated on the team page, where it belongs,
-rather than beside a form that is no longer there.
+work — the programme and the reporting — rather than on a promise about it. The form
+itself closes the About page, under the register and the records (see *The three pages*);
+it is not repeated on the landing page or the team page, and the committee’s address
+stays in the header of all three for a reader who only wants to write. A roster that has
+not been published is stated on the team page, where it belongs, rather than beside a
+form that is not there.
 
 **4. Build it general, ship it on Health first.**
 The model is committee-agnostic: Academic's symposia, Social's events, Research's
@@ -66,9 +67,9 @@ page. Health is now three addresses under the committee's own:
 
 | Address | Holds |
 | --- | --- |
-| `/leadership/committees/health` | the next dates, updates, the programme ledger, the reporting filed under Health, and the contact form |
+| `/leadership/committees/health` | the next dates, updates, the programme ledger, and the reporting filed under Health |
 | `/leadership/committees/health/team` | the roster and how to join |
-| `/leadership/committees/health/about` | the constitution's register, the committee's records |
+| `/leadership/committees/health/about` | the constitution's register, the committee's records, and the contact form |
 
 The rail under the header is the way between them and marks the open page with
 `aria-current`. A subpage a committee does not have — any second segment on a stacked
@@ -82,9 +83,11 @@ rail — “At a glance” — and it is deliberately not a preview of what sits
 dates and the programme are one screen down, so the cards say the things the landing
 page does not: how many people serve and who chairs them, how many duties the register
 sets, how many documents are published, how many pieces of health reporting exist, and
-the committee’s address. Each count is one the API returned; a committee that has
-published nothing gets a shorter strip rather than a strip of zeros, and fewer than two
-cards is no strip at all. It scrolls sideways with the arrows and by swipe rather than
+where to write to it. That last card leads to the form on the About page rather than
+opening a mail client: every other card in the strip goes to a page on this site, and the
+committee’s address is already in the header. Each count is one the API returned; a
+committee that has published nothing gets a shorter strip rather than a strip of zeros,
+and fewer than two cards is no strip at all. It scrolls sideways with the arrows and by swipe rather than
 advancing on a timer, because a page that moves under a reader is the thing WCAG 2.2.2
 is for.
 
@@ -95,9 +98,20 @@ sits beside it in a column; Health prints no calendar — the programme carries 
 so the band is the reporting on its own: named “Health notes”, three posts across, each a
 date, a title and the opening of the piece, and one route to `/news`. It renders only
 when posts are published, so until the news API returns any health pieces the landing
-page goes from the programme straight to the form. The form band keeps the page's usual
-80/112 top padding for exactly that reason: what sits above it can disappear, and the
-form should not end up against the ledger when it does.
+page goes from the programme straight to the foot of the page.
+
+*Amended after the boundary work.* The contact form moved from the foot of the landing
+page to the foot of the About page. Reaching the committee is what that page is for — the
+register says what the committee owes, the records say what it has done, and the form is
+the last thing to say — while the landing page's action is its dates and its programme,
+and a screen of fields after the reporting read as a second thing to do. The form is not
+repeated on the landing page or the team page; the committee's address stays in the
+header of every page. The landing page keeps one line under its reporting — a ruled
+“Write to the committee” link to `/health/about#committee-contact-form` — so the form is
+one click from where a reader finishes reading, and so that path survives the reporting
+band disappearing. The card itself keeps the page's usual 80/112 top padding for the
+reason it always had: what sits above it can disappear, and the form should not end up
+against the records when it does.
 
 ## 1. Data model
 

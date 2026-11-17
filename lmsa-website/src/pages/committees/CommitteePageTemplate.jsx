@@ -173,15 +173,15 @@ const COMMITTEE_PROFILES = {
     // full-screen stock photograph of a clinic that is not LMSA's. It is the
     // same call Academic makes: the spine says it once.
     activities: 'hidden',
-    // The page closes on the loop it opened with, not on what a committee is:
-    // the association-wide "one of twelve standing committees" pitch belongs on
-    // the committees index, not under this committee's work.
+    // The compact card, not a full band: the form closes the About page under
+    // a run of records, and the card keeps it an action at the foot of that
+    // page rather than a second section of it.
     contact: 'compact',
     // A closing band has to close something. The band that stood here pitched
-    // reporting a fault, and the form underneath it does the work; with the
-    // form at the foot of the landing page, the band was a second paragraph
-    // asking for what the reader was about to be offered. Suppressed, so the
-    // page ends on the form rather than on an advertisement for it.
+    // reporting a fault, and the form does that work; the form now closes the
+    // About page, so the landing page ends on what is scheduled and what has
+    // been reported. Suppressed rather than restaged: the About page is one
+    // rail link away, and a pitch here would advertise a form on another page.
     closing: 'hidden',
     // Health has no committee-scoped news endpoint, but the admin editor files
     // health reporting under the shared `health` news category. `alsoInNews`
@@ -742,15 +742,20 @@ export default function CommitteePageTemplate() {
         to: '/news',
       });
     }
-    if (committee?.email) {
-      glanceFacts.push({
-        id: 'contact',
-        label: 'Contact',
-        value: committee.email,
-        detail: 'Or use the form at the foot of this page',
-        href: `mailto:${committee.email}`,
-      });
-    }
+    // The card leads to the form, not to a mail client. It was the one link in
+    // the strip that left the site, and with the form now closing the About
+    // page, writing to the committee is a page on this site like the other
+    // four cards. Unconditional, unlike the address it used to print: the form
+    // exists whether or not the committee has published an email, and the
+    // address still sits in the header of every page for a reader who only
+    // wants to write.
+    glanceFacts.push({
+      id: 'contact',
+      label: 'Contact',
+      value: 'Write to the committee',
+      detail: 'Reports, questions and requests',
+      to: `/leadership/committees/${slug}/about#committee-contact-form`,
+    });
   }
   // `closing: 'hidden'` suppresses the band altogether; without it, a profile
   // that names no closing note gets the association-wide one.
@@ -1857,6 +1862,34 @@ export default function CommitteePageTemplate() {
         </section>
       )}
 
+      {/* ---------- Where to write (landing page of a paged committee) ----------
+          The form closes the About page, one rail link away, and a reader who
+          came for the programme should not have to work out where it went. One
+          line under the reporting, ruled off rather than built into a band: the
+          landing page's bulk is already its dates and its programme, and a
+          second contact pitch here would be the closing note this profile
+          suppresses. Stacked committees need none of it — their form is on this
+          page. */}
+      {pagesLayout && onLanding && (
+        <div className="bg-paper">
+          <div className="mx-auto max-w-7xl px-4 pb-16 sm:px-6 lg:px-8">
+            <div className="flex flex-col gap-3 border-t border-lmsa-200 pt-7 sm:flex-row sm:items-baseline sm:justify-between sm:gap-10">
+              <p className="max-w-[52ch] text-[15px] leading-6 text-gray-700">
+                Reports, questions and requests reach the committee through
+                the form.
+              </p>
+              <Link
+                to={`/leadership/committees/${slug}/about#committee-contact-form`}
+                className="inline-flex min-h-11 shrink-0 items-center gap-2 self-start text-[15px] font-semibold text-lmsa-700 underline decoration-2 underline-offset-[6px] transition-colors hover:decoration-lmsa-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lmsa-600 focus-visible:ring-offset-2 sm:self-auto"
+              >
+                Write to the committee
+                <ArrowRight size={15} aria-hidden="true" />
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* ---------- Who does the work ----------
           Only when there is a roster. A committee that has not published its
           members used to get a full section whose whole content was an apology;
@@ -2139,13 +2172,14 @@ export default function CommitteePageTemplate() {
       )}
 
       {/* ---------- Contact ----------
-          The form is the page's one action, so it sits where the reader's
-          intent is: the foot of the landing page, after the work. It is not
-          repeated on the team and about pages, where it was a screen of fields
-          at the end of two short pages and read as a second thing to do; the
-          committee's address is in the header of every page for a reader who
+          The foot of the About page. That page states what the committee is
+          bound to do and what it has on the record; what is left to say is how
+          to reach it, so the form closes the page instead of opening it. It is
+          not repeated on the landing page, whose action is its programme and
+          its dates, nor on the team page, whose action is joining. The
+          committee's address stays in the header of every page for a reader who
           only wants to write. */}
-      {onLanding && (
+      {onAbout && (
       <section
         id="committee-contact"
         className="scroll-mt-24 bg-paper"
@@ -2153,12 +2187,12 @@ export default function CommitteePageTemplate() {
       >
         <div
           className={`mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 ${
-            // The compact form is the last band on the landing page, and the
-            // sections above it can disappear on their own (reporting needs
-            // published posts, dates need sessions), so its own top padding is
-            // what keeps it off whatever ends up above it. It is set to the
+            // The compact form is the last band on the About page, and the
+            // sections above it can disappear on their own (records need
+            // published documents, dates need sessions), so its own top padding
+            // is what keeps it off whatever ends up above it. It is set to the
             // page's usual 80/112 and not to the 56/64 a compact block would
-            // take, so the form opens on air instead of on the ledger's foot.
+            // take, so the form opens on air instead of on the records' foot.
             compactContact
               ? 'pt-20 pb-14 md:pt-28 md:pb-16'
               : 'py-20 md:py-28'
